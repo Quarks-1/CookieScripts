@@ -10,20 +10,14 @@ function RefreshIcon({ spinning }: { spinning: boolean }) {
   return (
     <svg
       aria-hidden="true"
-      viewBox="0 0 16 16"
+      viewBox="0 0 24 24"
       fill="none"
-      className={`h-3 w-3 ${spinning ? "animate-spin" : ""}`}
+      className={`h-3.5 w-3.5 ${spinning ? "animate-spin" : ""}`}
     >
       <path
-        d="M13.65 2.35A7 7 0 1 0 14.5 8"
+        d="M4 4v5h5M20 20v-5h-5M5.07 18.36A9 9 0 1 0 6.05 6.34M18.93 5.64A9 9 0 0 0 17.95 17.66"
         stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <path
-        d="M14.5 3.5V8H10"
-        stroke="currentColor"
-        strokeWidth="1.5"
+        strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -82,7 +76,7 @@ export function VersionStatus({
         onClick={onRefresh}
         disabled={checking}
         aria-label={checking ? "Checking for updates" : "Check for updates"}
-        className="inline-flex items-center justify-center rounded-full border border-zinc-700/80 p-1 text-zinc-400 hover:bg-zinc-800/80 hover:text-zinc-200 disabled:opacity-50"
+        className="inline-flex h-6 w-6 items-center justify-center rounded-full text-zinc-500 transition-colors hover:bg-zinc-800/80 hover:text-zinc-200 disabled:opacity-50"
       >
         <RefreshIcon spinning={checking} />
       </button>
