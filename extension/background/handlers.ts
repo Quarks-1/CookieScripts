@@ -11,6 +11,7 @@ import {
 import { resolveWatchConfig } from "@ext/lib/watch.ts";
 import {
   activeChannels,
+  clearRecentUrlKeys,
   enqueueLinkProcessing,
   mergeDedupKeys,
   recentUrlKeys,
@@ -193,6 +194,7 @@ async function handleUiMessage(
     }
     case "CLEAR_HISTORY": {
       await clearHistory();
+      clearRecentUrlKeys();
       return { ok: true };
     }
   }

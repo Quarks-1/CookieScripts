@@ -25,6 +25,14 @@ export async function initRuntimeState(): Promise<void> {
   activeChannels.clear();
 }
 
+export function clearRecentUrlKeys(): void {
+  recentUrlKeys.clear();
+  if (recentUrlsFlushTimer !== null) {
+    clearTimeout(recentUrlsFlushTimer);
+    recentUrlsFlushTimer = null;
+  }
+}
+
 export function mergeDedupKeys(newKeys: string[]): void {
   for (const key of newKeys) {
     if (recentUrlKeys.has(key)) {

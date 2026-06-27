@@ -244,4 +244,14 @@ describe("handleMessage", () => {
     onTabRemoved(5);
     expect(activeChannels.has(5)).toBe(false);
   });
+
+  it("clears dedup keys when history is cleared", async () => {
+    recentUrlKeys.add("https://walmart.com/item");
+    const sender = mockExtensionPageSender(EXTENSION_ID);
+
+    const response = await handleMessage({ type: "CLEAR_HISTORY" }, sender);
+
+    expect(response).toEqual({ ok: true });
+    expect(recentUrlKeys.size).toBe(0);
+  });
 });

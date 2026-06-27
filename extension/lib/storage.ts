@@ -30,7 +30,10 @@ export async function prependHistory(items: HistoryItem[]): Promise<void> {
 }
 
 export async function clearHistory(): Promise<void> {
-  await chrome.storage.local.set({ [STORAGE_KEYS.history]: [] });
+  await chrome.storage.local.set({
+    [STORAGE_KEYS.history]: [],
+    [STORAGE_KEYS.recentUrls]: [],
+  });
 }
 
 export async function loadRecentUrls(): Promise<string[]> {
