@@ -235,8 +235,13 @@ interface HistoryItem {
 interface PersistedState {
   settings: ExtensionSettings;
   history: HistoryItem[];     // cap at 200 (match autoopen backend/service.py)
+  recentUrls: string[];       // normalized dedup keys, cap 500 — debounced persist to chrome.storage.local
 }
 ```
+
+Storage uses **separate keys** (`cookiescripts:settings`, `cookiescripts:history`, `cookiescripts:recentUrls`), not a single blob load/merge.
+
+Channel authorization: `resolveContentChannel(sender, payloadChannelId)` derives `channel_id` from `sender.tab.url`; reject payload mismatch.
 
 No `discord_token`. No `has_token` field.
 
@@ -413,7 +418,7 @@ Responsibilities:
 2. Respond to `CHANNEL_ACTIVE` — tell content script if channel is watched + domains
 3. On `CANDIDATE_LINKS` — filter, dedup, `chrome.tabs.create({ url, active: false })`
    - Use `active: false` so user stays on Discord (product decision — document in README)
-4. Maintain `recentUrlSet` (cap 500) and `history` (cap 200) in memory; persist history periodically
+4. Maintain in-memory `recentUrlKeys` (cap 500, authoritative hot path) with debounced persist to `chrome.storage.local`; `history` (cap 200) persisted on each batch; `activeChannels` in memory only (never persisted)
 5. Broadcast status updates to popup when open
 
 **MV3 lifetime:** Service worker may sleep. Content script does the continuous observation;
@@ -480,7 +485,7 @@ Environment variables: none required for MVP.
 7. Post link on non-allowed domain → ignored
 8. Navigate to unwatched channel → popup shows "Not watching"
 9. Close Discord tab → popup shows inactive
-10. Test `goto.walmart.com?u=...` unwrap opens final Walmart URL
+10. Test `goto.walmart.com?u=...` affiliate dedupes against direct Walmart URL (opens original matched URL; unwrap applies to dedup only)
 
 ---
 

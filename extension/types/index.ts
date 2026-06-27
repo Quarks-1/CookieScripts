@@ -16,9 +16,20 @@ export interface HistoryItem {
   timestamp: string;
 }
 
+/** Documentation shape — persisted as separate storage keys, not one blob load. */
 export interface PersistedState {
   settings: ExtensionSettings;
   history: HistoryItem[];
+  recentUrls: string[];
+}
+
+export interface ExtensionStatus {
+  enabled: boolean;
+  discord_tab_detected: boolean;
+  active_channel_id: string | null;
+  is_watched: boolean;
+  allowed_domains: string[];
+  recent_history: HistoryItem[];
 }
 
 export type ContentToBackground =
@@ -38,6 +49,15 @@ export type UiToBackground =
   | { type: "CLEAR_HISTORY" };
 
 export type RuntimeMessage = ContentToBackground | BackgroundToContent | UiToBackground;
+
+export type BackgroundResponse =
+  | { ok: true; status: ExtensionStatus }
+  | { ok: true; settings: ExtensionSettings }
+  | { ok: true; history: HistoryItem[] }
+  | { ok: true; opened: string[]; duplicates: string[] }
+  | { ok: true }
+  | { ok: false; error: string }
+  | { type: "WATCH_CONFIG"; channel_id: string | null; allowed_domains: string[] };
 
 export const DEFAULT_SETTINGS: ExtensionSettings = {
   channel_targets: [],

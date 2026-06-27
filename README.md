@@ -15,10 +15,12 @@ See [BUILD.md](./BUILD.md) for architecture, phases, and upstream references.
 
 ```bash
 npm install
-npm run dev      # HMR for popup/options (load unpacked from dist/ after first build)
+npm run dev      # HMR for popup/options (reload extension for service worker changes)
 npm run build    # Production build → dist/
-npm test         # Vitest smoke tests
+npm test         # Vitest unit tests (links, validate, process-links, handlers)
 ```
+
+After changing the service worker or background handlers, reload the extension on `chrome://extensions`.
 
 ## Load unpacked
 
@@ -28,11 +30,20 @@ npm test         # Vitest smoke tests
 4. Click **Load unpacked** and select the `dist/` folder
 5. Pin the extension and open the popup or **Options**
 
+## Permissions
+
+| Permission | Why |
+|------------|-----|
+| `storage` | Save watch targets, link history, and dedup keys locally on your device |
+| `tabs` | Open matched product links in new background tabs; read active tab URL for status |
+
+`host_permissions` for `discord.com` will be added in Phase 3 with the content script.
+
 ## Privacy
 
 - Data stays on your device; no Discord user token is collected or stored
-- Future versions will use `chrome.storage.local` for watch targets and link history only
-- Permissions (`storage`, `tabs`, `host_permissions` for discord.com) are added incrementally as features ship
+- `chrome.storage.local` holds watch targets, link history (last 200), and recent dedup keys (last 500)
+- No data is sent to external servers
 
 ## Discord Terms of Service
 
@@ -46,4 +57,6 @@ Toolbar icons are derived from [Quarks-1/autoopen](https://github.com/Quarks-1/a
 ## Architecture rules
 
 - UI pages (popup, options) message the service worker; they never call `chrome.tabs.create` directly
-- Phase 2+: validate message `sender` in the service worker; use `textContent` (not `innerHTML`) for scraped Discord text
+- Service worker validates message `sender` (content vs extension-page paths)
+- Content script (Phase 3) uses `textContent` (not `innerHTML`) for scraped Discord text
+- Matched links open in new tabs with `active: false` so you stay on Discord

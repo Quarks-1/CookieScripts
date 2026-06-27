@@ -17,7 +17,7 @@ export default defineConfig({
     },
   },
   build: {
-    target: "es2021",
+    target: "es2022",
     outDir: "dist",
   },
 });
