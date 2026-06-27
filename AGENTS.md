@@ -111,3 +111,12 @@ When changing link parsing, validation, or domain matching, check BUILD.md “Lo
 - Firefox/Safari ports
 - Gateway listener or stored Discord user token
 - Detecting links added by message edits (planned v0.2+)
+
+## Cursor Cloud specific instructions
+
+Standard commands live in the `Dev & test` section above and in `package.json`. Notes below are non-obvious caveats for running/testing in this VM.
+
+- **Loading the built extension**: `npm run build` emits to `dist/` with `manifest.json` at its root; load it via `chrome://extensions` → Developer mode → Load unpacked → select `/workspace/dist`. The service worker card shows "service worker (inactive)" until woken — that is normal MV3 behavior, not an error.
+- **Opening the popup**: Chrome blocks navigating to `chrome-extension://<id>/ui/popup/index.html` directly (`ERR_BLOCKED_BY_CLIENT`). Open the popup by pinning the extension and clicking its toolbar icon instead.
+- **Testing the per-channel domain editor and link auto-opening requires a logged-in Discord channel tab.** `buildStatus` derives `active_channel_id` from the active tab's `https://discord.com/channels/<guild>/<channel>` URL; without a Discord session, Discord redirects to login so no channel is detected and the popup shows "No Discord tab" with the domains section disabled. To exercise the domain-editing UI against the real React code without Discord, run `npm run dev:ui` (mocked `chrome` APIs, scenario buttons in the bottom toolbar).
+- **Popup-only flows that work without Discord login**: enable/disable toggle (persists via `SAVE_SETTINGS` → `chrome.storage.local`), the GitHub version check (live GET to `api.github.com`), and link history. These are sufficient to confirm the popup ↔ service worker ↔ storage path end-to-end.
