@@ -3,7 +3,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { attachMessagePipeline } from "@ext/content/observers.ts";
-import { MESSAGE_ARTICLE } from "@ext/content/selectors.ts";
 
 function makeMessageList(): HTMLElement {
   const wrapper = document.createElement("div");
