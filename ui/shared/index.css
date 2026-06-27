@@ -4,6 +4,18 @@ body {
   @apply m-0 bg-zinc-950 text-zinc-100 antialiased;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 :where(a:any-link, button):focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 2px;

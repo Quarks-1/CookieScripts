@@ -1,0 +1,195 @@
+import { STORAGE_KEYS } from "@ext/lib/constants.ts";
+import { validateChannelTargets } from "@ext/lib/validate.ts";
+import type {
+  BackgroundResponse,
+  ExtensionSettings,
+  ExtensionStatus,
+  HistoryItem,
+  UiToBackground,
+} from "@ext/types/index.ts";
+import { DEFAULT_SETTINGS } from "@ext/types/index.ts";
+
+export type PopupScenario = "watching" | "not_watching" | "no_discord";
+
+const SAMPLE_CHANNEL_ID = "1234567890123456789";
+
+const SAMPLE_HISTORY: HistoryItem[] = [
+  {
+    kind: "opened",
+    url: "https://www.walmart.com/ip/example",
+    author: "dealbot",
+    channel_id: SAMPLE_CHANNEL_ID,
+    timestamp: new Date(Date.now() - 60_000).toISOString(),
+  },
+  {
+    kind: "duplicate",
+    url: "https://www.amazon.com/dp/example",
+    author: "shopper",
+    channel_id: SAMPLE_CHANNEL_ID,
+    timestamp: new Date(Date.now() - 120_000).toISOString(),
+  },
+];
+
+let settings: ExtensionSettings = {
+  enabled: true,
+  channel_targets: [
+    {
+      channel_id: SAMPLE_CHANNEL_ID,
+      allowed_domains: ["walmart.com", "amazon.com"],
+    },
+  ],
+};
+
+let history: HistoryItem[] = [...SAMPLE_HISTORY];
+let popupScenario: PopupScenario = "watching";
+
+type StorageListener = (
+  changes: Record<string, chrome.storage.StorageChange>,
+  area: string,
+) => void;
+
+const storageListeners = new Set<StorageListener>();
+
+export function addStorageChangedListener(listener: StorageListener) {
+  storageListeners.add(listener);
+}
+
+export function removeStorageChangedListener(listener: StorageListener) {
+  storageListeners.delete(listener);
+}
+
+function notifyStorage(changes: Record<string, chrome.storage.StorageChange>) {
+  for (const listener of storageListeners) {
+    listener(changes, "local");
+  }
+}
+
+function buildStatus(): ExtensionStatus {
+  const recent = history.slice(0, 10);
+
+  if (!settings.enabled) {
+    return {
+      enabled: false,
+      discord_tab_detected: popupScenario !== "no_discord",
+      active_channel_id: popupScenario === "no_discord" ? null : SAMPLE_CHANNEL_ID,
+      is_watched: false,
+      allowed_domains: [],
+      recent_history: recent,
+    };
+  }
+
+  switch (popupScenario) {
+    case "no_discord":
+      return {
+        enabled: true,
+        discord_tab_detected: false,
+        active_channel_id: null,
+        is_watched: false,
+        allowed_domains: [],
+        recent_history: recent,
+      };
+    case "not_watching":
+      return {
+        enabled: true,
+        discord_tab_detected: true,
+        active_channel_id: "999888777666555444",
+        is_watched: false,
+        allowed_domains: [],
+        recent_history: recent,
+      };
+    case "watching":
+    default:
+      return {
+        enabled: true,
+        discord_tab_detected: true,
+        active_channel_id: SAMPLE_CHANNEL_ID,
+        is_watched: true,
+        allowed_domains: ["walmart.com", "amazon.com"],
+        recent_history: recent,
+      };
+  }
+}
+
+export function handleUiMessage(message: UiToBackground): BackgroundResponse {
+  switch (message.type) {
+    case "GET_STATUS":
+      return { ok: true, status: buildStatus() };
+    case "GET_SETTINGS":
+      return { ok: true, settings: structuredClone(settings) };
+    case "SAVE_SETTINGS": {
+      const error = validateChannelTargets(message.settings.channel_targets);
+      if (error) {
+        return { ok: false, error };
+      }
+      settings = structuredClone(message.settings);
+      notifyStorage({
+        [STORAGE_KEYS.settings]: {
+          oldValue: undefined,
+          newValue: settings,
+        },
+      });
+      return { ok: true };
+    }
+    case "GET_HISTORY":
+      return { ok: true, history: structuredClone(history) };
+    case "CLEAR_HISTORY": {
+      history = [];
+      notifyStorage({
+        [STORAGE_KEYS.history]: { oldValue: SAMPLE_HISTORY, newValue: [] },
+      });
+      return { ok: true };
+    }
+  }
+}
+
+export function setPopupScenario(scenario: PopupScenario) {
+  popupScenario = scenario;
+  notifyStorage({
+    [STORAGE_KEYS.settings]: { oldValue: settings, newValue: settings },
+  });
+}
+
+export function getPopupScenario(): PopupScenario {
+  return popupScenario;
+}
+
+export function resetMockStore() {
+  settings = {
+    enabled: true,
+    channel_targets: [
+      {
+        channel_id: SAMPLE_CHANNEL_ID,
+        allowed_domains: ["walmart.com", "amazon.com"],
+      },
+    ],
+  };
+  history = [...SAMPLE_HISTORY];
+  popupScenario = "watching";
+  notifyStorage({
+    [STORAGE_KEYS.settings]: { oldValue: undefined, newValue: settings },
+    [STORAGE_KEYS.history]: { oldValue: undefined, newValue: history },
+  });
+}
+
+export function seedEmptySettings() {
+  settings = { ...DEFAULT_SETTINGS, channel_targets: [] };
+  notifyStorage({
+    [STORAGE_KEYS.settings]: { oldValue: undefined, newValue: settings },
+  });
+}
+
+export function addSampleHistoryItem() {
+  history = [
+    {
+      kind: "opened",
+      url: `https://www.walmart.com/ip/dev-${Date.now()}`,
+      author: "dev-preview",
+      channel_id: SAMPLE_CHANNEL_ID,
+      timestamp: new Date().toISOString(),
+    },
+    ...history,
+  ];
+  notifyStorage({
+    [STORAGE_KEYS.history]: { oldValue: undefined, newValue: history },
+  });
+}

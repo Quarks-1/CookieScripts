@@ -1,7 +1,18 @@
-import type { ContentToBackground, RuntimeMessage, WatchConfig } from "@ext/types/index.ts";
+import type {
+  BackgroundResponse,
+  ContentToBackground,
+  ExtensionSettings,
+  ExtensionStatus,
+  HistoryItem,
+  RuntimeMessage,
+  UiToBackground,
+  WatchConfig,
+} from "@ext/types/index.ts";
 
 const CANDIDATE_LINKS_MAX_RETRIES = 2;
 const CANDIDATE_LINKS_RETRY_MS = 150;
+const UI_MESSAGE_MAX_RETRIES = 2;
+const UI_MESSAGE_RETRY_MS = 150;
 
 export function sendToBackground<T = unknown>(message: RuntimeMessage): Promise<T> {
   return chrome.runtime.sendMessage(message) as Promise<T>;
@@ -55,4 +66,68 @@ export async function sendCandidateLinks(
     }
   }
   console.warn("CookieScripts: CANDIDATE_LINKS failed after retries", lastError);
+}
+
+async function sendUiMessage(uiMessage: UiToBackground): Promise<BackgroundResponse> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt <= UI_MESSAGE_MAX_RETRIES; attempt++) {
+    try {
+      const response = await sendToBackground<BackgroundResponse>(uiMessage);
+      if (response === undefined) {
+        throw new Error("No response from extension background");
+      }
+      return response;
+    } catch (error) {
+      lastError = error;
+      if (attempt < UI_MESSAGE_MAX_RETRIES) {
+        await sleep(UI_MESSAGE_RETRY_MS * (attempt + 1));
+      }
+    }
+  }
+  const errorMessage =
+    lastError instanceof Error ? lastError.message : "Extension messaging failed";
+  throw new Error(errorMessage);
+}
+
+function assertOk(response: BackgroundResponse): void {
+  if ("ok" in response && response.ok === false) {
+    throw new Error(response.error);
+  }
+}
+
+export async function getExtensionStatus(): Promise<ExtensionStatus> {
+  const response = await sendUiMessage({ type: "GET_STATUS" });
+  assertOk(response);
+  if (!("status" in response)) {
+    throw new Error("Unexpected GET_STATUS response");
+  }
+  return response.status;
+}
+
+export async function getExtensionSettings(): Promise<ExtensionSettings> {
+  const response = await sendUiMessage({ type: "GET_SETTINGS" });
+  assertOk(response);
+  if (!("settings" in response)) {
+    throw new Error("Unexpected GET_SETTINGS response");
+  }
+  return response.settings;
+}
+
+export async function saveExtensionSettings(settings: ExtensionSettings): Promise<void> {
+  const response = await sendUiMessage({ type: "SAVE_SETTINGS", settings });
+  assertOk(response);
+}
+
+export async function getLinkHistory(): Promise<HistoryItem[]> {
+  const response = await sendUiMessage({ type: "GET_HISTORY" });
+  assertOk(response);
+  if (!("history" in response)) {
+    throw new Error("Unexpected GET_HISTORY response");
+  }
+  return response.history;
+}
+
+export async function clearLinkHistory(): Promise<void> {
+  const response = await sendUiMessage({ type: "CLEAR_HISTORY" });
+  assertOk(response);
 }
