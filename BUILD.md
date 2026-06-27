@@ -63,7 +63,7 @@ which reduces risk but does not eliminate policy concerns.
 - [ ] Selector resilience / fallback extraction strategies
 - [ ] Optional: intercept Discord REST responses in-page (session piggyback) for reliability
 - [ ] Vitest unit tests for link parsing and validation (port upstream tests)
-- [ ] Chrome Web Store publish
+- [ ] GitHub Releases auto-publish (see `.github/workflows/release.yml`) + popup update nudge
 
 ### Non-goals (for now)
 

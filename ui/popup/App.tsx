@@ -8,9 +8,11 @@ import { LinkHistory } from "@shared/components/LinkHistory.tsx";
 import { EnableSlider } from "@shared/components/EnableSlider.tsx";
 import { WatchStatusBadge } from "@shared/components/WatchStatusBadge.tsx";
 import { ChannelDomainsSection } from "./components/ChannelDomainsSection.tsx";
+import { UpdateBanner } from "./components/UpdateBanner.tsx";
 import { useChannelDomainsEditor } from "./hooks/useChannelDomainsEditor.ts";
 import { useLinkHistory } from "./hooks/useLinkHistory.ts";
 import { usePopupStatus } from "./hooks/usePopupStatus.ts";
+import { useUpdateCheck } from "./hooks/useUpdateCheck.ts";
 
 export default function App() {
   const { status, loading, error, refresh } = usePopupStatus();
@@ -19,6 +21,7 @@ export default function App() {
     status?.enabled ?? false,
   );
   const linkHistory = useLinkHistory();
+  const updateCheck = useUpdateCheck();
   const [enabling, setEnabling] = useState(false);
   const [enableError, setEnableError] = useState<string | null>(null);
 
@@ -39,6 +42,15 @@ export default function App() {
   return (
     <main className="w-80 p-4">
       <h1 className="text-lg font-semibold">CookieScripts</h1>
+
+      {updateCheck.updateAvailable && updateCheck.latestVersion && updateCheck.releaseUrl && (
+        <UpdateBanner
+          latestVersion={updateCheck.latestVersion}
+          releaseUrl={updateCheck.releaseUrl}
+          dismissing={updateCheck.dismissing}
+          onDismiss={() => void updateCheck.dismiss()}
+        />
+      )}
 
       <section aria-labelledby="popup-enable-heading" className="mt-3">
         <h2 id="popup-enable-heading" className="sr-only">

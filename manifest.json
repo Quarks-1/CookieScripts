@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "Auto-open allowlisted links from Discord web channels.",
   "permissions": ["storage", "tabs"],
-  "host_permissions": ["https://discord.com/*"],
+  "host_permissions": ["https://discord.com/*", "https://api.github.com/*"],
   "content_scripts": [
     {
       "matches": ["https://discord.com/channels/*"],

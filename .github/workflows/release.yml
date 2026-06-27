@@ -1,0 +1,113 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Compute next version
+        id: version
+        run: |
+          git fetch --tags --force
+          LATEST_TAG=$(git tag -l 'v*' --sort=-v:refname | head -1)
+          if [ -z "$LATEST_TAG" ]; then
+            NEXT=$(node -p "require('./manifest.json').version")
+          else
+            BASE="${LATEST_TAG#v}"
+            IFS='.' read -r MAJOR MINOR PATCH <<< "$BASE"
+            NEXT="${MAJOR}.${MINOR}.$((PATCH + 1))"
+          fi
+          if git rev-parse "v${NEXT}" >/dev/null 2>&1; then
+            echo "Tag v${NEXT} already exists; aborting."
+            exit 1
+          fi
+          echo "next=${NEXT}" >> "$GITHUB_OUTPUT"
+          echo "tag=v${NEXT}" >> "$GITHUB_OUTPUT"
+
+      - name: Rewrite version files
+        run: |
+          NEXT="${{ steps.version.outputs.next }}"
+          node -e "
+            const fs = require('fs');
+            for (const file of ['manifest.json', 'package.json']) {
+              const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+              data.version = process.env.NEXT;
+              fs.writeFileSync(file, JSON.stringify(data, null, 2) + '\n');
+            }
+          "
+        env:
+          NEXT: ${{ steps.version.outputs.next }}
+
+      - name: Install, test, and build
+        run: |
+          npm ci
+          npm test
+          npm run build
+
+      - name: Package extension zip
+        run: |
+          cd dist
+          zip -r "../cookiescripts-${{ steps.version.outputs.next }}.zip" .
+
+      - name: Verify zip layout
+        run: |
+          unzip -q "cookiescripts-${{ steps.version.outputs.next }}.zip" -d /tmp/zip-verify
+          test -f /tmp/zip-verify/manifest.json
+          VERSION=$(node -p "require('/tmp/zip-verify/manifest.json').version")
+          test "$VERSION" = "${{ steps.version.outputs.next }}"
+
+      - name: Commit and push version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add manifest.json package.json
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: release v${{ steps.version.outputs.next }} [skip ci]"
+            git push origin main
+          fi
+
+      - name: Create and push tag
+        run: |
+          git tag -a "${{ steps.version.outputs.tag }}" -m "Release ${{ steps.version.outputs.tag }}"
+          git push origin "${{ steps.version.outputs.tag }}"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: CookieScripts ${{ steps.version.outputs.next }}
+          files: cookiescripts-${{ steps.version.outputs.next }}.zip
+          generate_release_notes: true
+          body: |
+            ## Install
+
+            1. Download `cookiescripts-${{ steps.version.outputs.next }}.zip` below
+            2. Unzip to a permanent folder (root of zip = extension files; `manifest.json` at top level)
+            3. Open `chrome://extensions` → Developer mode → **Load unpacked** → select that folder
+
+            ## Update
+
+            1. Download the zip for this release
+            2. Unzip **into the same folder** already loaded in Chrome (replace files)
+            3. On `chrome://extensions`, click **Reload** on the existing CookieScripts card — do not **Load unpacked** again
