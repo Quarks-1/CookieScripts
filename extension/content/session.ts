@@ -9,7 +9,7 @@ import { attachMessagePipeline } from "@ext/content/observers.ts";
 import { parseChannelId } from "@ext/lib/channels.ts";
 import { STORAGE_KEYS } from "@ext/lib/constants.ts";
 import {
-  isWatched,
+  isChannelActive,
   requestWatchConfig,
   sendCandidateLinks,
   sendChannelInactive,
@@ -140,7 +140,7 @@ async function runSyncChannel(): Promise<void> {
     return;
   }
 
-  const watched = isWatched(config);
+  const watched = isChannelActive(config);
   session.channelId = channelId;
 
   if (channelId !== previousChannelId) {

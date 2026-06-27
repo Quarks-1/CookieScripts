@@ -1,5 +1,5 @@
 import { HISTORY_LIMIT, RECENT_URL_LIMIT, STORAGE_KEYS } from "@ext/lib/constants.ts";
-import { validateChannelTargets } from "@ext/lib/validate.ts";
+import { validatePersistedTargets } from "@ext/lib/validate.ts";
 import { DEFAULT_SETTINGS, type ExtensionSettings, type HistoryItem } from "@ext/types/index.ts";
 
 export async function getSettings(): Promise<ExtensionSettings> {
@@ -8,7 +8,7 @@ export async function getSettings(): Promise<ExtensionSettings> {
 }
 
 export async function saveSettings(settings: ExtensionSettings): Promise<void> {
-  const error = validateChannelTargets(settings.channel_targets);
+  const error = validatePersistedTargets(settings.channel_targets);
   if (error) {
     throw new Error(error);
   }

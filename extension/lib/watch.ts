@@ -1,3 +1,4 @@
+import { getChannelDomains } from "@ext/lib/channel-targets.ts";
 import type { ExtensionSettings } from "@ext/types/index.ts";
 
 export function resolveWatchConfig(
@@ -7,9 +8,5 @@ export function resolveWatchConfig(
   if (!settings.enabled) {
     return null;
   }
-  const target = settings.channel_targets.find((t) => t.channel_id === channelId);
-  if (!target || !target.allowed_domains.length) {
-    return null;
-  }
-  return target.allowed_domains;
+  return getChannelDomains(settings, channelId);
 }

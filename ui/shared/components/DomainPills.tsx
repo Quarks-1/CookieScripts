@@ -1,15 +1,15 @@
 import { useState, type KeyboardEvent } from "react";
 
-import { normalizeDomain, type DomainPill } from "@ext/lib/domains.ts";
+import { normalizeDomain } from "@ext/lib/domains.ts";
 
 interface DomainPillsProps {
-  pills: DomainPill[];
-  onChange: (pills: DomainPill[]) => void;
+  domains: string[];
+  onChange: (domains: string[]) => void;
   disabled?: boolean;
   inputId?: string;
 }
 
-export function DomainPills({ pills, onChange, disabled, inputId }: DomainPillsProps) {
+export function DomainPills({ domains, onChange, disabled, inputId }: DomainPillsProps) {
   const [draft, setDraft] = useState("");
 
   function addDraft() {
@@ -17,11 +17,11 @@ export function DomainPills({ pills, onChange, disabled, inputId }: DomainPillsP
     if (!domain) {
       return;
     }
-    if (pills.some((pill) => pill.domain === domain)) {
+    if (domains.includes(domain)) {
       setDraft("");
       return;
     }
-    onChange([...pills, { domain, enabled: true }]);
+    onChange([...domains, domain]);
     setDraft("");
   }
 
@@ -32,34 +32,28 @@ export function DomainPills({ pills, onChange, disabled, inputId }: DomainPillsP
     }
   }
 
-  function toggleDomain(domain: string) {
-    onChange(
-      pills.map((pill) =>
-        pill.domain === domain ? { ...pill, enabled: !pill.enabled } : pill,
-      ),
-    );
+  function removeDomain(domain: string) {
+    onChange(domains.filter((d) => d !== domain));
   }
 
   return (
     <div className="space-y-3">
-      {pills.length > 0 ? (
+      {domains.length > 0 ? (
         <ul className="flex flex-wrap gap-2">
-          {pills.map((pill) => (
-            <li key={pill.domain}>
-              <button
-                type="button"
-                disabled={disabled}
-                onClick={() => toggleDomain(pill.domain)}
-                className={`rounded-full border px-3 py-1 text-sm font-medium transition-colors disabled:cursor-not-allowed ${
-                  pill.enabled
-                    ? "border-emerald-700 bg-emerald-950/80 text-emerald-200"
-                    : "border-zinc-700 bg-zinc-950 text-zinc-500 line-through"
-                }`}
-                aria-pressed={pill.enabled}
-                aria-label={`${pill.enabled ? "Disable" : "Enable"} ${pill.domain}`}
-              >
-                {pill.domain}
-              </button>
+          {domains.map((domain) => (
+            <li key={domain}>
+              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-700 bg-emerald-950/80 px-2 py-1 text-sm font-medium text-emerald-200">
+                {domain}
+                <button
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => removeDomain(domain)}
+                  className="rounded-full px-1 text-emerald-400 hover:bg-emerald-900/60 hover:text-emerald-100 disabled:cursor-not-allowed disabled:opacity-50"
+                  aria-label={`Remove ${domain}`}
+                >
+                  ×
+                </button>
+              </span>
             </li>
           ))}
         </ul>
@@ -84,7 +78,6 @@ export function DomainPills({ pills, onChange, disabled, inputId }: DomainPillsP
         enterKeyHint="done"
         className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-300 invalid:user-invalid:border-red-600 disabled:opacity-50"
       />
-      <p className="text-xs text-zinc-500">Click a pill to enable or disable it.</p>
     </div>
   );
 }

@@ -1,36 +1,55 @@
 import type { ChannelTarget } from "@ext/types/index.ts";
 
-export function validateChannelTargets(targets: ChannelTarget[]): string | null {
-  if (!targets.length) {
-    return "Add at least one channel";
+function validateChannelId(channelId: string): string | null {
+  if (!/^\d+$/.test(channelId)) {
+    return "Each channel ID must be a numeric Discord channel ID";
   }
+  try {
+    if (BigInt(channelId) <= 0n) {
+      return "Each channel ID must be a positive integer";
+    }
+  } catch {
+    return "Each channel ID must be a numeric Discord channel ID";
+  }
+  return null;
+}
 
+export function validateChannelTarget(target: ChannelTarget): string | null {
+  const idError = validateChannelId(target.channel_id);
+  if (idError) {
+    return idError;
+  }
+  if (!target.allowed_domains.length) {
+    return "Each channel needs at least one allowed domain";
+  }
+  return null;
+}
+
+export function validatePersistedTargets(targets: ChannelTarget[]): string | null {
   const seen = new Set<string>();
   for (const target of targets) {
-    if (!/^\d+$/.test(target.channel_id)) {
-      return "Each channel ID must be a numeric Discord channel ID";
-    }
-    try {
-      if (BigInt(target.channel_id) <= 0n) {
-        return "Each channel ID must be a positive integer";
-      }
-    } catch {
-      return "Each channel ID must be a numeric Discord channel ID";
+    const error = validateChannelTarget(target);
+    if (error) {
+      return error;
     }
     if (seen.has(target.channel_id)) {
       return "Channel IDs must be unique";
     }
     seen.add(target.channel_id);
-    if (!target.allowed_domains.length) {
-      return "Each channel needs at least one enabled domain";
-    }
   }
-
   return null;
 }
 
+/** @deprecated Use validatePersistedTargets */
+export function validateChannelTargets(targets: ChannelTarget[]): string | null {
+  if (!targets.length) {
+    return "Add at least one channel";
+  }
+  return validatePersistedTargets(targets);
+}
+
 export function assertChannelTargets(targets: ChannelTarget[]): void {
-  const error = validateChannelTargets(targets);
+  const error = validatePersistedTargets(targets);
   if (error) {
     throw new Error(error);
   }

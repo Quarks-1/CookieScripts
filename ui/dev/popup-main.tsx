@@ -12,7 +12,7 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <div className="pb-28">
       <PopupApp />
-      <DevToolbar surface="popup" />
+      <DevToolbar />
     </div>
   </StrictMode>,
 );

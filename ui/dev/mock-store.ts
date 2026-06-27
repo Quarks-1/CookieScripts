@@ -1,5 +1,5 @@
 import { STORAGE_KEYS } from "@ext/lib/constants.ts";
-import { validateChannelTargets } from "@ext/lib/validate.ts";
+import { validatePersistedTargets } from "@ext/lib/validate.ts";
 import type {
   BackgroundResponse,
   ExtensionSettings,
@@ -9,7 +9,7 @@ import type {
 } from "@ext/types/index.ts";
 import { DEFAULT_SETTINGS } from "@ext/types/index.ts";
 
-export type PopupScenario = "watching" | "not_watching" | "no_discord";
+export type PopupScenario = "watching" | "active_no_domains" | "no_discord";
 
 const SAMPLE_CHANNEL_ID = "1234567890123456789";
 
@@ -65,16 +65,14 @@ function notifyStorage(changes: Record<string, chrome.storage.StorageChange>) {
 }
 
 function buildStatus(): ExtensionStatus {
-  const recent = history.slice(0, 10);
-
   if (!settings.enabled) {
     return {
       enabled: false,
       discord_tab_detected: popupScenario !== "no_discord",
       active_channel_id: popupScenario === "no_discord" ? null : SAMPLE_CHANNEL_ID,
-      is_watched: false,
+      is_active: false,
+      has_allowed_domains: false,
       allowed_domains: [],
-      recent_history: recent,
     };
   }
 
@@ -84,18 +82,18 @@ function buildStatus(): ExtensionStatus {
         enabled: true,
         discord_tab_detected: false,
         active_channel_id: null,
-        is_watched: false,
+        is_active: false,
+        has_allowed_domains: false,
         allowed_domains: [],
-        recent_history: recent,
       };
-    case "not_watching":
+    case "active_no_domains":
       return {
         enabled: true,
         discord_tab_detected: true,
         active_channel_id: "999888777666555444",
-        is_watched: false,
+        is_active: true,
+        has_allowed_domains: false,
         allowed_domains: [],
-        recent_history: recent,
       };
     case "watching":
     default:
@@ -103,9 +101,9 @@ function buildStatus(): ExtensionStatus {
         enabled: true,
         discord_tab_detected: true,
         active_channel_id: SAMPLE_CHANNEL_ID,
-        is_watched: true,
+        is_active: true,
+        has_allowed_domains: true,
         allowed_domains: ["walmart.com", "amazon.com"],
-        recent_history: recent,
       };
   }
 }
@@ -117,7 +115,7 @@ export function handleUiMessage(message: UiToBackground): BackgroundResponse {
     case "GET_SETTINGS":
       return { ok: true, settings: structuredClone(settings) };
     case "SAVE_SETTINGS": {
-      const error = validateChannelTargets(message.settings.channel_targets);
+      const error = validatePersistedTargets(message.settings.channel_targets);
       if (error) {
         return { ok: false, error };
       }

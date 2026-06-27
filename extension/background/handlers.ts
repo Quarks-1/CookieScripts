@@ -1,5 +1,6 @@
 import { parseChannelId, resolveContentChannel } from "@ext/lib/channels.ts";
 import { decideLinkActions } from "@ext/lib/process-links.ts";
+import { getChannelDomains } from "@ext/lib/channel-targets.ts";
 import {
   clearHistory,
   getHistory,
@@ -40,17 +41,16 @@ function isExtensionPageSender(sender: chrome.runtime.MessageSender): boolean {
 }
 
 function watchConfigResponse(channelId: string, settings: ExtensionSettings) {
-  const allowedDomains = resolveWatchConfig(settings, channelId) ?? [];
+  const allowedDomains = settings.enabled ? getChannelDomains(settings, channelId) : [];
   return {
     type: "WATCH_CONFIG" as const,
-    channel_id: allowedDomains.length > 0 ? channelId : null,
+    channel_id: settings.enabled ? channelId : null,
     allowed_domains: allowedDomains,
   };
 }
 
 export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<ExtensionStatus> {
   const settings = await getSettings();
-  const history = await getHistory();
 
   let activeChannelId: string | null = null;
   let discordTabDetected = false;
@@ -76,15 +76,16 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
   }
 
   const allowedDomains =
-    activeChannelId !== null ? (resolveWatchConfig(settings, activeChannelId) ?? []) : [];
+    activeChannelId !== null ? getChannelDomains(settings, activeChannelId) : [];
+  const isActive = settings.enabled && activeChannelId !== null;
 
   return {
     enabled: settings.enabled,
     discord_tab_detected: discordTabDetected,
     active_channel_id: activeChannelId,
-    is_watched: allowedDomains.length > 0,
+    is_active: isActive,
+    has_allowed_domains: allowedDomains.length > 0,
     allowed_domains: allowedDomains,
-    recent_history: history.slice(0, 10),
   };
 }
 
@@ -119,7 +120,7 @@ async function handleContentMessage(
       }
       const settings = await getSettings();
       const allowedDomains = resolveWatchConfig(settings, channelId);
-      if (!allowedDomains) {
+      if (!allowedDomains?.length) {
         return { ok: true, opened: [], duplicates: [] };
       }
 

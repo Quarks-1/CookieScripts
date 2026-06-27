@@ -6,7 +6,7 @@ import { defineConfig } from "vite";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-/** Dev-only Vite config — previews popup/options in a normal browser with mocked chrome APIs. */
+/** Dev-only Vite config — previews popup in a normal browser with mocked chrome APIs. */
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
@@ -24,7 +24,6 @@ export default defineConfig({
     rollupOptions: {
       input: {
         popup: path.resolve(__dirname, "ui/dev/popup.html"),
-        options: path.resolve(__dirname, "ui/dev/options.html"),
       },
     },
   },

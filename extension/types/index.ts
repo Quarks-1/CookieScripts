@@ -27,9 +27,9 @@ export interface ExtensionStatus {
   enabled: boolean;
   discord_tab_detected: boolean;
   active_channel_id: string | null;
-  is_watched: boolean;
+  is_active: boolean;
+  has_allowed_domains: boolean;
   allowed_domains: string[];
-  recent_history: HistoryItem[];
 }
 
 export type ContentToBackground =

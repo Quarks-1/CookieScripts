@@ -131,6 +131,66 @@ describe("handleMessage", () => {
     });
   });
 
+  it("does not open links when channel has no allowlist", async () => {
+    vi.mocked(chrome.storage.local.get).mockImplementation(async (keys) => {
+      const keyList = Array.isArray(keys) ? keys : [keys];
+      const result: Record<string, unknown> = {};
+      for (const key of keyList) {
+        if (key === "cookiescripts:settings") {
+          result[key] = DEFAULT_SETTINGS;
+        }
+      }
+      return result;
+    });
+
+    const sender = mockContentSender({
+      extensionId: EXTENSION_ID,
+      tabUrl: "https://discord.com/channels/111/222",
+    });
+
+    const response = await handleMessage(
+      {
+        type: "CANDIDATE_LINKS",
+        channel_id: "222",
+        urls: ["https://walmart.com/item"],
+      },
+      sender,
+    );
+
+    expect(response).toEqual({ ok: true, opened: [], duplicates: [] });
+    expect(chrome.tabs.create).not.toHaveBeenCalled();
+  });
+
+  it("returns WATCH_CONFIG with channel_id when enabled and no domains configured", async () => {
+    vi.mocked(chrome.storage.local.get).mockImplementation(async (keys) => {
+      const keyList = Array.isArray(keys) ? keys : [keys];
+      const result: Record<string, unknown> = {};
+      for (const key of keyList) {
+        if (key === "cookiescripts:settings") {
+          result[key] = DEFAULT_SETTINGS;
+        }
+      }
+      return result;
+    });
+
+    const sender = mockContentSender({
+      extensionId: EXTENSION_ID,
+      tabUrl: "https://discord.com/channels/111/222",
+    });
+
+    const response = await handleMessage(
+      { type: "CHANNEL_ACTIVE", channel_id: "222" },
+      sender,
+    );
+
+    expect(response).toEqual({
+      type: "WATCH_CONFIG",
+      channel_id: "222",
+      allowed_domains: [],
+    });
+    expect(activeChannels.get(1)).toBe("222");
+  });
+
   it("returns WATCH_CONFIG from derived channel on CHANNEL_ACTIVE", async () => {
     const settings = {
       enabled: true,
@@ -165,7 +225,7 @@ describe("handleMessage", () => {
     expect(activeChannels.get(1)).toBe("222");
   });
 
-  it("rejects SAVE_SETTINGS with invalid targets", async () => {
+  it("accepts SAVE_SETTINGS with empty channel_targets", async () => {
     const sender = mockExtensionPageSender(EXTENSION_ID);
 
     const response = await handleMessage(
@@ -176,7 +236,7 @@ describe("handleMessage", () => {
       sender,
     );
 
-    expect(response).toEqual({ ok: false, error: "Add at least one channel" });
+    expect(response).toEqual({ ok: true });
   });
 
   it("clears active channel on tab removed", () => {

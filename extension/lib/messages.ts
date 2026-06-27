@@ -1,3 +1,4 @@
+import { upsertChannelDomains } from "@ext/lib/channel-targets.ts";
 import type {
   BackgroundResponse,
   ContentToBackground,
@@ -26,8 +27,17 @@ export function isWatchConfig(response: unknown): response is WatchConfig {
   );
 }
 
-export function isWatched(config: WatchConfig): boolean {
-  return config.channel_id !== null && config.allowed_domains.length > 0;
+export function isChannelActive(config: WatchConfig): boolean {
+  return config.channel_id !== null;
+}
+
+export async function saveChannelDomains(
+  channelId: string,
+  domains: string[],
+): Promise<void> {
+  const settings = await getExtensionSettings();
+  const next = upsertChannelDomains(settings, channelId, domains);
+  await saveExtensionSettings(next);
 }
 
 export async function requestWatchConfig(channelId: string): Promise<WatchConfig | null> {

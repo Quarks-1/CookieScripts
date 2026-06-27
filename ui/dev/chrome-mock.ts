@@ -27,9 +27,6 @@ export function installChromeMock() {
       sendMessage(message: unknown) {
         return Promise.resolve(handleUiMessage(message as Parameters<typeof handleUiMessage>[0]));
       },
-      openOptionsPage() {
-        window.open("/ui/dev/options.html", "_blank");
-      },
     },
     storage: {
       onChanged: {
@@ -70,7 +67,7 @@ export function installChromeMock() {
 
 export const POPUP_SCENARIO_LABELS: Record<PopupScenario, string> = {
   watching: "Watching channel",
-  not_watching: "Not a watched channel",
+  active_no_domains: "Active, no domains",
   no_discord: "No Discord tab",
 };
 
