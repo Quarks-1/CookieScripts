@@ -34,6 +34,7 @@ function attachMessageObserver(
 
 export function attachMessagePipeline(
   onMessageAdded: (node: Element) => void,
+  onListReady?: (messageListRoot: Element) => void,
 ): () => void {
   let messageObserver: MutationObserver | null = null;
   let discoveryObserver: MutationObserver | null = null;
@@ -65,6 +66,7 @@ export function attachMessagePipeline(
       clearTimeout(discoveryTimeout);
       discoveryTimeout = null;
     }
+    onListReady?.(messageListRoot);
     messageObserver = attachMessageObserver(messageListRoot, onMessageAdded);
   };
 

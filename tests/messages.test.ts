@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   isExtensionContextValid,
+  requestWatchConfig,
   sendCandidateLinks,
   sendChannelInactive,
 } from "@ext/lib/messages.ts";
@@ -80,6 +81,47 @@ describe("sendCandidateLinks", () => {
 
     expect(sendMessage).toHaveBeenCalledTimes(2);
     expect(console.warn).not.toHaveBeenCalled();
+  });
+});
+
+describe("requestWatchConfig", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it("returns null when extension context is invalid", async () => {
+    const sendMessage = vi.fn();
+    vi.stubGlobal("chrome", {
+      get runtime() {
+        throw new Error("Extension context invalidated.");
+      },
+    });
+
+    await expect(requestWatchConfig("123")).resolves.toBeNull();
+    expect(sendMessage).not.toHaveBeenCalled();
+  });
+
+  it("returns null when sendMessage reports invalidated context", async () => {
+    const sendMessage = vi
+      .fn()
+      .mockRejectedValue(new Error("Extension context invalidated."));
+    vi.stubGlobal("chrome", { runtime: { id: "extension-id", sendMessage } });
+
+    await expect(requestWatchConfig("123")).resolves.toBeNull();
+    expect(sendMessage).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns watch config from background", async () => {
+    const config = {
+      type: "WATCH_CONFIG" as const,
+      channel_id: "123",
+      allowed_domains: ["example.com"],
+    };
+    const sendMessage = vi.fn().mockResolvedValue(config);
+    vi.stubGlobal("chrome", { runtime: { id: "extension-id", sendMessage } });
+
+    await expect(requestWatchConfig("123")).resolves.toEqual(config);
   });
 });
 

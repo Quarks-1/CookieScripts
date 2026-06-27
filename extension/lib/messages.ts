@@ -25,7 +25,7 @@ export function isExtensionContextValid(): boolean {
   }
 }
 
-function isExtensionContextInvalidatedError(error: unknown): boolean {
+export function isExtensionContextInvalidatedError(error: unknown): boolean {
   return (
     error instanceof Error && error.message.includes(EXTENSION_CONTEXT_INVALIDATED)
   );
@@ -57,11 +57,21 @@ export async function saveChannelDomains(
 }
 
 export async function requestWatchConfig(channelId: string): Promise<WatchConfig | null> {
-  const response = await sendToBackground({
-    type: "CHANNEL_ACTIVE",
-    channel_id: channelId,
-  });
-  return isWatchConfig(response) ? response : null;
+  if (!isExtensionContextValid()) {
+    return null;
+  }
+  try {
+    const response = await sendToBackground({
+      type: "CHANNEL_ACTIVE",
+      channel_id: channelId,
+    });
+    return isWatchConfig(response) ? response : null;
+  } catch (error) {
+    if (isExtensionContextInvalidatedError(error)) {
+      return null;
+    }
+    throw error;
+  }
 }
 
 function sleep(ms: number): Promise<void> {
