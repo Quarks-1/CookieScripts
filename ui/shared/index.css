@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+body {
+  @apply m-0 bg-zinc-950 text-zinc-100 antialiased;
+}
+
+:where(a:any-link, button):focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
