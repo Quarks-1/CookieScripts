@@ -3,6 +3,32 @@ interface VersionStatusProps {
   checking: boolean;
   updateAvailable: boolean;
   releaseUrl: string | null;
+  onRefresh: () => void;
+}
+
+function RefreshIcon({ spinning }: { spinning: boolean }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 16 16"
+      fill="none"
+      className={`h-3 w-3 ${spinning ? "animate-spin" : ""}`}
+    >
+      <path
+        d="M13.65 2.35A7 7 0 1 0 14.5 8"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M14.5 3.5V8H10"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
 }
 
 export function VersionStatus({
@@ -10,6 +36,7 @@ export function VersionStatus({
   checking,
   updateAvailable,
   releaseUrl,
+  onRefresh,
 }: VersionStatusProps) {
   function handleUpdate() {
     if (releaseUrl) {
@@ -50,6 +77,15 @@ export function VersionStatus({
           Update
         </button>
       )}
+      <button
+        type="button"
+        onClick={onRefresh}
+        disabled={checking}
+        aria-label={checking ? "Checking for updates" : "Check for updates"}
+        className="inline-flex items-center justify-center rounded-full border border-zinc-700/80 p-1 text-zinc-400 hover:bg-zinc-800/80 hover:text-zinc-200 disabled:opacity-50"
+      >
+        <RefreshIcon spinning={checking} />
+      </button>
     </div>
   );
 }

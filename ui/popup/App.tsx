@@ -55,6 +55,7 @@ export default function App() {
           checking={updateCheck.checking}
           updateAvailable={updateCheck.updateAvailable}
           releaseUrl={updateCheck.releaseUrl}
+          onRefresh={() => void updateCheck.refresh()}
         />
       </div>
 

@@ -1,8 +1,4 @@
-import {
-  GITHUB_RELEASES_LATEST_URL,
-  STORAGE_KEYS,
-  UPDATE_CHECK_CACHE_MS,
-} from "@ext/lib/constants.ts";
+import { GITHUB_RELEASES_LATEST_URL, STORAGE_KEYS } from "@ext/lib/constants.ts";
 import { getInstalledVersion, isNewerVersion, parseReleaseVersion } from "@ext/lib/version.ts";
 
 export interface UpdateInfo {
@@ -75,35 +71,34 @@ function toUpdateInfo(release: GitHubRelease): UpdateInfo | null {
 export async function checkForUpdate(): Promise<UpdateInfo | null> {
   const current = getInstalledVersion();
   const cache = await readCache();
-  const now = Date.now();
-  const cacheFresh = cache !== null && now - cache.checkedAt < UPDATE_CHECK_CACHE_MS;
 
   let latestVersion = cache?.latestVersion ?? null;
   let releaseUrl = cache?.releaseUrl ?? null;
 
-  if (!cacheFresh) {
-    try {
-      const { release, etag, notModified } = await fetchLatestRelease(cache?.etag ?? null);
-      if (notModified && cache) {
-        latestVersion = cache.latestVersion;
-        releaseUrl = cache.releaseUrl;
-      } else if (release) {
-        const info = toUpdateInfo(release);
-        latestVersion = info?.latestVersion ?? null;
-        releaseUrl = info?.releaseUrl ?? null;
-      }
+  try {
+    const { release, etag, notModified } = await fetchLatestRelease(cache?.etag ?? null);
+    if (notModified && cache) {
+      latestVersion = cache.latestVersion;
+      releaseUrl = cache.releaseUrl;
       await writeCache({
-        checkedAt: now,
+        checkedAt: Date.now(),
+        latestVersion,
+        releaseUrl,
+        etag: etag ?? cache.etag,
+      });
+    } else if (release) {
+      const info = toUpdateInfo(release);
+      latestVersion = info?.latestVersion ?? null;
+      releaseUrl = info?.releaseUrl ?? null;
+      await writeCache({
+        checkedAt: Date.now(),
         latestVersion,
         releaseUrl,
         etag: etag ?? cache?.etag ?? null,
       });
-    } catch {
-      if (cache) {
-        latestVersion = cache.latestVersion;
-        releaseUrl = cache.releaseUrl;
-      }
     }
+  } catch {
+    // Keep cached values on network errors.
   }
 
   if (!latestVersion || !releaseUrl) {

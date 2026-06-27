@@ -2,7 +2,6 @@ export const RECENT_URL_LIMIT = 500;
 export const HISTORY_LIMIT = 200;
 export const MAX_URLS_PER_MESSAGE = 20;
 export const RECENT_URLS_DEBOUNCE_MS = 1000;
-export const UPDATE_CHECK_CACHE_MS = 6 * 60 * 60 * 1000;
 
 export const GITHUB_OWNER = "Quarks-1";
 export const GITHUB_REPO = "CookieScripts";

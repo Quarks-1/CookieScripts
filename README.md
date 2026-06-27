@@ -39,7 +39,7 @@ If you installed from a dev build before releases existed, do this once to enabl
 2. Unzip **into the same folder** already loaded in Chrome (replace all files)
 3. On `chrome://extensions`, click **Reload** on the existing CookieScripts card — do **not** use **Load unpacked** again (that creates a duplicate extension and resets settings)
 
-The popup shows an update banner when a newer release is available (checks GitHub at most every 6 hours).
+The popup shows an update banner when a newer release is available (checks GitHub each time you open the popup; unchanged releases reuse a cached ETag).
 
 ## Load unpacked (development)
 
