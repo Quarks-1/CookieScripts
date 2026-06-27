@@ -9,11 +9,13 @@ import { EnableSlider } from "@shared/components/EnableSlider.tsx";
 import { WatchStatusBadge } from "@shared/components/WatchStatusBadge.tsx";
 import { ChannelDomainsSection } from "./components/ChannelDomainsSection.tsx";
 import { DetectedLinksSection } from "./components/DetectedLinksSection.tsx";
+import { RetailerAutoModeSection } from "./components/RetailerAutoModeSection.tsx";
 import { VersionStatus } from "./components/VersionStatus.tsx";
 import { useChannelDomainsEditor } from "./hooks/useChannelDomainsEditor.ts";
 import { useDetectedLinks } from "./hooks/useDetectedLinks.ts";
 import { useLinkHistory } from "./hooks/useLinkHistory.ts";
 import { usePopupStatus } from "./hooks/usePopupStatus.ts";
+import { useRetailerAutoMode } from "./hooks/useRetailerAutoMode.ts";
 import { useUpdateCheck } from "./hooks/useUpdateCheck.ts";
 
 export default function App() {
@@ -29,6 +31,11 @@ export default function App() {
   );
   const linkHistory = useLinkHistory();
   const updateCheck = useUpdateCheck();
+  const retailerAuto = useRetailerAutoMode(
+    status?.active_channel_id ?? null,
+    status?.enabled ?? false,
+    domainsEditor.domains,
+  );
   const [enabling, setEnabling] = useState(false);
   const [enableError, setEnableError] = useState<string | null>(null);
 
@@ -109,6 +116,19 @@ export default function App() {
             saveError={domainsEditor.saveError}
             onDomainsChange={domainsEditor.handleDomainsChange}
           />
+
+          {retailerAuto.canShow && (
+            <RetailerAutoModeSection
+              retailerAutoEnabled={retailerAuto.retailerAutoEnabled}
+              stepsRecorded={retailerAuto.stepsRecorded}
+              disabled={retailerAuto.disabled || enabling}
+              saving={retailerAuto.saving}
+              saveError={retailerAuto.saveError}
+              clearing={retailerAuto.clearing}
+              onChange={(next) => void retailerAuto.handleChange(next)}
+              onClearRecording={() => void retailerAuto.handleClearRecording()}
+            />
+          )}
 
           <DetectedLinksSection
             domains={detectedLinks.domains}

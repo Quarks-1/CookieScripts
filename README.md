@@ -57,7 +57,9 @@ Releases are created automatically on every push to `main` (patch version bump).
 |------------|-----|
 | `storage` | Save per-channel domain allowlists, link history, dedup keys, and update-check cache locally on your device |
 | `tabs` | Open matched product links and the GitHub release page when you choose to download an update |
+| `windows` | Open Target Auto Mode product links in a separate window so your Discord monitor tab stays put |
 | `host_permissions: discord.com` | Inject the content script on Discord channel pages to scan messages |
+| `host_permissions: target.com` | Inject the retailer content script for Target Auto Mode (add-to-cart automation and manual record mode) |
 | `host_permissions: api.github.com` | Check the public GitHub Releases API for newer versions (anonymous GET; no Discord or settings data sent) |
 
 ## Known limitations
@@ -65,6 +67,7 @@ Releases are created automatically on every push to `main` (patch version bump).
 - **Thread URLs:** allowlists use the parent channel ID from `/channels/guild/parent/threadId` paths
 - **Message edits:** links added by editing an existing message are not detected until v0.2
 - **Selector fragility:** Discord UI changes may require updates to `extension/content/selectors.ts`
+- **Target Auto Mode:** Automating add-to-cart on target.com may conflict with Target's terms of service; automation uses synthetic keyboard events and may fail on bot-protected pages. Use at your own risk.
 - **Masked links:** external URLs in visible message text are preferred over Discord redirect `href`s
 
 ## Privacy

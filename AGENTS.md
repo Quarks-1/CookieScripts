@@ -63,10 +63,15 @@ flowchart LR
 | `cookiescripts:recentUrls` | Normalized dedup keys, cap 500 |
 | `cookiescripts:updateCheck` | GitHub release ETag cache |
 | `cookiescripts:ignoredDomains` | Per-channel dismissed detected-link suggestions |
+| `cookiescripts:retailerProfiles` | Recorded Target automation steps (global, versioned) |
 
 ## Runtime messages
 
-Defined in `extension/types/index.ts`. Content → background: `CHANNEL_ACTIVE`, `CHANNEL_INACTIVE`, `CANDIDATE_LINKS`, `ADD_ALLOWED_DOMAIN`, `IGNORE_DOMAIN`. Background → content: `WATCH_CONFIG`, `SCAN_DETECTED_DOMAINS`. Popup ↔ background: `GET_STATUS`, `GET_SETTINGS`, `SAVE_SETTINGS`, `GET_HISTORY`, `CLEAR_HISTORY`, `GET_DETECTED_DOMAINS`. **Content script never opens tabs** — delegate to the service worker.
+Defined in `extension/types/index.ts`. Content → background: `CHANNEL_ACTIVE`, `CHANNEL_INACTIVE`, `CANDIDATE_LINKS`, `ADD_ALLOWED_DOMAIN`, `IGNORE_DOMAIN`. Retailer content → background: `RETAILER_PING`, `RETAILER_AUTO_STATUS`, `RETAILER_RECORDING_*`. Background → retailer content: `RETAILER_START_AUTO`, `RETAILER_ARM_UI`. Popup ↔ background: `GET_STATUS`, `GET_SETTINGS`, `SAVE_SETTINGS`, `GET_HISTORY`, `CLEAR_HISTORY`, `GET_DETECTED_DOMAINS`, `SET_RETAILER_AUTO_ENABLED`, `CLEAR_RETAILER_PROFILE`. **Content script never opens tabs** — delegate to the service worker.
+
+## Target Auto Mode (retailer)
+
+Per-channel `retailer_auto_enabled` on `ChannelTarget` (visible when `target.com` is allowlisted). When enabled, Target product links open in a **new Chrome window** (`chrome.windows.create`); content script on `target.com` runs add-to-cart automation and navigates to `/checkout/start`. Manual panel on Target pages supports **Start Auto Mode** and **Record** for selector capture. After manifest or service-worker changes, reload the extension and refresh Discord **and** Target tabs.
 
 ## Critical invariants / footguns
 

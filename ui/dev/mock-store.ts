@@ -1,4 +1,6 @@
 import { STORAGE_KEYS } from "@ext/lib/constants.ts";
+import { getChannelTarget } from "@ext/lib/channel-targets.ts";
+import { setRetailerAutoEnabled } from "@ext/lib/retailer/channel-config.ts";
 import { validatePersistedTargets } from "@ext/lib/validate.ts";
 import type {
   BackgroundResponse,
@@ -9,7 +11,7 @@ import type {
 } from "@ext/types/index.ts";
 import { DEFAULT_SETTINGS } from "@ext/types/index.ts";
 
-export type PopupScenario = "watching" | "active_no_domains" | "no_discord";
+export type PopupScenario = "watching" | "active_no_domains" | "no_discord" | "retailer_auto";
 
 const SAMPLE_CHANNEL_ID = "1234567890123456789";
 
@@ -35,11 +37,12 @@ let settings: ExtensionSettings = {
   channel_targets: [
     {
       channel_id: SAMPLE_CHANNEL_ID,
-      allowed_domains: ["walmart.com", "amazon.com"],
+      allowed_domains: ["walmart.com", "amazon.com", "target.com"],
     },
   ],
 };
 
+let retailerStepsRecorded = 0;
 let history: HistoryItem[] = [...SAMPLE_HISTORY];
 let popupScenario: PopupScenario = "watching";
 
@@ -65,6 +68,15 @@ function notifyStorage(changes: Record<string, chrome.storage.StorageChange>) {
 }
 
 function buildStatus(): ExtensionStatus {
+  const allowedDomains =
+    popupScenario === "watching" || popupScenario === "retailer_auto"
+      ? getChannelTarget(settings, SAMPLE_CHANNEL_ID)?.allowed_domains ?? ["target.com"]
+      : [];
+
+  const retailerAutoEnabled =
+    popupScenario === "retailer_auto" ||
+    getChannelTarget(settings, SAMPLE_CHANNEL_ID)?.retailer_auto_enabled === true;
+
   if (!settings.enabled) {
     return {
       enabled: false,
@@ -73,6 +85,8 @@ function buildStatus(): ExtensionStatus {
       is_active: false,
       has_allowed_domains: false,
       allowed_domains: [],
+      retailer_auto_enabled: false,
+      retailer_steps_recorded: 0,
     };
   }
 
@@ -85,6 +99,8 @@ function buildStatus(): ExtensionStatus {
         is_active: false,
         has_allowed_domains: false,
         allowed_domains: [],
+        retailer_auto_enabled: false,
+        retailer_steps_recorded: 0,
       };
     case "active_no_domains":
       return {
@@ -94,7 +110,10 @@ function buildStatus(): ExtensionStatus {
         is_active: true,
         has_allowed_domains: false,
         allowed_domains: [],
+        retailer_auto_enabled: false,
+        retailer_steps_recorded: 0,
       };
+    case "retailer_auto":
     case "watching":
     default:
       return {
@@ -102,8 +121,10 @@ function buildStatus(): ExtensionStatus {
         discord_tab_detected: true,
         active_channel_id: SAMPLE_CHANNEL_ID,
         is_active: true,
-        has_allowed_domains: true,
-        allowed_domains: ["walmart.com", "amazon.com"],
+        has_allowed_domains: allowedDomains.length > 0,
+        allowed_domains: allowedDomains,
+        retailer_auto_enabled: retailerAutoEnabled,
+        retailer_steps_recorded: retailerStepsRecorded,
       };
   }
 }
@@ -128,6 +149,17 @@ export function handleUiMessage(message: UiToBackground): BackgroundResponse {
       });
       return { ok: true };
     }
+    case "SET_RETAILER_AUTO_ENABLED": {
+      settings = setRetailerAutoEnabled(settings, message.channel_id, message.enabled);
+      notifyStorage({
+        [STORAGE_KEYS.settings]: { oldValue: undefined, newValue: settings },
+      });
+      return { ok: true };
+    }
+    case "CLEAR_RETAILER_PROFILE": {
+      retailerStepsRecorded = 0;
+      return { ok: true };
+    }
     case "GET_HISTORY":
       return { ok: true, history: structuredClone(history) };
     case "CLEAR_HISTORY": {
@@ -139,11 +171,16 @@ export function handleUiMessage(message: UiToBackground): BackgroundResponse {
     }
     case "GET_DETECTED_DOMAINS":
       return { ok: true, domains: ["target.com", "bestbuy.com"] };
+    case "RETAILER_ARM_UI":
+      return { ok: true };
   }
 }
 
 export function setPopupScenario(scenario: PopupScenario) {
   popupScenario = scenario;
+  if (scenario === "retailer_auto") {
+    settings = setRetailerAutoEnabled(settings, SAMPLE_CHANNEL_ID, true);
+  }
   notifyStorage({
     [STORAGE_KEYS.settings]: { oldValue: settings, newValue: settings },
   });
@@ -159,10 +196,11 @@ export function resetMockStore() {
     channel_targets: [
       {
         channel_id: SAMPLE_CHANNEL_ID,
-        allowed_domains: ["walmart.com", "amazon.com"],
+        allowed_domains: ["walmart.com", "amazon.com", "target.com"],
       },
     ],
   };
+  retailerStepsRecorded = 0;
   history = [...SAMPLE_HISTORY];
   popupScenario = "watching";
   notifyStorage({

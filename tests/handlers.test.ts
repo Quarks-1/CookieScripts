@@ -45,6 +45,12 @@ function setupChromeMocks() {
       query: vi.fn(async () => [{ id: 1, url: "https://discord.com/channels/111/222" }]),
       sendMessage: vi.fn(async () => ({ ok: true, domains: ["walmart.com"] })),
       onRemoved: { addListener: vi.fn() },
+      get: vi.fn(async () => ({ id: 99, status: "complete" })),
+      onUpdated: { addListener: vi.fn(), removeListener: vi.fn() },
+    },
+    windows: {
+      create: vi.fn(async () => ({ id: 10, tabs: [{ id: 99 }] })),
+      onRemoved: { addListener: vi.fn() },
     },
   });
 
@@ -130,6 +136,61 @@ describe("handleMessage", () => {
       url: "https://walmart.com/item",
       active: false,
     });
+  });
+
+  it("opens target product links in a new window when retailer auto mode is enabled", async () => {
+    const settings = {
+      enabled: true,
+      channel_targets: [
+        buildChannelTarget({
+          channel_id: "222",
+          allowed_domains: ["target.com"],
+          retailer_auto_enabled: true,
+        }),
+      ],
+    };
+    vi.mocked(chrome.storage.local.get).mockImplementation(async (keys) => {
+      const keyList = Array.isArray(keys) ? keys : [keys];
+      const result: Record<string, unknown> = {};
+      for (const key of keyList) {
+        if (key === "cookiescripts:settings") {
+          result[key] = settings;
+        } else if (key === "cookiescripts:history") {
+          result[key] = [];
+        } else if (key === "cookiescripts:recentUrls") {
+          result[key] = [];
+        }
+      }
+      return result;
+    });
+
+    const sender = mockContentSender({
+      extensionId: EXTENSION_ID,
+      tabUrl: "https://discord.com/channels/111/222",
+    });
+
+    const response = await handleMessage(
+      {
+        type: "CANDIDATE_LINKS",
+        channel_id: "222",
+        urls: ["https://www.target.com/p/foo/-/A-123"],
+        author: "alice",
+      },
+      sender,
+    );
+
+    expect(response).toMatchObject({
+      ok: true,
+      opened: ["https://www.target.com/p/foo/-/A-123"],
+    });
+    expect(chrome.windows.create).toHaveBeenCalledWith({
+      url: "https://www.target.com/p/foo/-/A-123",
+      focused: true,
+    });
+    expect(chrome.tabs.sendMessage).toHaveBeenCalledWith(
+      99,
+      expect.objectContaining({ type: "RETAILER_START_AUTO", channel_id: "222" }),
+    );
   });
 
   it("does not open links when channel has no allowlist", async () => {

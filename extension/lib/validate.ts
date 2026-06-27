@@ -22,6 +22,12 @@ export function validateChannelTarget(target: ChannelTarget): string | null {
   if (!target.allowed_domains.length) {
     return "Each channel needs at least one allowed domain";
   }
+  if (
+    target.retailer_auto_enabled !== undefined &&
+    typeof target.retailer_auto_enabled !== "boolean"
+  ) {
+    return "retailer_auto_enabled must be a boolean";
+  }
   return null;
 }
 

@@ -1,6 +1,8 @@
 import { HISTORY_LIMIT, RECENT_URL_LIMIT, STORAGE_KEYS } from "@ext/lib/constants.ts";
+import { validateRetailerProfilesStore } from "@ext/lib/retailer/validate-profile.ts";
 import { validatePersistedTargets } from "@ext/lib/validate.ts";
 import { DEFAULT_SETTINGS, type ExtensionSettings, type HistoryItem } from "@ext/types/index.ts";
+import type { RetailerProfile, RetailerProfilesStore } from "@ext/types/retailer.ts";
 
 export async function getSettings(): Promise<ExtensionSettings> {
   const result = await chrome.storage.local.get(STORAGE_KEYS.settings);
@@ -51,6 +53,7 @@ export async function seedDefaultsIfMissing(): Promise<void> {
     STORAGE_KEYS.settings,
     STORAGE_KEYS.history,
     STORAGE_KEYS.recentUrls,
+    STORAGE_KEYS.retailerProfiles,
   ]);
   const updates: Record<string, unknown> = {};
   if (result[STORAGE_KEYS.settings] === undefined) {
@@ -62,7 +65,33 @@ export async function seedDefaultsIfMissing(): Promise<void> {
   if (result[STORAGE_KEYS.recentUrls] === undefined) {
     updates[STORAGE_KEYS.recentUrls] = [];
   }
+  if (result[STORAGE_KEYS.retailerProfiles] === undefined) {
+    updates[STORAGE_KEYS.retailerProfiles] = { target: null };
+  }
   if (Object.keys(updates).length > 0) {
     await chrome.storage.local.set(updates);
   }
+}
+
+const DEFAULT_PROFILES_STORE: RetailerProfilesStore = { target: null };
+
+export async function getRetailerProfiles(): Promise<RetailerProfilesStore> {
+  const result = await chrome.storage.local.get(STORAGE_KEYS.retailerProfiles);
+  return (
+    (result[STORAGE_KEYS.retailerProfiles] as RetailerProfilesStore | undefined) ??
+    DEFAULT_PROFILES_STORE
+  );
+}
+
+export async function saveRetailerProfile(profile: RetailerProfile | null): Promise<void> {
+  const store: RetailerProfilesStore = { target: profile };
+  const error = validateRetailerProfilesStore(store);
+  if (error) {
+    throw new Error(error);
+  }
+  await chrome.storage.local.set({ [STORAGE_KEYS.retailerProfiles]: store });
+}
+
+export async function clearRetailerProfile(): Promise<void> {
+  await chrome.storage.local.set({ [STORAGE_KEYS.retailerProfiles]: DEFAULT_PROFILES_STORE });
 }
