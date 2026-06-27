@@ -15,6 +15,22 @@ const CANDIDATE_LINKS_RETRY_MS = 150;
 const UI_MESSAGE_MAX_RETRIES = 2;
 const UI_MESSAGE_RETRY_MS = 150;
 
+const EXTENSION_CONTEXT_INVALIDATED = "Extension context invalidated";
+
+export function isExtensionContextValid(): boolean {
+  try {
+    return typeof chrome.runtime.id === "string" && chrome.runtime.id.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+function isExtensionContextInvalidatedError(error: unknown): boolean {
+  return (
+    error instanceof Error && error.message.includes(EXTENSION_CONTEXT_INVALIDATED)
+  );
+}
+
 export function sendToBackground<T = unknown>(message: RuntimeMessage): Promise<T> {
   return chrome.runtime.sendMessage(message) as Promise<T>;
 }
@@ -53,9 +69,15 @@ function sleep(ms: number): Promise<void> {
 }
 
 export async function sendChannelInactive(): Promise<void> {
+  if (!isExtensionContextValid()) {
+    return;
+  }
   try {
     await sendToBackground({ type: "CHANNEL_INACTIVE" });
   } catch (error) {
+    if (isExtensionContextInvalidatedError(error)) {
+      return;
+    }
     console.warn("CookieScripts: CHANNEL_INACTIVE failed", error);
   }
 }
@@ -63,12 +85,18 @@ export async function sendChannelInactive(): Promise<void> {
 export async function sendCandidateLinks(
   payload: Extract<ContentToBackground, { type: "CANDIDATE_LINKS" }>,
 ): Promise<void> {
+  if (!isExtensionContextValid()) {
+    return;
+  }
   let lastError: unknown;
   for (let attempt = 0; attempt <= CANDIDATE_LINKS_MAX_RETRIES; attempt++) {
     try {
       await sendToBackground(payload);
       return;
     } catch (error) {
+      if (isExtensionContextInvalidatedError(error)) {
+        return;
+      }
       lastError = error;
       if (attempt < CANDIDATE_LINKS_MAX_RETRIES) {
         await sleep(CANDIDATE_LINKS_RETRY_MS * (attempt + 1));
@@ -79,6 +107,9 @@ export async function sendCandidateLinks(
 }
 
 async function sendUiMessage(uiMessage: UiToBackground): Promise<BackgroundResponse> {
+  if (!isExtensionContextValid()) {
+    throw new Error(EXTENSION_CONTEXT_INVALIDATED);
+  }
   let lastError: unknown;
   for (let attempt = 0; attempt <= UI_MESSAGE_MAX_RETRIES; attempt++) {
     try {
@@ -88,6 +119,9 @@ async function sendUiMessage(uiMessage: UiToBackground): Promise<BackgroundRespo
       }
       return response;
     } catch (error) {
+      if (isExtensionContextInvalidatedError(error)) {
+        throw error;
+      }
       lastError = error;
       if (attempt < UI_MESSAGE_MAX_RETRIES) {
         await sleep(UI_MESSAGE_RETRY_MS * (attempt + 1));

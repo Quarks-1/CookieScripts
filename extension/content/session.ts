@@ -10,6 +10,7 @@ import { parseChannelId } from "@ext/lib/channels.ts";
 import { STORAGE_KEYS } from "@ext/lib/constants.ts";
 import {
   isChannelActive,
+  isExtensionContextValid,
   requestWatchConfig,
   sendCandidateLinks,
   sendChannelInactive,
@@ -61,6 +62,12 @@ function rememberMessageId(messageId: string): void {
 }
 
 function onMessageAdded(node: Element): void {
+  if (!isExtensionContextValid()) {
+    stopObserving();
+    session.watched = false;
+    return;
+  }
+
   const channelId = session.channelId;
   if (!channelId || !session.watched) {
     return;
@@ -118,6 +125,11 @@ async function runSyncChannel(): Promise<void> {
   stopObserving();
   session.channelId = null;
   session.watched = false;
+
+  if (!isExtensionContextValid()) {
+    session.seenMessageIds.clear();
+    return;
+  }
 
   const channelId = parseChannelId(location.pathname);
   if (channelId === null) {
