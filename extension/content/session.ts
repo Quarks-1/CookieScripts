@@ -4,6 +4,11 @@ import {
   getMessageId,
   isOwnMessage,
 } from "@ext/content/extract.ts";
+import {
+  installDetectedDomainsListener,
+  startDetectedDomainScan,
+  stopDetectedDomainScan,
+} from "@ext/content/detected-domains.ts";
 import { hookSpaNavigation } from "@ext/content/navigation.ts";
 import { attachMessagePipeline } from "@ext/content/observers.ts";
 import { MESSAGE_ARTICLE } from "@ext/content/selectors.ts";
@@ -92,6 +97,7 @@ function seedExistingMessageIds(root: Element): void {
 
 function stopObserving(): void {
   clearMessageBootstrap();
+  stopDetectedDomainScan();
   session.disconnectObservers?.();
   session.disconnectObservers = null;
 }
@@ -236,6 +242,7 @@ async function runSyncChannel(): Promise<void> {
   session.disconnectObservers = attachMessagePipeline(onMessageAdded, (messageListRoot) => {
     seedExistingMessageIds(messageListRoot);
     extendMessageBootstrap();
+    startDetectedDomainScan(channelId, messageListRoot);
   });
 }
 
@@ -257,6 +264,8 @@ function syncChannel(): void {
 }
 
 export function startSession(): void {
+  installDetectedDomainsListener();
+
   unhookNavigation = hookSpaNavigation(() => {
     if (sessionEnded || !isExtensionContextValid()) {
       endSession();

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getChannelDomains, upsertChannelDomains } from "@ext/lib/channel-targets.ts";
+import { addChannelDomain, getChannelDomains, upsertChannelDomains } from "@ext/lib/channel-targets.ts";
 import { DEFAULT_SETTINGS } from "@ext/types/index.ts";
 import { buildChannelTarget } from "./fixtures.ts";
 
@@ -68,5 +68,18 @@ describe("upsertChannelDomains", () => {
       { channel_id: "222", allowed_domains: ["b.com"] },
       { channel_id: "111", allowed_domains: ["c.com"] },
     ]);
+  });
+});
+
+describe("addChannelDomain", () => {
+  it("appends a domain without duplicates", () => {
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      channel_targets: [buildChannelTarget({ channel_id: "111", allowed_domains: ["a.com"] })],
+    };
+    const once = addChannelDomain(settings, "111", "b.com");
+    expect(getChannelDomains(once, "111")).toEqual(["a.com", "b.com"]);
+    const twice = addChannelDomain(once, "111", "https://www.b.com");
+    expect(getChannelDomains(twice, "111")).toEqual(["a.com", "b.com"]);
   });
 });

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { normalizeDomain } from "@ext/lib/domains.ts";
+import { normalizeDomain, domainFromUrl } from "@ext/lib/domains.ts";
 
 describe("normalizeDomain", () => {
   it("strips protocol and www", () => {
@@ -18,5 +18,15 @@ describe("normalizeDomain", () => {
 
   it("rejects host without dot", () => {
     expect(normalizeDomain("localhost")).toBeNull();
+  });
+});
+
+describe("domainFromUrl", () => {
+  it("extracts normalized host from urls", () => {
+    expect(domainFromUrl("https://www.walmart.com/deal?id=1")).toBe("walmart.com");
+  });
+
+  it("returns null for invalid urls", () => {
+    expect(domainFromUrl("not-a-url")).toBeNull();
   });
 });

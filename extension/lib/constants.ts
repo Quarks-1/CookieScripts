@@ -14,4 +14,5 @@ export const STORAGE_KEYS = {
   history: "cookiescripts:history",
   recentUrls: "cookiescripts:recentUrls",
   updateCheck: "cookiescripts:updateCheck",
+  ignoredDomains: "cookiescripts:ignoredDomains",
 } as const;

@@ -137,6 +137,8 @@ export function handleUiMessage(message: UiToBackground): BackgroundResponse {
       });
       return { ok: true };
     }
+    case "GET_DETECTED_DOMAINS":
+      return { ok: true, domains: ["target.com", "bestbuy.com"] };
   }
 }
 

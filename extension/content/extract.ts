@@ -58,3 +58,11 @@ export function extractLinksFromMessage(root: Element): string[] {
   const fromHrefs = hrefs.filter(isHttpOrHttpsUrl);
   return dedupeUrls([...fromText, ...fromHrefs]);
 }
+
+export function extractHrefLinksFromMessage(root: Element): string[] {
+  const hrefs = [...root.querySelectorAll("a[href]")]
+    .map((anchor) => anchor.getAttribute("href") ?? "")
+    .filter(Boolean)
+    .filter(isHttpOrHttpsUrl);
+  return dedupeUrls(hrefs);
+}

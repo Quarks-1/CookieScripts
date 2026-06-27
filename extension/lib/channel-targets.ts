@@ -20,6 +20,22 @@ function normalizeDomainList(domains: string[]): string[] {
   return result;
 }
 
+export function addChannelDomain(
+  settings: ExtensionSettings,
+  channelId: string,
+  domain: string,
+): ExtensionSettings {
+  const normalized = normalizeDomain(domain);
+  if (!normalized) {
+    return settings;
+  }
+  const current = getChannelDomains(settings, channelId);
+  if (current.includes(normalized)) {
+    return settings;
+  }
+  return upsertChannelDomains(settings, channelId, [...current, normalized]);
+}
+
 export function upsertChannelDomains(
   settings: ExtensionSettings,
   channelId: string,

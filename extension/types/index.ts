@@ -35,18 +35,22 @@ export interface ExtensionStatus {
 export type ContentToBackground =
   | { type: "CHANNEL_ACTIVE"; channel_id: string }
   | { type: "CHANNEL_INACTIVE" }
-  | { type: "CANDIDATE_LINKS"; channel_id: string; urls: string[]; author?: string };
+  | { type: "CANDIDATE_LINKS"; channel_id: string; urls: string[]; author?: string }
+  | { type: "ADD_ALLOWED_DOMAIN"; channel_id: string; domain: string }
+  | { type: "IGNORE_DOMAIN"; channel_id: string; domain: string };
 
 export type BackgroundToContent =
   | { type: "WATCH_CONFIG"; channel_id: string | null; allowed_domains: string[] }
-  | { type: "PING" };
+  | { type: "PING" }
+  | { type: "SCAN_DETECTED_DOMAINS" };
 
 export type UiToBackground =
   | { type: "GET_STATUS" }
   | { type: "GET_SETTINGS" }
   | { type: "SAVE_SETTINGS"; settings: ExtensionSettings }
   | { type: "GET_HISTORY" }
-  | { type: "CLEAR_HISTORY" };
+  | { type: "CLEAR_HISTORY" }
+  | { type: "GET_DETECTED_DOMAINS" };
 
 export type RuntimeMessage = ContentToBackground | BackgroundToContent | UiToBackground;
 
@@ -61,9 +65,14 @@ export type BackgroundResponse =
   | { ok: true; settings: ExtensionSettings }
   | { ok: true; history: HistoryItem[] }
   | { ok: true; opened: string[]; duplicates: string[] }
+  | { ok: true; domains: string[] }
   | { ok: true }
   | { ok: false; error: string }
   | WatchConfig;
+
+export type DetectedDomainsResponse =
+  | { ok: true; domains: string[] }
+  | { ok: false; error: string };
 
 export const DEFAULT_SETTINGS: ExtensionSettings = {
   channel_targets: [],

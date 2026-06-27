@@ -1,6 +1,7 @@
 import { parseChannelId, resolveContentChannel } from "@ext/lib/channels.ts";
+import { addChannelDomain, getChannelDomains } from "@ext/lib/channel-targets.ts";
 import { decideLinkActions } from "@ext/lib/process-links.ts";
-import { getChannelDomains } from "@ext/lib/channel-targets.ts";
+import { addIgnoredDomain } from "@ext/lib/ignored-domains.ts";
 import {
   clearHistory,
   getHistory,
@@ -159,6 +160,24 @@ async function handleContentMessage(
 
       return { ok: true, ...result };
     }
+    case "ADD_ALLOWED_DOMAIN": {
+      const channelId = resolveContentChannel(sender, message.channel_id);
+      if (!channelId) {
+        return { ok: false, error: "Invalid channel" };
+      }
+      const settings = await getSettings();
+      const next = addChannelDomain(settings, channelId, message.domain);
+      await saveSettings(next);
+      return { ok: true };
+    }
+    case "IGNORE_DOMAIN": {
+      const channelId = resolveContentChannel(sender, message.channel_id);
+      if (!channelId) {
+        return { ok: false, error: "Invalid channel" };
+      }
+      await addIgnoredDomain(channelId, message.domain);
+      return { ok: true };
+    }
   }
 }
 
@@ -197,6 +216,26 @@ async function handleUiMessage(
       clearRecentUrlKeys();
       return { ok: true };
     }
+    case "GET_DETECTED_DOMAINS": {
+      const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (
+        activeTab?.id == null ||
+        !activeTab.url?.startsWith("https://discord.com/channels/")
+      ) {
+        return { ok: true, domains: [] };
+      }
+      try {
+        const response = (await chrome.tabs.sendMessage(activeTab.id, {
+          type: "SCAN_DETECTED_DOMAINS",
+        })) as { ok?: boolean; domains?: string[] } | undefined;
+        if (response?.ok === true && Array.isArray(response.domains)) {
+          return { ok: true, domains: response.domains };
+        }
+      } catch {
+        // Content script may not be injected yet.
+      }
+      return { ok: true, domains: [] };
+    }
   }
 }
 
@@ -209,12 +248,15 @@ export async function handleMessage(
       case "CHANNEL_ACTIVE":
       case "CHANNEL_INACTIVE":
       case "CANDIDATE_LINKS":
+      case "ADD_ALLOWED_DOMAIN":
+      case "IGNORE_DOMAIN":
         return await handleContentMessage(message, sender);
       case "GET_STATUS":
       case "GET_SETTINGS":
       case "SAVE_SETTINGS":
       case "GET_HISTORY":
       case "CLEAR_HISTORY":
+      case "GET_DETECTED_DOMAINS":
         return await handleUiMessage(message, sender);
       case "WATCH_CONFIG":
       case "PING":

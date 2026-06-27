@@ -1,3 +1,7 @@
+export { unwrapAffiliateUrl } from "@ext/lib/affiliate-unwrap.ts";
+
+import { unwrapAffiliateUrl } from "@ext/lib/affiliate-unwrap.ts";
+
 const URL_PATTERN = /https?:\/\/[^\s<>"')\]]+/gi;
 const TRAILING_PUNCTUATION = ".,;:!?)]}'\"";
 
@@ -10,23 +14,6 @@ export function hostMatches(host: string, allowed: string): boolean {
   const normalizedHost = normalizeHost(host);
   const normalizedAllowed = normalizeHost(allowed);
   return normalizedHost === normalizedAllowed || normalizedHost.endsWith("." + normalizedAllowed);
-}
-
-export function unwrapAffiliateUrl(url: string): string {
-  let parsed: URL;
-  try {
-    parsed = new URL(url);
-  } catch {
-    return url;
-  }
-  if (normalizeHost(parsed.hostname) !== "goto.walmart.com") {
-    return url;
-  }
-  const u = parsed.searchParams.get("u");
-  if (u) {
-    return decodeURIComponent(u);
-  }
-  return url;
 }
 
 export function normalizeUrlForDedup(url: string): string {

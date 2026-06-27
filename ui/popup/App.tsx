@@ -8,8 +8,10 @@ import { LinkHistory } from "@shared/components/LinkHistory.tsx";
 import { EnableSlider } from "@shared/components/EnableSlider.tsx";
 import { WatchStatusBadge } from "@shared/components/WatchStatusBadge.tsx";
 import { ChannelDomainsSection } from "./components/ChannelDomainsSection.tsx";
+import { DetectedLinksSection } from "./components/DetectedLinksSection.tsx";
 import { VersionStatus } from "./components/VersionStatus.tsx";
 import { useChannelDomainsEditor } from "./hooks/useChannelDomainsEditor.ts";
+import { useDetectedLinks } from "./hooks/useDetectedLinks.ts";
 import { useLinkHistory } from "./hooks/useLinkHistory.ts";
 import { usePopupStatus } from "./hooks/usePopupStatus.ts";
 import { useUpdateCheck } from "./hooks/useUpdateCheck.ts";
@@ -19,6 +21,11 @@ export default function App() {
   const domainsEditor = useChannelDomainsEditor(
     status?.active_channel_id ?? null,
     status?.enabled ?? false,
+  );
+  const detectedLinks = useDetectedLinks(
+    status?.active_channel_id ?? null,
+    status?.enabled ?? false,
+    domainsEditor.domains,
   );
   const linkHistory = useLinkHistory();
   const updateCheck = useUpdateCheck();
@@ -100,6 +107,17 @@ export default function App() {
             saving={domainsEditor.saving}
             saveError={domainsEditor.saveError}
             onDomainsChange={domainsEditor.handleDomainsChange}
+          />
+
+          <DetectedLinksSection
+            domains={detectedLinks.domains}
+            loading={detectedLinks.loading}
+            acting={detectedLinks.acting}
+            error={detectedLinks.error}
+            disabled={detectedLinks.disabled || enabling}
+            onAccept={(domain) => void detectedLinks.handleAccept(domain)}
+            onDismiss={(domain) => void detectedLinks.handleDismiss(domain)}
+            onRefresh={() => void detectedLinks.refresh()}
           />
 
           <section aria-labelledby="link-history-heading">

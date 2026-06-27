@@ -116,6 +116,33 @@ export async function sendCandidateLinks(
   console.warn("CookieScripts: CANDIDATE_LINKS failed after retries", lastError);
 }
 
+async function sendContentAction(
+  message: Extract<ContentToBackground, { type: "ADD_ALLOWED_DOMAIN" | "IGNORE_DOMAIN" }>,
+): Promise<void> {
+  if (!isExtensionContextValid()) {
+    return;
+  }
+  try {
+    const response = await sendToBackground<BackgroundResponse>(message);
+    if (response && "ok" in response && response.ok === false) {
+      console.warn("CookieScripts: action failed", response.error);
+    }
+  } catch (error) {
+    if (isExtensionContextInvalidatedError(error)) {
+      return;
+    }
+    console.warn("CookieScripts: action failed", error);
+  }
+}
+
+export async function sendAddAllowedDomain(channelId: string, domain: string): Promise<void> {
+  await sendContentAction({ type: "ADD_ALLOWED_DOMAIN", channel_id: channelId, domain });
+}
+
+export async function sendIgnoreDomain(channelId: string, domain: string): Promise<void> {
+  await sendContentAction({ type: "IGNORE_DOMAIN", channel_id: channelId, domain });
+}
+
 async function sendUiMessage(uiMessage: UiToBackground): Promise<BackgroundResponse> {
   if (!isExtensionContextValid()) {
     throw new Error(EXTENSION_CONTEXT_INVALIDATED);
@@ -184,4 +211,13 @@ export async function getLinkHistory(): Promise<HistoryItem[]> {
 export async function clearLinkHistory(): Promise<void> {
   const response = await sendUiMessage({ type: "CLEAR_HISTORY" });
   assertOk(response);
+}
+
+export async function getDetectedDomains(): Promise<string[]> {
+  const response = await sendUiMessage({ type: "GET_DETECTED_DOMAINS" });
+  assertOk(response);
+  if (!("domains" in response)) {
+    throw new Error("Unexpected GET_DETECTED_DOMAINS response");
+  }
+  return response.domains;
 }

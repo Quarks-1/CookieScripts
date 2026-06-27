@@ -43,6 +43,7 @@ function setupChromeMocks() {
     tabs: {
       create: vi.fn(async () => ({ id: 99 })),
       query: vi.fn(async () => [{ id: 1, url: "https://discord.com/channels/111/222" }]),
+      sendMessage: vi.fn(async () => ({ ok: true, domains: ["walmart.com"] })),
       onRemoved: { addListener: vi.fn() },
     },
   });
@@ -253,5 +254,79 @@ describe("handleMessage", () => {
 
     expect(response).toEqual({ ok: true });
     expect(recentUrlKeys.size).toBe(0);
+  });
+
+  it("adds an allowed domain from content script", async () => {
+    const storage: Record<string, unknown> = {
+      "cookiescripts:settings": DEFAULT_SETTINGS,
+    };
+    vi.mocked(chrome.storage.local.get).mockImplementation(async (keys) => {
+      const keyList = Array.isArray(keys) ? keys : [keys];
+      const result: Record<string, unknown> = {};
+      for (const key of keyList) {
+        if (storage[key] !== undefined) {
+          result[key] = storage[key];
+        }
+      }
+      return result;
+    });
+    vi.mocked(chrome.storage.local.set).mockImplementation(async (items) => {
+      Object.assign(storage, items);
+    });
+
+    const sender = mockContentSender({
+      extensionId: EXTENSION_ID,
+      tabUrl: "https://discord.com/channels/111/222",
+    });
+
+    const response = await handleMessage(
+      { type: "ADD_ALLOWED_DOMAIN", channel_id: "222", domain: "walmart.com" },
+      sender,
+    );
+
+    expect(response).toEqual({ ok: true });
+    expect(storage["cookiescripts:settings"]).toEqual({
+      enabled: true,
+      channel_targets: [{ channel_id: "222", allowed_domains: ["walmart.com"] }],
+    });
+  });
+
+  it("stores ignored domains from content script", async () => {
+    const storage: Record<string, unknown> = {};
+    vi.mocked(chrome.storage.local.get).mockImplementation(async (keys) => {
+      const keyList = Array.isArray(keys) ? keys : [keys];
+      const result: Record<string, unknown> = {};
+      for (const key of keyList) {
+        if (storage[key] !== undefined) {
+          result[key] = storage[key];
+        }
+      }
+      return result;
+    });
+    vi.mocked(chrome.storage.local.set).mockImplementation(async (items) => {
+      Object.assign(storage, items);
+    });
+
+    const sender = mockContentSender({
+      extensionId: EXTENSION_ID,
+      tabUrl: "https://discord.com/channels/111/222",
+    });
+
+    const response = await handleMessage(
+      { type: "IGNORE_DOMAIN", channel_id: "222", domain: "spam.com" },
+      sender,
+    );
+
+    expect(response).toEqual({ ok: true });
+    expect(storage["cookiescripts:ignoredDomains"]).toEqual({ "222": ["spam.com"] });
+  });
+
+  it("returns detected domains from the active discord tab", async () => {
+    const sender = mockExtensionPageSender(EXTENSION_ID);
+
+    const response = await handleMessage({ type: "GET_DETECTED_DOMAINS" }, sender);
+
+    expect(response).toEqual({ ok: true, domains: ["walmart.com"] });
+    expect(chrome.tabs.sendMessage).toHaveBeenCalledWith(1, { type: "SCAN_DETECTED_DOMAINS" });
   });
 });
