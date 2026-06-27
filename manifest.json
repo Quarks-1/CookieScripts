@@ -4,6 +4,14 @@
   "version": "0.1.0",
   "description": "Auto-open allowlisted links from Discord web channels you watch.",
   "permissions": ["storage", "tabs"],
+  "host_permissions": ["https://discord.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://discord.com/channels/*"],
+      "js": ["extension/content/discord.ts"],
+      "run_at": "document_idle"
+    }
+  ],
   "background": {
     "service_worker": "extension/background/service-worker.ts",
     "type": "module"

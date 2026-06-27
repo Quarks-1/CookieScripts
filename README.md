@@ -17,7 +17,7 @@ See [BUILD.md](./BUILD.md) for architecture, phases, and upstream references.
 npm install
 npm run dev      # HMR for popup/options (reload extension for service worker changes)
 npm run build    # Production build → dist/
-npm test         # Vitest unit tests (links, validate, process-links, handlers)
+npm test         # Vitest unit tests (links, validate, process-links, handlers, content)
 ```
 
 After changing the service worker or background handlers, reload the extension on `chrome://extensions`.
@@ -36,8 +36,14 @@ After changing the service worker or background handlers, reload the extension o
 |------------|-----|
 | `storage` | Save watch targets, link history, and dedup keys locally on your device |
 | `tabs` | Open matched product links in new background tabs; read active tab URL for status |
+| `host_permissions: discord.com` | Inject the content script on Discord channel pages to watch messages |
 
-`host_permissions` for `discord.com` will be added in Phase 3 with the content script.
+## Known limitations
+
+- **Thread URLs:** watch targets use the parent channel ID from `/channels/guild/parent/threadId` paths
+- **Message edits:** links added by editing an existing message are not detected until v0.2
+- **Selector fragility:** Discord UI changes may require updates to `extension/content/selectors.ts`
+- **Masked links:** external URLs in visible message text are preferred over Discord redirect `href`s
 
 ## Privacy
 

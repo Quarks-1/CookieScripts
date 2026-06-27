@@ -6,14 +6,15 @@ import {
 } from "@ext/background/runtime-state.ts";
 import { seedDefaultsIfMissing } from "@ext/lib/storage.ts";
 
-await initRuntimeState();
+// Chrome disallows top-level await in MV3 service workers — gate handlers on initPromise instead.
+const initPromise = initRuntimeState();
 
 chrome.runtime.onInstalled.addListener(() => {
-  void seedDefaultsIfMissing();
+  void initPromise.then(() => seedDefaultsIfMissing());
 });
 
 chrome.runtime.onMessage.addListener((message, sender) => {
-  return handleMessage(message, sender);
+  return initPromise.then(() => handleMessage(message, sender));
 });
 
 chrome.tabs.onRemoved.addListener((tabId) => {
@@ -22,6 +23,6 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 
 if (chrome.runtime.onSuspend) {
   chrome.runtime.onSuspend.addListener(() => {
-    void flushRecentUrls();
+    void initPromise.then(() => flushRecentUrls());
   });
 }

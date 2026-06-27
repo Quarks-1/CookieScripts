@@ -1,0 +1,177 @@
+import {
+  extractAuthor,
+  extractLinksFromMessage,
+  getMessageId,
+  isOwnMessage,
+} from "@ext/content/extract.ts";
+import { hookSpaNavigation } from "@ext/content/navigation.ts";
+import { attachMessagePipeline } from "@ext/content/observers.ts";
+import { parseChannelId } from "@ext/lib/channels.ts";
+import { STORAGE_KEYS } from "@ext/lib/constants.ts";
+import {
+  isWatched,
+  requestWatchConfig,
+  sendCandidateLinks,
+  sendChannelInactive,
+} from "@ext/lib/messages.ts";
+
+const SEEN_MESSAGE_ID_LIMIT = 2000;
+const WATCH_CONFIG_MAX_ATTEMPTS = 3;
+const WATCH_CONFIG_RETRY_BASE_MS = 100;
+
+type Session = {
+  channelId: string | null;
+  watched: boolean;
+  disconnectObservers: (() => void) | null;
+  syncGeneration: number;
+  seenMessageIds: Set<string>;
+};
+
+const session: Session = {
+  channelId: null,
+  watched: false,
+  disconnectObservers: null,
+  syncGeneration: 0,
+  seenMessageIds: new Set(),
+};
+
+let syncChain: Promise<void> = Promise.resolve();
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function stopObserving(): void {
+  session.disconnectObservers?.();
+  session.disconnectObservers = null;
+}
+
+function rememberMessageId(messageId: string): void {
+  if (session.seenMessageIds.has(messageId)) {
+    return;
+  }
+  session.seenMessageIds.add(messageId);
+  while (session.seenMessageIds.size > SEEN_MESSAGE_ID_LIMIT) {
+    const oldest = session.seenMessageIds.values().next().value;
+    if (oldest === undefined) {
+      break;
+    }
+    session.seenMessageIds.delete(oldest);
+  }
+}
+
+function onMessageAdded(node: Element): void {
+  const channelId = session.channelId;
+  if (!channelId || !session.watched) {
+    return;
+  }
+
+  const messageId = getMessageId(node);
+  if (messageId !== null) {
+    if (session.seenMessageIds.has(messageId)) {
+      return;
+    }
+    rememberMessageId(messageId);
+  }
+
+  if (isOwnMessage(node)) {
+    return;
+  }
+
+  const urls = extractLinksFromMessage(node);
+  if (urls.length === 0) {
+    return;
+  }
+
+  void sendCandidateLinks({
+    type: "CANDIDATE_LINKS",
+    channel_id: channelId,
+    urls,
+    author: extractAuthor(node),
+  });
+}
+
+async function requestWatchConfigWithRetry(
+  channelId: string,
+  gen: number,
+): Promise<Awaited<ReturnType<typeof requestWatchConfig>>> {
+  for (let attempt = 0; attempt < WATCH_CONFIG_MAX_ATTEMPTS; attempt++) {
+    if (session.syncGeneration !== gen) {
+      return null;
+    }
+    const config = await requestWatchConfig(channelId);
+    if (config !== null) {
+      return config;
+    }
+    if (attempt < WATCH_CONFIG_MAX_ATTEMPTS - 1) {
+      await sleep(WATCH_CONFIG_RETRY_BASE_MS * (attempt + 1));
+    }
+  }
+  return null;
+}
+
+async function runSyncChannel(): Promise<void> {
+  const gen = ++session.syncGeneration;
+  const previousChannelId = session.channelId;
+  const wasWatched = session.watched;
+
+  stopObserving();
+  session.channelId = null;
+  session.watched = false;
+
+  const channelId = parseChannelId(location.pathname);
+  if (channelId === null) {
+    if (wasWatched || previousChannelId !== null) {
+      await sendChannelInactive();
+    }
+    session.seenMessageIds.clear();
+    return;
+  }
+
+  const config = await requestWatchConfigWithRetry(channelId, gen);
+  if (session.syncGeneration !== gen) {
+    return;
+  }
+
+  if (config === null) {
+    if (wasWatched || previousChannelId !== null) {
+      await sendChannelInactive();
+    }
+    return;
+  }
+
+  const watched = isWatched(config);
+  session.channelId = channelId;
+
+  if (channelId !== previousChannelId) {
+    session.seenMessageIds.clear();
+  }
+
+  if (!watched) {
+    if (wasWatched || previousChannelId !== null) {
+      await sendChannelInactive();
+    }
+    return;
+  }
+
+  session.watched = true;
+  session.disconnectObservers = attachMessagePipeline(onMessageAdded);
+}
+
+function syncChannel(): void {
+  syncChain = syncChain.then(runSyncChannel).catch((error) => {
+    console.error("CookieScripts: syncChannel failed", error);
+  });
+}
+
+export function startSession(): void {
+  hookSpaNavigation(() => syncChannel());
+
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === "local" && changes[STORAGE_KEYS.settings]) {
+      syncChannel();
+    }
+  });
+
+  syncChannel();
+}

@@ -50,6 +50,12 @@ export type UiToBackground =
 
 export type RuntimeMessage = ContentToBackground | BackgroundToContent | UiToBackground;
 
+export type WatchConfig = {
+  type: "WATCH_CONFIG";
+  channel_id: string | null;
+  allowed_domains: string[];
+};
+
 export type BackgroundResponse =
   | { ok: true; status: ExtensionStatus }
   | { ok: true; settings: ExtensionSettings }
@@ -57,7 +63,7 @@ export type BackgroundResponse =
   | { ok: true; opened: string[]; duplicates: string[] }
   | { ok: true }
   | { ok: false; error: string }
-  | { type: "WATCH_CONFIG"; channel_id: string | null; allowed_domains: string[] };
+  | WatchConfig;
 
 export const DEFAULT_SETTINGS: ExtensionSettings = {
   channel_targets: [],
