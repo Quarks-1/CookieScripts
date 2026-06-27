@@ -8,7 +8,7 @@ import { LinkHistory } from "@shared/components/LinkHistory.tsx";
 import { EnableSlider } from "@shared/components/EnableSlider.tsx";
 import { WatchStatusBadge } from "@shared/components/WatchStatusBadge.tsx";
 import { ChannelDomainsSection } from "./components/ChannelDomainsSection.tsx";
-import { UpdateBanner } from "./components/UpdateBanner.tsx";
+import { VersionStatus } from "./components/VersionStatus.tsx";
 import { useChannelDomainsEditor } from "./hooks/useChannelDomainsEditor.ts";
 import { useLinkHistory } from "./hooks/useLinkHistory.ts";
 import { usePopupStatus } from "./hooks/usePopupStatus.ts";
@@ -41,16 +41,15 @@ export default function App() {
 
   return (
     <main className="w-80 p-4">
-      <h1 className="text-lg font-semibold">CookieScripts</h1>
-
-      {updateCheck.updateAvailable && updateCheck.latestVersion && updateCheck.releaseUrl && (
-        <UpdateBanner
-          latestVersion={updateCheck.latestVersion}
+      <div className="flex items-center justify-between gap-2">
+        <h1 className="text-lg font-semibold">CookieScripts</h1>
+        <VersionStatus
+          installedVersion={updateCheck.installedVersion}
+          checking={updateCheck.checking}
+          updateAvailable={updateCheck.updateAvailable}
           releaseUrl={updateCheck.releaseUrl}
-          dismissing={updateCheck.dismissing}
-          onDismiss={() => void updateCheck.dismiss()}
         />
-      )}
+      </div>
 
       <section aria-labelledby="popup-enable-heading" className="mt-3">
         <h2 id="popup-enable-heading" className="sr-only">
