@@ -110,8 +110,9 @@ describe("checkForUpdate", () => {
 
   it("does not clear cached release data when GitHub returns an error", async () => {
     const storage = setupChromeMocks("0.1.1");
+    const checkedAt = Date.now() - 60_000;
     storage[STORAGE_KEYS.updateCheck] = {
-      checkedAt: Date.now() - 60_000,
+      checkedAt,
       latestVersion: "0.1.2",
       releaseUrl: RELEASE_URL,
       etag: '"current-etag"',
@@ -132,7 +133,7 @@ describe("checkForUpdate", () => {
       releaseUrl: RELEASE_URL,
     });
     expect(storage[STORAGE_KEYS.updateCheck]).toEqual({
-      checkedAt: Date.now() - 60_000,
+      checkedAt,
       latestVersion: "0.1.2",
       releaseUrl: RELEASE_URL,
       etag: '"current-etag"',
