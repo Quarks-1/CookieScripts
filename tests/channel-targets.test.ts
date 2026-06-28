@@ -69,6 +69,40 @@ describe("upsertChannelDomains", () => {
       { channel_id: "111", allowed_domains: ["c.com"] },
     ]);
   });
+
+  it("preserves retailer_auto_enabled when domains are updated", () => {
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      channel_targets: [
+        buildChannelTarget({
+          channel_id: "111",
+          allowed_domains: ["target.com"],
+          retailer_auto_enabled: true,
+        }),
+      ],
+    };
+    const result = upsertChannelDomains(settings, "111", ["target.com", "amazon.com"]);
+    expect(result.channel_targets[0]).toEqual({
+      channel_id: "111",
+      allowed_domains: ["target.com", "amazon.com"],
+      retailer_auto_enabled: true,
+    });
+  });
+
+  it("clears retailer_auto_enabled when target.com is removed", () => {
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      channel_targets: [
+        buildChannelTarget({
+          channel_id: "111",
+          allowed_domains: ["target.com"],
+          retailer_auto_enabled: true,
+        }),
+      ],
+    };
+    const result = upsertChannelDomains(settings, "111", ["amazon.com"]);
+    expect(result.channel_targets[0]?.retailer_auto_enabled).toBeUndefined();
+  });
 });
 
 describe("addChannelDomain", () => {

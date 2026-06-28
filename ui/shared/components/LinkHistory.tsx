@@ -8,11 +8,35 @@ interface LinkHistoryProps {
 }
 
 function kindLabel(kind: HistoryItem["kind"]) {
-  return kind === "opened" ? "Opened" : "Duplicate";
+  switch (kind) {
+    case "opened":
+      return "Opened";
+    case "duplicate":
+      return "Duplicate";
+    case "retailer_window_opened":
+      return "Target window";
+    case "retailer_auto_queued":
+      return "Target queued";
+    case "retailer_auto_success":
+      return "Target auto OK";
+    case "retailer_auto_failed":
+      return "Target auto failed";
+  }
 }
 
 function kindTone(kind: HistoryItem["kind"]) {
-  return kind === "opened" ? "text-emerald-300" : "text-amber-300";
+  switch (kind) {
+    case "opened":
+    case "retailer_window_opened":
+    case "retailer_auto_success":
+      return "text-emerald-300";
+    case "duplicate":
+      return "text-amber-300";
+    case "retailer_auto_queued":
+      return "text-amber-300";
+    case "retailer_auto_failed":
+      return "text-red-300";
+  }
 }
 
 export function LinkHistory({
@@ -51,6 +75,9 @@ export function LinkHistory({
           <p className={`text-zinc-500 ${isCompact ? "text-xs" : "text-sm"}`}>
             channel {item.channel_id} · from {item.author}
           </p>
+          {item.error && (
+            <p className={`mt-1 text-red-300 ${isCompact ? "text-xs" : "text-sm"}`}>{item.error}</p>
+          )}
         </li>
       ))}
     </ul>

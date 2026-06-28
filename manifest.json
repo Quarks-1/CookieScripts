@@ -5,11 +5,14 @@
   "description": "Auto-open allowlisted links from Discord web channels.",
   "permissions": [
     "storage",
-    "tabs"
+    "tabs",
+    "windows"
   ],
   "host_permissions": [
     "https://discord.com/*",
-    "https://api.github.com/*"
+    "https://api.github.com/*",
+    "https://www.target.com/*",
+    "https://target.com/*"
   ],
   "content_scripts": [
     {
@@ -18,6 +21,16 @@
       ],
       "js": [
         "extension/content/discord.ts"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://www.target.com/*",
+        "https://target.com/*"
+      ],
+      "js": [
+        "extension/content/retailer.ts"
       ],
       "run_at": "document_idle"
     }

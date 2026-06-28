@@ -22,6 +22,22 @@ export function validateChannelTarget(target: ChannelTarget): string | null {
   if (!target.allowed_domains.length) {
     return "Each channel needs at least one allowed domain";
   }
+  if (
+    target.retailer_auto_enabled !== undefined &&
+    typeof target.retailer_auto_enabled !== "boolean"
+  ) {
+    return "retailer_auto_enabled must be a boolean";
+  }
+  if (target.retailer_refresh_interval_sec !== undefined) {
+    if (
+      typeof target.retailer_refresh_interval_sec !== "number" ||
+      !Number.isFinite(target.retailer_refresh_interval_sec) ||
+      target.retailer_refresh_interval_sec <= 0 ||
+      target.retailer_refresh_interval_sec > 3600
+    ) {
+      return "retailer_refresh_interval_sec must be between 1 and 3600";
+    }
+  }
   return null;
 }
 

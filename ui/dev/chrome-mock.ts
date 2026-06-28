@@ -69,6 +69,7 @@ export const POPUP_SCENARIO_LABELS: Record<PopupScenario, string> = {
   watching: "Watching channel",
   active_no_domains: "Active, no domains",
   no_discord: "No Discord tab",
+  retailer_auto: "Target auto mode on",
 };
 
 export function currentScenarioLabel() {
