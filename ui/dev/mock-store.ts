@@ -15,7 +15,12 @@ import type {
 } from "@ext/types/index.ts";
 import { DEFAULT_SETTINGS } from "@ext/types/index.ts";
 
-export type PopupScenario = "watching" | "active_no_domains" | "no_discord" | "retailer_auto";
+export type PopupScenario =
+  | "watching"
+  | "active_no_domains"
+  | "no_discord"
+  | "retailer_auto"
+  | "target_manual";
 
 const SAMPLE_CHANNEL_ID = "1234567890123456789";
 
@@ -71,7 +76,14 @@ function notifyStorage(changes: Record<string, chrome.storage.StorageChange>) {
 }
 
 function buildStatus(): ExtensionStatus {
-  const retailerTabDetected = popupScenario === "retailer_auto";
+  const retailerTabDetected =
+    popupScenario === "retailer_auto" || popupScenario === "target_manual";
+  const activeTabKind =
+    popupScenario === "retailer_auto" || popupScenario === "target_manual"
+      ? "retailer"
+      : popupScenario === "no_discord"
+        ? "other"
+        : "discord_channel";
   const allowedDomains =
     popupScenario === "watching" || popupScenario === "retailer_auto"
       ? getChannelTarget(settings, SAMPLE_CHANNEL_ID)?.allowed_domains ?? ["target.com"]
@@ -84,9 +96,13 @@ function buildStatus(): ExtensionStatus {
   if (!settings.enabled) {
     return {
       enabled: false,
-      discord_tab_detected: popupScenario !== "no_discord",
+      active_tab_kind: activeTabKind,
+      discord_tab_detected: popupScenario !== "no_discord" && popupScenario !== "target_manual",
       retailer_tab_detected: retailerTabDetected,
-      active_channel_id: popupScenario === "no_discord" ? null : SAMPLE_CHANNEL_ID,
+      active_channel_id:
+        popupScenario === "no_discord" || popupScenario === "target_manual"
+          ? null
+          : SAMPLE_CHANNEL_ID,
       is_active: false,
       has_allowed_domains: false,
       allowed_domains: [],
@@ -107,8 +123,9 @@ function buildStatus(): ExtensionStatus {
     case "no_discord":
       return {
         enabled: true,
+        active_tab_kind: "other",
         discord_tab_detected: false,
-        retailer_tab_detected: retailerTabDetected,
+        retailer_tab_detected: false,
         active_channel_id: null,
         is_active: false,
         has_allowed_domains: false,
@@ -117,11 +134,27 @@ function buildStatus(): ExtensionStatus {
         retailer_refresh_interval_sec: 0,
         ...manualUi,
       };
+    case "target_manual":
+      return {
+        enabled: true,
+        active_tab_kind: "retailer",
+        discord_tab_detected: false,
+        retailer_tab_detected: true,
+        active_channel_id: null,
+        is_active: false,
+        has_allowed_domains: false,
+        allowed_domains: [],
+        retailer_auto_enabled: false,
+        retailer_refresh_interval_sec: getRetailerRefreshIntervalSec(settings, "manual"),
+        retailer_manual_status: "Ready — open a product page and press Start",
+        retailer_manual_running: false,
+      };
     case "active_no_domains":
       return {
         enabled: true,
+        active_tab_kind: "discord_channel",
         discord_tab_detected: true,
-        retailer_tab_detected: retailerTabDetected,
+        retailer_tab_detected: false,
         active_channel_id: "999888777666555444",
         is_active: true,
         has_allowed_domains: false,
@@ -131,12 +164,26 @@ function buildStatus(): ExtensionStatus {
         ...manualUi,
       };
     case "retailer_auto":
+      return {
+        enabled: true,
+        active_tab_kind: "retailer",
+        discord_tab_detected: true,
+        retailer_tab_detected: true,
+        active_channel_id: SAMPLE_CHANNEL_ID,
+        is_active: true,
+        has_allowed_domains: allowedDomains.length > 0,
+        allowed_domains: allowedDomains,
+        retailer_auto_enabled: retailerAutoEnabled,
+        retailer_refresh_interval_sec: refreshIntervalSec,
+        ...manualUi,
+      };
     case "watching":
     default:
       return {
         enabled: true,
+        active_tab_kind: "discord_channel",
         discord_tab_detected: true,
-        retailer_tab_detected: retailerTabDetected,
+        retailer_tab_detected: false,
         active_channel_id: SAMPLE_CHANNEL_ID,
         is_active: true,
         has_allowed_domains: allowedDomains.length > 0,

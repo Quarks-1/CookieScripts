@@ -70,6 +70,7 @@ export const POPUP_SCENARIO_LABELS: Record<PopupScenario, string> = {
   active_no_domains: "Active, no domains",
   no_discord: "No Discord tab",
   retailer_auto: "On Target (auto mode)",
+  target_manual: "On Target (manual only)",
 };
 
 export function currentScenarioLabel() {

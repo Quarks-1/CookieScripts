@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { STORAGE_KEYS } from "@ext/lib/constants.ts";
+import { resolveActiveTabKind } from "@ext/lib/active-tab.ts";
 import { getExtensionStatus } from "@ext/lib/messages.ts";
 import type { ExtensionStatus } from "@ext/types/index.ts";
 
@@ -52,15 +53,23 @@ export function usePopupStatus() {
       void refresh();
     }
 
+    function isRelevantTabUrl(url: string | undefined): boolean {
+      if (!url) {
+        return false;
+      }
+      return (
+        url.startsWith("https://discord.com/channels/") || resolveActiveTabKind(url) === "retailer"
+      );
+    }
+
     function onTabUpdated(
       _tabId: number,
       changeInfo: chrome.tabs.TabChangeInfo,
       tab: chrome.tabs.Tab,
     ) {
       if (
-        changeInfo.url?.startsWith("https://discord.com/channels/") ||
-        (changeInfo.status === "complete" &&
-          tab.url?.startsWith("https://discord.com/channels/"))
+        isRelevantTabUrl(changeInfo.url) ||
+        (changeInfo.status === "complete" && isRelevantTabUrl(tab.url))
       ) {
         void refresh();
       }

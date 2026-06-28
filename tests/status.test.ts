@@ -15,6 +15,7 @@ describe("buildStatus", () => {
       url: "https://www.target.com/p/foo/-/A-123",
     } as chrome.tabs.Tab);
     expect(status.retailer_tab_detected).toBe(true);
+    expect(status.active_tab_kind).toBe("retailer");
   });
 
   it("clears retailer_tab_detected for non-Target tabs", async () => {
@@ -23,6 +24,17 @@ describe("buildStatus", () => {
       id: 1,
       url: "https://discord.com/channels/111/222",
     } as chrome.tabs.Tab);
+    expect(status.retailer_tab_detected).toBe(false);
+    expect(status.active_tab_kind).toBe("discord_channel");
+  });
+
+  it("sets active_tab_kind to other for unrelated tabs", async () => {
+    activeChannels.clear();
+    const status = await buildStatus({
+      id: 1,
+      url: "https://www.google.com/",
+    } as chrome.tabs.Tab);
+    expect(status.active_tab_kind).toBe("other");
     expect(status.retailer_tab_detected).toBe(false);
   });
 });

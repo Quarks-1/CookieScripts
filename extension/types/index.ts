@@ -32,8 +32,13 @@ export interface HistoryItem {
   error?: string;
 }
 
+export type ActiveTabKind = "discord_channel" | "retailer" | "other";
+
 export interface ExtensionStatus {
   enabled: boolean;
+  /** Active tab surface for side panel layout. */
+  active_tab_kind: ActiveTabKind;
+  /** True when any Discord channel tab is connected, not necessarily the active tab. */
   discord_tab_detected: boolean;
   /** Active tab is on target.com (or affiliate redirect to Target). */
   retailer_tab_detected: boolean;
