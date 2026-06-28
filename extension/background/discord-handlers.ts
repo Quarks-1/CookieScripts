@@ -119,7 +119,14 @@ export async function handleDiscordMessage(
             } else if (windowResult.queued) {
               await openPassiveProductTab(url);
               opened.push(url);
-              passiveHistory.push(entry);
+              retailerHistory.push({
+                kind: "retailer_auto_queued",
+                url,
+                author: entry.author,
+                channel_id: channelId,
+                timestamp: entry.timestamp,
+                error: "Auto mode skipped — job in progress",
+              });
             }
           } else {
             await openPassiveProductTab(url);

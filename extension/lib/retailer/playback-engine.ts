@@ -8,11 +8,15 @@ export function defaultTargetAutomationSteps(): AutomationStep[] {
       type: "click",
       selectors: ['button[data-test="shipItButton"]'],
       label: "Ship it",
+      optional: true,
     },
     {
       type: "keyboard_enter_hold",
       selectors: [
+        'button[id^="addToCartButtonOrTextIdFor"]',
+        'button[data-test="shippingButton"]',
         'button[data-test="addToCartButton"]',
+        'button[data-test="addToCartBtn"]',
         'button[data-test="orderPickupButton"]',
       ],
       holdMs: 400,
@@ -20,7 +24,6 @@ export function defaultTargetAutomationSteps(): AutomationStep[] {
     {
       type: "wait_for_cart_delta",
       minDelta: 1,
-      timeoutMs: 15_000,
     },
     {
       type: "navigate",
@@ -30,9 +33,9 @@ export function defaultTargetAutomationSteps(): AutomationStep[] {
 }
 
 export type PlaybackEngineCallbacks = {
-  click: (selectors: string[]) => Promise<boolean>;
+  click: (selectors: string[], optional?: boolean) => Promise<boolean>;
   keyboardEnterHold: (selectors: string[], holdMs: number) => Promise<boolean>;
-  waitForCartDelta: (minDelta: number, timeoutMs: number) => Promise<boolean>;
+  waitForCartDelta: (minDelta: number) => Promise<boolean>;
   navigate: (url: string) => void;
 };
 
@@ -43,7 +46,7 @@ export async function runPlaybackEngine(
   for (const step of steps) {
     switch (step.type) {
       case "click": {
-        const clicked = await callbacks.click(step.selectors);
+        const clicked = await callbacks.click(step.selectors, step.optional === true);
         if (!clicked) {
           return { ok: false, error: `Click failed: ${step.label}` };
         }
@@ -57,7 +60,7 @@ export async function runPlaybackEngine(
         break;
       }
       case "wait_for_cart_delta": {
-        const confirmed = await callbacks.waitForCartDelta(step.minDelta, step.timeoutMs);
+        const confirmed = await callbacks.waitForCartDelta(step.minDelta);
         if (!confirmed) {
           return { ok: false, error: "Cart did not update in time" };
         }

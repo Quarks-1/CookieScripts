@@ -1,6 +1,10 @@
 import { getChannelDomains, getChannelTarget } from "@ext/lib/channel-targets.ts";
+import {
+  getRetailerRefreshIntervalSec,
+  setRetailerAutoEnabled,
+  setRetailerRefreshInterval,
+} from "@ext/lib/retailer/channel-config.ts";
 import { allowlistIncludesRetailerHost } from "@ext/lib/retailer/host.ts";
-import { setRetailerAutoEnabled } from "@ext/lib/retailer/channel-config.ts";
 import { getRetailerProfiles, getSettings, saveSettings } from "@ext/lib/storage.ts";
 import { activeChannels } from "@ext/background/runtime-state.ts";
 import { parseChannelId } from "@ext/lib/channels.ts";
@@ -40,6 +44,10 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     activeChannelId !== null
       ? getChannelTarget(settings, activeChannelId)?.retailer_auto_enabled === true
       : false;
+  const retailerRefreshIntervalSec =
+    activeChannelId !== null
+      ? getRetailerRefreshIntervalSec(settings, activeChannelId)
+      : getRetailerRefreshIntervalSec(settings, "manual");
 
   return {
     enabled: settings.enabled,
@@ -50,6 +58,7 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     allowed_domains: allowedDomains,
     retailer_auto_enabled: retailerAutoEnabled && allowlistIncludesRetailerHost(allowedDomains),
     retailer_steps_recorded: profiles.target?.steps.length ?? 0,
+    retailer_refresh_interval_sec: retailerRefreshIntervalSec,
   };
 }
 
@@ -59,6 +68,16 @@ export async function setRetailerAutoEnabledForChannel(
 ): Promise<ExtensionSettings> {
   const settings = await getSettings();
   const next = setRetailerAutoEnabled(settings, channelId, enabled);
+  await saveSettings(next);
+  return next;
+}
+
+export async function setRetailerRefreshIntervalForChannel(
+  channelId: string,
+  intervalSec: number,
+): Promise<ExtensionSettings> {
+  const settings = await getSettings();
+  const next = setRetailerRefreshInterval(settings, channelId, intervalSec);
   await saveSettings(next);
   return next;
 }

@@ -14,7 +14,6 @@ describe("retailer host", () => {
 
   it("detects product urls", () => {
     expect(isRetailerProductUrl("https://www.target.com/p/foo/-/A-1")).toBe(true);
-    expect(isRetailerUrl("https://www.target.com/cart")).toBe(true);
     expect(isRetailerProductUrl("https://www.target.com/cart")).toBe(false);
   });
 

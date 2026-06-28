@@ -117,15 +117,24 @@ export default function App() {
             onDomainsChange={domainsEditor.handleDomainsChange}
           />
 
-          {retailerAuto.canShow && (
+          {status.enabled && (
             <RetailerAutoModeSection
               retailerAutoEnabled={retailerAuto.retailerAutoEnabled}
+              refreshIntervalSec={retailerAuto.refreshIntervalSec}
               stepsRecorded={retailerAuto.stepsRecorded}
+              showAutoToggle={retailerAuto.canShow}
+              showRecording={retailerAuto.canShow}
               disabled={retailerAuto.disabled || enabling}
+              refreshDisabled={retailerAuto.refreshDisabled || enabling}
               saving={retailerAuto.saving}
               saveError={retailerAuto.saveError}
+              savingRefresh={retailerAuto.savingRefresh}
+              refreshError={retailerAuto.refreshError}
               clearing={retailerAuto.clearing}
               onChange={(next) => void retailerAuto.handleChange(next)}
+              onRefreshIntervalChange={(intervalSec) =>
+                void retailerAuto.handleRefreshIntervalChange(intervalSec)
+              }
               onClearRecording={() => void retailerAuto.handleClearRecording()}
             />
           )}

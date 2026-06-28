@@ -31,6 +31,9 @@ function isRetailerContentMessage(message: RuntimeMessage): message is RetailerT
     message.type === "RETAILER_AUTO_STATUS" ||
     message.type === "RETAILER_RECORDING_SAVE" ||
     message.type === "RETAILER_RECORDING_GET" ||
+    message.type === "RETAILER_GET_AUTO_CONFIG" ||
+    message.type === "RETAILER_SET_REFRESH_INTERVAL" ||
+    message.type === "RETAILER_HARD_RELOAD" ||
     message.type === "RETAILER_PING"
   );
 }
@@ -44,6 +47,7 @@ function isUiMessage(message: RuntimeMessage): message is UiToBackground {
     message.type === "CLEAR_HISTORY" ||
     message.type === "GET_DETECTED_DOMAINS" ||
     message.type === "SET_RETAILER_AUTO_ENABLED" ||
+    message.type === "SET_RETAILER_REFRESH_INTERVAL" ||
     message.type === "CLEAR_RETAILER_PROFILE" ||
     message.type === "RETAILER_ARM_UI"
   );

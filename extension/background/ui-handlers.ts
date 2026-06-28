@@ -1,4 +1,5 @@
-import { buildStatus, setRetailerAutoEnabledForChannel } from "@ext/background/status.ts";
+import { buildStatus, setRetailerAutoEnabledForChannel, setRetailerRefreshIntervalForChannel } from "@ext/background/status.ts";
+import { broadcastRetailerStopAuto } from "@ext/background/retailer-runtime-state.ts";
 import {
   clearHistory,
   clearRetailerProfile,
@@ -36,6 +37,17 @@ export async function handleUiMessage(
     case "SET_RETAILER_AUTO_ENABLED": {
       try {
         await setRetailerAutoEnabledForChannel(message.channel_id, message.enabled);
+        if (!message.enabled) {
+          await broadcastRetailerStopAuto(message.channel_id);
+        }
+        return { ok: true };
+      } catch (error) {
+        return { ok: false, error: error instanceof Error ? error.message : "Save failed" };
+      }
+    }
+    case "SET_RETAILER_REFRESH_INTERVAL": {
+      try {
+        await setRetailerRefreshIntervalForChannel(message.channel_id, message.interval_sec);
         return { ok: true };
       } catch (error) {
         return { ok: false, error: error instanceof Error ? error.message : "Save failed" };

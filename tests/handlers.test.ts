@@ -2,6 +2,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { handleMessage } from "@ext/background/handlers.ts";
 import {
+  clearRetailerRuntimeState,
+  tryAcquireRetailerJob,
+  releaseRetailerJob,
+} from "@ext/background/retailer-runtime-state.ts";
+import {
   activeChannels,
   initRuntimeState,
   onTabRemoved,
@@ -61,6 +66,7 @@ describe("handleMessage", () => {
   beforeEach(async () => {
     vi.restoreAllMocks();
     setupChromeMocks();
+    clearRetailerRuntimeState();
     recentUrlKeys.clear();
     activeChannels.clear();
     await initRuntimeState();
@@ -191,6 +197,74 @@ describe("handleMessage", () => {
       99,
       expect.objectContaining({ type: "RETAILER_START_AUTO", channel_id: "222" }),
     );
+  });
+
+  it("opens a passive tab when retailer auto mode job is already in progress", async () => {
+    const settings = {
+      enabled: true,
+      channel_targets: [
+        buildChannelTarget({
+          channel_id: "222",
+          allowed_domains: ["target.com"],
+          retailer_auto_enabled: true,
+        }),
+      ],
+    };
+    const storage = {
+      "cookiescripts:settings": settings,
+      "cookiescripts:history": [],
+      "cookiescripts:recentUrls": [],
+    };
+    vi.mocked(chrome.storage.local.get).mockImplementation(async (keys) => {
+      const keyList = Array.isArray(keys) ? keys : [keys];
+      const result: Record<string, unknown> = {};
+      for (const key of keyList) {
+        if (storage[key as keyof typeof storage] !== undefined) {
+          result[key] = storage[key as keyof typeof storage];
+        }
+      }
+      return result;
+    });
+    vi.mocked(chrome.storage.local.set).mockImplementation(async (items) => {
+      Object.assign(storage, items);
+    });
+
+    tryAcquireRetailerJob("222");
+
+    const sender = mockContentSender({
+      extensionId: EXTENSION_ID,
+      tabUrl: "https://discord.com/channels/111/222",
+    });
+
+    const response = await handleMessage(
+      {
+        type: "CANDIDATE_LINKS",
+        channel_id: "222",
+        urls: ["https://www.target.com/p/foo/-/A-123"],
+        author: "alice",
+      },
+      sender,
+    );
+
+    expect(response).toMatchObject({
+      ok: true,
+      opened: ["https://www.target.com/p/foo/-/A-123"],
+    });
+    expect(chrome.tabs.create).toHaveBeenCalledTimes(1);
+    expect(chrome.tabs.create).toHaveBeenCalledWith({
+      url: "https://www.target.com/p/foo/-/A-123",
+      active: false,
+    });
+    expect(chrome.windows.create).not.toHaveBeenCalled();
+    expect(storage["cookiescripts:history"]).toEqual([
+      expect.objectContaining({
+        kind: "retailer_auto_queued",
+        url: "https://www.target.com/p/foo/-/A-123",
+        channel_id: "222",
+        error: "Auto mode skipped — job in progress",
+      }),
+    ]);
+    releaseRetailerJob("222");
   });
 
   it("does not open links when channel has no allowlist", async () => {

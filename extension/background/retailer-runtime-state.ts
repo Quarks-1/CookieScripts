@@ -54,6 +54,19 @@ export function onRetailerWindowRemoved(windowId: number): void {
   windowTabMap.delete(windowId);
 }
 
+export async function broadcastRetailerStopAuto(channelId?: string): Promise<void> {
+  for (const [tabId, boundChannel] of tabChannelMap.entries()) {
+    if (channelId && boundChannel !== channelId) {
+      continue;
+    }
+    try {
+      await chrome.tabs.sendMessage(tabId, { type: "RETAILER_STOP_AUTO" });
+    } catch {
+      // Tab may have navigated away or closed.
+    }
+  }
+}
+
 export function clearRetailerRuntimeState(): void {
   activeJobs.clear();
   tabChannelMap.clear();

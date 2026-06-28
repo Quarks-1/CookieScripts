@@ -1,6 +1,10 @@
 import { STORAGE_KEYS } from "@ext/lib/constants.ts";
 import { getChannelTarget } from "@ext/lib/channel-targets.ts";
-import { setRetailerAutoEnabled } from "@ext/lib/retailer/channel-config.ts";
+import {
+  getRetailerRefreshIntervalSec,
+  setRetailerAutoEnabled,
+  setRetailerRefreshInterval,
+} from "@ext/lib/retailer/channel-config.ts";
 import { validatePersistedTargets } from "@ext/lib/validate.ts";
 import type {
   BackgroundResponse,
@@ -87,8 +91,11 @@ function buildStatus(): ExtensionStatus {
       allowed_domains: [],
       retailer_auto_enabled: false,
       retailer_steps_recorded: 0,
+      retailer_refresh_interval_sec: 0,
     };
   }
+
+  const refreshIntervalSec = getRetailerRefreshIntervalSec(settings, SAMPLE_CHANNEL_ID);
 
   switch (popupScenario) {
     case "no_discord":
@@ -101,6 +108,7 @@ function buildStatus(): ExtensionStatus {
         allowed_domains: [],
         retailer_auto_enabled: false,
         retailer_steps_recorded: 0,
+        retailer_refresh_interval_sec: 0,
       };
     case "active_no_domains":
       return {
@@ -112,6 +120,7 @@ function buildStatus(): ExtensionStatus {
         allowed_domains: [],
         retailer_auto_enabled: false,
         retailer_steps_recorded: 0,
+        retailer_refresh_interval_sec: 0,
       };
     case "retailer_auto":
     case "watching":
@@ -125,6 +134,7 @@ function buildStatus(): ExtensionStatus {
         allowed_domains: allowedDomains,
         retailer_auto_enabled: retailerAutoEnabled,
         retailer_steps_recorded: retailerStepsRecorded,
+        retailer_refresh_interval_sec: refreshIntervalSec,
       };
   }
 }
@@ -151,6 +161,17 @@ export function handleUiMessage(message: UiToBackground): BackgroundResponse {
     }
     case "SET_RETAILER_AUTO_ENABLED": {
       settings = setRetailerAutoEnabled(settings, message.channel_id, message.enabled);
+      notifyStorage({
+        [STORAGE_KEYS.settings]: { oldValue: undefined, newValue: settings },
+      });
+      return { ok: true };
+    }
+    case "SET_RETAILER_REFRESH_INTERVAL": {
+      settings = setRetailerRefreshInterval(
+        settings,
+        message.channel_id,
+        message.interval_sec,
+      );
       notifyStorage({
         [STORAGE_KEYS.settings]: { oldValue: undefined, newValue: settings },
       });

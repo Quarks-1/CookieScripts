@@ -10,29 +10,34 @@ export function useRetailerAutoMode(
   domains: string[],
 ) {
   const [retailerAutoEnabled, setRetailerAutoEnabled] = useState(false);
+  const [refreshIntervalSec, setRefreshIntervalSec] = useState(0);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [savingRefresh, setSavingRefresh] = useState(false);
+  const [refreshError, setRefreshError] = useState<string | null>(null);
   const [stepsRecorded, setStepsRecorded] = useState(0);
   const [clearing, setClearing] = useState(false);
 
   const canShow = allowlistIncludesRetailerHost(domains);
+  const settingsChannelId = channelId ?? "manual";
 
   const refresh = useCallback(async () => {
-    if (!canShow) {
-      setRetailerAutoEnabled(false);
-      setStepsRecorded(0);
-      return;
-    }
     const response = await sendToBackground<BackgroundResponse>({ type: "GET_STATUS" });
     if ("status" in response && response.ok) {
-      setRetailerAutoEnabled(response.status.retailer_auto_enabled);
-      setStepsRecorded(response.status.retailer_steps_recorded);
+      setRefreshIntervalSec(response.status.retailer_refresh_interval_sec);
+      if (canShow) {
+        setRetailerAutoEnabled(response.status.retailer_auto_enabled);
+        setStepsRecorded(response.status.retailer_steps_recorded);
+      } else {
+        setRetailerAutoEnabled(false);
+        setStepsRecorded(0);
+      }
     }
   }, [canShow]);
 
   useEffect(() => {
     void refresh();
-  }, [channelId, domains, refresh]);
+  }, [channelId, domains, enabled, refresh]);
 
   const handleChange = useCallback(
     async (next: boolean) => {
@@ -62,6 +67,35 @@ export function useRetailerAutoMode(
     [channelId, enabled, canShow, refresh],
   );
 
+  const handleRefreshIntervalChange = useCallback(
+    async (intervalSec: number) => {
+      if (!enabled) {
+        return;
+      }
+      const normalized = Number.isFinite(intervalSec) ? Math.max(0, Math.floor(intervalSec)) : 0;
+      setSavingRefresh(true);
+      setRefreshError(null);
+      setRefreshIntervalSec(normalized);
+      try {
+        const response = await sendToBackground<BackgroundResponse>({
+          type: "SET_RETAILER_REFRESH_INTERVAL",
+          channel_id: settingsChannelId,
+          interval_sec: normalized,
+        });
+        if ("ok" in response && response.ok === false) {
+          throw new Error(response.error);
+        }
+        await refresh();
+      } catch (err) {
+        setRefreshError(err instanceof Error ? err.message : "Save failed");
+        await refresh();
+      } finally {
+        setSavingRefresh(false);
+      }
+    },
+    [enabled, settingsChannelId, refresh],
+  );
+
   const handleClearRecording = useCallback(async () => {
     setClearing(true);
     try {
@@ -75,12 +109,17 @@ export function useRetailerAutoMode(
   return {
     canShow,
     retailerAutoEnabled,
+    refreshIntervalSec,
     stepsRecorded,
     saving,
     saveError,
+    savingRefresh,
+    refreshError,
     clearing,
     disabled: !enabled || channelId === null || !canShow,
+    refreshDisabled: !enabled,
     handleChange,
+    handleRefreshIntervalChange,
     handleClearRecording,
   };
 }
