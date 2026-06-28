@@ -6,7 +6,7 @@ import {
   setRetailerRefreshInterval,
 } from "@ext/lib/retailer/channel-config.ts";
 import { allowlistIncludesRetailerHost, isRetailerUrl } from "@ext/lib/retailer/host.ts";
-import { getRetailerProfiles, getSettings, saveSettings } from "@ext/lib/storage.ts";
+import { getSettings, saveSettings } from "@ext/lib/storage.ts";
 import { activeChannels } from "@ext/background/runtime-state.ts";
 import { getRetailerTabUiState } from "@ext/background/retailer-runtime-state.ts";
 import { parseChannelId } from "@ext/lib/channels.ts";
@@ -14,7 +14,6 @@ import type { ExtensionSettings, ExtensionStatus } from "@ext/types/index.ts";
 
 export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<ExtensionStatus> {
   const settings = await getSettings();
-  const profiles = await getRetailerProfiles();
 
   let activeChannelId: string | null = null;
   let discordTabDetected = false;
@@ -55,7 +54,7 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
   const tabUi =
     activeTab?.id != null && retailerTabDetected
       ? getRetailerTabUiState(activeTab.id)
-      : { status: "", running: false, recording: false };
+      : { status: "", running: false };
 
   return {
     enabled: settings.enabled,
@@ -66,11 +65,9 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     has_allowed_domains: allowedDomains.length > 0,
     allowed_domains: allowedDomains,
     retailer_auto_enabled: retailerAutoEnabled && allowlistIncludesRetailerHost(allowedDomains),
-    retailer_steps_recorded: profiles.target?.steps.length ?? 0,
     retailer_refresh_interval_sec: retailerRefreshIntervalSec,
     retailer_manual_status: tabUi.status,
     retailer_manual_running: tabUi.running,
-    retailer_recording: tabUi.recording,
   };
 }
 

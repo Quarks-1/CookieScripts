@@ -46,7 +46,6 @@ let settings: ExtensionSettings = {
   ],
 };
 
-let retailerStepsRecorded = 0;
 let history: HistoryItem[] = [...SAMPLE_HISTORY];
 let popupScenario: PopupScenario = "watching";
 
@@ -92,11 +91,9 @@ function buildStatus(): ExtensionStatus {
       has_allowed_domains: false,
       allowed_domains: [],
       retailer_auto_enabled: false,
-      retailer_steps_recorded: 0,
       retailer_refresh_interval_sec: 0,
       retailer_manual_status: "",
       retailer_manual_running: false,
-      retailer_recording: false,
     };
   }
 
@@ -104,7 +101,6 @@ function buildStatus(): ExtensionStatus {
   const manualUi = {
     retailer_manual_status: retailerTabDetected ? "Ready — press Start Auto Mode" : "",
     retailer_manual_running: false,
-    retailer_recording: false,
   };
 
   switch (popupScenario) {
@@ -118,7 +114,6 @@ function buildStatus(): ExtensionStatus {
         has_allowed_domains: false,
         allowed_domains: [],
         retailer_auto_enabled: false,
-        retailer_steps_recorded: 0,
         retailer_refresh_interval_sec: 0,
         ...manualUi,
       };
@@ -132,7 +127,6 @@ function buildStatus(): ExtensionStatus {
         has_allowed_domains: false,
         allowed_domains: [],
         retailer_auto_enabled: false,
-        retailer_steps_recorded: 0,
         retailer_refresh_interval_sec: 0,
         ...manualUi,
       };
@@ -148,7 +142,6 @@ function buildStatus(): ExtensionStatus {
         has_allowed_domains: allowedDomains.length > 0,
         allowed_domains: allowedDomains,
         retailer_auto_enabled: retailerAutoEnabled,
-        retailer_steps_recorded: retailerStepsRecorded,
         retailer_refresh_interval_sec: refreshIntervalSec,
         ...manualUi,
       };
@@ -193,10 +186,6 @@ export function handleUiMessage(message: UiToBackground): BackgroundResponse {
       });
       return { ok: true };
     }
-    case "CLEAR_RETAILER_PROFILE": {
-      retailerStepsRecorded = 0;
-      return { ok: true };
-    }
     case "GET_HISTORY":
       return { ok: true, history: structuredClone(history) };
     case "CLEAR_HISTORY": {
@@ -210,8 +199,6 @@ export function handleUiMessage(message: UiToBackground): BackgroundResponse {
       return { ok: true, domains: ["target.com", "bestbuy.com"] };
     case "RETAILER_START_MANUAL_AUTO":
     case "RETAILER_STOP_MANUAL_AUTO":
-    case "RETAILER_TOGGLE_RECORDING":
-    case "RETAILER_SAVE_RECORDING":
       return { ok: true };
   }
 }
@@ -240,7 +227,6 @@ export function resetMockStore() {
       },
     ],
   };
-  retailerStepsRecorded = 0;
   history = [...SAMPLE_HISTORY];
   popupScenario = "watching";
   notifyStorage({

@@ -1,6 +1,4 @@
-import type { RetailerProfile } from "./retailer.ts";
-
-export type { AutomationStep, ElementDescriptor, RetailerProfile } from "./retailer.ts";
+export type { AutomationStep } from "./retailer.ts";
 
 export interface ChannelTarget {
   channel_id: string;
@@ -44,12 +42,10 @@ export interface ExtensionStatus {
   has_allowed_domains: boolean;
   allowed_domains: string[];
   retailer_auto_enabled: boolean;
-  retailer_steps_recorded: number;
   retailer_refresh_interval_sec: number;
   /** Live status from the active Target tab's automation session. */
   retailer_manual_status: string;
   retailer_manual_running: boolean;
-  retailer_recording: boolean;
 }
 
 export type ContentToBackground =
@@ -67,8 +63,6 @@ export type RetailerToBackground =
       url: string;
       error?: string;
     }
-  | { type: "RETAILER_RECORDING_SAVE"; profile: RetailerProfile }
-  | { type: "RETAILER_RECORDING_GET" }
   | { type: "RETAILER_GET_AUTO_CONFIG"; channel_id: string }
   | { type: "RETAILER_SET_REFRESH_INTERVAL"; channel_id: string; interval_sec: number }
   | { type: "RETAILER_HARD_RELOAD" }
@@ -77,7 +71,6 @@ export type RetailerToBackground =
       type: "RETAILER_UI_STATE";
       status: string;
       running: boolean;
-      recording: boolean;
     };
 
 export type BackgroundToContent =
@@ -92,9 +85,7 @@ export type BackgroundToContent =
       source: "discord" | "manual";
     }
   | { type: "RETAILER_STOP_AUTO" }
-  | { type: "RETAILER_START_MANUAL_AUTO" }
-  | { type: "RETAILER_TOGGLE_RECORDING" }
-  | { type: "RETAILER_SAVE_RECORDING" };
+  | { type: "RETAILER_START_MANUAL_AUTO" };
 
 export type UiToBackground =
   | { type: "GET_STATUS" }
@@ -105,11 +96,8 @@ export type UiToBackground =
   | { type: "GET_DETECTED_DOMAINS" }
   | { type: "SET_RETAILER_AUTO_ENABLED"; channel_id: string; enabled: boolean }
   | { type: "SET_RETAILER_REFRESH_INTERVAL"; channel_id: string; interval_sec: number }
-  | { type: "CLEAR_RETAILER_PROFILE" }
   | { type: "RETAILER_START_MANUAL_AUTO" }
-  | { type: "RETAILER_STOP_MANUAL_AUTO" }
-  | { type: "RETAILER_TOGGLE_RECORDING" }
-  | { type: "RETAILER_SAVE_RECORDING" };
+  | { type: "RETAILER_STOP_MANUAL_AUTO" };
 
 export type RuntimeMessage =
   | ContentToBackground
@@ -129,7 +117,6 @@ export type BackgroundResponse =
   | { ok: true; history: HistoryItem[] }
   | { ok: true; opened: string[]; duplicates: string[] }
   | { ok: true; domains: string[] }
-  | { ok: true; profile: RetailerProfile | null }
   | { ok: true; refresh_interval_sec: number }
   | { ok: true }
   | { ok: false; error: string }

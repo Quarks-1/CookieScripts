@@ -29,8 +29,6 @@ function isDiscordContentMessage(
 function isRetailerContentMessage(message: RuntimeMessage): message is RetailerToBackground {
   return (
     message.type === "RETAILER_AUTO_STATUS" ||
-    message.type === "RETAILER_RECORDING_SAVE" ||
-    message.type === "RETAILER_RECORDING_GET" ||
     message.type === "RETAILER_GET_AUTO_CONFIG" ||
     message.type === "RETAILER_SET_REFRESH_INTERVAL" ||
     message.type === "RETAILER_HARD_RELOAD" ||
@@ -49,11 +47,8 @@ function isUiMessage(message: RuntimeMessage): message is UiToBackground {
     message.type === "GET_DETECTED_DOMAINS" ||
     message.type === "SET_RETAILER_AUTO_ENABLED" ||
     message.type === "SET_RETAILER_REFRESH_INTERVAL" ||
-    message.type === "CLEAR_RETAILER_PROFILE" ||
     message.type === "RETAILER_START_MANUAL_AUTO" ||
-    message.type === "RETAILER_STOP_MANUAL_AUTO" ||
-    message.type === "RETAILER_TOGGLE_RECORDING" ||
-    message.type === "RETAILER_SAVE_RECORDING"
+    message.type === "RETAILER_STOP_MANUAL_AUTO"
   );
 }
 

@@ -49,7 +49,7 @@ flowchart LR
 | Detected-domain scan | `extension/content/detected-domains.ts` | Page-load link suggestions for popup |
 | Background router | `extension/background/handlers.ts` | Routes runtime messages to handler modules |
 | Discord / link handlers | `extension/background/discord-handlers.ts`, `open-product-link.ts` | Channel watch, candidate links, tab/window opening |
-| Retailer handlers | `extension/background/retailer-handlers.ts`, `retailer-runtime-state.ts` | Target auto queue, recording, tab-ready |
+| Retailer handlers | `extension/background/retailer-handlers.ts`, `retailer-runtime-state.ts` | Target auto queue, tab-ready |
 | Popup / status handlers | `extension/background/ui-handlers.ts`, `status.ts` | Settings, history, `buildStatus` for popup |
 | Pure logic | `extension/lib/*` | Testable; minimize `chrome.*` in lib modules |
 | Popup UI | `ui/popup/` + `ui/sidepanel/` | Same React app; side panel is the primary UI (toolbar icon) |
@@ -66,15 +66,14 @@ flowchart LR
 | `cookiescripts:recentUrls` | Normalized dedup keys, cap 500 |
 | `cookiescripts:updateCheck` | GitHub release ETag cache |
 | `cookiescripts:ignoredDomains` | Per-channel dismissed detected-link suggestions |
-| `cookiescripts:retailerProfiles` | Recorded Target automation steps (global, versioned) |
 
 ## Runtime messages
 
-Defined in `extension/types/index.ts`. Content → background: `CHANNEL_ACTIVE`, `CHANNEL_INACTIVE`, `CANDIDATE_LINKS`, `ADD_ALLOWED_DOMAIN`, `IGNORE_DOMAIN`. Retailer content → background: `RETAILER_PING`, `RETAILER_AUTO_STATUS`, `RETAILER_RECORDING_*`. Background → retailer content: `RETAILER_START_AUTO`, `RETAILER_START_MANUAL_AUTO`, `RETAILER_STOP_AUTO`, `RETAILER_TOGGLE_RECORDING`, `RETAILER_SAVE_RECORDING`. Popup ↔ background: `GET_STATUS`, `GET_SETTINGS`, `SAVE_SETTINGS`, `GET_HISTORY`, `CLEAR_HISTORY`, `GET_DETECTED_DOMAINS`, `SET_RETAILER_AUTO_ENABLED`, `SET_RETAILER_REFRESH_INTERVAL`, `RETAILER_START_MANUAL_AUTO`, `RETAILER_STOP_MANUAL_AUTO`, `RETAILER_TOGGLE_RECORDING`, `RETAILER_SAVE_RECORDING`, `CLEAR_RETAILER_PROFILE`. **Content script never opens tabs** — delegate to the service worker.
+Defined in `extension/types/index.ts`. Content → background: `CHANNEL_ACTIVE`, `CHANNEL_INACTIVE`, `CANDIDATE_LINKS`, `ADD_ALLOWED_DOMAIN`, `IGNORE_DOMAIN`. Retailer content → background: `RETAILER_PING`, `RETAILER_AUTO_STATUS`, `RETAILER_GET_AUTO_CONFIG`, `RETAILER_SET_REFRESH_INTERVAL`, `RETAILER_HARD_RELOAD`, `RETAILER_UI_STATE`. Background → retailer content: `RETAILER_START_AUTO`, `RETAILER_START_MANUAL_AUTO`, `RETAILER_STOP_AUTO`. Popup ↔ background: `GET_STATUS`, `GET_SETTINGS`, `SAVE_SETTINGS`, `GET_HISTORY`, `CLEAR_HISTORY`, `GET_DETECTED_DOMAINS`, `SET_RETAILER_AUTO_ENABLED`, `SET_RETAILER_REFRESH_INTERVAL`, `RETAILER_START_MANUAL_AUTO`, `RETAILER_STOP_MANUAL_AUTO`. **Content script never opens tabs** — delegate to the service worker.
 
 ## Target Auto Mode (retailer)
 
-Per-channel `retailer_auto_enabled` on `ChannelTarget` (visible when `target.com` is allowlisted). When enabled, Target product links open in a **new Chrome window** (`chrome.windows.create`); content script on `target.com` runs add-to-cart automation and navigates to `/checkout/start`. Manual panel on Target pages supports **Start Auto Mode** and **Record** for selector capture. After manifest or service-worker changes, reload the extension and refresh Discord **and** Target tabs.
+Per-channel `retailer_auto_enabled` on `ChannelTarget` (visible when `target.com` is allowlisted). When enabled, Target product links open in a **new Chrome window** (`chrome.windows.create`); content script on `target.com` runs add-to-cart automation (built-in selectors in `extension/lib/retailer/selectors.ts`) and navigates to `/checkout/start`. Side panel on Target tabs supports **Start Auto Mode** / **Stop Auto Mode** and hard-refresh interval. After manifest or service-worker changes, reload the extension and refresh Discord **and** Target tabs.
 
 ## Critical invariants / footguns
 

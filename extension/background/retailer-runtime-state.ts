@@ -12,7 +12,6 @@ const windowTabMap = new Map<number, number>();
 export type RetailerTabUiState = {
   status: string;
   running: boolean;
-  recording: boolean;
 };
 
 const tabUiState = new Map<number, RetailerTabUiState>();
@@ -20,7 +19,6 @@ const tabUiState = new Map<number, RetailerTabUiState>();
 const DEFAULT_TAB_UI_STATE: RetailerTabUiState = {
   status: "Ready — open a product page and press Start",
   running: false,
-  recording: false,
 };
 
 export function tryAcquireRetailerJob(channelId: string): boolean {

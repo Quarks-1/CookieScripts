@@ -121,19 +121,15 @@ export default function App() {
             <RetailerAutoModeSection
               retailerAutoEnabled={retailerAuto.retailerAutoEnabled}
               refreshIntervalSec={retailerAuto.refreshIntervalSec}
-              stepsRecorded={retailerAuto.stepsRecorded}
               manualStatus={retailerAuto.manualStatus}
               manualRunning={retailerAuto.manualRunning}
-              recording={retailerAuto.recording}
               showDiscordAutoToggle={retailerAuto.canShowDiscordAuto}
-              showRecording
               disabled={retailerAuto.disabled || enabling}
               refreshDisabled={retailerAuto.refreshDisabled || enabling}
               saving={retailerAuto.saving}
               saveError={retailerAuto.saveError}
               savingRefresh={retailerAuto.savingRefresh}
               refreshError={retailerAuto.refreshError}
-              clearing={retailerAuto.clearing}
               acting={retailerAuto.acting}
               actionError={retailerAuto.actionError}
               onChange={(next) => void retailerAuto.handleChange(next)}
@@ -142,9 +138,6 @@ export default function App() {
               }
               onStartManual={() => void retailerAuto.handleStartManual()}
               onStopManual={() => void retailerAuto.handleStopManual()}
-              onToggleRecording={() => void retailerAuto.handleToggleRecording()}
-              onSaveRecording={() => void retailerAuto.handleSaveRecording()}
-              onClearRecording={() => void retailerAuto.handleClearRecording()}
             />
           )}
 

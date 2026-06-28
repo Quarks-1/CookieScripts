@@ -1,8 +1,3 @@
-import type { GeneratedDescriptor } from "@ext/lib/retailer/element-descriptor.ts";
-import {
-  descriptorToProfile,
-  startRecording,
-} from "@ext/content/retailer/automation/record.ts";
 import { runAutomationPlayback } from "@ext/content/retailer/automation/playback.ts";
 import { waitForMainAddToCartButton } from "@ext/lib/retailer/main-add-to-cart.ts";
 import {
@@ -16,7 +11,7 @@ import {
   startRetailerAutoResume,
 } from "@ext/lib/retailer/auto-resume.ts";
 import { isRetailerProductUrl } from "@ext/lib/retailer/host.ts";
-import { resolveAutomationSteps } from "@ext/lib/retailer/resolve-steps.ts";
+import { defaultTargetAutomationSteps } from "@ext/lib/retailer/playback-engine.ts";
 import { DEFAULT_ADD_TO_CART_SELECTORS } from "@ext/lib/retailer/selectors.ts";
 import { sleep } from "@ext/lib/sleep.ts";
 import { STORAGE_KEYS } from "@ext/lib/constants.ts";
@@ -45,9 +40,6 @@ const session: Session = {
 
 let syncChain: Promise<void> = Promise.resolve();
 let sessionEnded = false;
-let stopRecording: (() => void) | null = null;
-let recordingActive = false;
-const recordedDescriptors: GeneratedDescriptor[] = [];
 let bootstrapTimer: ReturnType<typeof setTimeout> | null = null;
 let bootstrapActive = false;
 let stopAutoRequested = false;
@@ -90,7 +82,6 @@ function publishUiState(status: string, running?: boolean): void {
     type: "RETAILER_UI_STATE",
     status,
     running: running ?? session.running,
-    recording: recordingActive,
   }).catch((err) => {
     if (isExtensionContextInvalidatedError(err)) {
       endSession();
@@ -123,9 +114,6 @@ function endSession(): void {
     return;
   }
   sessionEnded = true;
-  stopRecording?.();
-  stopRecording = null;
-  recordingActive = false;
   session.channelId = null;
   session.url = null;
   session.running = false;
@@ -133,17 +121,6 @@ function endSession(): void {
 
 function sendToBackground(message: RetailerToBackground): Promise<unknown> {
   return chrome.runtime.sendMessage(message);
-}
-
-async function loadProfile(): Promise<import("@ext/types/retailer.ts").RetailerProfile | null> {
-  const response = (await sendToBackground({ type: "RETAILER_RECORDING_GET" })) as {
-    ok?: boolean;
-    profile?: import("@ext/types/retailer.ts").RetailerProfile | null;
-  };
-  if (response?.ok === true && response.profile) {
-    return response.profile;
-  }
-  return null;
 }
 
 async function reportAutoStatus(
@@ -236,8 +213,7 @@ async function runAutoMode(): Promise<void> {
     cachedRefreshIntervalSec = (await loadAutoConfig(session.channelId)).refreshIntervalSec;
     const getRefreshIntervalSec = () => cachedRefreshIntervalSec;
 
-    const profile = await loadProfile();
-    const steps = resolveAutomationSteps(profile);
+    const steps = defaultTargetAutomationSteps();
     const readySelectors =
       steps.find((step) => step.type === "keyboard_enter_hold")?.selectors ??
       DEFAULT_ADD_TO_CART_SELECTORS;
@@ -311,30 +287,6 @@ async function runAutoMode(): Promise<void> {
       );
     }
   }
-}
-
-function toggleRecording(): void {
-  if (stopRecording) {
-    stopRecording();
-    stopRecording = null;
-    recordingActive = false;
-    publishUiState("Record stopped");
-    return;
-  }
-  stopRecording = startRecording((descriptor) => {
-    recordedDescriptors.push(descriptor);
-    publishUiState(`Recording… captured ${recordedDescriptors.length} step(s)`);
-  });
-  recordingActive = true;
-  publishUiState("Recording… click elements on the page");
-}
-
-async function saveRecording(): Promise<void> {
-  await sendToBackground({
-    type: "RETAILER_RECORDING_SAVE",
-    profile: descriptorToProfile(recordedDescriptors),
-  });
-  publishUiState("Recording saved");
 }
 
 function scheduleAutoModeRun(): void {
@@ -430,12 +382,6 @@ export function startRetailerSession(): void {
       case "RETAILER_STOP_AUTO":
         requestStopAutoMode();
         publishUiState("Stopped", false);
-        return { ok: true };
-      case "RETAILER_TOGGLE_RECORDING":
-        toggleRecording();
-        return { ok: true };
-      case "RETAILER_SAVE_RECORDING":
-        void saveRecording();
         return { ok: true };
       default:
         return undefined;

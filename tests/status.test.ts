@@ -5,7 +5,6 @@ import { activeChannels } from "@ext/background/runtime-state.ts";
 
 vi.mock("@ext/lib/storage.ts", () => ({
   getSettings: vi.fn().mockResolvedValue({ enabled: true, channel_targets: [] }),
-  getRetailerProfiles: vi.fn().mockResolvedValue({ target: null }),
 }));
 
 describe("buildStatus", () => {

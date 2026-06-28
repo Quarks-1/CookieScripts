@@ -14,13 +14,10 @@ export function useRetailerAutoMode(
   const [refreshIntervalSec, setRefreshIntervalSec] = useState(0);
   const [manualStatus, setManualStatus] = useState("");
   const [manualRunning, setManualRunning] = useState(false);
-  const [recording, setRecording] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [savingRefresh, setSavingRefresh] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
-  const [stepsRecorded, setStepsRecorded] = useState(0);
-  const [clearing, setClearing] = useState(false);
   const [acting, setActing] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -33,13 +30,10 @@ export function useRetailerAutoMode(
       setRefreshIntervalSec(response.status.retailer_refresh_interval_sec);
       setManualStatus(response.status.retailer_manual_status);
       setManualRunning(response.status.retailer_manual_running);
-      setRecording(response.status.retailer_recording);
       if (canShowDiscordAuto) {
         setRetailerAutoEnabled(response.status.retailer_auto_enabled);
-        setStepsRecorded(response.status.retailer_steps_recorded);
       } else {
         setRetailerAutoEnabled(false);
-        setStepsRecorded(response.status.retailer_steps_recorded);
       }
     }
   }, [canShowDiscordAuto]);
@@ -116,7 +110,7 @@ export function useRetailerAutoMode(
   );
 
   const runTabAction = useCallback(
-    async (type: "RETAILER_START_MANUAL_AUTO" | "RETAILER_STOP_MANUAL_AUTO" | "RETAILER_TOGGLE_RECORDING" | "RETAILER_SAVE_RECORDING") => {
+    async (type: "RETAILER_START_MANUAL_AUTO" | "RETAILER_STOP_MANUAL_AUTO") => {
       setActing(true);
       setActionError(null);
       try {
@@ -134,29 +128,16 @@ export function useRetailerAutoMode(
     [refresh],
   );
 
-  const handleClearRecording = useCallback(async () => {
-    setClearing(true);
-    try {
-      await sendToBackground<BackgroundResponse>({ type: "CLEAR_RETAILER_PROFILE" });
-      await refresh();
-    } finally {
-      setClearing(false);
-    }
-  }, [refresh]);
-
   return {
     canShowDiscordAuto,
     retailerAutoEnabled,
     refreshIntervalSec,
     manualStatus,
     manualRunning,
-    recording,
-    stepsRecorded,
     saving,
     saveError,
     savingRefresh,
     refreshError,
-    clearing,
     acting,
     actionError,
     disabled: !enabled || channelId === null || !canShowDiscordAuto,
@@ -165,8 +146,5 @@ export function useRetailerAutoMode(
     handleRefreshIntervalChange,
     handleStartManual: () => runTabAction("RETAILER_START_MANUAL_AUTO"),
     handleStopManual: () => runTabAction("RETAILER_STOP_MANUAL_AUTO"),
-    handleToggleRecording: () => runTabAction("RETAILER_TOGGLE_RECORDING"),
-    handleSaveRecording: () => runTabAction("RETAILER_SAVE_RECORDING"),
-    handleClearRecording,
   };
 }

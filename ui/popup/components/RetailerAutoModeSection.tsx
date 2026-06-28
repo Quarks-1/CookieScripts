@@ -3,55 +3,41 @@ import { EnableSlider } from "@shared/components/EnableSlider.tsx";
 interface RetailerAutoModeSectionProps {
   retailerAutoEnabled: boolean;
   refreshIntervalSec: number;
-  stepsRecorded: number;
   manualStatus: string;
   manualRunning: boolean;
-  recording: boolean;
   showDiscordAutoToggle: boolean;
-  showRecording: boolean;
   disabled: boolean;
   refreshDisabled: boolean;
   saving: boolean;
   saveError: string | null;
   savingRefresh: boolean;
   refreshError: string | null;
-  clearing: boolean;
   acting: boolean;
   actionError: string | null;
   onChange: (enabled: boolean) => void;
   onRefreshIntervalChange: (intervalSec: number) => void;
   onStartManual: () => void;
   onStopManual: () => void;
-  onToggleRecording: () => void;
-  onSaveRecording: () => void;
-  onClearRecording: () => void;
 }
 
 export function RetailerAutoModeSection({
   retailerAutoEnabled,
   refreshIntervalSec,
-  stepsRecorded,
   manualStatus,
   manualRunning,
-  recording,
   showDiscordAutoToggle,
-  showRecording,
   disabled,
   refreshDisabled,
   saving,
   saveError,
   savingRefresh,
   refreshError,
-  clearing,
   acting,
   actionError,
   onChange,
   onRefreshIntervalChange,
   onStartManual,
   onStopManual,
-  onToggleRecording,
-  onSaveRecording,
-  onClearRecording,
 }: RetailerAutoModeSectionProps) {
   const controlsDisabled = acting || savingRefresh;
 
@@ -119,40 +105,6 @@ export function RetailerAutoModeSection({
           While the main Add to cart button is disabled, hard-refresh the page on this interval until
           it becomes available.
         </p>
-
-        {showRecording && (
-          <div className="mt-3 space-y-2">
-            <div className="flex gap-2">
-              <button
-                type="button"
-                disabled={controlsDisabled}
-                onClick={onToggleRecording}
-                className="flex-1 rounded border border-zinc-700 px-2 py-1 text-xs text-zinc-300 disabled:opacity-50"
-              >
-                {recording ? "Stop Record" : "Record"}
-              </button>
-              <button
-                type="button"
-                disabled={controlsDisabled}
-                onClick={onSaveRecording}
-                className="flex-1 rounded border border-zinc-700 px-2 py-1 text-xs text-zinc-300 disabled:opacity-50"
-              >
-                Save Recording
-              </button>
-            </div>
-            <div className="flex items-center justify-between gap-2 text-xs text-zinc-500">
-              <span>{stepsRecorded} step(s) recorded</span>
-              <button
-                type="button"
-                disabled={clearing || stepsRecorded === 0}
-                onClick={onClearRecording}
-                className="rounded border border-zinc-700 px-2 py-0.5 disabled:opacity-50"
-              >
-                {clearing ? "Clearing…" : "Clear"}
-              </button>
-            </div>
-          </div>
-        )}
 
         {saving && <p className="mt-1 text-xs text-zinc-500">Saving…</p>}
         {savingRefresh && <p className="mt-1 text-xs text-zinc-500">Saving refresh interval…</p>}

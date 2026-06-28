@@ -3,7 +3,6 @@ import { sendToActiveRetailerTab } from "@ext/background/retailer-tab-message.ts
 import { broadcastRetailerStopAuto } from "@ext/background/retailer-runtime-state.ts";
 import {
   clearHistory,
-  clearRetailerProfile,
   getHistory,
   getSettings,
   saveSettings,
@@ -54,10 +53,6 @@ export async function handleUiMessage(
         return { ok: false, error: error instanceof Error ? error.message : "Save failed" };
       }
     }
-    case "CLEAR_RETAILER_PROFILE": {
-      await clearRetailerProfile();
-      return { ok: true };
-    }
     case "GET_HISTORY": {
       const history = await getHistory();
       return { ok: true, history };
@@ -94,9 +89,5 @@ export async function handleUiMessage(
       );
     case "RETAILER_STOP_MANUAL_AUTO":
       return sendToActiveRetailerTab({ type: "RETAILER_STOP_AUTO" });
-    case "RETAILER_TOGGLE_RECORDING":
-      return sendToActiveRetailerTab({ type: "RETAILER_TOGGLE_RECORDING" });
-    case "RETAILER_SAVE_RECORDING":
-      return sendToActiveRetailerTab({ type: "RETAILER_SAVE_RECORDING" });
   }
 }

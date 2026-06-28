@@ -5,12 +5,7 @@ import {
 } from "@ext/background/retailer-runtime-state.ts";
 import { getRetailerRefreshIntervalSec } from "@ext/lib/retailer/channel-config.ts";
 import { setRetailerRefreshIntervalForChannel } from "@ext/background/status.ts";
-import {
-  getRetailerProfiles,
-  getSettings,
-  prependHistory,
-  saveRetailerProfile,
-} from "@ext/lib/storage.ts";
+import { getSettings, prependHistory } from "@ext/lib/storage.ts";
 import type { BackgroundResponse, RetailerToBackground } from "@ext/types/index.ts";
 
 export async function handleRetailerMessage(
@@ -22,10 +17,6 @@ export async function handleRetailerMessage(
   switch (message.type) {
     case "RETAILER_PING":
       return { ok: true };
-    case "RETAILER_RECORDING_GET": {
-      const profiles = await getRetailerProfiles();
-      return { ok: true, profile: profiles.target };
-    }
     case "RETAILER_GET_AUTO_CONFIG": {
       const settings = await getSettings();
       return {
@@ -40,10 +31,6 @@ export async function handleRetailerMessage(
     }
     case "RETAILER_HARD_RELOAD": {
       await chrome.tabs.reload(tabId, { bypassCache: true });
-      return { ok: true };
-    }
-    case "RETAILER_RECORDING_SAVE": {
-      await saveRetailerProfile(message.profile);
       return { ok: true };
     }
     case "RETAILER_AUTO_STATUS": {
@@ -74,7 +61,6 @@ export async function handleRetailerMessage(
       setRetailerTabUiState(tabId, {
         status: message.status,
         running: message.running,
-        recording: message.recording,
       });
       return { ok: true };
     }
