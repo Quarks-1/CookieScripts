@@ -1,0 +1,30 @@
+{
+  "probes": {
+    "minimal": {
+      "label": "minimal",
+      "status": 201,
+      "body": "{\"cart_id\":\"8be8b261-7335-11f1-94ba-3556844de31c\",\"total_cart_item_quantity\":1,\"cart_item_id\":\"8bea11f1-7335-11f1-a5e6-df724eb4e79b\",\"cart_item_type\":\"REGULARITEM\",\"return_policy\":[{\"type\":\"default\",\"day_count\":120,\"user_type\":\"best_guest\"},{\"type\":\"default\",\"day_count\":90,\"user_type\":\"regular_guest\"}],\"tcin\":\"13356914\",\"dpci\":\"081-06-0301\",\"quantity\":1,\"unit_price\":4.29,\"list_price\":4.59,\"current_price\":4.29,\"msrp\":4.59,\"eyebrow\":\"S\",\"limited_quantity\":false,\"available_quantity_in_inventory\":99"
+    },
+    "webApp": {
+      "label": "webApp",
+      "status": 201,
+      "body": "{\"cart_id\":\"8be8b261-7335-11f1-94ba-3556844de31c\",\"total_cart_item_quantity\":2,\"cart_item_id\":\"8bea11f1-7335-11f1-a5e6-df724eb4e79b\",\"cart_item_type\":\"REGULARITEM\",\"return_policy\":[{\"type\":\"default\",\"day_count\":120,\"user_type\":\"best_guest\"},{\"type\":\"default\",\"day_count\":90,\"user_type\":\"regular_guest\"}],\"tcin\":\"13356914\",\"dpci\":\"081-06-0301\",\"quantity\":2,\"unit_price\":4.29,\"list_price\":4.59,\"current_price\":4.29,\"msrp\":4.59,\"eyebrow\":\"S\",\"limited_quantity\":false,\"available_quantity_in_inventory\":99"
+    },
+    "getCart": {
+      "status": 200,
+      "body": "{\"channel_id\":\"10\",\"cart_id\":\"8be8b261-7335-11f1-94ba-3556844de31c\",\"alerts\":[{\"message\":\"Cart Items contain add-on-item and product total is less than add-on-threshold\",\"code\":\"CART_NOT_MET_ADD_ON_THRESHOLD\",\"level\":\"ERROR\",\"metadata\":{\"shortfall\":\"26.42\",\"threshold\":\"35.00\"}}],\"test_cart\":false,\"reference_id\":\"102003562475701\",\"guest_id\":\"f9f38bb6-5d7b-4e10-92ad-fb5e5f3b90fa\",\"cart_state\":\"PENDING\",\"cart_type\":\"REGULAR\",\"guest_type\":\"GUEST\",\"guest_location\":{\"zip_code\":\"55401\",\"state\":\"MN\",\"country\":\"US\"},\"guest_profile\":{},\"shipt_available_memberships_type\":[\"PAY_PER_ORDER\"],\"eligible_paid_membership_types\":[\"SUBSCRIPTION\",\"TRIAL\"],\"pay_per_order_charges\":{\"ONE_DAY\":7.99,\"SCHEDULED_DELIVERY\":9.99},\"summary\":{\"total_discounts\":0.00,\"total_gift_wrap_amount\":0.00,\"total_product_amount\":8.5"
+    }
+  },
+  "checkoutDom": {
+    "url": "https://www.target.com/checkout/start",
+    "title": "Checkout : Target",
+    "signIn": false,
+    "checkoutSteps": [
+      "checkout-title",
+      "apple-pay-checkout-latest",
+      "checkout-loading-skeleton",
+      "@web/auth-components/AuthSignInFlyout"
+    ],
+    "body": "skip to main content\nskip to footer\nCheckout\nFooter\n\n*See details. Restrictions and terms apply. Pricing, promotions, and availability may vary by location and at Target.com\n\nTerms\nCA Supply Chain\nPrivacy Policy\nYour CA Privacy Rights\nYour Privacy Choices\nInterest Based Ads\nHealth Privacy Policy\n\nTM & © 2026 Target Brands, Inc.\n\nHealth Data Consent\n\nSome information collected, used, and shared by Target may be health data under certain state laws such as Virginia (e.g., purchase of some health-related items). By interacting with Target and using this Site, you agree to the Terms and to processing of this data for necessary purposes (e.g., product/service fulfillment, internal operations) as described in the Health Privacy Policy.\n\nHealth Privacy Policy\nTerms\nClose\nContinue shopping\nSign in or create account\n\nBy continuing, you agree to Target's terms and privacy policy\n\nEmail or mobile phone\nContinue\nor\nSign in with passkey\nWhat's a passkey?\nKeep me signed in\nClose"
+  }
+}

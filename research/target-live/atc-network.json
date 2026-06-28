@@ -1,0 +1,278 @@
+{
+  "productLink": "https://www.target.com/p/scotch-3pk-magic-tape-3-4-34-x-350-34/-/A-13356914#lnk=sametab",
+  "tcin": "13356914",
+  "dom": {
+    "url": "https://www.target.com/p/scotch-3pk-magic-tape-3-4-34-x-350-34/-/A-13356914#lnk=sametab",
+    "title": "Scotch Magic Tape with Dispensers 3pk : Target",
+    "h1": "Scotch Magic Tape with Dispensers 3pk",
+    "mainBtn": {
+      "id": "addToCartButtonOrTextIdFor13356914",
+      "dataTest": "orderPickupButton",
+      "disabled": false,
+      "text": "Add to cart",
+      "aria": "Add to cart for Scotch Magic Tape with Dispensers 3pk"
+    },
+    "fulfillmentButtons": [
+      {
+        "id": "",
+        "dataTest": "fulfillment-cell-pickup",
+        "disabled": false,
+        "text": "PickupReady within 2 hours"
+      },
+      {
+        "id": "",
+        "dataTest": "fulfillment-cell-delivery",
+        "disabled": false,
+        "text": "DeliveryCheck availability"
+      },
+      {
+        "id": "",
+        "dataTest": "fulfillment-cell-shipping",
+        "disabled": false,
+        "text": "ShippingArrives by Tue, Jun 30"
+      },
+      {
+        "id": "store-name-2272",
+        "dataTest": null,
+        "disabled": false,
+        "text": "Dulles"
+      },
+      {
+        "id": "",
+        "dataTest": "@web/ATCEditStoreLink",
+        "disabled": false,
+        "text": "Check other stores"
+      },
+      {
+        "id": "select-_r_2j_",
+        "dataTest": null,
+        "disabled": false,
+        "text": "Qty1"
+      },
+      {
+        "id": "addToCartButtonOrTextIdFor13356914",
+        "dataTest": "orderPickupButton",
+        "disabled": false,
+        "text": "Add to cart"
+      },
+      {
+        "id": "sign-in-to-buy-now-button",
+        "dataTest": "sign-in-to-buy-now-button",
+        "disabled": false,
+        "text": "Sign in to buy now"
+      }
+    ],
+    "qty": [],
+    "cartAria": "cart 0 items"
+  },
+  "clickMethod": "click",
+  "beforeCart": "cart 0 items",
+  "after": {
+    "cartAria": "cart 0 items",
+    "success": false,
+    "stickyText": "Qty1Add to cart"
+  },
+  "captured": {
+    "cartPosts": [
+      {
+        "method": "POST",
+        "url": "https://carts.target.com/web_checkouts/v1/cart_items?field_groups=CART%2CCART_ITEMS%2CSUMMARY&key=9f36aeafbe60771e321a7cc95a78140772ab3e96",
+        "headers": {
+          "x-gyjwza5z-z": "q",
+          "referer": "https://www.target.com/p/scotch-3pk-magic-tape-3-4-34-x-350-34/-/A-13356914",
+          "x-application-name": "web",
+          "accept-language": "en-US,en;q=0.9",
+          "x-gyjwza5z-f": "AwOKDxCfAQAAsNKWk-DARwJNd4Oi1i8xH2g67fji9Hr5qfF-8db5j7TVSYJuAWQaDamucu_LwH8AAEB3AAAAAA==",
+          "x-gyjwza5z-b": "-yznesq",
+          "x-gyjwza5z-a": "8h1EtYyjkQU_=eGiiYq0aAmo5N3cP2c6MJW5ZI7pyt6SxLHkFAUWY1bxC4gmnW=26A5aAQpL9kHxaItYYvCOIXrjdkgOihRt-s0tH32EBddeMWowNqEGM4TBWdQ9OtZmj5NmD_knADgfa7CCOyR5JkQ0lkWYrYu-IWFetv3xErdD9SEHsjkSIeNQJ1HY7dysyVCIFN_b4plSl3M44wAaDGGLoHLYfn_WZ_2_agahsT95scSjXhHLnmr3JM-YfuXlXfIW6kSJWqtf6mdG12nAkAuOZ5m08i0O7irBJiJdckbVJokPx1OkF6N0UzZ3GbpPZeozLd-oDfiSk_2O7Ta8mMdTZdexT9x1uD49cnUJFv12Z_-fIny-dSlzmaXJwAGu03Dfx4ZVk3OAv4EeNU=z4LNpUzIzXGjFZ1pFgaUdBeWzoJm_g9yaufmYtE6prytHSMTmCJS7IoTHB_ljIz6toEiGFOirWi0gX4ag=cvDyGUC=YOU9Qo_4lDyPmrMEwRLhgduuFkp2ZmiZmr0HLqS-ZMSvQgnpJ1aLbMmHgdaliHbeqMA7EfGWHfhHhseQHPypUNlM9p2yuHH-yFsmWwQAaWleiMxJMmSiFm-W5cb0DJ0PXyTdzMfmYdVR2vZSbBUa6MlOXnAftzqLJXaQ2fwaifdJ00QGXiOSN_wABMe_uMPWnSy_GmMVMEQmVqQ0sxPq-HsNmTWWHMLkMbWuPnYVQT6mQQoBiU9TRQlEHgrhAjnbwtVH_7IdZOHPRc9aV7n_sn8LE8jN1Qsl8G5agGmBlQdmYwyR7FHAEEVW_3rwWhdfhUZS2bOP8_d53D=VdbUbQp35brQJSfb=Tq3hqNDa6hVhwX7VWW9ylyec6AnnD8w7Bm4qFPbb_vmTr1-9TX2T0u0wszZzvO_W3RM=Ad07iuNm-D8q45Nb9ixe7AtEnf7okZda3L_3VFDbO2=DJIPeR0oRj6CwIn94YM4niQ7BX-4LJ3eOAC87dStL3PMb3MFAmrBCxITkVrEF8EAFM-1SYZoSbC0h37yb_gXZOifoXXODYyJSE-tN31QueG_rR3NFQodN4qxQjaX-PfhsNfkIX6_1a6hHzPLthfPcdZkL29WHAybbzwMyyOkczk6QCqe1zzWDf0_UnH4qz6kyvAk5R7UAUu5jiqbl9AUdDjRJ8GtoxPWs=1QcpM31w-8zWeT=_ZhTJzGik_bEjXcbGumz85sVZLS8xs5FnQHmmr0udZi_4WgrP9VEG26lJWjVLu4uI_-OxmyXJ0Gl5ZNpsC_Z1JqB8NTcomQIwQHv1nlp7DczvkdSBnQNS3bxV3qhdq48Wtif66vnv4e=D_Msoi95C5JW3llzkDNedz1Wzq9D1LXk9JsjeRODEHIG7EDVm5dEb2_VjHA9MSat6oL_LVlpbPliTf4ASx=OFsaJBIk4k3s4sfy0h6Y78og7ZzISXSYcr924zt-fdufRhiQNvj6qfJqo5i4p52vRJ-8FDjW2wOY-OOefLAkQh3r5nzxGUQXz5S6hHrA-oVQrbkD4qndTwnx-1pzlOkA09BxfaNi7XLoeTi61DXDmHjUo0Rgz8lFbInO3fvdTHkw3fUtQ1xiWt30aDkaeSow58n1HF0dPGuVcI5BS2ImMC8xP_Fqq9O2NTV6HSZ4q-R4CVHk3cyGTrdu5xpte0upTHSs-X6QMRUkG0hCZZ2Ht=Fyd6EgTVDb14YQBQYQdBaikEcG9NLTgLAevlvRES6c_W7dHIsUVC16Yd68icSD9EEwEw4F-EeeM38_u0bUGYv1EUMeAIhZEP_gM7VHXFyz0YkvhT_q4DMhIVe06kfEfpdP2zk=6L73kg8qA-2ly5drJZz3qxr3XRv3o9UYpI2WWUhYi0lg-pTqhXX1JcI-Iktc57mnJunAv5eAevwlc4W8xXjNPyrtSilxr7Y2on0J8IrqCf11WQYffPcj_RqmH_wzu1CwXuMVoqAWTu-T308u1=HQFM4mk9iWb2hfwyg5k_g5pfuX=ynwwAam6CQ6lWDssOxDJBuEzgA_LR50LAnYUNxIeMv3baSA26HnTHPlNvMb=vDDTrHkGDo6Xw_OZ49oVqUol2zeRAN4EGbUo4b8h40fDUqSj4eJnyZjXYm2gSMbG-DCQU7d4SjHb=Ru2QIPnQ0C-FqJj0=ALta37jY6NTUo=j3Z4hDvMLrH=IjuYXzwh3q0qizhGiWq=F2U9Bg9jo=OlvcJBDv6kUH9TzZ23=hRBq8Tscpo8LHRok_vvqYI=aBex4oQEuaFdZU2RD72dbScCRQIHqpuDD3xYzzozfLXssxhTsfXo0sGNb5FdXxJ3fGMAiy=TdUs9svDZs1zYhUi_e0MR4tNbbLzji8n6tePhmsRsQ8Fg3uH=aHv4r2mWcujDpC_LRbu6OIfBx_Ghj_me81WSgOi3YboT-Sj7fL_tcL=6Qb_AgLMg3mzJD5W6PQmsGcwTPIUhWaIquFE8RT5gUu0STUbsCv3wAqJJhGR-OcfesP=J2Dsl=Ysco-NWqmePFuzfcDYm1LC5D6L6jNFlSSPE8eg8ALhj=SbFuVNqAoFGcAlpQOw3CNpYQilV2DV1g6SEPV202o3akz3-E2a8BBGsG9vQ4CNMsRcFGrgtYNWYd7BC8eGtTwFO_4NnrX70HXyP-1aXyj0h_cc8ruur8r4=M4LIImMLU_7fT2zLekGVvTufv7j-HNbF0=p8Jajv_1dA0BQSPJG9uX6=Ej7uaMP-hOgA-cpsgn55buFyARGztL0C0xsP4Yj4gtFth=uJ96A1=HfT8Jrf0pq57HbnhCDINxFt6GuP_FbtEupk4fwh8AHk5cXDUShpRFfFXDldfe9pUcEYVbrqm0hefusMNjGqMJIOpA=oxwRnkz--ZiLdggsB5O03FXwr13UEh3nDG9IIFZWeoA84PwDEkL5hbxajweBMvJo9UTrDjU6CS2Ym7FWlDE6qdRMmLvMUaR-azFYfzQubPing0RF7EUnvi2Sa8nEiFawr8xhB-l=l__OtGFNJ17=hMhTG5FZI=Xe-FmEJmVD1sfixyXD9hk4fJPLQcRdcrLcHoFBb=93mI_h1bUqn99mtY5ooTi6bRcvaC98pCZMvhLZn6L3_4hUjjlaEkcMfrqupvqWB7Uw4nOTmcNim9HwTks=0krvfcvzt0cLstvgv01x1Z-_h157NxvXin9PYYEPaDU7UBnFWsC=c2jpdch_txf9oVC7sUqeuQGQl13NoNvbFEJeWEkBnJj=X-BInSza-lz=lM-kNtwQyow8zancBvN2Fk8M67kb7OsojhNnc6DcBNo9-y8uiQ22ApkO3EesEZsRu_MeH1C-6XLoDZuoC28RxGTGo-F8lrZuOOwifI1921ouQBpxBUXtc_F3nmMzseC3d-JbCqUouM-ON_ylXPEhuNF=sxYZSEYFrdy6FeRzlD6gwy43i1y4LYsOSLmjDC8SqbRL4pRVR=iJlcyAnzuGhNbms49uwzeOBbpUqBuHIVstQDD4M5_PW64blB9yMZZZ7M8qs=GyettuOgc5DbA2VSAxP-k4U6e1W6f36RjUTlJApDWOYMEPob4EFled4hZ09-XIWjdhclVFgH24pXwwoGyH9BdPTq_ovi3PfjkRr2bn0b5shytp04a6t6AOWcJU8SD24APovpHh6UaF=s0WYPNXjvAQtbr0Xnk6A0mt-wMCSGUaJW8IWV0-391qZ0gEfrJ0jiB-urG1gYBEyFCXAANJxhfbcxRJ_ZLe21CiQ-BmY2H2Nr2eAG2ndCopsi8nPHTqk9NLII0QikN35ta2a15pHodk37FyBjzN_YnDas-Re7_E9SNl8N=vyYqd46wFwsa=H0=YfHB6V9BY7TBykkHosCFAYuPM7_GkLtCHPfVBtsYJXJlhQPiLVs5lPL61JsUlW=GM2dbzxz0Nyb7CzdVobIngY9jTt1-M9RWWTDwqr6ej7SHr7E7Wp93FdI6ovexbafrQMnu72ay9UmMOYOjk=rWe_l4jPwAksUJliVbYWNnIU=VPFAZCzM_vONwaT-BVre7ljpz9AEVWYvyR=35gF40jPUdhfBMotR2Oa08WfyNTZJDo9xUpHH69CO-pU4ZE1qXVfqXVC=Y_AB3Alr8ELX2oN9fBTgArbyV-HdXc7zbofhNcR8iPWt7M85QiiS5VnJhfZfreUmmJ3GfXOhUTi8bquFBRDTQv_R0TaFxsMC8kPyMB6vh6WNrPSn9TgzaIbUBdcrFoG-xlebqew5PxSXzY1AtjXuZNgpQ6oUTjcN8_6d3O09TYQRVXELLlMfnGZNEtipcHm4O46wh2ePw9__ZyBrDzafoDi=evOfUuAXfmubXDY0swTNG5enmUIQlzGn=LXNjRqut1FelhJZ0VChAWH_hS4_6bzOOm1RNZhTLaGBgaiO=8BkyoOzj5j7k1ilHWXwJtRNfi=rMvbc0zUdpurSUui=3g-F9yMHLVPo2jY2GuFtUrnOkBcsmZpuLs3dNnORd330_swj83P7HlH_XEOq9qNOOGrGzhbdo4Pvyv1MYpUanD7ZzVC=aJIfPvpa6SDV3t0W_In8UPMZuVhUlWLbd3QS6QDPqE9vuefcDTwEC3ADiipnCWaEYimo3D0s79OXJB1OUV5uW20L34urujpr0Yg1-MdOnshMPF=v=dWhriZIbE6OungMUF3_aWn4RNX_czM9i7uLtBA7r6Fza3koHDTuFaROhWstZy=BDAoW3unY6oMPdwiExTqnOr3CW3mDW-=W8qPZSiG89EACxaJ24PndM_NQIvw9XsE0MH2pTPwXQRW08ZZBeddI_rqfJ=qVV8A2E4=GJD56CxorkogwdNQutvWss=CwVhqt4qPUAtWWx7ZCxtfP3ggMmwjQ69l6R=AHs3X4RYtkfvJU149Zr4m-iLhGGcUWvCPnxa6HFoXecIaTs-cVDhjLdyJHs00Q=OR3YCidbEdCkgWHXLknq=XGa5=ywl4CNE1Fp8Uf2=FR4qqzcS9Hsf8wyXdyWksbEoREU4tAzLf==Vrxt6F-VzIgfdoU3Fri8IphQl8JlIiwgsXjohPg42c6E-7ORf8-43scV8uBvzmeHaAtMnlY3WRBmxdzndWw7bR9Zvv_MkAi7Urz2hhOe5-6mCXTLA1w=dAwRmfgmiVMbasryxh-mnmYSCs5XX0La62_45kvBuo2ihSPP0rrbj3opQ3k9zG_mgSBgkE7=-XhAE_tEV7rzDD_S_V7BpnDOu_3c5SDMAb9B2E9H2VSXdN45Hq54cW-HiYwrFOiREH2GHFqpy9xVaqBD6h5_vRvs2PUhgvilnxw3lhyNgmG3-pb7cBQDr_P5dvrlInzTHnSpRAI5=ks_frV9kmk66hEp3GiBxTJUXx6PHpS-31tND4iU0tr_oBy6va8eeCJ7RFxFiY43pqvkWsB73ILzfcRHqWUC1xEhq_4qLQHdzpOvl3atSHMqTsJkMG6e0y700SFq_pFl95qzq_Hqfz7nf7LaOigCfVd0Mo94GGVc3tp4voMkgqfmizeiPkqHFI0L_ssOuLLHYXZ9ybpHUR47wIYW9UxRJLcHZuX24hbLCh89eQem-jVRB4atvdev7yXwJ2GtLayYQBwLyn9gDHHsnCe4ceV=o3646XrVaVRc_4bnyn4EoEYpJMXkJG7f7lzJbevDJaRBANFmdqCb4MA66hSyqCX2jwBHzn5L=ZjsXNrJo0BmCTB7cNLJwlLJ_we7mcomS_op1QYUPR74Be3RJj0iMijx3bjMsl0EHkmev1JQTgpbXT54VbRk6oFr=JCtr=iCvVHTbPy5YfqkBaEHjBF_DYae6CjJjotr-DT3cXow0h7Je6rjALTFsTnDSDFlZGJlLq9oL7IVhulz7t0HsSJmUdOQU4oTJy8XXgZcBGZGWegk--a-rN9_b5zHIHiVNA=GXv45RW0Y1QhGFeIF--wr5DU0-S7HsGu4XU37yvh5POzpzxU1h0W-m_=ppSAAWXNuav4ixIrr1RJVA69O2Jphsqle0HaIL2Wm3vgPwzYOPQ1fqQUj_rMAV6GEFn=Je4wMB=QcyfsHpaqyx0GXIiY4AR79sv5DffongyrU=_YW2AfnXWQb4q3auFJ8e=hUPIqFzyyGSegB5cmkU=QfkWA2HBU=iEfx9oMn1ssowEncmsqnn6MogtYrIs6gHI0Jed0qplM1rOJL27hjU3LkylryJoWz=H_arcf-tYXJVoG=cb9_k60lC1bWJosO82FjE5gE1O-IGUTFwh02nCRjrIF8MVtkLdCTodavFTxDc7iNBm2gGQAimB-RGSNtPnY45bLJQehvq_8fdR579O54VqCln=Ae=jInLc9YB1oZ5kJiIDoN61S-rO5pX37ohpFHbkO-ZS29Hk=VFnXAHVwNXA0NmqjSeg6E8Gp68xYeLitFtjzItyUaYESFeOD7dPl_y1ZTHNhbk49dg0Q234=tfJkYlO7=ycsBpQqaRfYdE8LrNSxeB_tOsbnHF1GZSDYFRboPeUDMPLmfe3LDuPZXwDdBqnUButA-R5AUXeLiFvxC2_DDRd-cdgrSInPe-4iTGOLid6FyQMt5xr=qvuuovYFc9cqwt_ya-6Nby3QI=x=wMPM2tQ6=qRIFrqMVapYwkqqvJ4AQas5YBnGWZ4ile1-ws=QP2CsLB_tfGhdQB6_grQfvRvwCIrfycX7C5kJenTqo9DQRw0JSGI5PAQbewkICJZVZcGJRHtYQtjrathuPR_5VmWuBNGxFguGaNzEHNG7TvJ6N6NEJ4yvqOBvD5X6S0TReJWPwLGgBXVvgP1_ELDCGzd2iy_I1-ktbHn2v1nGN26w=_c4mA2WyVwHplm_Wbcyrlo3BShMv_Q7fJEzHxxYk9h6bZG3-PCqsogZSmEV2rhDcZe8EV1_tAZo1BS8ZVv4Y8d9lsxEQdPX-Jt3hk_UMB27GvuqWWe0CghWG5-ZceUSMyJ0a6XM5wFqTqI2mlfVZtmiOD2ZB2Hl2799_PrpCPfslMln7H4Y07b6uRl3V5DGkSxr59xv0I2zZEgUm3DIy=aeXA6w9dn0gSPlN0PnvFcgsHSglQ7I=e07dglN0ae1_OahyfjSXQlDtscA_t9j-DUI=gEfQzMLc7baw7QHyMY5=SkG9_LXYQYt1YiSwkpCIsAbJdgYsRO1QWhIwobNEepPpLSf=V9BTkpEbB58ZmA8h55sXwJk8Zp61OiriGXEpO=7ZGtDaTI=Myld64OJdwl3JMETHRUA8DZvmfDWi44G3P-IT0ntjttU0vl2oQVigS=MvzQFgsmoc6NHC7dAT8xPmsvD4qzXO8=U5v19D65NI1i4uuVvyXn0ubTRpoqwwNSBIxdUZo9PNEW3EpICHv0HIJfWL=L3MvPE=o3Xl6sxTVPSFeGqVfJLV=ERltcuFUO2B=Zx7o5Ah5DNyNAqfXOjMq7SJxU_NSbj5Bpk6fhJYU_ih1YOMaXBEc93Y7wmj5Ouy0m0W9U3=Ht2zE343i7gSyZCEXwPCLY4XW-m=aMS6tm7h1MN2gBj-kqfU5uESYvRv49I7Cht5rkZQ",
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+          "accept": "application/json",
+          "x-gyjwza5z-c": "AIAwCBCfAQAAaEkvZE0rs9pDz0oN89TFC2-32AEvHXhjfBibz1QwayBgwMJ5",
+          "content-type": "application/json",
+          "x-gyjwza5z-d": "ADYAhICBAKGAgQGAAYAQgISigaIAwAGAyPpCxg_13ocR3sD_CLzTAFQwayBgwMJ5_____5yYML0Bs7kON6UuydWYqRU4wxEx5w"
+        },
+        "postData": "{\"cart_item\":{\"item_channel_id\":\"10\",\"tcin\":\"13356914\",\"quantity\":1},\"cart_type\":\"REGULAR\",\"channel_id\":\"10\",\"shopping_context\":\"DIGITAL\"}"
+      }
+    ],
+    "cartResponses": [],
+    "allCart": [
+      {
+        "type": "request",
+        "method": "GET",
+        "url": "https://carts.target.com/web_checkouts/v1/cart?cart_type=REGULAR&field_groups=ADDRESSES%2CCART_ITEMS%2CSUMMARY&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&client_feature=add_to_cart",
+        "headers": {
+          "referer": "https://www.target.com/s?searchTerm=scotch+tape",
+          "x-application-name": "web",
+          "accept": "application/json",
+          "accept-language": "en-US,en;q=0.9",
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+        },
+        "postData": null
+      },
+      {
+        "type": "request",
+        "method": "OPTIONS",
+        "url": "https://carts.target.com/web_checkouts/v1/cart?cart_type=REGULAR&field_groups=ADDRESSES%2CCART_ITEMS%2CSUMMARY&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&client_feature=add_to_cart",
+        "headers": {
+          "accept": "*/*",
+          "access-control-request-headers": "x-application-name",
+          "access-control-request-method": "GET",
+          "origin": "https://www.target.com",
+          "sec-fetch-mode": "cors",
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+        },
+        "postData": null
+      },
+      {
+        "type": "response",
+        "status": 200,
+        "url": "https://carts.target.com/web_checkouts/v1/cart?cart_type=REGULAR&field_groups=ADDRESSES%2CCART_ITEMS%2CSUMMARY&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&client_feature=add_to_cart"
+      },
+      {
+        "type": "response",
+        "status": 204,
+        "url": "https://carts.target.com/web_checkouts/v1/cart?cart_type=REGULAR&field_groups=ADDRESSES%2CCART_ITEMS%2CSUMMARY&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&client_feature=add_to_cart",
+        "body": ""
+      },
+      {
+        "type": "request",
+        "method": "GET",
+        "url": "https://carts.target.com/web_checkouts/v1/cart?cart_type=REGULAR&field_groups=ADDRESSES%2CCART_ITEMS%2CSUMMARY&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&client_feature=add_to_cart",
+        "headers": {
+          "referer": "https://www.target.com/s?searchTerm=scotch+tape",
+          "x-application-name": "web",
+          "accept": "application/json",
+          "accept-language": "en-US,en;q=0.9",
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+        },
+        "postData": null
+      },
+      {
+        "type": "response",
+        "status": 204,
+        "url": "https://carts.target.com/web_checkouts/v1/cart?cart_type=REGULAR&field_groups=ADDRESSES%2CCART_ITEMS%2CSUMMARY&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&client_feature=add_to_cart",
+        "body": ""
+      },
+      {
+        "type": "request",
+        "method": "GET",
+        "url": "https://carts.target.com/web_checkouts/v1/cart?cart_type=REGULAR&field_groups=ADDRESSES&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&client_feature=add_to_cart",
+        "headers": {
+          "referer": "https://www.target.com/s?searchTerm=scotch+tape",
+          "x-application-name": "web",
+          "accept": "application/json",
+          "accept-language": "en-US,en;q=0.9",
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+        },
+        "postData": null
+      },
+      {
+        "type": "request",
+        "method": "OPTIONS",
+        "url": "https://carts.target.com/web_checkouts/v1/cart?cart_type=REGULAR&field_groups=ADDRESSES&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&client_feature=add_to_cart",
+        "headers": {
+          "accept": "*/*",
+          "access-control-request-headers": "x-application-name",
+          "access-control-request-method": "GET",
+          "origin": "https://www.target.com",
+          "sec-fetch-mode": "cors",
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+        },
+        "postData": null
+      },
+      {
+        "type": "response",
+        "status": 200,
+        "url": "https://carts.target.com/web_checkouts/v1/cart?cart_type=REGULAR&field_groups=ADDRESSES&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&client_feature=add_to_cart"
+      },
+      {
+        "type": "response",
+        "status": 204,
+        "url": "https://carts.target.com/web_checkouts/v1/cart?cart_type=REGULAR&field_groups=ADDRESSES&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&client_feature=add_to_cart",
+        "body": ""
+      },
+      {
+        "type": "request",
+        "method": "GET",
+        "url": "https://carts.target.com/web_checkouts/v1/cart?cart_type=REGULAR&field_groups=ADDRESSES%2CCART_ITEMS%2CSUMMARY&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&client_feature=add_to_cart",
+        "headers": {
+          "referer": "https://www.target.com/p/scotch-3pk-magic-tape-3-4-34-x-350-34/-/A-13356914",
+          "x-application-name": "web",
+          "accept": "application/json",
+          "accept-language": "en-US,en;q=0.9",
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+        },
+        "postData": null
+      },
+      {
+        "type": "response",
+        "status": 204,
+        "url": "https://carts.target.com/web_checkouts/v1/cart?cart_type=REGULAR&field_groups=ADDRESSES%2CCART_ITEMS%2CSUMMARY&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&client_feature=add_to_cart",
+        "body": ""
+      },
+      {
+        "type": "request",
+        "method": "GET",
+        "url": "https://carts.target.com/web_checkouts/v1/cart?cart_type=REGULAR&field_groups=ADDRESSES&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&client_feature=add_to_cart",
+        "headers": {
+          "referer": "https://www.target.com/p/scotch-3pk-magic-tape-3-4-34-x-350-34/-/A-13356914",
+          "x-application-name": "web",
+          "accept": "application/json",
+          "accept-language": "en-US,en;q=0.9",
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+        },
+        "postData": null
+      },
+      {
+        "type": "response",
+        "status": 204,
+        "url": "https://carts.target.com/web_checkouts/v1/cart?cart_type=REGULAR&field_groups=ADDRESSES&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&client_feature=add_to_cart",
+        "body": ""
+      },
+      {
+        "type": "request",
+        "method": "POST",
+        "url": "https://carts.target.com/web_checkouts/v1/cart_items?field_groups=CART%2CCART_ITEMS%2CSUMMARY&key=9f36aeafbe60771e321a7cc95a78140772ab3e96",
+        "headers": {
+          "x-gyjwza5z-z": "q",
+          "referer": "https://www.target.com/p/scotch-3pk-magic-tape-3-4-34-x-350-34/-/A-13356914",
+          "x-application-name": "web",
+          "accept-language": "en-US,en;q=0.9",
+          "x-gyjwza5z-f": "AwOKDxCfAQAAsNKWk-DARwJNd4Oi1i8xH2g67fji9Hr5qfF-8db5j7TVSYJuAWQaDamucu_LwH8AAEB3AAAAAA==",
+          "x-gyjwza5z-b": "-yznesq",
+          "x-gyjwza5z-a": "8h1EtYyjkQU_=eGiiYq0aAmo5N3cP2c6MJW5ZI7pyt6SxLHkFAUWY1bxC4gmnW=26A5aAQpL9kHxaItYYvCOIXrjdkgOihRt-s0tH32EBddeMWowNqEGM4TBWdQ9OtZmj5NmD_knADgfa7CCOyR5JkQ0lkWYrYu-IWFetv3xErdD9SEHsjkSIeNQJ1HY7dysyVCIFN_b4plSl3M44wAaDGGLoHLYfn_WZ_2_agahsT95scSjXhHLnmr3JM-YfuXlXfIW6kSJWqtf6mdG12nAkAuOZ5m08i0O7irBJiJdckbVJokPx1OkF6N0UzZ3GbpPZeozLd-oDfiSk_2O7Ta8mMdTZdexT9x1uD49cnUJFv12Z_-fIny-dSlzmaXJwAGu03Dfx4ZVk3OAv4EeNU=z4LNpUzIzXGjFZ1pFgaUdBeWzoJm_g9yaufmYtE6prytHSMTmCJS7IoTHB_ljIz6toEiGFOirWi0gX4ag=cvDyGUC=YOU9Qo_4lDyPmrMEwRLhgduuFkp2ZmiZmr0HLqS-ZMSvQgnpJ1aLbMmHgdaliHbeqMA7EfGWHfhHhseQHPypUNlM9p2yuHH-yFsmWwQAaWleiMxJMmSiFm-W5cb0DJ0PXyTdzMfmYdVR2vZSbBUa6MlOXnAftzqLJXaQ2fwaifdJ00QGXiOSN_wABMe_uMPWnSy_GmMVMEQmVqQ0sxPq-HsNmTWWHMLkMbWuPnYVQT6mQQoBiU9TRQlEHgrhAjnbwtVH_7IdZOHPRc9aV7n_sn8LE8jN1Qsl8G5agGmBlQdmYwyR7FHAEEVW_3rwWhdfhUZS2bOP8_d53D=VdbUbQp35brQJSfb=Tq3hqNDa6hVhwX7VWW9ylyec6AnnD8w7Bm4qFPbb_vmTr1-9TX2T0u0wszZzvO_W3RM=Ad07iuNm-D8q45Nb9ixe7AtEnf7okZda3L_3VFDbO2=DJIPeR0oRj6CwIn94YM4niQ7BX-4LJ3eOAC87dStL3PMb3MFAmrBCxITkVrEF8EAFM-1SYZoSbC0h37yb_gXZOifoXXODYyJSE-tN31QueG_rR3NFQodN4qxQjaX-PfhsNfkIX6_1a6hHzPLthfPcdZkL29WHAybbzwMyyOkczk6QCqe1zzWDf0_UnH4qz6kyvAk5R7UAUu5jiqbl9AUdDjRJ8GtoxPWs=1QcpM31w-8zWeT=_ZhTJzGik_bEjXcbGumz85sVZLS8xs5FnQHmmr0udZi_4WgrP9VEG26lJWjVLu4uI_-OxmyXJ0Gl5ZNpsC_Z1JqB8NTcomQIwQHv1nlp7DczvkdSBnQNS3bxV3qhdq48Wtif66vnv4e=D_Msoi95C5JW3llzkDNedz1Wzq9D1LXk9JsjeRODEHIG7EDVm5dEb2_VjHA9MSat6oL_LVlpbPliTf4ASx=OFsaJBIk4k3s4sfy0h6Y78og7ZzISXSYcr924zt-fdufRhiQNvj6qfJqo5i4p52vRJ-8FDjW2wOY-OOefLAkQh3r5nzxGUQXz5S6hHrA-oVQrbkD4qndTwnx-1pzlOkA09BxfaNi7XLoeTi61DXDmHjUo0Rgz8lFbInO3fvdTHkw3fUtQ1xiWt30aDkaeSow58n1HF0dPGuVcI5BS2ImMC8xP_Fqq9O2NTV6HSZ4q-R4CVHk3cyGTrdu5xpte0upTHSs-X6QMRUkG0hCZZ2Ht=Fyd6EgTVDb14YQBQYQdBaikEcG9NLTgLAevlvRES6c_W7dHIsUVC16Yd68icSD9EEwEw4F-EeeM38_u0bUGYv1EUMeAIhZEP_gM7VHXFyz0YkvhT_q4DMhIVe06kfEfpdP2zk=6L73kg8qA-2ly5drJZz3qxr3XRv3o9UYpI2WWUhYi0lg-pTqhXX1JcI-Iktc57mnJunAv5eAevwlc4W8xXjNPyrtSilxr7Y2on0J8IrqCf11WQYffPcj_RqmH_wzu1CwXuMVoqAWTu-T308u1=HQFM4mk9iWb2hfwyg5k_g5pfuX=ynwwAam6CQ6lWDssOxDJBuEzgA_LR50LAnYUNxIeMv3baSA26HnTHPlNvMb=vDDTrHkGDo6Xw_OZ49oVqUol2zeRAN4EGbUo4b8h40fDUqSj4eJnyZjXYm2gSMbG-DCQU7d4SjHb=Ru2QIPnQ0C-FqJj0=ALta37jY6NTUo=j3Z4hDvMLrH=IjuYXzwh3q0qizhGiWq=F2U9Bg9jo=OlvcJBDv6kUH9TzZ23=hRBq8Tscpo8LHRok_vvqYI=aBex4oQEuaFdZU2RD72dbScCRQIHqpuDD3xYzzozfLXssxhTsfXo0sGNb5FdXxJ3fGMAiy=TdUs9svDZs1zYhUi_e0MR4tNbbLzji8n6tePhmsRsQ8Fg3uH=aHv4r2mWcujDpC_LRbu6OIfBx_Ghj_me81WSgOi3YboT-Sj7fL_tcL=6Qb_AgLMg3mzJD5W6PQmsGcwTPIUhWaIquFE8RT5gUu0STUbsCv3wAqJJhGR-OcfesP=J2Dsl=Ysco-NWqmePFuzfcDYm1LC5D6L6jNFlSSPE8eg8ALhj=SbFuVNqAoFGcAlpQOw3CNpYQilV2DV1g6SEPV202o3akz3-E2a8BBGsG9vQ4CNMsRcFGrgtYNWYd7BC8eGtTwFO_4NnrX70HXyP-1aXyj0h_cc8ruur8r4=M4LIImMLU_7fT2zLekGVvTufv7j-HNbF0=p8Jajv_1dA0BQSPJG9uX6=Ej7uaMP-hOgA-cpsgn55buFyARGztL0C0xsP4Yj4gtFth=uJ96A1=HfT8Jrf0pq57HbnhCDINxFt6GuP_FbtEupk4fwh8AHk5cXDUShpRFfFXDldfe9pUcEYVbrqm0hefusMNjGqMJIOpA=oxwRnkz--ZiLdggsB5O03FXwr13UEh3nDG9IIFZWeoA84PwDEkL5hbxajweBMvJo9UTrDjU6CS2Ym7FWlDE6qdRMmLvMUaR-azFYfzQubPing0RF7EUnvi2Sa8nEiFawr8xhB-l=l__OtGFNJ17=hMhTG5FZI=Xe-FmEJmVD1sfixyXD9hk4fJPLQcRdcrLcHoFBb=93mI_h1bUqn99mtY5ooTi6bRcvaC98pCZMvhLZn6L3_4hUjjlaEkcMfrqupvqWB7Uw4nOTmcNim9HwTks=0krvfcvzt0cLstvgv01x1Z-_h157NxvXin9PYYEPaDU7UBnFWsC=c2jpdch_txf9oVC7sUqeuQGQl13NoNvbFEJeWEkBnJj=X-BInSza-lz=lM-kNtwQyow8zancBvN2Fk8M67kb7OsojhNnc6DcBNo9-y8uiQ22ApkO3EesEZsRu_MeH1C-6XLoDZuoC28RxGTGo-F8lrZuOOwifI1921ouQBpxBUXtc_F3nmMzseC3d-JbCqUouM-ON_ylXPEhuNF=sxYZSEYFrdy6FeRzlD6gwy43i1y4LYsOSLmjDC8SqbRL4pRVR=iJlcyAnzuGhNbms49uwzeOBbpUqBuHIVstQDD4M5_PW64blB9yMZZZ7M8qs=GyettuOgc5DbA2VSAxP-k4U6e1W6f36RjUTlJApDWOYMEPob4EFled4hZ09-XIWjdhclVFgH24pXwwoGyH9BdPTq_ovi3PfjkRr2bn0b5shytp04a6t6AOWcJU8SD24APovpHh6UaF=s0WYPNXjvAQtbr0Xnk6A0mt-wMCSGUaJW8IWV0-391qZ0gEfrJ0jiB-urG1gYBEyFCXAANJxhfbcxRJ_ZLe21CiQ-BmY2H2Nr2eAG2ndCopsi8nPHTqk9NLII0QikN35ta2a15pHodk37FyBjzN_YnDas-Re7_E9SNl8N=vyYqd46wFwsa=H0=YfHB6V9BY7TBykkHosCFAYuPM7_GkLtCHPfVBtsYJXJlhQPiLVs5lPL61JsUlW=GM2dbzxz0Nyb7CzdVobIngY9jTt1-M9RWWTDwqr6ej7SHr7E7Wp93FdI6ovexbafrQMnu72ay9UmMOYOjk=rWe_l4jPwAksUJliVbYWNnIU=VPFAZCzM_vONwaT-BVre7ljpz9AEVWYvyR=35gF40jPUdhfBMotR2Oa08WfyNTZJDo9xUpHH69CO-pU4ZE1qXVfqXVC=Y_AB3Alr8ELX2oN9fBTgArbyV-HdXc7zbofhNcR8iPWt7M85QiiS5VnJhfZfreUmmJ3GfXOhUTi8bquFBRDTQv_R0TaFxsMC8kPyMB6vh6WNrPSn9TgzaIbUBdcrFoG-xlebqew5PxSXzY1AtjXuZNgpQ6oUTjcN8_6d3O09TYQRVXELLlMfnGZNEtipcHm4O46wh2ePw9__ZyBrDzafoDi=evOfUuAXfmubXDY0swTNG5enmUIQlzGn=LXNjRqut1FelhJZ0VChAWH_hS4_6bzOOm1RNZhTLaGBgaiO=8BkyoOzj5j7k1ilHWXwJtRNfi=rMvbc0zUdpurSUui=3g-F9yMHLVPo2jY2GuFtUrnOkBcsmZpuLs3dNnORd330_swj83P7HlH_XEOq9qNOOGrGzhbdo4Pvyv1MYpUanD7ZzVC=aJIfPvpa6SDV3t0W_In8UPMZuVhUlWLbd3QS6QDPqE9vuefcDTwEC3ADiipnCWaEYimo3D0s79OXJB1OUV5uW20L34urujpr0Yg1-MdOnshMPF=v=dWhriZIbE6OungMUF3_aWn4RNX_czM9i7uLtBA7r6Fza3koHDTuFaROhWstZy=BDAoW3unY6oMPdwiExTqnOr3CW3mDW-=W8qPZSiG89EACxaJ24PndM_NQIvw9XsE0MH2pTPwXQRW08ZZBeddI_rqfJ=qVV8A2E4=GJD56CxorkogwdNQutvWss=CwVhqt4qPUAtWWx7ZCxtfP3ggMmwjQ69l6R=AHs3X4RYtkfvJU149Zr4m-iLhGGcUWvCPnxa6HFoXecIaTs-cVDhjLdyJHs00Q=OR3YCidbEdCkgWHXLknq=XGa5=ywl4CNE1Fp8Uf2=FR4qqzcS9Hsf8wyXdyWksbEoREU4tAzLf==Vrxt6F-VzIgfdoU3Fri8IphQl8JlIiwgsXjohPg42c6E-7ORf8-43scV8uBvzmeHaAtMnlY3WRBmxdzndWw7bR9Zvv_MkAi7Urz2hhOe5-6mCXTLA1w=dAwRmfgmiVMbasryxh-mnmYSCs5XX0La62_45kvBuo2ihSPP0rrbj3opQ3k9zG_mgSBgkE7=-XhAE_tEV7rzDD_S_V7BpnDOu_3c5SDMAb9B2E9H2VSXdN45Hq54cW-HiYwrFOiREH2GHFqpy9xVaqBD6h5_vRvs2PUhgvilnxw3lhyNgmG3-pb7cBQDr_P5dvrlInzTHnSpRAI5=ks_frV9kmk66hEp3GiBxTJUXx6PHpS-31tND4iU0tr_oBy6va8eeCJ7RFxFiY43pqvkWsB73ILzfcRHqWUC1xEhq_4qLQHdzpOvl3atSHMqTsJkMG6e0y700SFq_pFl95qzq_Hqfz7nf7LaOigCfVd0Mo94GGVc3tp4voMkgqfmizeiPkqHFI0L_ssOuLLHYXZ9ybpHUR47wIYW9UxRJLcHZuX24hbLCh89eQem-jVRB4atvdev7yXwJ2GtLayYQBwLyn9gDHHsnCe4ceV=o3646XrVaVRc_4bnyn4EoEYpJMXkJG7f7lzJbevDJaRBANFmdqCb4MA66hSyqCX2jwBHzn5L=ZjsXNrJo0BmCTB7cNLJwlLJ_we7mcomS_op1QYUPR74Be3RJj0iMijx3bjMsl0EHkmev1JQTgpbXT54VbRk6oFr=JCtr=iCvVHTbPy5YfqkBaEHjBF_DYae6CjJjotr-DT3cXow0h7Je6rjALTFsTnDSDFlZGJlLq9oL7IVhulz7t0HsSJmUdOQU4oTJy8XXgZcBGZGWegk--a-rN9_b5zHIHiVNA=GXv45RW0Y1QhGFeIF--wr5DU0-S7HsGu4XU37yvh5POzpzxU1h0W-m_=ppSAAWXNuav4ixIrr1RJVA69O2Jphsqle0HaIL2Wm3vgPwzYOPQ1fqQUj_rMAV6GEFn=Je4wMB=QcyfsHpaqyx0GXIiY4AR79sv5DffongyrU=_YW2AfnXWQb4q3auFJ8e=hUPIqFzyyGSegB5cmkU=QfkWA2HBU=iEfx9oMn1ssowEncmsqnn6MogtYrIs6gHI0Jed0qplM1rOJL27hjU3LkylryJoWz=H_arcf-tYXJVoG=cb9_k60lC1bWJosO82FjE5gE1O-IGUTFwh02nCRjrIF8MVtkLdCTodavFTxDc7iNBm2gGQAimB-RGSNtPnY45bLJQehvq_8fdR579O54VqCln=Ae=jInLc9YB1oZ5kJiIDoN61S-rO5pX37ohpFHbkO-ZS29Hk=VFnXAHVwNXA0NmqjSeg6E8Gp68xYeLitFtjzItyUaYESFeOD7dPl_y1ZTHNhbk49dg0Q234=tfJkYlO7=ycsBpQqaRfYdE8LrNSxeB_tOsbnHF1GZSDYFRboPeUDMPLmfe3LDuPZXwDdBqnUButA-R5AUXeLiFvxC2_DDRd-cdgrSInPe-4iTGOLid6FyQMt5xr=qvuuovYFc9cqwt_ya-6Nby3QI=x=wMPM2tQ6=qRIFrqMVapYwkqqvJ4AQas5YBnGWZ4ile1-ws=QP2CsLB_tfGhdQB6_grQfvRvwCIrfycX7C5kJenTqo9DQRw0JSGI5PAQbewkICJZVZcGJRHtYQtjrathuPR_5VmWuBNGxFguGaNzEHNG7TvJ6N6NEJ4yvqOBvD5X6S0TReJWPwLGgBXVvgP1_ELDCGzd2iy_I1-ktbHn2v1nGN26w=_c4mA2WyVwHplm_Wbcyrlo3BShMv_Q7fJEzHxxYk9h6bZG3-PCqsogZSmEV2rhDcZe8EV1_tAZo1BS8ZVv4Y8d9lsxEQdPX-Jt3hk_UMB27GvuqWWe0CghWG5-ZceUSMyJ0a6XM5wFqTqI2mlfVZtmiOD2ZB2Hl2799_PrpCPfslMln7H4Y07b6uRl3V5DGkSxr59xv0I2zZEgUm3DIy=aeXA6w9dn0gSPlN0PnvFcgsHSglQ7I=e07dglN0ae1_OahyfjSXQlDtscA_t9j-DUI=gEfQzMLc7baw7QHyMY5=SkG9_LXYQYt1YiSwkpCIsAbJdgYsRO1QWhIwobNEepPpLSf=V9BTkpEbB58ZmA8h55sXwJk8Zp61OiriGXEpO=7ZGtDaTI=Myld64OJdwl3JMETHRUA8DZvmfDWi44G3P-IT0ntjttU0vl2oQVigS=MvzQFgsmoc6NHC7dAT8xPmsvD4qzXO8=U5v19D65NI1i4uuVvyXn0ubTRpoqwwNSBIxdUZo9PNEW3EpICHv0HIJfWL=L3MvPE=o3Xl6sxTVPSFeGqVfJLV=ERltcuFUO2B=Zx7o5Ah5DNyNAqfXOjMq7SJxU_NSbj5Bpk6fhJYU_ih1YOMaXBEc93Y7wmj5Ouy0m0W9U3=Ht2zE343i7gSyZCEXwPCLY4XW-m=aMS6tm7h1MN2gBj-kqfU5uESYvRv49I7Cht5rkZQ",
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+          "accept": "application/json",
+          "x-gyjwza5z-c": "AIAwCBCfAQAAaEkvZE0rs9pDz0oN89TFC2-32AEvHXhjfBibz1QwayBgwMJ5",
+          "content-type": "application/json",
+          "x-gyjwza5z-d": "ADYAhICBAKGAgQGAAYAQgISigaIAwAGAyPpCxg_13ocR3sD_CLzTAFQwayBgwMJ5_____5yYML0Bs7kON6UuydWYqRU4wxEx5w"
+        },
+        "postData": "{\"cart_item\":{\"item_channel_id\":\"10\",\"tcin\":\"13356914\",\"quantity\":1},\"cart_type\":\"REGULAR\",\"channel_id\":\"10\",\"shopping_context\":\"DIGITAL\"}"
+      },
+      {
+        "type": "request",
+        "method": "OPTIONS",
+        "url": "https://carts.target.com/web_checkouts/v1/cart_items?field_groups=CART%2CCART_ITEMS%2CSUMMARY&key=9f36aeafbe60771e321a7cc95a78140772ab3e96",
+        "headers": {
+          "accept": "*/*",
+          "access-control-request-headers": "content-type,x-application-name,x-gyjwza5z-a,x-gyjwza5z-b,x-gyjwza5z-c,x-gyjwza5z-d,x-gyjwza5z-f,x-gyjwza5z-z",
+          "access-control-request-method": "POST",
+          "origin": "https://www.target.com",
+          "sec-fetch-mode": "cors",
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+        },
+        "postData": null
+      },
+      {
+        "type": "response",
+        "status": 200,
+        "url": "https://carts.target.com/web_checkouts/v1/cart_items?field_groups=CART%2CCART_ITEMS%2CSUMMARY&key=9f36aeafbe60771e321a7cc95a78140772ab3e96"
+      }
+    ]
+  },
+  "apiProbe": {
+    "status": 201,
+    "ok": true,
+    "body": "{\"cart_id\":\"7d3ce601-7335-11f1-9aee-c97633b694a8\",\"total_cart_item_quantity\":1,\"cart_item_id\":\"7d3e6ca0-7335-11f1-9533-09d2fa8a7fdb\",\"cart_item_type\":\"REGULARITEM\",\"return_policy\":[{\"type\":\"default\",\"day_count\":120,\"user_type\":\"best_guest\"},{\"type\":\"default\",\"day_count\":90,\"user_type\":\"regular_guest\"}],\"tcin\":\"13356914\",\"dpci\":\"081-06-0301\",\"quantity\":1,\"unit_price\":4.29,\"list_price\":4.59,\"current_price\":4.29,\"msrp\":4.59,\"eyebrow\":\"S\",\"limited_quantity\":false,\"available_quantity_in_inventory\":99,\"handling\":{\"buy_unit_of_measure\":\"Each\"},\"fulfillment\":{\"type\":\"SHIP\",\"location_data\":{},\"ship_method\":\"STANDARD\",\"price\":{\"shipping_price\":0.00,\"handling_price\":0.00,\"service_fee\":0.00},\"estimated_arrival_start_date\":\"2026-06-29\",\"estimated_arrival_end_date\":\"2026-06-29\",\"ship_method_service_level_description\":\"2-day shipping\",\"available_ship_methods\":[{\"type\":\"SHIP\",\"ship_method\":\"STANDARD\",\"estimated_arrival_start_date\":\"2026-06-29\",\"estimated_arrival_end_date\":\"2026-06-29\",\"preferred\":true,\"base\":true,\"selected\":true,\"seasonal\":false,\"ship_method_short_description\":\"Standard\",\"ship_method_long_description\":\"Ground\",\"ship_method_service_level_description\":\"2-day shipping\",\"order_cutoff\":\"2026-06-28T22:00+0000\",\"ship_date\":\"2026-06-28\",\"location_id\":\"9407-1\",\"two_day_shipping_eligible\":true,\"line_consolidated\":false,\"minimum_order_quantity\":1.0}]},\"item_attributes\":{\"description\":\"Scotch Magic Tape with Dispensers 3pk\",\"image_path\":\"https://target.scene7.com/is/image/Target//GUEST_e70feecd-aee3-4dab-8692-f68309a26a83\",\"max_purchase_quantity\":99,\"product_subtype_name\":\"OFFICE SUPPLIES\",\"product_type_name\":\"STATIONERY & OFFICE SUPPLIES\"},\"item_summary\":{\"shipping_discount\":0.00,\"shipping_charge\":0.00,\"total_discount\":0.00,\"partial_discount\":0.00,\"total_product\":4.29,\"tax_amount\":0.00,\"price\":4.29,\"shipping_tax\":0.00,\"handling_fee\":0.00,\"surcharge_fee\":0.00,\"handling_fee_tax\":0.00,\"handling_fee_discount\":0.00,\"gift_wrap_fee\":0.00,\"gift_wrap_tax\":0.00,\"delivery_charge\":0.00,\"taxes\":{\"total\":0.00,\"sales\":0.00,\"shipping\":0.00,\"handling_fee\":0.00,\"service_fee\":0.00,\"gift_wrap\":0.00},\"total_list_price\":4.59,\"personalized_price\":4.29,\"personalized_price_has_discounts\":true},\"subscription\":{},\"inventory_info\":{\"availability_status\":\"IN_STOCK\",\"location_type\":\"DISTRIBUTION_CENTER\",\"demand_type\":\"NETWORK\",\"online_available_to_promise_quantity\":1,\"stores_available_to_promise_quantity\":1,\"is_out_of_stock_in_all_store_locations\":false},\"item_indicators\":{\"is_store_pickup_eligible\":false,\"is_ship_to_store_eligible\":false,\"is_gift_wrap_eligible\":false,\"is_gift_message_eligible\":true,\"is_gift_options_eligible\":true,\"is_third_party_giftcard\":false,\"is_shipping_in_original_container\":false,\"is_loyalty_purchase_eligible\":false,\"is_add_on\":true,\"is_free_gift\":false,\"is_subscription\":false,\"is_subscription_eligible\":false,\"is_coming_soon\":false,\"is_bulky\":false,\"is_marketplace\":false,\"is_pre_order\":false,\"is_retail_ticketed\":false,\"is_pickup_window_item\":false,\"is_affirm_eligible\":false,\"is_variable_price_item\":false,\"is_snap_eligible\":false,\"is_digital_gift_message_eligible\":true,\"is_one_day_ppo_eligible\":false,\"is_qualified_medical_expense_eligible\":false},\"created_at\":\"2026-06-28T21:08:19.690Z\",\"updated_at\":\"2026-06-28T21:08:19.753Z\",\"add_on_threshold\":35,\"item_add_channel\":\"10\",\"government_programs\":{\"vppa\":false}}"
+  }
+}
