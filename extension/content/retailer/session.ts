@@ -3,28 +3,22 @@ import {
   descriptorToProfile,
   startRecording,
 } from "@ext/content/retailer/automation/record.ts";
-import {
-  resolvePlaybackSteps,
-  runAutomationPlayback,
-} from "@ext/content/retailer/automation/playback.ts";
-import {
-  getManualUiRefreshInterval,
-  isManualUiMounted,
-  mountManualUi,
-  setManualUiRefreshInterval,
-  setManualUiStatus,
-  unmountManualUi,
-} from "@ext/content/retailer/manual-ui.ts";
+import { runAutomationPlayback } from "@ext/content/retailer/automation/playback.ts";
 import { waitForMainAddToCartButton } from "@ext/lib/retailer/main-add-to-cart.ts";
 import {
+  clearRetailerAutoUserStopped,
   clearRetailerAutoResume,
   ensureRetailerAutoResume,
+  isRetailerAutoUserStopped,
+  markRetailerAutoUserStopped,
   readRetailerAutoResume,
   shouldResumeRetailerAuto,
   startRetailerAutoResume,
 } from "@ext/lib/retailer/auto-resume.ts";
 import { isRetailerProductUrl } from "@ext/lib/retailer/host.ts";
-import { DEFAULT_ADD_TO_CART_SELECTORS } from "@ext/content/retailer/selectors.ts";
+import { resolveAutomationSteps } from "@ext/lib/retailer/resolve-steps.ts";
+import { DEFAULT_ADD_TO_CART_SELECTORS } from "@ext/lib/retailer/selectors.ts";
+import { sleep } from "@ext/lib/sleep.ts";
 import { STORAGE_KEYS } from "@ext/lib/constants.ts";
 import type { ExtensionSettings } from "@ext/types/index.ts";
 import {
@@ -39,7 +33,6 @@ type Session = {
   channelId: string | null;
   url: string | null;
   syncGeneration: number;
-  armed: boolean;
   running: boolean;
 };
 
@@ -47,21 +40,29 @@ const session: Session = {
   channelId: null,
   url: null,
   syncGeneration: 0,
-  armed: false,
   running: false,
 };
 
 let syncChain: Promise<void> = Promise.resolve();
 let sessionEnded = false;
 let stopRecording: (() => void) | null = null;
+let recordingActive = false;
 const recordedDescriptors: GeneratedDescriptor[] = [];
 let bootstrapTimer: ReturnType<typeof setTimeout> | null = null;
 let bootstrapActive = false;
 let stopAutoRequested = false;
+let cachedRefreshIntervalSec = 0;
 
 function requestStopAutoMode(): void {
   stopAutoRequested = true;
-  clearRetailerAutoResume();
+  markRetailerAutoUserStopped();
+  session.syncGeneration += 1;
+  session.running = false;
+}
+
+function allowAutoModeStart(): void {
+  stopAutoRequested = false;
+  clearRetailerAutoUserStopped();
 }
 
 function shouldContinueAutoMode(): boolean {
@@ -84,17 +85,35 @@ function isRetailerAutoDisabledInSettings(settings: ExtensionSettings): boolean 
   return target?.retailer_auto_enabled !== true;
 }
 
-function watchAutoModeSettings(): void {
+function publishUiState(status: string, running?: boolean): void {
+  void sendToBackground({
+    type: "RETAILER_UI_STATE",
+    status,
+    running: running ?? session.running,
+    recording: recordingActive,
+  }).catch((err) => {
+    if (isExtensionContextInvalidatedError(err)) {
+      endSession();
+    }
+  });
+}
+
+function watchSettings(): void {
   chrome.storage.onChanged.addListener((changes, area) => {
-    if (area !== "local" || !session.running) {
+    if (area !== "local") {
       return;
     }
     const settingsChange = changes[STORAGE_KEYS.settings];
-    if (!settingsChange?.newValue || typeof settingsChange.newValue !== "object") {
-      return;
-    }
-    if (isRetailerAutoDisabledInSettings(settingsChange.newValue as ExtensionSettings)) {
-      requestStopAutoMode();
+    if (settingsChange?.newValue && typeof settingsChange.newValue === "object") {
+      const settings = settingsChange.newValue as ExtensionSettings;
+      if (session.running && isRetailerAutoDisabledInSettings(settings)) {
+        requestStopAutoMode();
+      }
+      if (session.channelId) {
+        void loadAutoConfig(session.channelId).then((config) => {
+          cachedRefreshIntervalSec = config.refreshIntervalSec;
+        });
+      }
     }
   });
 }
@@ -106,15 +125,10 @@ function endSession(): void {
   sessionEnded = true;
   stopRecording?.();
   stopRecording = null;
-  unmountManualUi();
+  recordingActive = false;
   session.channelId = null;
   session.url = null;
-  session.armed = false;
   session.running = false;
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function sendToBackground(message: RetailerToBackground): Promise<unknown> {
@@ -182,16 +196,6 @@ async function requestHardReload(): Promise<void> {
   await sendToBackground({ type: "RETAILER_HARD_RELOAD" });
 }
 
-async function resolveRefreshIntervalSec(channelId: string): Promise<number> {
-  const fromUi = getManualUiRefreshInterval();
-  const fromStorage = (await loadAutoConfig(channelId)).refreshIntervalSec;
-  const interval = fromUi > 0 ? fromUi : fromStorage;
-  if (fromUi > 0 && fromUi !== fromStorage) {
-    await saveRefreshInterval(fromUi);
-  }
-  return interval;
-}
-
 function autoModePlaybackOptions(
   getRefreshIntervalSec: () => number,
 ): import("@ext/content/retailer/automation/playback.ts").AutomationPlaybackOptions {
@@ -204,189 +208,178 @@ function autoModePlaybackOptions(
 }
 
 async function runAutoMode(): Promise<void> {
-  if (session.running || bootstrapActive) {
+  if (session.running || bootstrapActive || stopAutoRequested || isRetailerAutoUserStopped()) {
     return;
   }
   if (!isRetailerProductUrl(location.href)) {
-    setManualUiStatus("Open a product page (/p/…)");
+    publishUiState("Open a product page (/p/…)", false);
     return;
   }
 
-  stopAutoRequested = false;
   session.running = true;
-  setManualUiStatus("Running auto mode…");
+  publishUiState("Running auto mode…", true);
 
   if (!session.channelId) {
     session.running = false;
+    publishUiState("Ready — open a product page and press Start", false);
     return;
   }
 
-  const resuming = shouldResumeRetailerAuto(location.href) !== null;
-  if (resuming) {
-    ensureRetailerAutoResume(session.channelId, location.href);
-  } else {
-    startRetailerAutoResume(session.channelId, location.href);
-  }
+  try {
+    const resuming = shouldResumeRetailerAuto(location.href) !== null;
+    if (resuming) {
+      ensureRetailerAutoResume(session.channelId, location.href);
+    } else {
+      startRetailerAutoResume(session.channelId, location.href);
+    }
 
-  const refreshIntervalSec = await resolveRefreshIntervalSec(session.channelId);
-  const getRefreshIntervalSec = () => getManualUiRefreshInterval() || refreshIntervalSec;
+    cachedRefreshIntervalSec = (await loadAutoConfig(session.channelId)).refreshIntervalSec;
+    const getRefreshIntervalSec = () => cachedRefreshIntervalSec;
 
-  const profile = await loadProfile();
-  const steps = resolvePlaybackSteps(profile);
-  const readySelectors =
-    steps.find((step) => step.type === "keyboard_enter_hold")?.selectors ??
-    DEFAULT_ADD_TO_CART_SELECTORS;
+    const profile = await loadProfile();
+    const steps = resolveAutomationSteps(profile);
+    const readySelectors =
+      steps.find((step) => step.type === "keyboard_enter_hold")?.selectors ??
+      DEFAULT_ADD_TO_CART_SELECTORS;
 
-  setManualUiStatus("Waiting for product page…");
-  const ready = await waitForMainAddToCartButton({
-    selectors: readySelectors,
-    timeoutMs: null,
-    shouldContinue: shouldContinueAutoMode,
-    pageUrl: location.href,
-    onStatus: setManualUiStatus,
-    refreshIntervalSec,
-    getRefreshIntervalSec,
-    requestHardReload,
-  });
-  if (!ready) {
-    session.running = false;
-    if (stopAutoRequested) {
-      setManualUiStatus("Stopped");
+    publishUiState("Waiting for product page…", true);
+    const ready = await waitForMainAddToCartButton({
+      selectors: readySelectors,
+      timeoutMs: null,
+      shouldContinue: shouldContinueAutoMode,
+      pageUrl: location.href,
+      onStatus: (text) => publishUiState(text, true),
+      refreshIntervalSec: cachedRefreshIntervalSec,
+      getRefreshIntervalSec,
+      requestHardReload,
+    });
+    if (!ready) {
+      if (stopAutoRequested) {
+        publishUiState("Stopped", false);
+        await reportAutoStatus("failed", "Stopped");
+        return;
+      }
+      if (readRetailerAutoResume()) {
+        return;
+      }
+      publishUiState("Error: Add to cart button not found", false);
+      await reportAutoStatus("failed", "Add to cart button not found");
+      clearRetailerAutoResume();
+      return;
+    }
+
+    const result = await runAutomationPlayback(
+      steps,
+      (text) => publishUiState(text, true),
+      autoModePlaybackOptions(getRefreshIntervalSec),
+    );
+
+    clearRetailerAutoResume();
+
+    if (result.ok) {
+      publishUiState("Success", false);
+      await reportAutoStatus("success");
+      return;
+    }
+
+    if (result.error === "Stopped") {
+      publishUiState("Stopped", false);
       await reportAutoStatus("failed", "Stopped");
       return;
     }
-    if (readRetailerAutoResume()) {
+
+    if (result.error === "Reloading") {
       return;
     }
-    setManualUiStatus("Error: Add to cart button not found");
-    await reportAutoStatus("failed", "Add to cart button not found");
-    clearRetailerAutoResume();
-    return;
+
+    publishUiState(`Error: ${result.error}`, false);
+    await reportAutoStatus("failed", result.error);
+  } catch (err) {
+    if (isExtensionContextInvalidatedError(err)) {
+      endSession();
+      return;
+    }
+    publishUiState(err instanceof Error ? err.message : "Auto mode failed", false);
+  } finally {
+    session.running = false;
+    if (!sessionEnded && !readRetailerAutoResume()) {
+      publishUiState(
+        isRetailerProductUrl(location.href)
+          ? "Ready — press Start Auto Mode"
+          : "Ready — open a product page and press Start",
+        false,
+      );
+    }
   }
-
-  const result = await runAutomationPlayback(
-    steps,
-    setManualUiStatus,
-    autoModePlaybackOptions(getRefreshIntervalSec),
-  );
-
-  session.running = false;
-  clearRetailerAutoResume();
-
-  if (result.ok) {
-    setManualUiStatus("Success");
-    await reportAutoStatus("success");
-    return;
-  }
-
-  if (result.error === "Stopped") {
-    setManualUiStatus("Stopped");
-    await reportAutoStatus("failed", "Stopped");
-    return;
-  }
-
-  if (result.error === "Reloading") {
-    return;
-  }
-
-  setManualUiStatus(`Error: ${result.error}`);
-  await reportAutoStatus("failed", result.error);
 }
 
-async function saveRefreshInterval(intervalSec: number): Promise<void> {
-  const channelId = session.channelId ?? "manual";
-  await sendToBackground({
-    type: "RETAILER_SET_REFRESH_INTERVAL",
-    channel_id: channelId,
-    interval_sec: intervalSec,
+function toggleRecording(): void {
+  if (stopRecording) {
+    stopRecording();
+    stopRecording = null;
+    recordingActive = false;
+    publishUiState("Record stopped");
+    return;
+  }
+  stopRecording = startRecording((descriptor) => {
+    recordedDescriptors.push(descriptor);
+    publishUiState(`Recording… captured ${recordedDescriptors.length} step(s)`);
   });
-  setManualUiRefreshInterval(intervalSec);
+  recordingActive = true;
+  publishUiState("Recording… click elements on the page");
 }
 
-async function syncManualUiRefreshInterval(): Promise<void> {
-  const channelId = session.channelId ?? "manual";
-  const config = await loadAutoConfig(channelId);
-  setManualUiRefreshInterval(config.refreshIntervalSec);
+async function saveRecording(): Promise<void> {
+  await sendToBackground({
+    type: "RETAILER_RECORDING_SAVE",
+    profile: descriptorToProfile(recordedDescriptors),
+  });
+  publishUiState("Recording saved");
 }
 
-function manualUiCallbacks(): import("@ext/content/retailer/manual-ui.ts").ManualUiCallbacks {
-  return {
-    onStartAuto: () => {
-      void saveRefreshInterval(getManualUiRefreshInterval()).then(() => runAutoMode());
-    },
-    onStopAuto: () => {
-      requestStopAutoMode();
-      setManualUiStatus("Stopping…");
-    },
-    onRefreshIntervalChange: (intervalSec) => {
-      void saveRefreshInterval(intervalSec);
-    },
-    onToggleRecord: () => {
-      if (stopRecording) {
-        stopRecording();
-        stopRecording = null;
-        setManualUiStatus("Record stopped");
+function scheduleAutoModeRun(): void {
+  beginBootstrapQuiet();
+  const generation = ++session.syncGeneration;
+  syncChain = syncChain
+    .then(async () => {
+      if (generation !== session.syncGeneration) {
         return;
       }
-      stopRecording = startRecording((descriptor) => {
-        recordedDescriptors.push(descriptor);
-        setManualUiStatus(`Captured (${recordedDescriptors.length})`);
-      });
-      setManualUiStatus("Recording… click elements");
-    },
-    onSaveRecording: () => {
-      void sendToBackground({
-        type: "RETAILER_RECORDING_SAVE",
-        profile: descriptorToProfile(recordedDescriptors),
-      }).then(() => setManualUiStatus("Recording saved"));
-    },
-    onClearRecording: () => {
-      recordedDescriptors.length = 0;
-      setManualUiStatus("Recording cleared");
-    },
-  };
+      await sleep(BOOTSTRAP_QUIET_MS);
+      if (generation !== session.syncGeneration) {
+        return;
+      }
+      await runAutoMode();
+    })
+    .catch((err) => {
+      if (isExtensionContextInvalidatedError(err)) {
+        endSession();
+      }
+    });
 }
 
-function ensureManualUi(): void {
-  if (!session.armed) {
-    return;
-  }
-
-  if (!isManualUiMounted()) {
-    mountManualUi(manualUiCallbacks(), 0);
-    void syncManualUiRefreshInterval();
-  }
+function armManualSession(): void {
+  session.channelId = "manual";
+  session.url = location.href;
 }
 
 function handleStartAuto(message: Extract<BackgroundToContent, { type: "RETAILER_START_AUTO" }>) {
+  allowAutoModeStart();
   session.channelId = message.channel_id;
   session.url = message.url;
-  session.armed = true;
-  beginBootstrapQuiet();
-  ensureManualUi();
-
-  const generation = ++session.syncGeneration;
-  syncChain = syncChain.then(async () => {
-    if (generation !== session.syncGeneration) {
-      return;
-    }
-    await sleep(BOOTSTRAP_QUIET_MS);
-    if (generation !== session.syncGeneration) {
-      return;
-    }
-    await runAutoMode();
-  });
+  scheduleAutoModeRun();
 }
 
-function handleArmUi() {
-  session.channelId = "manual";
-  session.url = location.href;
-  session.armed = true;
-  ensureManualUi();
-  setManualUiStatus("Armed — use Start Auto Mode on this product page");
+function handleStartManualAuto(): void {
+  allowAutoModeStart();
+  armManualSession();
+  scheduleAutoModeRun();
 }
 
 function tryResumeAutoMode(): void {
+  if (isRetailerAutoUserStopped()) {
+    return;
+  }
   const resume = shouldResumeRetailerAuto(location.href);
   if (!resume || !isRetailerProductUrl(location.href)) {
     return;
@@ -394,21 +387,8 @@ function tryResumeAutoMode(): void {
 
   session.channelId = resume.channel_id;
   session.url = location.href;
-  session.armed = true;
-  ensureManualUi();
-  setManualUiStatus("Resuming auto mode…");
-
-  const generation = ++session.syncGeneration;
-  syncChain = syncChain.then(async () => {
-    if (generation !== session.syncGeneration) {
-      return;
-    }
-    await sleep(BOOTSTRAP_QUIET_MS);
-    if (generation !== session.syncGeneration) {
-      return;
-    }
-    await runAutoMode();
-  });
+  publishUiState("Resuming auto mode…", true);
+  scheduleAutoModeRun();
 }
 
 export function startRetailerSession(): void {
@@ -416,19 +396,21 @@ export function startRetailerSession(): void {
     return;
   }
 
-  watchAutoModeSettings();
-
-  session.armed = true;
-  session.channelId = "manual";
-  session.url = location.href;
-  ensureManualUi();
+  watchSettings();
+  armManualSession();
 
   if (shouldResumeRetailerAuto(location.href)) {
     tryResumeAutoMode();
-    return;
+  } else if (isRetailerAutoUserStopped()) {
+    publishUiState("Stopped", false);
+  } else {
+    publishUiState(
+      isRetailerProductUrl(location.href)
+        ? "Ready — press Start Auto Mode"
+        : "Ready — open a product page and press Start",
+      false,
+    );
   }
-
-  setManualUiStatus("Ready — open a product page and use Start Auto Mode");
 
   chrome.runtime.onMessage.addListener((message: BackgroundToContent) => {
     if (!isExtensionContextValid()) {
@@ -442,12 +424,18 @@ export function startRetailerSession(): void {
       case "RETAILER_START_AUTO":
         handleStartAuto(message);
         return { ok: true };
-      case "RETAILER_ARM_UI":
-        handleArmUi();
+      case "RETAILER_START_MANUAL_AUTO":
+        handleStartManualAuto();
         return { ok: true };
       case "RETAILER_STOP_AUTO":
         requestStopAutoMode();
-        setManualUiStatus("Stopping…");
+        publishUiState("Stopped", false);
+        return { ok: true };
+      case "RETAILER_TOGGLE_RECORDING":
+        toggleRecording();
+        return { ok: true };
+      case "RETAILER_SAVE_RECORDING":
+        void saveRecording();
         return { ok: true };
       default:
         return undefined;

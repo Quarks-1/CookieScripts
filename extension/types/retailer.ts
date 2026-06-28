@@ -28,14 +28,3 @@ export interface RetailerProfile {
 export type RetailerProfilesStore = {
   target: RetailerProfile | null;
 };
-
-export type RetailerAutoSource = "discord" | "manual";
-
-export type RetailerAutoStatus =
-  | "idle"
-  | "finding_button"
-  | "adding"
-  | "waiting_cart"
-  | "navigating"
-  | "success"
-  | "failed";

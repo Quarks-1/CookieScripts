@@ -35,6 +35,7 @@ export default function App() {
     status?.active_channel_id ?? null,
     status?.enabled ?? false,
     domainsEditor.domains,
+    status?.retailer_tab_detected ?? false,
   );
   const [enabling, setEnabling] = useState(false);
   const [enableError, setEnableError] = useState<string | null>(null);
@@ -54,7 +55,7 @@ export default function App() {
   }
 
   return (
-    <main className="w-80 p-4">
+    <main className="w-full min-w-72 p-4">
       <div className="flex items-center justify-between gap-2">
         <h1 className="text-lg font-semibold">CookieScripts</h1>
         <VersionStatus
@@ -62,7 +63,6 @@ export default function App() {
           checking={updateCheck.checking}
           updateAvailable={updateCheck.updateAvailable}
           releaseUrl={updateCheck.releaseUrl}
-          onRefresh={() => void updateCheck.refresh()}
         />
       </div>
 
@@ -117,13 +117,16 @@ export default function App() {
             onDomainsChange={domainsEditor.handleDomainsChange}
           />
 
-          {status.enabled && (
+          {status.enabled && status.retailer_tab_detected && (
             <RetailerAutoModeSection
               retailerAutoEnabled={retailerAuto.retailerAutoEnabled}
               refreshIntervalSec={retailerAuto.refreshIntervalSec}
               stepsRecorded={retailerAuto.stepsRecorded}
-              showAutoToggle={retailerAuto.canShow}
-              showRecording={retailerAuto.canShow}
+              manualStatus={retailerAuto.manualStatus}
+              manualRunning={retailerAuto.manualRunning}
+              recording={retailerAuto.recording}
+              showDiscordAutoToggle={retailerAuto.canShowDiscordAuto}
+              showRecording
               disabled={retailerAuto.disabled || enabling}
               refreshDisabled={retailerAuto.refreshDisabled || enabling}
               saving={retailerAuto.saving}
@@ -131,10 +134,16 @@ export default function App() {
               savingRefresh={retailerAuto.savingRefresh}
               refreshError={retailerAuto.refreshError}
               clearing={retailerAuto.clearing}
+              acting={retailerAuto.acting}
+              actionError={retailerAuto.actionError}
               onChange={(next) => void retailerAuto.handleChange(next)}
               onRefreshIntervalChange={(intervalSec) =>
                 void retailerAuto.handleRefreshIntervalChange(intervalSec)
               }
+              onStartManual={() => void retailerAuto.handleStartManual()}
+              onStopManual={() => void retailerAuto.handleStopManual()}
+              onToggleRecording={() => void retailerAuto.handleToggleRecording()}
+              onSaveRecording={() => void retailerAuto.handleSaveRecording()}
               onClearRecording={() => void retailerAuto.handleClearRecording()}
             />
           )}

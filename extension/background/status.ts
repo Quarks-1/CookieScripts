@@ -1,12 +1,14 @@
-import { getChannelDomains, getChannelTarget } from "@ext/lib/channel-targets.ts";
+import { getChannelDomains } from "@ext/lib/channel-targets.ts";
 import {
+  getRetailerAutoEnabled,
   getRetailerRefreshIntervalSec,
   setRetailerAutoEnabled,
   setRetailerRefreshInterval,
 } from "@ext/lib/retailer/channel-config.ts";
-import { allowlistIncludesRetailerHost } from "@ext/lib/retailer/host.ts";
+import { allowlistIncludesRetailerHost, isRetailerUrl } from "@ext/lib/retailer/host.ts";
 import { getRetailerProfiles, getSettings, saveSettings } from "@ext/lib/storage.ts";
 import { activeChannels } from "@ext/background/runtime-state.ts";
+import { getRetailerTabUiState } from "@ext/background/retailer-runtime-state.ts";
 import { parseChannelId } from "@ext/lib/channels.ts";
 import type { ExtensionSettings, ExtensionStatus } from "@ext/types/index.ts";
 
@@ -37,21 +39,28 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     discordTabDetected = true;
   }
 
+  const retailerTabDetected =
+    activeTab?.url != null && activeTab.url.length > 0 && isRetailerUrl(activeTab.url);
+
   const allowedDomains =
     activeChannelId !== null ? getChannelDomains(settings, activeChannelId) : [];
   const isActive = settings.enabled && activeChannelId !== null;
   const retailerAutoEnabled =
-    activeChannelId !== null
-      ? getChannelTarget(settings, activeChannelId)?.retailer_auto_enabled === true
-      : false;
+    activeChannelId !== null ? getRetailerAutoEnabled(settings, activeChannelId) : false;
   const retailerRefreshIntervalSec =
     activeChannelId !== null
       ? getRetailerRefreshIntervalSec(settings, activeChannelId)
       : getRetailerRefreshIntervalSec(settings, "manual");
 
+  const tabUi =
+    activeTab?.id != null && retailerTabDetected
+      ? getRetailerTabUiState(activeTab.id)
+      : { status: "", running: false, recording: false };
+
   return {
     enabled: settings.enabled,
     discord_tab_detected: discordTabDetected,
+    retailer_tab_detected: retailerTabDetected,
     active_channel_id: activeChannelId,
     is_active: isActive,
     has_allowed_domains: allowedDomains.length > 0,
@@ -59,6 +68,9 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     retailer_auto_enabled: retailerAutoEnabled && allowlistIncludesRetailerHost(allowedDomains),
     retailer_steps_recorded: profiles.target?.steps.length ?? 0,
     retailer_refresh_interval_sec: retailerRefreshIntervalSec,
+    retailer_manual_status: tabUi.status,
+    retailer_manual_running: tabUi.running,
+    retailer_recording: tabUi.recording,
   };
 }
 

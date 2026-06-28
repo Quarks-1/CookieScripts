@@ -32,5 +32,5 @@ export function useUpdateCheck() {
     void refresh();
   }, [refresh]);
 
-  return { installedVersion, checking, updateAvailable, releaseUrl, refresh };
+  return { installedVersion, checking, updateAvailable, releaseUrl };
 }

@@ -1,5 +1,3 @@
-export const SELECTOR_VERSION = 3;
-
 /** Button selectors searched only inside main product fulfillment areas. */
 export const DEFAULT_ADD_TO_CART_SELECTORS = [
   'button[id^="addToCartButtonOrTextIdFor"]',

@@ -34,7 +34,8 @@ function isRetailerContentMessage(message: RuntimeMessage): message is RetailerT
     message.type === "RETAILER_GET_AUTO_CONFIG" ||
     message.type === "RETAILER_SET_REFRESH_INTERVAL" ||
     message.type === "RETAILER_HARD_RELOAD" ||
-    message.type === "RETAILER_PING"
+    message.type === "RETAILER_PING" ||
+    message.type === "RETAILER_UI_STATE"
   );
 }
 
@@ -49,7 +50,10 @@ function isUiMessage(message: RuntimeMessage): message is UiToBackground {
     message.type === "SET_RETAILER_AUTO_ENABLED" ||
     message.type === "SET_RETAILER_REFRESH_INTERVAL" ||
     message.type === "CLEAR_RETAILER_PROFILE" ||
-    message.type === "RETAILER_ARM_UI"
+    message.type === "RETAILER_START_MANUAL_AUTO" ||
+    message.type === "RETAILER_STOP_MANUAL_AUTO" ||
+    message.type === "RETAILER_TOGGLE_RECORDING" ||
+    message.type === "RETAILER_SAVE_RECORDING"
   );
 }
 
@@ -96,5 +100,3 @@ export async function handleMessage(
     return { ok: false, error: error instanceof Error ? error.message : "Handler failed" };
   }
 }
-
-export { buildStatus } from "@ext/background/status.ts";

@@ -102,21 +102,3 @@ export function isCartConfirmed(
   const after = readCartCountFromDocument(doc);
   return cartCountIncreased(baselineCount, after, minDelta) || hasCartAddSuccessUi(doc);
 }
-
-export async function waitForCartConfirmation(
-  baselineCount: number,
-  minDelta: number,
-  timeoutMs: number,
-  doc: Document = document,
-): Promise<boolean> {
-  const deadline = Date.now() + timeoutMs;
-
-  while (Date.now() < deadline) {
-    if (isCartConfirmed(doc, baselineCount, minDelta)) {
-      return true;
-    }
-    await new Promise((resolve) => setTimeout(resolve, 300));
-  }
-
-  return false;
-}

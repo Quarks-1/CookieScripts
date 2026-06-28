@@ -22,6 +22,7 @@ import {
   sendCandidateLinks,
   sendChannelInactive,
 } from "@ext/lib/messages.ts";
+import { sleep } from "@ext/lib/sleep.ts";
 
 const SEEN_MESSAGE_ID_LIMIT = 2000;
 const WATCH_CONFIG_MAX_ATTEMPTS = 3;
@@ -61,10 +62,6 @@ function endSession(): void {
   session.seenMessageIds.clear();
   unhookNavigation?.();
   unhookNavigation = null;
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function clearMessageBootstrap(): void {

@@ -1,4 +1,8 @@
 import type { AutomationStep } from "@ext/types/retailer.ts";
+import {
+  DEFAULT_ADD_TO_CART_SELECTORS,
+  SHIP_IT_SELECTORS,
+} from "@ext/lib/retailer/selectors.ts";
 
 export const CHECKOUT_START_URL = "https://www.target.com/checkout/start";
 
@@ -6,19 +10,13 @@ export function defaultTargetAutomationSteps(): AutomationStep[] {
   return [
     {
       type: "click",
-      selectors: ['button[data-test="shipItButton"]'],
+      selectors: [...SHIP_IT_SELECTORS],
       label: "Ship it",
       optional: true,
     },
     {
       type: "keyboard_enter_hold",
-      selectors: [
-        'button[id^="addToCartButtonOrTextIdFor"]',
-        'button[data-test="shippingButton"]',
-        'button[data-test="addToCartButton"]',
-        'button[data-test="addToCartBtn"]',
-        'button[data-test="orderPickupButton"]',
-      ],
+      selectors: [...DEFAULT_ADD_TO_CART_SELECTORS],
       holdMs: 400,
     },
     {

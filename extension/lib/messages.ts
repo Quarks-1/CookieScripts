@@ -1,4 +1,5 @@
 import { upsertChannelDomains } from "@ext/lib/channel-targets.ts";
+import { sleep } from "@ext/lib/sleep.ts";
 import type {
   BackgroundResponse,
   ContentToBackground,
@@ -72,10 +73,6 @@ export async function requestWatchConfig(channelId: string): Promise<WatchConfig
     }
     throw error;
   }
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export async function sendChannelInactive(): Promise<void> {

@@ -55,18 +55,3 @@ export function validatePersistedTargets(targets: ChannelTarget[]): string | nul
   }
   return null;
 }
-
-/** @deprecated Use validatePersistedTargets */
-export function validateChannelTargets(targets: ChannelTarget[]): string | null {
-  if (!targets.length) {
-    return "Add at least one channel";
-  }
-  return validatePersistedTargets(targets);
-}
-
-export function assertChannelTargets(targets: ChannelTarget[]): void {
-  const error = validatePersistedTargets(targets);
-  if (error) {
-    throw new Error(error);
-  }
-}

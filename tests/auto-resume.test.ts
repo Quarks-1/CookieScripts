@@ -4,8 +4,10 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
 import {
-  clearRetailerAutoResume,
+  clearRetailerAutoUserStopped,
   ensureRetailerAutoResume,
+  isRetailerAutoUserStopped,
+  markRetailerAutoUserStopped,
   productPathFromUrl,
   readRetailerAutoResume,
   shouldResumeRetailerAuto,
@@ -34,7 +36,17 @@ describe("auto-resume", () => {
 
   it("clears resume state on stop", () => {
     ensureRetailerAutoResume("222", PAGE_URL);
-    clearRetailerAutoResume();
+    markRetailerAutoUserStopped();
     expect(readRetailerAutoResume()).toBeNull();
+    expect(isRetailerAutoUserStopped()).toBe(true);
+    expect(shouldResumeRetailerAuto(PAGE_URL)).toBeNull();
+  });
+
+  it("allows resume again after user stop is cleared", () => {
+    ensureRetailerAutoResume("222", PAGE_URL);
+    markRetailerAutoUserStopped();
+    clearRetailerAutoUserStopped();
+    startRetailerAutoResume("222", PAGE_URL);
+    expect(shouldResumeRetailerAuto(PAGE_URL)?.channel_id).toBe("222");
   });
 });

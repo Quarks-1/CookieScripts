@@ -10,7 +10,7 @@ Chrome MV3 extension that auto-opens allowlisted product links from Discord web 
 - **Popup only** — no options page. Global enable slider; per-channel `allowed_domains` edited for the **active tab's channel** only.
 - When enabled on a Discord channel tab, the extension **auto-scans** messages. Empty allowlist = observe but do not open links.
 - Matched links open via `chrome.tabs.create({ active: false })` in the service worker.
-- Distribution: manual zip from [GitHub Releases](https://github.com/Quarks-1/CookieScripts/releases) + popup update nudge (not Chrome Web Store).
+- Distribution: manual zip from [GitHub Releases](https://github.com/Quarks-1/CookieScripts/releases) + side panel update nudge (not Chrome Web Store).
 
 ### BUILD.md vs reality
 
@@ -47,9 +47,12 @@ flowchart LR
 | DOM selectors | `extension/content/selectors.ts` | **Only** Discord CSS selectors; bump `SELECTOR_VERSION` |
 | Link extraction | `extension/content/extract.ts` | Use `textContent`, not `innerHTML` |
 | Detected-domain scan | `extension/content/detected-domains.ts` | Page-load link suggestions for popup |
-| Background | `extension/background/handlers.ts` | Message routing, tab opening, status |
+| Background router | `extension/background/handlers.ts` | Routes runtime messages to handler modules |
+| Discord / link handlers | `extension/background/discord-handlers.ts`, `open-product-link.ts` | Channel watch, candidate links, tab/window opening |
+| Retailer handlers | `extension/background/retailer-handlers.ts`, `retailer-runtime-state.ts` | Target auto queue, recording, tab-ready |
+| Popup / status handlers | `extension/background/ui-handlers.ts`, `status.ts` | Settings, history, `buildStatus` for popup |
 | Pure logic | `extension/lib/*` | Testable; minimize `chrome.*` in lib modules |
-| Popup UI | `ui/popup/` | Hooks in `hooks/`, sections in `components/` |
+| Popup UI | `ui/popup/` + `ui/sidepanel/` | Same React app; side panel is the primary UI (toolbar icon) |
 | Shared UI | `ui/shared/` | `DomainPills`, `LinkHistory`, `EnableSlider` |
 | Dev UI preview | `ui/dev/` + `npm run dev:ui` | Mocked `chrome` APIs |
 | Tests | `tests/` | Vitest; `happy-dom` for DOM tests |
@@ -67,7 +70,7 @@ flowchart LR
 
 ## Runtime messages
 
-Defined in `extension/types/index.ts`. Content → background: `CHANNEL_ACTIVE`, `CHANNEL_INACTIVE`, `CANDIDATE_LINKS`, `ADD_ALLOWED_DOMAIN`, `IGNORE_DOMAIN`. Retailer content → background: `RETAILER_PING`, `RETAILER_AUTO_STATUS`, `RETAILER_RECORDING_*`. Background → retailer content: `RETAILER_START_AUTO`, `RETAILER_ARM_UI`. Popup ↔ background: `GET_STATUS`, `GET_SETTINGS`, `SAVE_SETTINGS`, `GET_HISTORY`, `CLEAR_HISTORY`, `GET_DETECTED_DOMAINS`, `SET_RETAILER_AUTO_ENABLED`, `CLEAR_RETAILER_PROFILE`. **Content script never opens tabs** — delegate to the service worker.
+Defined in `extension/types/index.ts`. Content → background: `CHANNEL_ACTIVE`, `CHANNEL_INACTIVE`, `CANDIDATE_LINKS`, `ADD_ALLOWED_DOMAIN`, `IGNORE_DOMAIN`. Retailer content → background: `RETAILER_PING`, `RETAILER_AUTO_STATUS`, `RETAILER_RECORDING_*`. Background → retailer content: `RETAILER_START_AUTO`, `RETAILER_START_MANUAL_AUTO`, `RETAILER_STOP_AUTO`, `RETAILER_TOGGLE_RECORDING`, `RETAILER_SAVE_RECORDING`. Popup ↔ background: `GET_STATUS`, `GET_SETTINGS`, `SAVE_SETTINGS`, `GET_HISTORY`, `CLEAR_HISTORY`, `GET_DETECTED_DOMAINS`, `SET_RETAILER_AUTO_ENABLED`, `SET_RETAILER_REFRESH_INTERVAL`, `RETAILER_START_MANUAL_AUTO`, `RETAILER_STOP_MANUAL_AUTO`, `RETAILER_TOGGLE_RECORDING`, `RETAILER_SAVE_RECORDING`, `CLEAR_RETAILER_PROFILE`. **Content script never opens tabs** — delegate to the service worker.
 
 ## Target Auto Mode (retailer)
 
@@ -83,7 +86,7 @@ Per-channel `retailer_auto_enabled` on `ChannelTarget` (visible when `target.com
 6. **Domain suggestions** — Canonicalize CDN/affiliate hosts via `suggestion-domains.ts` (`CANONICAL_SUFFIXES`); filter noise via `blocked-domains.ts` and `ignored-domains.ts`.
 7. **No Discord token** — Never add `cookies`, `webRequest`, or `<all_urls>` permissions.
 8. **CRXJS manifest** — Root `manifest.json` references **source** `.ts` / `.html` entrypoints, not `dist/` paths.
-9. **Version check** — Conditional GET to GitHub on every popup open (ETag); 304 reuses cache. No time-based skip (`check-for-update.ts`).
+9. **Version check** — Conditional GET to GitHub on every side panel open (ETag); 304 reuses cache. No time-based skip (`check-for-update.ts`).
 10. **After service-worker changes** — Reload on `chrome://extensions`; refresh Discord tabs to avoid stale content scripts.
 
 ## Dev & test
@@ -122,6 +125,6 @@ When changing link parsing, validation, or domain matching, check BUILD.md “Lo
 Standard commands live in the `Dev & test` section above and in `package.json`. Notes below are non-obvious caveats for running/testing in this VM.
 
 - **Loading the built extension**: `npm run build` emits to `dist/` with `manifest.json` at its root; load it via `chrome://extensions` → Developer mode → Load unpacked → select `/workspace/dist`. The service worker card shows "service worker (inactive)" until woken — that is normal MV3 behavior, not an error.
-- **Opening the popup**: Chrome blocks navigating to `chrome-extension://<id>/ui/popup/index.html` directly (`ERR_BLOCKED_BY_CLIENT`). Open the popup by pinning the extension and clicking its toolbar icon instead.
+- **Opening the UI**: Click the toolbar icon to open the **side panel** (persists across tab reloads). `chrome-extension://<id>/ui/sidepanel/index.html` is blocked if navigated to directly (`ERR_BLOCKED_BY_CLIENT`).
 - **Testing the per-channel domain editor and link auto-opening requires a logged-in Discord channel tab.** `buildStatus` derives `active_channel_id` from the active tab's `https://discord.com/channels/<guild>/<channel>` URL; without a Discord session, Discord redirects to login so no channel is detected and the popup shows "No Discord tab" with the domains section disabled. To exercise the domain-editing UI against the real React code without Discord, run `npm run dev:ui` (mocked `chrome` APIs, scenario buttons in the bottom toolbar).
 - **Popup-only flows that work without Discord login**: enable/disable toggle (persists via `SAVE_SETTINGS` → `chrome.storage.local`), the GitHub version check (live GET to `api.github.com`), and link history. These are sufficient to confirm the popup ↔ service worker ↔ storage path end-to-end.

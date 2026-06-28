@@ -9,6 +9,20 @@ const activeJobs = new Set<string>();
 const tabChannelMap = new Map<number, string>();
 const windowTabMap = new Map<number, number>();
 
+export type RetailerTabUiState = {
+  status: string;
+  running: boolean;
+  recording: boolean;
+};
+
+const tabUiState = new Map<number, RetailerTabUiState>();
+
+const DEFAULT_TAB_UI_STATE: RetailerTabUiState = {
+  status: "Ready — open a product page and press Start",
+  running: false,
+  recording: false,
+};
+
 export function tryAcquireRetailerJob(channelId: string): boolean {
   if (activeJobs.has(channelId)) {
     return false;
@@ -39,6 +53,7 @@ export function onRetailerTabRemoved(tabId: number): void {
     releaseRetailerJob(channelId);
   }
   tabChannelMap.delete(tabId);
+  tabUiState.delete(tabId);
   for (const [windowId, mappedTabId] of windowTabMap.entries()) {
     if (mappedTabId === tabId) {
       windowTabMap.delete(windowId);
@@ -71,4 +86,13 @@ export function clearRetailerRuntimeState(): void {
   activeJobs.clear();
   tabChannelMap.clear();
   windowTabMap.clear();
+  tabUiState.clear();
+}
+
+export function setRetailerTabUiState(tabId: number, state: RetailerTabUiState): void {
+  tabUiState.set(tabId, state);
+}
+
+export function getRetailerTabUiState(tabId: number): RetailerTabUiState {
+  return tabUiState.get(tabId) ?? DEFAULT_TAB_UI_STATE;
 }

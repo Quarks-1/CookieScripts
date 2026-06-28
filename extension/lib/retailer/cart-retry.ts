@@ -1,6 +1,4 @@
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+import { sleep } from "@ext/lib/sleep.ts";
 
 export type RetryUntilConfirmedOptions = {
   retryIntervalMs: number;

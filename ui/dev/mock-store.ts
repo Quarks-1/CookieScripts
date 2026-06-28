@@ -72,6 +72,7 @@ function notifyStorage(changes: Record<string, chrome.storage.StorageChange>) {
 }
 
 function buildStatus(): ExtensionStatus {
+  const retailerTabDetected = popupScenario === "retailer_auto";
   const allowedDomains =
     popupScenario === "watching" || popupScenario === "retailer_auto"
       ? getChannelTarget(settings, SAMPLE_CHANNEL_ID)?.allowed_domains ?? ["target.com"]
@@ -85,6 +86,7 @@ function buildStatus(): ExtensionStatus {
     return {
       enabled: false,
       discord_tab_detected: popupScenario !== "no_discord",
+      retailer_tab_detected: retailerTabDetected,
       active_channel_id: popupScenario === "no_discord" ? null : SAMPLE_CHANNEL_ID,
       is_active: false,
       has_allowed_domains: false,
@@ -92,16 +94,25 @@ function buildStatus(): ExtensionStatus {
       retailer_auto_enabled: false,
       retailer_steps_recorded: 0,
       retailer_refresh_interval_sec: 0,
+      retailer_manual_status: "",
+      retailer_manual_running: false,
+      retailer_recording: false,
     };
   }
 
   const refreshIntervalSec = getRetailerRefreshIntervalSec(settings, SAMPLE_CHANNEL_ID);
+  const manualUi = {
+    retailer_manual_status: retailerTabDetected ? "Ready — press Start Auto Mode" : "",
+    retailer_manual_running: false,
+    retailer_recording: false,
+  };
 
   switch (popupScenario) {
     case "no_discord":
       return {
         enabled: true,
         discord_tab_detected: false,
+        retailer_tab_detected: retailerTabDetected,
         active_channel_id: null,
         is_active: false,
         has_allowed_domains: false,
@@ -109,11 +120,13 @@ function buildStatus(): ExtensionStatus {
         retailer_auto_enabled: false,
         retailer_steps_recorded: 0,
         retailer_refresh_interval_sec: 0,
+        ...manualUi,
       };
     case "active_no_domains":
       return {
         enabled: true,
         discord_tab_detected: true,
+        retailer_tab_detected: retailerTabDetected,
         active_channel_id: "999888777666555444",
         is_active: true,
         has_allowed_domains: false,
@@ -121,6 +134,7 @@ function buildStatus(): ExtensionStatus {
         retailer_auto_enabled: false,
         retailer_steps_recorded: 0,
         retailer_refresh_interval_sec: 0,
+        ...manualUi,
       };
     case "retailer_auto":
     case "watching":
@@ -128,6 +142,7 @@ function buildStatus(): ExtensionStatus {
       return {
         enabled: true,
         discord_tab_detected: true,
+        retailer_tab_detected: retailerTabDetected,
         active_channel_id: SAMPLE_CHANNEL_ID,
         is_active: true,
         has_allowed_domains: allowedDomains.length > 0,
@@ -135,6 +150,7 @@ function buildStatus(): ExtensionStatus {
         retailer_auto_enabled: retailerAutoEnabled,
         retailer_steps_recorded: retailerStepsRecorded,
         retailer_refresh_interval_sec: refreshIntervalSec,
+        ...manualUi,
       };
   }
 }
@@ -192,7 +208,10 @@ export function handleUiMessage(message: UiToBackground): BackgroundResponse {
     }
     case "GET_DETECTED_DOMAINS":
       return { ok: true, domains: ["target.com", "bestbuy.com"] };
-    case "RETAILER_ARM_UI":
+    case "RETAILER_START_MANUAL_AUTO":
+    case "RETAILER_STOP_MANUAL_AUTO":
+    case "RETAILER_TOGGLE_RECORDING":
+    case "RETAILER_SAVE_RECORDING":
       return { ok: true };
   }
 }

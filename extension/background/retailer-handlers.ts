@@ -1,6 +1,7 @@
 import {
   getRetailerTabChannel,
   releaseRetailerJob,
+  setRetailerTabUiState,
 } from "@ext/background/retailer-runtime-state.ts";
 import { getRetailerRefreshIntervalSec } from "@ext/lib/retailer/channel-config.ts";
 import { setRetailerRefreshIntervalForChannel } from "@ext/background/status.ts";
@@ -67,6 +68,14 @@ export async function handleRetailerMessage(
       ]);
 
       releaseRetailerJob(message.channel_id);
+      return { ok: true };
+    }
+    case "RETAILER_UI_STATE": {
+      setRetailerTabUiState(tabId, {
+        status: message.status,
+        running: message.running,
+        recording: message.recording,
+      });
       return { ok: true };
     }
   }

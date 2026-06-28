@@ -67,27 +67,3 @@ export function activateElement(element: HTMLElement): void {
     new MouseEvent("pointerup", { bubbles: true, cancelable: true, view: window }),
   );
 }
-
-export async function waitForActionable(
-  selectors: string[],
-  timeoutMs: number | null,
-  root: ParentNode = document,
-  shouldContinue: () => boolean = () => true,
-): Promise<HTMLElement | null> {
-  const deadline = timeoutMs === null ? null : Date.now() + timeoutMs;
-
-  while (deadline === null || Date.now() < deadline) {
-    if (!shouldContinue()) {
-      return null;
-    }
-
-    const element = queryActionable(selectors, root);
-    if (element) {
-      return element;
-    }
-
-    await new Promise((resolve) => setTimeout(resolve, 200));
-  }
-
-  return null;
-}

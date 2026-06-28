@@ -1,4 +1,5 @@
 import { buildStatus, setRetailerAutoEnabledForChannel, setRetailerRefreshIntervalForChannel } from "@ext/background/status.ts";
+import { sendToActiveRetailerTab } from "@ext/background/retailer-tab-message.ts";
 import { broadcastRetailerStopAuto } from "@ext/background/retailer-runtime-state.ts";
 import {
   clearHistory,
@@ -86,16 +87,16 @@ export async function handleUiMessage(
       }
       return { ok: true, domains: [] };
     }
-    case "RETAILER_ARM_UI": {
-      try {
-        await chrome.tabs.sendMessage(message.tab_id, { type: "RETAILER_ARM_UI" });
-        return { ok: true };
-      } catch (error) {
-        return {
-          ok: false,
-          error: error instanceof Error ? error.message : "Failed to arm retailer UI",
-        };
-      }
-    }
+    case "RETAILER_START_MANUAL_AUTO":
+      return sendToActiveRetailerTab(
+        { type: "RETAILER_START_MANUAL_AUTO" },
+        { bindManual: true },
+      );
+    case "RETAILER_STOP_MANUAL_AUTO":
+      return sendToActiveRetailerTab({ type: "RETAILER_STOP_AUTO" });
+    case "RETAILER_TOGGLE_RECORDING":
+      return sendToActiveRetailerTab({ type: "RETAILER_TOGGLE_RECORDING" });
+    case "RETAILER_SAVE_RECORDING":
+      return sendToActiveRetailerTab({ type: "RETAILER_SAVE_RECORDING" });
   }
 }

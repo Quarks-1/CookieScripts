@@ -12,9 +12,9 @@ import { maybeHardRefreshWhileWaiting } from "@ext/lib/retailer/page-refresh.ts"
 import { readRetailerAutoResume } from "@ext/lib/retailer/auto-resume.ts";
 import { activateElement } from "@ext/lib/retailer/dom.ts";
 import { runPlaybackEngine } from "@ext/lib/retailer/playback-engine.ts";
-import { resolveAutomationSteps } from "@ext/lib/retailer/resolve-steps.ts";
-import { DEFAULT_ADD_TO_CART_SELECTORS } from "@ext/content/retailer/selectors.ts";
-import type { AutomationStep, RetailerProfile } from "@ext/types/retailer.ts";
+import { DEFAULT_ADD_TO_CART_SELECTORS } from "@ext/lib/retailer/selectors.ts";
+import { sleep } from "@ext/lib/sleep.ts";
+import type { AutomationStep } from "@ext/types/retailer.ts";
 
 const OPTIONAL_CLICK_TIMEOUT_MS = 3_000;
 const POST_ACTION_DELAY_MS = 600;
@@ -26,10 +26,6 @@ export type AutomationPlaybackOptions = {
   getRefreshIntervalSec?: () => number;
   requestHardReload: () => Promise<void>;
 };
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 function cartMinDelta(steps: AutomationStep[]): number {
   const waitStep = steps.find((step) => step.type === "wait_for_cart_delta");
@@ -182,8 +178,4 @@ export async function runAutomationPlayback(
   }
 
   return addResult;
-}
-
-export function resolvePlaybackSteps(profile?: RetailerProfile | null): AutomationStep[] {
-  return resolveAutomationSteps(profile);
 }

@@ -34,16 +34,11 @@ export interface HistoryItem {
   error?: string;
 }
 
-/** Documentation shape — persisted as separate storage keys, not one blob load. */
-export interface PersistedState {
-  settings: ExtensionSettings;
-  history: HistoryItem[];
-  recentUrls: string[];
-}
-
 export interface ExtensionStatus {
   enabled: boolean;
   discord_tab_detected: boolean;
+  /** Active tab is on target.com (or affiliate redirect to Target). */
+  retailer_tab_detected: boolean;
   active_channel_id: string | null;
   is_active: boolean;
   has_allowed_domains: boolean;
@@ -51,6 +46,10 @@ export interface ExtensionStatus {
   retailer_auto_enabled: boolean;
   retailer_steps_recorded: number;
   retailer_refresh_interval_sec: number;
+  /** Live status from the active Target tab's automation session. */
+  retailer_manual_status: string;
+  retailer_manual_running: boolean;
+  retailer_recording: boolean;
 }
 
 export type ContentToBackground =
@@ -73,7 +72,13 @@ export type RetailerToBackground =
   | { type: "RETAILER_GET_AUTO_CONFIG"; channel_id: string }
   | { type: "RETAILER_SET_REFRESH_INTERVAL"; channel_id: string; interval_sec: number }
   | { type: "RETAILER_HARD_RELOAD" }
-  | { type: "RETAILER_PING" };
+  | { type: "RETAILER_PING" }
+  | {
+      type: "RETAILER_UI_STATE";
+      status: string;
+      running: boolean;
+      recording: boolean;
+    };
 
 export type BackgroundToContent =
   | { type: "WATCH_CONFIG"; channel_id: string | null; allowed_domains: string[] }
@@ -86,8 +91,10 @@ export type BackgroundToContent =
       url: string;
       source: "discord" | "manual";
     }
-  | { type: "RETAILER_ARM_UI" }
-  | { type: "RETAILER_STOP_AUTO" };
+  | { type: "RETAILER_STOP_AUTO" }
+  | { type: "RETAILER_START_MANUAL_AUTO" }
+  | { type: "RETAILER_TOGGLE_RECORDING" }
+  | { type: "RETAILER_SAVE_RECORDING" };
 
 export type UiToBackground =
   | { type: "GET_STATUS" }
@@ -99,7 +106,10 @@ export type UiToBackground =
   | { type: "SET_RETAILER_AUTO_ENABLED"; channel_id: string; enabled: boolean }
   | { type: "SET_RETAILER_REFRESH_INTERVAL"; channel_id: string; interval_sec: number }
   | { type: "CLEAR_RETAILER_PROFILE" }
-  | { type: "RETAILER_ARM_UI"; tab_id: number };
+  | { type: "RETAILER_START_MANUAL_AUTO" }
+  | { type: "RETAILER_STOP_MANUAL_AUTO" }
+  | { type: "RETAILER_TOGGLE_RECORDING" }
+  | { type: "RETAILER_SAVE_RECORDING" };
 
 export type RuntimeMessage =
   | ContentToBackground

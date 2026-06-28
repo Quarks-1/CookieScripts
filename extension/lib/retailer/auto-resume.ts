@@ -1,4 +1,5 @@
 export const RETAILER_AUTO_RESUME_KEY = "cookiescripts:retailerAutoResume";
+export const RETAILER_AUTO_USER_STOPPED_KEY = "cookiescripts:retailerAutoUserStopped";
 
 export type RetailerAutoResume = {
   channel_id: string;
@@ -42,6 +43,19 @@ export function clearRetailerAutoResume(): void {
   sessionStorage.removeItem(RETAILER_AUTO_RESUME_KEY);
 }
 
+export function markRetailerAutoUserStopped(): void {
+  sessionStorage.setItem(RETAILER_AUTO_USER_STOPPED_KEY, "1");
+  clearRetailerAutoResume();
+}
+
+export function clearRetailerAutoUserStopped(): void {
+  sessionStorage.removeItem(RETAILER_AUTO_USER_STOPPED_KEY);
+}
+
+export function isRetailerAutoUserStopped(): boolean {
+  return sessionStorage.getItem(RETAILER_AUTO_USER_STOPPED_KEY) === "1";
+}
+
 export function ensureRetailerAutoResume(channelId: string, pageUrl: string): void {
   const productPath = productPathFromUrl(pageUrl);
   const existing = readRetailerAutoResume();
@@ -75,6 +89,9 @@ export function markRetailerAutoRefreshed(): void {
 }
 
 export function shouldResumeRetailerAuto(pageUrl: string): RetailerAutoResume | null {
+  if (isRetailerAutoUserStopped()) {
+    return null;
+  }
   const resume = readRetailerAutoResume();
   if (!resume) {
     return null;

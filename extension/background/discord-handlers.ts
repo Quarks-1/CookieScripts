@@ -1,4 +1,4 @@
-import { parseChannelId, resolveContentChannel } from "@ext/lib/channels.ts";
+import { resolveContentChannel } from "@ext/lib/channels.ts";
 import { addChannelDomain, getChannelDomains } from "@ext/lib/channel-targets.ts";
 import { decideLinkActions } from "@ext/lib/process-links.ts";
 import { addIgnoredDomain } from "@ext/lib/ignored-domains.ts";
@@ -168,5 +168,3 @@ export async function handleDiscordMessage(
     }
   }
 }
-
-export { parseChannelId };

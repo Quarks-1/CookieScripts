@@ -9,7 +9,7 @@ import {
   parseTargetTcinFromUrl,
   resolveMainAddToCartWaitState,
 } from "@ext/lib/retailer/main-add-to-cart.ts";
-import { DEFAULT_ADD_TO_CART_SELECTORS } from "@ext/content/retailer/selectors.ts";
+import { DEFAULT_ADD_TO_CART_SELECTORS } from "@ext/lib/retailer/selectors.ts";
 
 const PAGE_URL =
   "https://www.target.com/p/restockr/-/A-1011209279?nrtv_cid=vt3w5xhj28kwr";

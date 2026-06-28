@@ -8,40 +8,59 @@ export function useRetailerAutoMode(
   channelId: string | null,
   enabled: boolean,
   domains: string[],
+  retailerTabDetected: boolean,
 ) {
   const [retailerAutoEnabled, setRetailerAutoEnabled] = useState(false);
   const [refreshIntervalSec, setRefreshIntervalSec] = useState(0);
+  const [manualStatus, setManualStatus] = useState("");
+  const [manualRunning, setManualRunning] = useState(false);
+  const [recording, setRecording] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [savingRefresh, setSavingRefresh] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
   const [stepsRecorded, setStepsRecorded] = useState(0);
   const [clearing, setClearing] = useState(false);
+  const [acting, setActing] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
 
-  const canShow = allowlistIncludesRetailerHost(domains);
+  const canShowDiscordAuto = allowlistIncludesRetailerHost(domains);
   const settingsChannelId = channelId ?? "manual";
 
   const refresh = useCallback(async () => {
     const response = await sendToBackground<BackgroundResponse>({ type: "GET_STATUS" });
     if ("status" in response && response.ok) {
       setRefreshIntervalSec(response.status.retailer_refresh_interval_sec);
-      if (canShow) {
+      setManualStatus(response.status.retailer_manual_status);
+      setManualRunning(response.status.retailer_manual_running);
+      setRecording(response.status.retailer_recording);
+      if (canShowDiscordAuto) {
         setRetailerAutoEnabled(response.status.retailer_auto_enabled);
         setStepsRecorded(response.status.retailer_steps_recorded);
       } else {
         setRetailerAutoEnabled(false);
-        setStepsRecorded(0);
+        setStepsRecorded(response.status.retailer_steps_recorded);
       }
     }
-  }, [canShow]);
+  }, [canShowDiscordAuto]);
 
   useEffect(() => {
     void refresh();
-  }, [channelId, domains, enabled, refresh]);
+  }, [channelId, domains, enabled, retailerTabDetected, refresh]);
+
+  useEffect(() => {
+    if (!retailerTabDetected || (!manualRunning && !acting)) {
+      return;
+    }
+    const timer = setInterval(() => {
+      void refresh();
+    }, 500);
+    return () => clearInterval(timer);
+  }, [retailerTabDetected, manualRunning, acting, refresh]);
 
   const handleChange = useCallback(
     async (next: boolean) => {
-      if (channelId === null || !enabled || !canShow) {
+      if (channelId === null || !enabled || !canShowDiscordAuto) {
         return;
       }
       setSaving(true);
@@ -64,7 +83,7 @@ export function useRetailerAutoMode(
         setSaving(false);
       }
     },
-    [channelId, enabled, canShow, refresh],
+    [channelId, enabled, canShowDiscordAuto, refresh],
   );
 
   const handleRefreshIntervalChange = useCallback(
@@ -96,6 +115,25 @@ export function useRetailerAutoMode(
     [enabled, settingsChannelId, refresh],
   );
 
+  const runTabAction = useCallback(
+    async (type: "RETAILER_START_MANUAL_AUTO" | "RETAILER_STOP_MANUAL_AUTO" | "RETAILER_TOGGLE_RECORDING" | "RETAILER_SAVE_RECORDING") => {
+      setActing(true);
+      setActionError(null);
+      try {
+        const response = await sendToBackground<BackgroundResponse>({ type });
+        if ("ok" in response && response.ok === false) {
+          throw new Error(response.error);
+        }
+        await refresh();
+      } catch (err) {
+        setActionError(err instanceof Error ? err.message : "Action failed");
+      } finally {
+        setActing(false);
+      }
+    },
+    [refresh],
+  );
+
   const handleClearRecording = useCallback(async () => {
     setClearing(true);
     try {
@@ -107,19 +145,28 @@ export function useRetailerAutoMode(
   }, [refresh]);
 
   return {
-    canShow,
+    canShowDiscordAuto,
     retailerAutoEnabled,
     refreshIntervalSec,
+    manualStatus,
+    manualRunning,
+    recording,
     stepsRecorded,
     saving,
     saveError,
     savingRefresh,
     refreshError,
     clearing,
-    disabled: !enabled || channelId === null || !canShow,
+    acting,
+    actionError,
+    disabled: !enabled || channelId === null || !canShowDiscordAuto,
     refreshDisabled: !enabled,
     handleChange,
     handleRefreshIntervalChange,
+    handleStartManual: () => runTabAction("RETAILER_START_MANUAL_AUTO"),
+    handleStopManual: () => runTabAction("RETAILER_STOP_MANUAL_AUTO"),
+    handleToggleRecording: () => runTabAction("RETAILER_TOGGLE_RECORDING"),
+    handleSaveRecording: () => runTabAction("RETAILER_SAVE_RECORDING"),
     handleClearRecording,
   };
 }
