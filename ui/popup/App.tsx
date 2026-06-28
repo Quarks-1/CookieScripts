@@ -17,16 +17,19 @@ import { useLinkHistory } from "./hooks/useLinkHistory.ts";
 import { usePopupStatus } from "./hooks/usePopupStatus.ts";
 import { useRetailerAutoMode } from "./hooks/useRetailerAutoMode.ts";
 import { useUpdateCheck } from "./hooks/useUpdateCheck.ts";
+import { isSectionVisible } from "./sidepanel-layout.ts";
 
 export default function App() {
   const { status, loading, error, refresh } = usePopupStatus();
+  const discordSurface = status?.active_tab_kind === "discord_channel";
+  const retailerSurface = status?.active_tab_kind === "retailer";
   const domainsEditor = useChannelDomainsEditor(
-    status?.active_channel_id ?? null,
-    status?.enabled ?? false,
+    discordSurface ? (status?.active_channel_id ?? null) : null,
+    (status?.enabled ?? false) && discordSurface,
   );
   const detectedLinks = useDetectedLinks(
-    status?.active_channel_id ?? null,
-    status?.enabled ?? false,
+    discordSurface ? (status?.active_channel_id ?? null) : null,
+    (status?.enabled ?? false) && discordSurface,
     domainsEditor.domains,
   );
   const linkHistory = useLinkHistory();
@@ -35,7 +38,7 @@ export default function App() {
     status?.active_channel_id ?? null,
     status?.enabled ?? false,
     domainsEditor.domains,
-    status?.retailer_tab_detected ?? false,
+    retailerSurface,
   );
   const [enabling, setEnabling] = useState(false);
   const [enableError, setEnableError] = useState<string | null>(null);
@@ -104,20 +107,24 @@ export default function App() {
 
       {status && !loading && (
         <div className="mt-4 space-y-4">
-          <section aria-label="Status">
-            <WatchStatusBadge status={status} />
-          </section>
+          {isSectionVisible("watchStatus", status) && (
+            <section aria-label="Status">
+              <WatchStatusBadge status={status} />
+            </section>
+          )}
 
-          <ChannelDomainsSection
-            channelId={status.active_channel_id}
-            domains={domainsEditor.domains}
-            disabled={domainsEditor.disabled || enabling}
-            saving={domainsEditor.saving}
-            saveError={domainsEditor.saveError}
-            onDomainsChange={domainsEditor.handleDomainsChange}
-          />
+          {isSectionVisible("channelDomains", status) && (
+            <ChannelDomainsSection
+              channelId={status.active_channel_id}
+              domains={domainsEditor.domains}
+              disabled={domainsEditor.disabled || enabling}
+              saving={domainsEditor.saving}
+              saveError={domainsEditor.saveError}
+              onDomainsChange={domainsEditor.handleDomainsChange}
+            />
+          )}
 
-          {status.enabled && status.retailer_tab_detected && (
+          {isSectionVisible("retailerAuto", status) && (
             <RetailerAutoModeSection
               retailerAutoEnabled={retailerAuto.retailerAutoEnabled}
               refreshIntervalSec={retailerAuto.refreshIntervalSec}
@@ -148,48 +155,66 @@ export default function App() {
             />
           )}
 
-          <DetectedLinksSection
-            domains={detectedLinks.domains}
-            loading={detectedLinks.loading}
-            acting={detectedLinks.acting}
-            error={detectedLinks.error}
-            disabled={detectedLinks.disabled || enabling}
-            onAccept={(domain) => void detectedLinks.handleAccept(domain)}
-            onDismiss={(domain) => void detectedLinks.handleDismiss(domain)}
-            onRefresh={() => void detectedLinks.refresh()}
-          />
+          {isSectionVisible("detectedLinks", status) && (
+            <DetectedLinksSection
+              domains={detectedLinks.domains}
+              loading={detectedLinks.loading}
+              acting={detectedLinks.acting}
+              error={detectedLinks.error}
+              disabled={detectedLinks.disabled || enabling}
+              onAccept={(domain) => void detectedLinks.handleAccept(domain)}
+              onDismiss={(domain) => void detectedLinks.handleDismiss(domain)}
+              onRefresh={() => void detectedLinks.refresh()}
+            />
+          )}
 
-          <section aria-labelledby="link-history-heading">
-            <div className="flex items-center justify-between gap-2">
-              <h2 id="link-history-heading" className="text-sm font-medium text-zinc-400">
-                Link history
+          {isSectionVisible("globalHint", status) && (
+            <section
+              aria-labelledby="global-hint-heading"
+              className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-3"
+            >
+              <h2 id="global-hint-heading" className="sr-only">
+                Discord setup
               </h2>
-              <button
-                type="button"
-                disabled={linkHistory.clearing || linkHistory.history.length === 0}
-                onClick={() => void linkHistory.handleClearHistory()}
-                className="rounded border border-zinc-700 px-2 py-0.5 text-xs text-zinc-400 disabled:opacity-50"
-              >
-                {linkHistory.clearing ? "Clearing…" : "Clear"}
-              </button>
-            </div>
-            <div className="mt-2 max-h-48 overflow-y-auto">
-              {linkHistory.loading ? (
-                <p className="text-sm text-zinc-500">Loading history…</p>
-              ) : (
-                <LinkHistory
-                  items={linkHistory.history}
-                  variant="compact"
-                  emptyMessage="No links opened yet."
-                />
-              )}
-            </div>
-            {linkHistory.clearMessage && (
-              <p role="status" aria-live="polite" className="mt-2 text-xs text-zinc-500">
-                {linkHistory.clearMessage}
+              <p className="text-sm text-zinc-500">
+                Open a Discord channel tab to configure domains and scan for links.
               </p>
-            )}
-          </section>
+            </section>
+          )}
+
+          {isSectionVisible("linkHistory", status) && (
+            <section aria-labelledby="link-history-heading">
+              <div className="flex items-center justify-between gap-2">
+                <h2 id="link-history-heading" className="text-sm font-medium text-zinc-400">
+                  Link history
+                </h2>
+                <button
+                  type="button"
+                  disabled={linkHistory.clearing || linkHistory.history.length === 0}
+                  onClick={() => void linkHistory.handleClearHistory()}
+                  className="rounded border border-zinc-700 px-2 py-0.5 text-xs text-zinc-400 disabled:opacity-50"
+                >
+                  {linkHistory.clearing ? "Clearing…" : "Clear"}
+                </button>
+              </div>
+              <div className="mt-2 max-h-48 overflow-y-auto">
+                {linkHistory.loading ? (
+                  <p className="text-sm text-zinc-500">Loading history…</p>
+                ) : (
+                  <LinkHistory
+                    items={linkHistory.history}
+                    variant="compact"
+                    emptyMessage="No links opened yet."
+                  />
+                )}
+              </div>
+              {linkHistory.clearMessage && (
+                <p role="status" aria-live="polite" className="mt-2 text-xs text-zinc-500">
+                  {linkHistory.clearMessage}
+                </p>
+              )}
+            </section>
+          )}
         </div>
       )}
     </main>

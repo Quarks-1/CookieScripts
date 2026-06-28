@@ -5,7 +5,8 @@ import {
   setRetailerAutoEnabled,
   setRetailerRefreshInterval,
 } from "@ext/lib/retailer/channel-config.ts";
-import { allowlistIncludesRetailerHost, isRetailerUrl } from "@ext/lib/retailer/host.ts";
+import { resolveActiveTabKind } from "@ext/lib/active-tab.ts";
+import { allowlistIncludesRetailerHost } from "@ext/lib/retailer/host.ts";
 import { getRetailerProfiles, getSettings, saveSettings } from "@ext/lib/storage.ts";
 import { activeChannels } from "@ext/background/runtime-state.ts";
 import { getRetailerTabUiState } from "@ext/background/retailer-runtime-state.ts";
@@ -39,8 +40,8 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     discordTabDetected = true;
   }
 
-  const retailerTabDetected =
-    activeTab?.url != null && activeTab.url.length > 0 && isRetailerUrl(activeTab.url);
+  const activeTabKind = resolveActiveTabKind(activeTab?.url);
+  const retailerTabDetected = activeTabKind === "retailer";
 
   const allowedDomains =
     activeChannelId !== null ? getChannelDomains(settings, activeChannelId) : [];
@@ -59,6 +60,7 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
 
   return {
     enabled: settings.enabled,
+    active_tab_kind: activeTabKind,
     discord_tab_detected: discordTabDetected,
     retailer_tab_detected: retailerTabDetected,
     active_channel_id: activeChannelId,
