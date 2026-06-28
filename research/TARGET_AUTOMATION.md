@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-28  
 **Method:** Live Puppeteer sessions against `target.com` (headless Chrome 131), network capture, in-page `fetch` probes, cross-check with CookieScripts retailer automation code.  
-**Raw captures:** `research/target-live/` (`atc-network.json`, `api-probes.json`, `summary.json`)
+**Raw captures:** `research/target-live/` (`atc-network.json`, `api-probes.json`, `drop-1011209279.json`, `summary.json`)
 
 ---
 
@@ -284,7 +284,155 @@ Existing implementation already matches this research:
 
 ---
 
-## 11. Legal / ToS note
+## 11. Drop / OOS PDP patterns — TCIN `1011209279` (Pokémon TCG)
+
+**URL:** `https://www.target.com/p/-/A-1011209279` (also `/p/restockr/-/A-…`)  
+**Product:** Pokémon Trading Card Game: First Partner Illustration Collection Series 2 — `$17.99`, purchase limit **2**, final sale / no returns  
+**Capture:** `research/target-live/drop-1011209279.json` (2026-06-28, post-drop OOS)  
+**Reference in-stock PDP:** Scotch tape `A-13356914` (same capture file, side-by-side)
+
+This TCIN is the canonical CookieScripts test fixture (`tests/main-add-to-cart.test.ts`) and represents **high-demand TCG drop** behavior, not a normal consumables PDP.
+
+### 11.1 Current OOS DOM (live)
+
+| Element | Drop OOS (`1011209279`) | In-stock ref (`13356914`) |
+|---------|-------------------------|---------------------------|
+| Main button id | `#addToCartButtonOrTextIdFor1011209279` | `#addToCartButtonOrTextIdFor13356914` |
+| Main `data-test` | **`null`** | `orderPickupButton` |
+| Main `disabled` | **`true`** | `false` |
+| Main label | “Add to cart” (still visible) | “Add to cart” |
+| Fulfillment tabs | **Absent** — section contains only the disabled ATC | `fulfillment-cell-pickup`, `-delivery`, `-shipping` all present |
+| Shipping section | `[data-test="@web/AddToCart/Fulfillment/ShippingSection"]` **missing** | N/A (tabs inline) |
+| Sticky bar CTA | **“Find alternative”** (enabled, not ATC) | “Qty1” + enabled ATC mirror |
+| Qty selector | **None** | `<select>` “Qty 1” |
+| `sign-in-to-buy-now` | **Absent** | Present (`data-test="sign-in-to-buy-now-button"`) |
+| Body copy | “Out of stock”, “Final sale item”, “Bestseller”, “New at Target” | Pickup/shipping ETA lines, no OOS |
+| `[data-test="outOfStockMessage"]` | **Not present** (OOS is plain text near price) | Not present on ref either |
+| `[data-test="NonbuyableSection"]` | **Present** | Absent |
+| Recommendation tiles | Enabled `chooseOptionsButton` on **other TCINs** below fold | Standard recs |
+
+**Critical trap:** Six+ enabled “Add to cart” buttons exist on the OOS drop page — all are **`chooseOptionsButton`** recommendation tiles (`addToCartButtonOrTextIdFor1009790281`, etc.). CookieScripts’ TCIN guard + exclusion zones correctly ignore these; a naive global `button:contains("Add to cart")` would cart the wrong SKU.
+
+### 11.2 Network on OOS drop page load
+
+| Request | Drop OOS behavior |
+|---------|-------------------|
+| `GET carts.../cart?client_feature=add_to_cart` | `204` (empty guest cart) |
+| Redsky `pdp_client_v1` | Initially `403` → captcha; after verify, `200` with product metadata |
+| Redsky `product_fulfillment_and_variation_hierarchy_v1` | `200` — see fulfillment JSON below |
+| Redsky `pdp_recommendations_placement_v1?placement_id=adapt_pdp_oos_01` | `200` — **OOS-specific** “Find alternative” carousel |
+| Redsky captcha / `RttCheck` / `AtaVerifyCaptcha` | **Heavy** — multiple round-trips on Pokémon PDP |
+| `POST carts.../cart_items` (probe) | **`424`** `INVENTORY_UNAVAILABLE` |
+
+**Redsky fulfillment (OOS, zip 20147, store 2272):**
+
+```json
+{
+  "is_out_of_stock_in_all_store_locations": true,
+  "sold_out": false,
+  "shipping_options": {
+    "availability_status": "OUT_OF_STOCK",
+    "available_to_promise_quantity": 0.0,
+    "reason_code": "INVENTORY_UNAVAILABLE"
+  },
+  "order_pickup": { "availability_status": "UNAVAILABLE" }
+}
+```
+
+**Cart API error body (OOS):**
+
+```json
+{
+  "code": "DEPENDENT_SERVICE_ERROR",
+  "alerts": [{
+    "code": "INVENTORY_UNAVAILABLE",
+    "message": "inventory is not available for this item",
+    "metadata": { "tcin": "1011209279" }
+  }]
+}
+```
+
+Compare in-stock Scotch tape: Redsky `shipping_options.availability_status: "IN_STOCK"`, `available_to_promise_quantity: 21`, cart `POST` → **`201`**.
+
+### 11.3 Drop-specific UI patterns (observed + inferred)
+
+| Pattern | Seen on `1011209279` now? | Notes |
+|---------|----------------------------|-------|
+| Disabled ATC + visible label | **Yes** | Button stays in DOM; `waiting_disabled` is correct |
+| No fulfillment tabs | **Yes** | Strong drop-OOS signal vs in-stock PDPs |
+| `adapt_pdp_oos_01` placement | **Yes** | Redsky `strategy_description: "Find alternative"` |
+| Sticky “Find alternative” | **Yes** | Do not click — opens alt-product UX |
+| `NonbuyableSection` | **Yes** | Only on buybox-collapsed / non-buyable state |
+| Final sale / no returns | **Yes** | `return_method: "No Return"` in Redsky |
+| Purchase limit 2 | In Redsky | Enforced at cart/checkout |
+| Countdown / “coming soon” | No | `street_date: 2026-06-19` already passed |
+| Virtual queue / waiting room | No | Used on **some** mega-drops (separate flow, not this PDP today) |
+| High-traffic modal | No | Community reports: “Please keep trying” during drops |
+| Sign-in-to-buy-now | No (OOS) | May appear when in-stock on other SKUs |
+| Notify me | No | Target email alerts lag real stock |
+
+**Inferred in-stock state during drop** (from Redsky deltas, community reports, recent verified reviews dated 2026-06-25–28):
+
+1. `#addToCartButtonOrTextIdFor1011209279` flips to **`disabled: false`** (likely `data-test="shippingButton"` or null).
+2. Fulfillment tabs **appear** with shipping/pickup `IN_STOCK` and ATP &gt; 0.
+3. Sticky bar shows **qty + enabled ATC**, not “Find alternative”.
+4. `adapt_pdp_oos_01` carousel may shrink or defer.
+5. `POST cart_items` returns **`201`** (with Shape `x-gyjwza5z-*` headers on UI-initiated clicks).
+6. Window is **seconds** — inventory sells through network ATP immediately; cart lines can disappear at checkout under contention.
+
+### 11.4 “Waiting for restock” vs “permanently OOS”
+
+Target does not expose a reliable “gone forever” flag on the PDP. Use **combined signals**:
+
+| Signal | Waiting for restock (keep polling) | Likely permanent / not buyable online |
+|--------|-----------------------------------|---------------------------------------|
+| Main TCIN button in DOM | Present (even if `disabled`) | **Absent** / PDP “page unavailable” |
+| Body “Out of stock” | Yes | “Discontinued” / 404 / obsolete |
+| Redsky `sold_out` | **`false`** (observed now) | `true` |
+| Redsky `available_to_promise_quantity` | `0` now; watch for &gt; 0 | Stays `0` for weeks + `sold_out: true` |
+| `POST cart_items` | `424 INVENTORY_UNAVAILABLE` | Same, but button never enables |
+| `adapt_pdp_oos_01` placement | Active | N/A if product delisted |
+| Fulfillment tabs | Hidden when fully OOS | — |
+| Product still purchasable historically | Recent reviews confirm buys | — |
+
+**For `1011209279` specifically:** Post-drop OOS with `sold_out: false` and active product page = **restock-possible** (Target TCG restocks are irregular). CookieScripts should **keep hard-refresh polling**, not treat as fatal error.
+
+**Do not** use enabled recommendation buttons as a restock signal — they are always in-stock sibling SKUs.
+
+### 11.5 What CookieScripts should do differently (drop class vs normal SKU)
+
+| Behavior | Normal in-stock (e.g. tape) | Drop / TCG OOS-wait (e.g. `1011209279`) |
+|----------|----------------------------|----------------------------------------|
+| Pre-click fulfillment tab | Often needed (`fulfillment-cell-shipping`) | **Skip** — tabs absent until stock returns |
+| Wait state | Brief hydration wait | **`waiting_disabled`** for extended periods — **correct** |
+| Hard refresh interval | Optional | **Essential** — only path to catch enable flip |
+| ATC selector | TCIN id + scope | **Same** — id stable even when `data-test` is null |
+| Recommendation guard | Important | **Critical** — many enabled decoy buttons |
+| Sticky bar | May confirm “N in cart” | **Ignore** “Find alternative” |
+| Cart confirm | Header + modal | Same; expect lag during drops |
+| API fast-path `fetch(cart_items)` | Works (`201`) | Returns **`424`** while OOS — use as **secondary** restock probe |
+| Navigate checkout | After cart confirm | **Only** after `201` / cart confirm — empty cart checkout is useless |
+| Captcha / Shape | Moderate | **Expect** heavy Redsky captcha + Shape on successful ATC |
+| Purchase limit | Rarely hit | **2** — `minDelta` 1 is fine but user may want qty 2 |
+| Failure mode | “Button not found” | **Never** click `chooseOptionsButton` when main is disabled |
+
+**Existing code already handles the hardest drop problem** (`waiting_disabled` + TCIN-scoped id + recommendation exclusion). Gaps to consider:
+
+1. Detect `NonbuyableSection` or missing fulfillment tabs → classify as **drop-wait** (status: “Waiting for restock…”).
+2. Treat sticky text **“Find alternative”** as non-actionable (do not `activateElement`).
+3. Optional: poll `POST cart_items` when button disabled; on `201` skip waiting for DOM enable (race DOM).
+4. Surface `424 INVENTORY_UNAVAILABLE` in debug logs to distinguish from Shape blocks (`403`/`401`).
+5. Do **not** reduce refresh interval below what Target rate-limits; captcha storms make it worse.
+
+### 11.6 Reproduce
+
+```bash
+node scripts/target-drop-pdp.mjs
+```
+
+---
+
+## 12. Legal / ToS note
 
 Automating add-to-cart may violate [Target Terms of Service](https://www.target.com/c/terms). Bot circumvention (Shape) may have additional legal exposure. CookieScripts README already discloses this risk.
 
@@ -294,7 +442,7 @@ Automating add-to-cart may violate [Target Terms of Service](https://www.target.
 
 | URL | TCIN | Result |
 |-----|------|--------|
-| `/p/restockr/-/A-1011209279` (Pokémon) | 1011209279 | OOS, disabled ATC, captcha telemetry |
+| `/p/-/A-1011209279` (Pokémon TCG drop) | 1011209279 | **Post-drop OOS** — disabled ATC, no fulfillment tabs, `424` cart, `adapt_pdp_oos_01` |
 | `/p/bounty-.../-/A-13276134` | 13276134 | Redirected to milk PDP, store OOS |
 | `/p/tide-pods-.../-/A-14758404` | 14758404 | “Page unavailable” |
 | `/p/scotch-3pk-magic-tape-.../-/A-13356914` | 13356914 | **In-stock pickup default; ATC POST captured** |

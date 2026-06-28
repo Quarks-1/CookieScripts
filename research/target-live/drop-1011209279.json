@@ -1,0 +1,945 @@
+{
+  "capturedAt": "2026-06-28T21:11:29.703Z",
+  "drop": {
+    "label": "drop-oos",
+    "url": "https://www.target.com/p/-/A-1011209279",
+    "dom": {
+      "url": "https://www.target.com/p/-/A-1011209279",
+      "tcin": "1011209279",
+      "title": "Pokémon Trading Card Game: First Partner Illustration CollectionSeries 2 : Target",
+      "h1": "Pokémon Trading Card Game: First Partner Illustration CollectionSeries 2",
+      "priceArea": "$17.99",
+      "mainButton": {
+        "id": "addToCartButtonOrTextIdFor1011209279",
+        "dataTest": null,
+        "disabled": true,
+        "ariaLabel": "Add to cart for Pokémon Trading Card Game: First Partner Illustration CollectionSeries 2",
+        "text": "Add to cart",
+        "rect": {
+          "width": 480,
+          "height": 44
+        }
+      },
+      "fulfillmentSection": {
+        "present": true,
+        "buttons": [
+          {
+            "tag": "button",
+            "id": "addToCartButtonOrTextIdFor1011209279",
+            "dataTest": null,
+            "ariaLabel": "Add to cart for Pokémon Trading Card Game: First Partner Illustration CollectionSeries 2",
+            "disabled": true,
+            "href": null,
+            "text": "Add to cart"
+          }
+        ]
+      },
+      "stickySection": {
+        "present": true,
+        "buttons": [
+          {
+            "tag": "button",
+            "id": null,
+            "dataTest": null,
+            "ariaLabel": null,
+            "disabled": false,
+            "href": null,
+            "text": "Find alternative"
+          }
+        ],
+        "text": "Find alternative"
+      },
+      "oosElements": [],
+      "dropRelatedDataTests": [
+        "@web/AddToCart/FulfillmentSection",
+        "@web/CartIcon",
+        "@web/CartLink",
+        "NonbuyableSection",
+        "StickyAddToCartFulfillmentSection",
+        "ratingHistogramDropDown"
+      ],
+      "recommendationTiles": [],
+      "badges": [],
+      "bodyPatterns": {
+        "outOfStock": true,
+        "comingSoon": false,
+        "highTraffic": false,
+        "finalSale": true,
+        "findAlternative": true,
+        "bestseller": true,
+        "newAtTarget": true,
+        "signInBuyNow": false,
+        "notifyMe": false,
+        "countdown": false,
+        "queue": false
+      },
+      "bodySnippet": "skip to main content\nskip to footer\nShip to 20147\nDulles\nTarget Circle™\nTarget Circle™ Card\nTarget Circle 360™\nRegistry & Wish List\nWeekly Ad\nFind Stores\nCategories\nDeals\nPickup & delivery\nsearch\nAccount\nTargetToys & GamesTrading Cards\nSkip images\nAlready have this product?\nSnap a pic for all to see!\nUpload photo\nShop all Pokemon\nPokémon Trading Card Game: First Partner Illustration CollectionSeries 2\n2.7 out of 5 stars with 135 reviews\n135\n9 Questions\nBestseller\nNew at\nNew at Target\n$17.99\nOut of stock\nAdd to cart\nFinal sale item\nThis item can't be returned or exchanged\nWARNING: choking hazard - small parts. Not for children under 3 yrs.\nFind alternative\n$115.00\n2025 Pokemon McDonalds Dragon Discovery TCG Complete 1-10 Set\n1 out of 5 stars with 1 ratings\n1 review\nAdd to cart\n$59.99\nPokemon Futsal 2020 Promo Sealed Pack Trading Card | Sobble on the Ball\n3 out of 5 stars with 6 ratings\n6 reviews\nAdd to cart\n$79.99\nPokemon TCG: Scarlet & Violet—151 Mini Tin – Dragonite and Vileplume (2 Booster Packs, 1 Coin & 1 Art Card)\nAdd to cart\n$29.99\nPokemon Card Game Battle Partners Booster Pack (Japanese) - 3 Packs - 15 Cards Total\n2.7 out of 5 stars with 7 ratings\n7 reviews\nAdd to cart\n$21.99\nPokemon Card Game Cyber Judge Booster Pack (Japanese) - 3 Packs - 15 Cards Total\n3.3 out of 5 stars with 7 ratings\n7 reviews\nAdd to cart\n$22.99\nPokemon Card Game Scarlet ex Booster Pack (Japanese) - 3 Packs - 15 Cards Total\n2.3 out of 5 stars with 6 ratings\n6 reviews\nAdd to cart\nEligible for registries and wish lists\nSign in\nAdd to list\nSave 5% every day\nWith Target Circle™ Card\nPay over time\nWith Affirm on orders over $50\nPay in 4\nPay in 4 interest-free payments on purchases of $30-$1,500\n\nSponsored\n\nAbout this item\nDetails\nHighlights\n1 Pokémon TCG booster pack containing 3 of 9 promo cards\n2 Pokémon TCG booster packs\n1 sticker sheet\nDescription\n30 Years of First Partner Pokémon!\nEvery Pokémon Trainer’s journey begins with a first partner—a loyal friend who stands by your side through thick and thin! Relive your own adventures\nand celebrate the bond between Trainer and Pokémon with a booster pack containing 3 of 9 illustration rare-style promo cards consisting of beloved first partner Pokémon from the Johto, Unova, or Galar region. You’ll also find two more Pokémon TCG booster packs and a fun sticker sheet featuring first partner Pokémon friends.\nSpecifications\nShipping & Returns\nQ&A (9)\nAdditional product information and recommendations\nLoad all content at once\n\nSponsored\n\nRe",
+      "hasShippingSection": false,
+      "signInToBuyNow": false,
+      "qtyControl": []
+    },
+    "network": {
+      "redsky": [
+        {
+          "status": 403,
+          "url": "https://redsky.target.com/redsky_aggregations/v1/web/pdp_circle_offers_v1?store_id=2272&tcin=1011209279&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&visitor_id=019F10125B580200B6A99C7E39A2FA39&channel=WEB&page=%2Fp%2FA-1011209279",
+          "parsed": {
+            "path": "/redsky_aggregations/v1/web/pdp_circle_offers_v1",
+            "params": {
+              "tcin": "1011209279",
+              "store_id": "2272"
+            }
+          }
+        },
+        {
+          "status": 403,
+          "url": "https://redsky.target.com/redsky_aggregations/v1/web/pdp_personalized_v1?pricing_store_id=2272&tcin=1011209279&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&visitor_id=019F10125B580200B6A99C7E39A2FA39&channel=WEB&page=%2Fp%2FA-1011209279",
+          "parsed": {
+            "path": "/redsky_aggregations/v1/web/pdp_personalized_v1",
+            "params": {
+              "tcin": "1011209279"
+            }
+          }
+        },
+        {
+          "status": 403,
+          "url": "https://redsky.target.com/redsky_aggregations/v1/web/pdp_client_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&tcin=1011209279&is_bot=false&store_id=2272&pricing_store_id=2272&has_pricing_store_id=true&has_financing_options=true&include_obsolete=false&visitor_id=019F10125B580200B6A99C7E39A2FA39&skip_personalized=true&skip_variation_hierarchy=true&channel=WEB&page=%2Fp%2FA-1011209279",
+          "parsed": {
+            "path": "/redsky_aggregations/v1/web/pdp_client_v1",
+            "params": {
+              "tcin": "1011209279",
+              "store_id": "2272"
+            }
+          }
+        },
+        {
+          "status": 403,
+          "url": "https://redsky.target.com/redsky_aggregations/v1/web/product_fulfillment_and_variation_hierarchy_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&required_store_id=2272&latitude=39.030&longitude=-77.490&scheduled_delivery_store_id=2272&state=VA&zip=20147&store_id=2272&paid_membership=false&base_membership=false&card_membership=false&is_bot=false&tcin=1011209279&visitor_id=019F10125B580200B6A99C7E39A2FA39&channel=WEB&page=%2Fp%2FA-1011209279",
+          "parsed": {
+            "path": "/redsky_aggregations/v1/web/product_fulfillment_and_variation_hierarchy_v1",
+            "params": {
+              "tcin": "1011209279",
+              "store_id": "2272",
+              "zip": "20147"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/captcha?trackingId=1770e73d-7427-4bf5-8d98-85faa8913619&parentOrigin=https%3A%2F%2Fwww.target.com",
+          "parsed": {
+            "path": "/captcha",
+            "params": {}
+          }
+        },
+        {
+          "status": 403,
+          "url": "https://redsky.target.com/redsky_aggregations/v1/web/nearby_stores_v1?limit=5&within=100&place=20166&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&visitor_id=019F10125B580200B6A99C7E39A2FA39&channel=WEB&page=%2Fp%2FA-1011209279",
+          "parsed": {
+            "path": "/redsky_aggregations/v1/web/nearby_stores_v1",
+            "params": {}
+          }
+        },
+        {
+          "status": 403,
+          "url": "https://redsky.target.com/redsky_aggregations/v1/web/store_location_v1?store_id=2272&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&visitor_id=019F10125B580200B6A99C7E39A2FA39&channel=WEB&page=%2Fp%2FA-1011209279",
+          "parsed": {
+            "path": "/redsky_aggregations/v1/web/store_location_v1",
+            "params": {
+              "store_id": "2272"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/captcha?trackingId=3237962d-70d0-484f-9402-ac1e1097d881&parentOrigin=https%3A%2F%2Fwww.target.com",
+          "parsed": {
+            "path": "/captcha",
+            "params": {}
+          }
+        },
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/RttCheck",
+          "parsed": {
+            "path": "/RttCheck",
+            "params": {}
+          }
+        },
+        {
+          "status": 403,
+          "url": "https://redsky.target.com/redsky_aggregations/v1/web/store_location_v1?store_id=2272&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&visitor_id=019F10125B580200B6A99C7E39A2FA39&channel=WEB&page=%2Fp%2FA-1011209279",
+          "parsed": {
+            "path": "/redsky_aggregations/v1/web/store_location_v1",
+            "params": {
+              "store_id": "2272"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/captcha?trackingId=a9ec62dc-4f0c-481e-8d95-0df5c83c95cf&parentOrigin=https%3A%2F%2Fwww.target.com",
+          "parsed": {
+            "path": "/captcha",
+            "params": {}
+          }
+        },
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/RttCheck",
+          "parsed": {
+            "path": "/RttCheck",
+            "params": {}
+          }
+        },
+        {
+          "status": 403,
+          "url": "https://redsky.target.com/redsky_aggregations/v1/web/pdp_recommendations_placement_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&tcins=1011209279&placement_id=adapt_pdp_oos_01&purchasable_store_ids=2272&pricing_store_id=2272&visitor_id=019F10125B580200B6A99C7E39A2FA39&isServersideRendered=false&channel=WEB&include_sponsored_recommendations=true&platform=desktop&page=%2Fp%2FA-1011209279",
+          "parsed": {
+            "path": "/redsky_aggregations/v1/web/pdp_recommendations_placement_v1",
+            "params": {}
+          }
+        },
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/captcha?trackingId=dec1737a-58bb-4c42-a0fa-2311e135310b&parentOrigin=https%3A%2F%2Fwww.target.com",
+          "parsed": {
+            "path": "/captcha",
+            "params": {}
+          }
+        },
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/RttCheck",
+          "parsed": {
+            "path": "/RttCheck",
+            "params": {}
+          }
+        },
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/AtaVerifyCaptcha",
+          "parsed": {
+            "path": "/AtaVerifyCaptcha",
+            "params": {}
+          }
+        },
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/redsky_aggregations/v1/web/pdp_circle_offers_v1?store_id=2272&tcin=1011209279&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&visitor_id=019F10125B580200B6A99C7E39A2FA39&channel=WEB&page=%2Fp%2FA-1011209279",
+          "parsed": {
+            "path": "/redsky_aggregations/v1/web/pdp_circle_offers_v1",
+            "params": {
+              "tcin": "1011209279",
+              "store_id": "2272"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/redsky_aggregations/v1/web/product_fulfillment_and_variation_hierarchy_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&required_store_id=2272&latitude=39.030&longitude=-77.490&scheduled_delivery_store_id=2272&state=VA&zip=20147&store_id=2272&paid_membership=false&base_membership=false&card_membership=false&is_bot=false&tcin=1011209279&visitor_id=019F10125B580200B6A99C7E39A2FA39&channel=WEB&page=%2Fp%2FA-1011209279",
+          "parsed": {
+            "path": "/redsky_aggregations/v1/web/product_fulfillment_and_variation_hierarchy_v1",
+            "params": {
+              "tcin": "1011209279",
+              "store_id": "2272",
+              "zip": "20147"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/redsky_aggregations/v1/web/pdp_personalized_v1?pricing_store_id=2272&tcin=1011209279&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&visitor_id=019F10125B580200B6A99C7E39A2FA39&channel=WEB&page=%2Fp%2FA-1011209279",
+          "parsed": {
+            "path": "/redsky_aggregations/v1/web/pdp_personalized_v1",
+            "params": {
+              "tcin": "1011209279"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/redsky_aggregations/v1/web/pdp_client_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&tcin=1011209279&is_bot=false&store_id=2272&pricing_store_id=2272&has_pricing_store_id=true&has_financing_options=true&include_obsolete=false&visitor_id=019F10125B580200B6A99C7E39A2FA39&skip_personalized=true&skip_variation_hierarchy=true&channel=WEB&page=%2Fp%2FA-1011209279",
+          "parsed": {
+            "path": "/redsky_aggregations/v1/web/pdp_client_v1",
+            "params": {
+              "tcin": "1011209279",
+              "store_id": "2272"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/redsky_aggregations/v1/web/store_location_v1?store_id=2272&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&visitor_id=019F10125B580200B6A99C7E39A2FA39&channel=WEB&page=%2Fp%2FA-1011209279",
+          "parsed": {
+            "path": "/redsky_aggregations/v1/web/store_location_v1",
+            "params": {
+              "store_id": "2272"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/redsky_aggregations/v1/web/nearby_stores_v1?limit=5&within=100&place=20166&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&visitor_id=019F10125B580200B6A99C7E39A2FA39&channel=WEB&page=%2Fp%2FA-1011209279",
+          "parsed": {
+            "path": "/redsky_aggregations/v1/web/nearby_stores_v1",
+            "params": {}
+          }
+        },
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/redsky_aggregations/v1/web/pdp_recommendations_placement_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&tcins=1011209279&placement_id=adapt_pdp_oos_01&purchasable_store_ids=2272&pricing_store_id=2272&visitor_id=019F10125B580200B6A99C7E39A2FA39&isServersideRendered=false&channel=WEB&include_sponsored_recommendations=true&platform=desktop&page=%2Fp%2FA-1011209279",
+          "parsed": {
+            "path": "/redsky_aggregations/v1/web/pdp_recommendations_placement_v1",
+            "params": {}
+          }
+        },
+        {
+          "status": 403,
+          "url": "https://redsky.target.com/redsky_aggregations/v1/web/pdp_client_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&tcin=1011209279&is_bot=false&store_id=2272&pricing_store_id=2272&has_pricing_store_id=true&has_financing_options=true&include_obsolete=false&skip_personalized=true&skip_variation_hierarchy=true&channel=WEB&page=%2Fp%2FA-1011209279",
+          "parsed": {
+            "path": "/redsky_aggregations/v1/web/pdp_client_v1",
+            "params": {
+              "tcin": "1011209279",
+              "store_id": "2272"
+            }
+          }
+        },
+        {
+          "status": 403,
+          "url": "https://redsky.target.com/redsky_aggregations/v1/web/product_fulfillment_and_variation_hierarchy_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&required_store_id=2272&latitude=39.030&longitude=-77.490&scheduled_delivery_store_id=2272&state=VA&zip=20147&store_id=2272&paid_membership=false&base_membership=false&card_membership=false&is_bot=false&tcin=1011209279&channel=WEB&page=%2Fp%2FA-1011209279",
+          "parsed": {
+            "path": "/redsky_aggregations/v1/web/product_fulfillment_and_variation_hierarchy_v1",
+            "params": {
+              "tcin": "1011209279",
+              "store_id": "2272",
+              "zip": "20147"
+            }
+          }
+        },
+        {
+          "status": 403,
+          "url": "https://redsky.target.com/redsky_aggregations/v1/web/pdp_recommendations_placement_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&tcins=1011209279&placement_id=adapt_pdp_oos_01&purchasable_store_ids=2272&pricing_store_id=2272&channel=WEB&page=%2Fp%2FA-1011209279",
+          "parsed": {
+            "path": "/redsky_aggregations/v1/web/pdp_recommendations_placement_v1",
+            "params": {}
+          }
+        }
+      ],
+      "carts": [
+        {
+          "method": "OPTIONS",
+          "status": 200,
+          "url": "https://carts.target.com/web_checkouts/v1/cart?cart_type=REGULAR&field_groups=ADDRESSES%2CCART_ITEMS%2CSUMMARY&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&client_feature=add_to_cart",
+          "body": null
+        },
+        {
+          "method": "GET",
+          "status": 204,
+          "url": "https://carts.target.com/web_checkouts/v1/cart?cart_type=REGULAR&field_groups=ADDRESSES%2CCART_ITEMS%2CSUMMARY&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&client_feature=add_to_cart",
+          "body": ""
+        },
+        {
+          "method": "OPTIONS",
+          "status": 200,
+          "url": "https://carts.target.com/web_checkouts/v1/cart?cart_type=REGULAR&field_groups=ADDRESSES&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&client_feature=add_to_cart",
+          "body": null
+        },
+        {
+          "method": "GET",
+          "status": 204,
+          "url": "https://carts.target.com/web_checkouts/v1/cart?cart_type=REGULAR&field_groups=ADDRESSES&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&client_feature=add_to_cart",
+          "body": ""
+        },
+        {
+          "method": "GET",
+          "status": 204,
+          "url": "https://carts.target.com/web_checkouts/v1/cart?cart_type=REGULAR&field_groups=ADDRESSES%2CCART_ITEMS%2CSUMMARY&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&client_feature=add_to_cart",
+          "body": ""
+        },
+        {
+          "method": "OPTIONS",
+          "status": 200,
+          "url": "https://carts.target.com/web_checkouts/v1/cart_items?field_groups=CART%2CCART_ITEMS%2CSUMMARY&key=9f36aeafbe60771e321a7cc95a78140772ab3e96",
+          "body": null
+        },
+        {
+          "method": "POST",
+          "status": 424,
+          "url": "https://carts.target.com/web_checkouts/v1/cart_items?field_groups=CART%2CCART_ITEMS%2CSUMMARY&key=9f36aeafbe60771e321a7cc95a78140772ab3e96",
+          "body": "{\"message\":\"Encountered errors with required dependent services.\",\"code\":\"DEPENDENT_SERVICE_ERROR\",\"alerts\":[{\"integration\":\"CARTS.FULFILLMENT_AGGREGATOR\",\"message\":\"inventory is not available for this item\",\"code\":\"INVENTORY_UNAVAILABLE\",\"metadata\":{\"tcin\":\"1011209279\"}}]}"
+        }
+      ],
+      "captcha": [
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/captcha?trackingId=1770e73d-7427-4bf5-8d98-85faa8913619&parentOrigin=https%3A%2F%2Fwww.target.com"
+        },
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/captcha?trackingId=3237962d-70d0-484f-9402-ac1e1097d881&parentOrigin=https%3A%2F%2Fwww.target.com"
+        },
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/RttCheck"
+        },
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/captcha?trackingId=a9ec62dc-4f0c-481e-8d95-0df5c83c95cf&parentOrigin=https%3A%2F%2Fwww.target.com"
+        },
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/RttCheck"
+        },
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/captcha?trackingId=dec1737a-58bb-4c42-a0fa-2311e135310b&parentOrigin=https%3A%2F%2Fwww.target.com"
+        },
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/RttCheck"
+        },
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/AtaVerifyCaptcha"
+        }
+      ],
+      "fulfillment": []
+    },
+    "redskyBodies": [
+      {
+        "url": "https://redsky.target.com/redsky_aggregations/v1/web/pdp_client_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&tcin=1011209279&is_bot=false&store_id=2272&pricing_store_id=2272&has_pricing_store_id=true&has_financing_options=true&include_obsolete=false&visitor_id=019F10125B580200B6A99C7E39A2FA39&skip_personalized=true&skip_variation_hierarchy=true&channel=WEB&page=%2Fp%2FA-1011209279",
+        "status": 403,
+        "body": "{\n  \"captchaRelativeURL\":\"/captcha?trackingId=c2b2cee9-fa94-4640-8901-3ba42b330c51\",\n  \"captchaAbsoluteURL\":\"https://redsky.target.com/captcha?trackingId=c2b2cee9-fa94-4640-8901-3ba42b330c51\"\n}"
+      },
+      {
+        "url": "https://redsky.target.com/redsky_aggregations/v1/web/product_fulfillment_and_variation_hierarchy_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&required_store_id=2272&latitude=39.030&longitude=-77.490&scheduled_delivery_store_id=2272&state=VA&zip=20147&store_id=2272&paid_membership=false&base_membership=false&card_membership=false&is_bot=false&tcin=1011209279&visitor_id=019F10125B580200B6A99C7E39A2FA39&channel=WEB&page=%2Fp%2FA-1011209279",
+        "status": 403,
+        "body": "{\n  \"captchaRelativeURL\":\"/captcha?trackingId=1770e73d-7427-4bf5-8d98-85faa8913619\",\n  \"captchaAbsoluteURL\":\"https://redsky.target.com/captcha?trackingId=1770e73d-7427-4bf5-8d98-85faa8913619\"\n}"
+      },
+      {
+        "url": "https://redsky.target.com/redsky_aggregations/v1/web/pdp_recommendations_placement_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&tcins=1011209279&placement_id=adapt_pdp_oos_01&purchasable_store_ids=2272&pricing_store_id=2272&visitor_id=019F10125B580200B6A99C7E39A2FA39&isServersideRendered=false&channel=WEB&include_sponsored_recommendations=true&platform=desktop&page=%2Fp%2FA-1011209279",
+        "status": 403,
+        "body": "{\n  \"captchaRelativeURL\":\"/captcha?trackingId=dec1737a-58bb-4c42-a0fa-2311e135310b\",\n  \"captchaAbsoluteURL\":\"https://redsky.target.com/captcha?trackingId=dec1737a-58bb-4c42-a0fa-2311e135310b\"\n}"
+      },
+      {
+        "url": "https://redsky.target.com/redsky_aggregations/v1/web/product_fulfillment_and_variation_hierarchy_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&required_store_id=2272&latitude=39.030&longitude=-77.490&scheduled_delivery_store_id=2272&state=VA&zip=20147&store_id=2272&paid_membership=false&base_membership=false&card_membership=false&is_bot=false&tcin=1011209279&visitor_id=019F10125B580200B6A99C7E39A2FA39&channel=WEB&page=%2Fp%2FA-1011209279",
+        "status": 200,
+        "body": "{\"data\":{\"product\":{\"__typename\":\"Product\",\"tcin\":\"1011209279\",\"pay_per_order_charges\":{\"one_day\":7.99,\"scheduled_delivery\":9.99},\"fulfillment\":{\"product_id\":\"1011209279\",\"is_out_of_stock_in_all_store_locations\":true,\"sold_out\":false,\"store_options\":[{\"location_id\":\"2272\",\"store\":{\"location_name\":\"Dulles\",\"mailing_address\":{\"address_line1\":\"45130 Columbia Pl\",\"city\":\"Sterling\",\"state\":\"Virginia\",\"postal_code\":\"20166-2500\"}},\"search_response_store_type\":\"PRIMARY\",\"location_available_to_promise_quantity\":0.0,\"pre_order_location_available_to_promise_quantity\":0.0,\"order_pickup\":{\"availability_status\":\"UNAVAILABLE\"},\"in_store_only\":{\"availability_status\":\"OUT_OF_STOCK\"},\"ship_to_store\":{\"availability_status\":\"UNAVAILABLE\"}}],\"shipping_options\":{\"availability_status\":\"OUT_OF_STOCK\",\"loyalty_availability_status\":\"OUT_OF_STOCK\",\"available_to_promise_quantity\":0.0,\"reason_code\":\"INVENTORY_UNAVAILABLE\",\"services\":[]},\"scheduled_delivery\":{\"location_id\":\"2272\",\"availability_status\":\"UNAVAILABLE\",\"location_available_to_promise_quantity\":0.0}}}}}"
+      },
+      {
+        "url": "https://redsky.target.com/redsky_aggregations/v1/web/pdp_client_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&tcin=1011209279&is_bot=false&store_id=2272&pricing_store_id=2272&has_pricing_store_id=true&has_financing_options=true&include_obsolete=false&visitor_id=019F10125B580200B6A99C7E39A2FA39&skip_personalized=true&skip_variation_hierarchy=true&channel=WEB&page=%2Fp%2FA-1011209279",
+        "status": 200,
+        "body": "{\"data\":{\"product\":{\"__typename\":\"Product\",\"tcin\":\"1011209279\",\"category\":{\"parent_category_id\":\"5xtb0\",\"name\":\"Trading Cards\",\"breadcrumbs\":[{\"canonical_url\":\"/\",\"category_id\":\"root\",\"name\":\"target\"},{\"canonical_url\":\"/c/toys-games/-/N-5xtb0\",\"category_id\":\"5xtb0\",\"name\":\"Toys & Games\"},{\"canonical_url\":\"/c/trading-cards-toys-games/-/N-27p31\",\"category_id\":\"27p31\",\"name\":\"Trading Cards\"}]},\"sales_classification_nodes\":{\"node_ids\":[\"27p31\",\"6llsh\",\"hono5\",\"5cdua\",\"5ol\",\"j1kz2\",\"4yka5\",\"ehy89\",\"x6ax5\",\"qk2n3\",\"iinmv\",\"4slqy\",\"mvpyl\"]},\"ratings_and_reviews\":{\"has_verified\":true,\"statistics\":{\"not_recommended_count\":18,\"question_count\":9,\"rating\":{\"average\":2.7,\"count\":135,\"distribution\":{\"rating1\":76,\"rating2\":2,\"rating3\":0,\"rating4\":1,\"rating5\":56}},\"recommended_count\":8,\"recommended_percentage\":30,\"review_count\":45},\"most_recent\":[{\"id\":\"4c0fcfaa-7254-402e-a254-538fb25e1dc0\",\"text\":\"great collection and came well packaged \\uD83D\\uDD25\",\"author\":{\"nickname\":\"00piUmPBC555\",\"external_id\":\"20061479201\"},\"rating\":{\"value\":5.0,\"submitted_at\":\"2026-06-28T18:59:42.775Z\"}},{\"id\":\"a2f19cc2-64b9-4c90-9aad-b38bed7d30d7\",\"text\":\"Great timing and quality shipping\",\"author\":{\"external_id\":\"20112135587\"},\"rating\":{\"value\":5.0,\"submitted_at\":\"2026-06-27T15:51:30.204Z\"}},{\"id\":\"0b975fde-e7ff-451f-aab3-f43e3c20e7fb\",\"text\":\"Great price\",\"author\":{\"nickname\":\"Hpful1\",\"external_id\":\"221560158\"},\"rating\":{\"value\":5.0,\"submitted_at\":\"2026-06-26T21:04:04.985Z\"}},{\"id\":\"6e674965-484d-45a8-b3b1-77b16b103c37\",\"text\":\"Kids love it\",\"author\":{\"external_id\":\"10059322722\"},\"rating\":{\"value\":5.0,\"submitted_at\":\"2026-06-26T15:08:42.136Z\"}},{\"id\":\"622acbf4-3824-46a8-b4b4-588aa2de6b8d\",\"text\":\"Super good\",\"author\":{\"external_id\":\"20180937147\"},\"rating\":{\"value\":5.0,\"submitted_at\":\"2026-06-25T21:22:48.617Z\"}},{\"id\":\"2ffb006a-83ee-4433-86d1-1406a5ba0d25\",\"text\":\"Great\",\"author\":{\"nickname\":\"Sethbeth2010\",\"external_id\":\"1990197844\"},\"title\":\"Great find\",\"rating\":{\"value\":5.0,\"submitted_at\":\"2026-06-25T05:25:26.596Z\"}},{\"id\":\"7ee65dab-189d-4327-a5a2-4367f8fa1aee\",\"text\":\"The price is good not a scalper price. Excited for the first partner second series.\",\"author\":{\"nickname\":\"STEPHANIE\",\"external_id\":\"8185280551\"},\"title\":\"Good price\",\"rating\":{\"value\":5.0,\"submitted_at\":\"2026-06-24T20:39:42.882Z\"}},{\"id\":\"f88d22ef-8347-48a9-8adf-1a5a1db5836d\",\"text\":\"good quality\",\"author\":{\"nickname\":\"Hope\",\"external_id\":\"20035201043\"},\"title\":\"love it\",\"rating\":{\"value\":5.0,\"submitted_at\":\"2026-06-23T22:58:53.674Z\"}}],\"photos\":[\"https://target.scene7.com/is/image/Target/GUEST_dcd9804d-91ba-46e9-bf0e-35832b4d32d2\",\"https://target.scene7.com/is/image/Target/GUEST_62fc60ed-73fa-4d52-a0fe-2bd4d63c374d\",\"https://target.scene7.com/is/image/Target/GUEST_d2239a85-3aa6-47e3-8d7f-08980aaf18d7\",\"https://target.scene7.com/is/image/Target/GUEST_a0f4a688-eefe-4e97-a62a-635f17d0c47e\",\"https://target.scene7.com/is/image/Target/GUEST_d80cba45-4d58-4131-96a5-fa7028570f04\"]},\"financing_options\":{\"channel\":\"DIGITAL\",\"providers\":[{\"finance_footer\":\"Rates are between 10–36% APR. Subject to credit check and approval. Options depend on your purchase amount, and a down payment may be required. Estimated payment amount may exclude taxes and shipping. Payment options through Affirm are provided by these lending partners: <a class='affirm-loan-originator' href='https://www.affirm.com/lenders'>affirm.com/lenders</a>. Please note that you can’t use Affirm to pay for pre-ordered items. See <a class='affirm-loan-originator' href='https://www.affirm.com/faqs'>affirm.com/faqs</a> for details.\",\"finance_header\":\"Make easy monthly payments over 3, 6 or 12 months\",\"finance_message\":\"Pay over time on $50+ orders with Affirm. <a class='affirm-modal-trigger'>Learn more</a>\",\"finance_minimum_loan_amount\":50.0,\"finance_provider\":\"Affirm\",\"finance_terms\":[{\"amount\":103.35,\"apr\":19.99,\"installment_amount\":34.45,\"installment_count\":3,\"interest_amount\":3.35,\"minimum_loan_amount\":100.0,\"billing_frequency\":\"3 months\",\"installment_interval\":\"$34.45 every month\"},{\"amount\":105.93,\"apr\":20.06,\"installment_amount\":17.66,\"installment_count\":6,\"interest_amount\":5.93,\"minimum_loan_amount\":100.0,\"billing_frequency\":\"6 months\",\"installment_interval\":\"$17.66 every month\"},{\"amount\":111.27,\"apr\":20.18,\"installment_amount\":9.27,\"installment_count\":12,\"interest_amount\":11.27,\"minimum_loan_amount\":100.0,\"billing_frequency\":\"12 months\",\"installment_interval\":\"$9.27 every month\"}],\"financing_terms_url\":\"www.affirm.com/lenders\",\"financing_cell_header\":\"Pay over time\",\"financing_cell_body\":\"With Affirm on orders over $50\",\"is_finance_eligible\":true,\"is_finance_message_eligible\":true},{\"finance_minimum_loan_amount\":30.0,\"finance_provider\":\"PayPal\",\"financing_terms_url\":\"https://www.paypal.com/credit-presentment/lander/modal?client_id=AZ_XI7q1Eg3_B6ho8bkB1B06juS0UYjNs0hXDrDbxu4GzhtTUOj0xhb8VB0KigC5pV0Qljr95-Kp8JKE&amount=0&currency=USD&buyer_country=US&offer=PAY_LATER_SHORT_TERM&integrationType=API\",\"financing_cell_header\":\"Pay in 4\",\"financing_cell_body\":\"Pay in 4 interest-free payments on purchases of $30-$1,500\",\"is_finance_eligible\":true,\"is_finance_message_eligible\":true}]},\"free_shipping\":{\"enabled\":false},\"desirability_cues\":[{\"code\":\"bestseller\",\"display\":\"Bestseller\",\"long_description\":\"Based on sales and guest views of this item within the last 30 days.\"}],\"ornaments\":[{\"ornament\":\"bestseller\",\"display\":\"Bestseller\",\"long_description\":\"Based on sales and guest views of this item within the last 30 days.\",\"ornament_type\":\"guest\",\"template_type\":\"dark_marker_with_trophy\"},{\"ornament\":\"new_at_target\",\"display\":\"New at\",\"ornament_type\":\"enterprise\",\"template_type\":\"text_with_red_bullseye\"}],\"item\":{\"product_classification\":{\"item_type\":{\"name\":\"Collectible Trading Cards\",\"type\":\"39980041\"},\"product_type\":544,\"product_type_name\":\"TOYS\",\"purchase_behavior\":\"Discretionary\"},\"choking_hazard\":[{\"code\":\"choking_hazard_small_parts\",\"message\":\"WARNING: choking hazard - small parts. Not for children under 3 yrs.\"}],\"compliance\":{},\"enrichment\":{\"buy_url\":\"https://www.target.com/p/pok-233-mon-trading-card-game-first-partner-illustration-collectionseries-2/-/A-1011209279\",\"image_info\":{\"base_url\":\"//target.scene7.com/is/image/Target/\",\"primary_image\":{\"image_name\":\"GUEST_b7769337-8fed-43aa-9b50-03ab540f5e9c\",\"url\":\"https://target.scene7.com/is/image/Target/GUEST_b7769337-8fed-43aa-9b50-03ab540f5e9c\"},\"content_labels\":[{\"image_url\":\"https://target.scene7.com/is/image/Target/GUEST_b7769337-8fed-43aa-9b50-03ab540f5e9c\"},{\"image_url\":\"https://target.scene7.com/is/image/Target/GUEST_7bd743af-f749-4552-8ec4-8cb76879c3e8\"},{\"image_url\":\"https://target.scene7.com/is/image/Target/GUEST_d32702e5-7fcd-4275-8b35-f4f3d818e7e8\"}],\"alternate_images\":[{\"url\":\"https://target.scene7.com/is/image/Target/GUEST_7bd743af-f749-4552-8ec4-8cb76879c3e8\",\"image_name\":\"GUEST_7bd743af-f749-4552-8ec4-8cb76879c3e8\"},{\"url\":\"https://target.scene7.com/is/image/Target/GUEST_d32702e5-7fcd-4275-8b35-f4f3d818e7e8\",\"image_name\":\"GUEST_d32702e5-7fcd-4275-8b35-f4f3d818e7e8\"}],\"swatch_image\":{}},\"return_policies\":[{\"user_type\":\"regular_guest\",\"day_count\":0},{\"user_type\":\"best_guest\",\"day_count\":0}]},\"environmental_segmentation\":{\"is_hazardous_material\":false},\"formatted_return_method\":\"This item cannot be returned;  please reference our return policy for more information.\",\"fulfillment\":{\"po_box_prohibited_message\":\"We regret that this item cannot be shipped to PO Boxes.\",\"shipping_exclusion_codes\":[\"American Samoa (see also separate entry under AS)\",\"Guam (see also separate entry under GU)\",\"Northern Mariana Islands\",\"Puerto Rico (see also separate entry under PR)\",\"United States Minor Outlying Islands\",\"Virgin Islands, U.S.\",\"APO/FPO\",\"Alaska\",\"Hawaii\"],\"is_gift_wrap_eligible\":true,\"purchase_limit\":2},\"package_dimensions\":{\"depth\":1.31,\"dimension_unit_of_measure\":\"INCH\",\"weight\":0.32,\"weight_unit_of_measure\":\"POUND\",\"height\":7.06,\"width\":7.75},\"product_description\":{\"bullet_descriptions\":[\"<B>Suggested Age:</B> 6 Years and Up\",\"<B>CPSC Choking Hazard Warnings:</B> Choking_hazard_small_parts\",\"<B>Theme:</B> Pokemon\",\"<B>Includes:</B> Cards\",\"<B>Package Type:</B> Booster Pack\"],\"downstream_description\":\"30 Years of First Partner Pokémon!<br />Every Pokémon Trainer’s journey begins with a first partner—a loyal friend who stands by your side through thick and thin! Relive your own adventures<br />and celebrate the bond between Trainer and Pokémon with a booster pack containing 3 of 9 illustration rare-style promo cards consisting of beloved first partner Pokémon from the Johto, Unova, or Galar region. You’ll also find two more Pokémon TCG booster packs and a fun sticker sheet featuring first partner Pokémon friends. \",\"soft_bullets\":{\"bullets\":[\"1 Pokémon TCG booster pack containing 3 of 9 promo cards\",\"2 Pokémon TCG booster packs\",\"1 sticker sheet\"],\"title\":\"highlights\"},\"title\":\"Pok&#233;mon Trading Card Game: First Partner Illustration CollectionSeries 2\",\"soft_bullet_description\":\"&bull;1 Pokémon TCG booster pack containing 3 of 9 promo cards<br>&bull;2 Pokémon TCG booster packs<br>&bull;1 sticker sheet\"},\"relationship_type_code\":\"SA\",\"return_policy_url\":\"https://www.target.com/help/articles/returns-exchanges/returns\",\"ribbons\":[\"New At Target\"],\"cart_add_on_threshold\":35.0,\"dpci\":\"361-00-1131\",\"handling\":{\"import_designation_description\":\"Made in the USA or Imported\"},\"merchandise_classification\":{\"class_id\":0,\"department_id\":361,\"department_name\":\"TRADING CARDS\"},\"mmbv_content\":{\"street_date\":\"2026-06-19\"},\"primary_barcode\":\"196214155978\",\"primary_brand\":{\"canonical_url\":\"/b/pokemon/-/N-569t0\",\"linking_id\":\"569t0\",\"name\":\"Pokemon\"},\"return_method\":\"No Return\"},\"price\":{\"current_retail\":17.99,\"display_was_now\":false,\"formatted_current_price\":\"$17.99\",\"formatted_current_price_type\":\"reg\",\"reg_retail\":17.99,\"location_id\":3991,\"external_system_id\":\"1011209279-3991-17.99-2026062610\"}}}}"
+      },
+      {
+        "url": "https://redsky.target.com/redsky_aggregations/v1/web/pdp_recommendations_placement_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&tcins=1011209279&placement_id=adapt_pdp_oos_01&purchasable_store_ids=2272&pricing_store_id=2272&visitor_id=019F10125B580200B6A99C7E39A2FA39&isServersideRendered=false&channel=WEB&include_sponsored_recommendations=true&platform=desktop&page=%2Fp%2FA-1011209279",
+        "status": 200,
+        "body": "{\"data\":{\"recommended_products\":{\"strategy_id\":\"adapt_pdp_oos_01\",\"strategy_name\":\"sift_ics_recs_override;sift_rule_id:7ac3c402-03fc-49de-b09c-ca874dca7082;categories:27p31\",\"strategy_description\":\"Find alternative\",\"category_id\":\"27p31\",\"placement_id\":\"adapt_pdp_oos_01\",\"products\":[{\"__typename\":\"ProductSummary\",\"tcin\":\"1009790281\",\"promotions\":[],\"price\":{\"current_retail\":115.0,\"display_was_now\":false,\"formatted_current_price\":\"$115.00\",\"formatted_current_price_type\":\"reg\",\"reg_retail\":115.0},\"ratings_and_reviews\":{\"statistics\":{\"rating\":{\"average\":1.0,\"count\":1}}},\"item\":{\"relationship_type_code\":\"SA\",\"product_classification\":{\"item_type\":{\"name\":\"Collectible Trading Cards\",\"type\":\"39980041\"}},\"product_description\":{\"title\":\"2025 Pokemon McDonalds Dragon Discovery TCG Complete 1-10 Set\"},\"enrichment\":{\"buy_url\":\"https://www.target.com/p/2025-pokemon-mcdonalds-dragon-discovery-tcg-complete-1-10-set/-/A-1009790281\",\"image_info\":{\"primary_image\":{\"url\":\"https://target.scene7.com/is/image/Target/GUEST_107775fa-aaab-45d7-a4a5-6b45102f21a9\"}}}}},{\"__typename\":\"ProductSummary\",\"tcin\":\"1005369220\",\"promotions\":[],\"price\":{\"current_retail\":59.99,\"display_was_now\":false,\"formatted_current_price\":\"$59.99\",\"formatted_current_price_type\":\"reg\",\"reg_retail\":59.99},\"ratings_and_reviews\":{\"statistics\":{\"rating\":{\"average\":3.0,\"count\":6,\"secondary_averages\":[{\"id\":\"broad age appeal\",\"label\":\"broad age appeal\",\"value\":5.0},{\"id\":\"length of play\",\"label\":\"length of play\",\"value\":5.0},{\"id\":\"quality\",\"label\":\"quality\",\"value\":5.0},{\"id\":\"value\",\"label\":\"value\",\"value\":5.0}]}}},\"item\":{\"relationship_type_code\":\"SA\",\"product_classification\":{\"item_type\":{\"name\":\"Collectible Trading Cards\",\"type\":\"39980041\"}},\"product_description\":{\"title\":\"Pokemon Futsal 2020 Promo Sealed Pack Trading Card | Sobble on the Ball\"},\"enrichment\":{\"buy_url\":\"https://www.target.com/p/the-pokemon-company-pokemon-futsal-2020-promo-trading-card-sobble-on-the-ball/-/A-1005369220\",\"image_info\":{\"primary_image\":{\"url\":\"https://target.scene7.com/is/image/Target/GUEST_017b4a2f-59d2-4d59-8af9-c0ac94a94f33\"}}}}},{\"__typename\":\"ProductSummary\",\"tcin\":\"1003082648\",\"promotions\":[],\"price\":{\"current_retail\":79.99,\"display_was_now\":false,\"formatted_current_price\":\"$79.99\",\"formatted_current_price_type\":\"reg\",\"reg_retail\":79.99},\"ratings_and_reviews\":{\"statistics\":{\"rating\":{\"average\":0.0,\"count\":0}}},\"item\":{\"relationship_type_code\":\"SA\",\"product_classification\":{\"item_type\":{\"name\":\"Collectible Trading Cards\",\"type\":\"39980041\"}},\"product_description\":{\"title\":\"Pokemon TCG: Scarlet & Violet—151 Mini Tin – Dragonite and Vileplume (2 Booster Packs, 1 Coin & 1 Art Card)\"},\"enrichment\":{\"buy_url\":\"https://www.target.com/p/pokemon-tcg-scarlet-violet-151-mini-tin-dragonite-and-vileplume-2-booster-packs-1-coin-1-art-card/-/A-1003082648\",\"image_info\":{\"primary_image\":{\"url\":\"https://target.scene7.com/is/image/Target/GUEST_65e94b0f-10e5-4134-ab0e-a813c8cecf5d\"}}}}},{\"__typename\":\"ProductSummary\",\"tcin\":\"1003557551\",\"promotions\":[],\"price\":{\"current_retail\":29.99,\"display_was_now\":false,\"formatted_current_price\":\"$29.99\",\"formatted_current_price_type\":\"reg\",\"reg_retail\":29.99},\"ratings_and_reviews\":{\"statistics\":{\"rating\":{\"average\":2.72,\"count\":7}}},\"item\":{\"relationship_type_code\":\"SA\",\"product_classification\":{\"item_type\":{\"name\":\"Collectible Trading Cards\",\"type\":\"39980041\"}},\"product_description\":{\"title\":\"Pokemon Card Game Battle Partners Booster Pack (Japanese) - 3 Packs - 15 Cards Total\"},\"enrichment\":{\"buy_url\":\"https://www.target.com/p/pokemon-card-game-battle-partners-booster-pack-japanese-3-packs-15-cards-total/-/A-1003557551\",\"image_info\":{\"primary_image\":{\"url\":\"https://target.scene7.com/is/image/Target/GUEST_6f24ca36-96d9-4a14-874d-af632147ca41\"}}}}},{\"__typename\":\"ProductSummary\",\"tcin\":\"1003557564\",\"promotions\":[],\"price\":{\"current_retail\":21.99,\"display_was_now\":false,\"formatted_current_price\":\"$21.99\",\"formatted_current_price_type\":\"reg\",\"reg_retail\":21.99},\"ratings_and_reviews\":{\"statistics\":{\"rating\":{\"average\":3.29,\"count\":7,\"secondary_averages\":[{\"id\":\"broad age appeal\",\"label\":\"broad age appeal\",\"value\":1.0},{\"id\":\"length of play\",\"label\":\"length of play\",\"value\":1.0},{\"id\":\"quality\",\"label\":\"quality\",\"value\":1.0},{\"id\":\"value\",\"label\":\"value\",\"value\":1.0}]}}},\"item\":{\"relationship_type_code\":\"SA\",\"product_classification\":{\"item_type\":{\"name\":\"Collectible Trading Cards\",\"type\":\"39980041\"}},\"product_description\":{\"title\":\"Pokemon Card Game Cyber Judge Booster Pack (Japanese) - 3 Packs - 15 Cards Total\"},\"enrichment\":{\"buy_url\":\"https://www.target.com/p/pokemon-card-game-cyber-judge-booster-pack-japanese-3-packs-15-cards-total/-/A-1003557564\",\"image_info\":{\"primary_image\":{\"url\":\"https://target.scene7.com/is/image/Target/GUEST_a718210c-4233-49f7-919d-a63686f7ea0c\"}}}}},{\"__typename\":\"ProductSummary\",\"tcin\":\"1004025264\",\"promotions\":[],\"price\":{\"current_retail\":22.99,\"display_was_now\":false,\"formatted_current_price\":\"$22.99\",\"formatted_current_price_type\":\"reg\",\"reg_retail\":22.99},\"ratings_and_reviews\":{\"statistics\":{\"rating\":{\"average\":2.34,\"count\":6,\"secondary_averages\":[{\"id\":\"broad age appeal\",\"label\":\"broad age appeal\",\"value\":4.5},{\"id\":\"length of play\",\"label\":\"length of play\",\"value\":4.5},{\"id\":\"quality\",\"label\":\"quality\",\"value\":3.5},{\"id\":\"value\",\"label\":\"value\",\"value\":3.0}]}}},\"item\":{\"relationship_type_code\":\"SA\",\"product_classification\":{\"item_type\":{\"name\":\"Collectible Trading Cards\",\"type\":\"39980041\"}},\"product_description\":{\"title\":\"Pokemon Card Game Scarlet ex Booster Pack (Japanese) - 3 Packs - 15 Cards Total\"},\"enrichment\":{\"buy_url\":\"https://www.target.com/p/pokemon-card-game-scarlet-ex-booster-pack-japanese-3-packs-15-cards-total/-/A-1004025264\",\"image_info\":{\"primary_image\":{\"url\":\"https://target.scene7.com/is/image/Target/GUEST_577cc8a9-2647-4dda-92e7-bb4c01ba0716\",\"alt_text\":\"Three packs of Pokémon cards featuring colorful artwork and Japanese text on the packaging.\"}}}}}],\"doctype\":\"7ac3c402-03fc-49de-b09c-ca874dca7082\"}}}"
+      },
+      {
+        "url": "https://redsky.target.com/redsky_aggregations/v1/web/pdp_client_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&tcin=1011209279&is_bot=false&store_id=2272&pricing_store_id=2272&has_pricing_store_id=true&has_financing_options=true&include_obsolete=false&skip_personalized=true&skip_variation_hierarchy=true&channel=WEB&page=%2Fp%2FA-1011209279",
+        "status": 403,
+        "body": "{\n  \"captchaRelativeURL\":\"/captcha?trackingId=dcb88769-6249-4a94-9f13-84fb27c99321\",\n  \"captchaAbsoluteURL\":\"https://redsky.target.com/captcha?trackingId=dcb88769-6249-4a94-9f13-84fb27c99321\"\n}"
+      },
+      {
+        "url": "https://redsky.target.com/redsky_aggregations/v1/web/product_fulfillment_and_variation_hierarchy_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&required_store_id=2272&latitude=39.030&longitude=-77.490&scheduled_delivery_store_id=2272&state=VA&zip=20147&store_id=2272&paid_membership=false&base_membership=false&card_membership=false&is_bot=false&tcin=1011209279&channel=WEB&page=%2Fp%2FA-1011209279",
+        "status": 403,
+        "body": "{\n  \"captchaRelativeURL\":\"/captcha?trackingId=be4ab037-672e-43e5-936a-5d801da00114\",\n  \"captchaAbsoluteURL\":\"https://redsky.target.com/captcha?trackingId=be4ab037-672e-43e5-936a-5d801da00114\"\n}"
+      },
+      {
+        "url": "https://redsky.target.com/redsky_aggregations/v1/web/pdp_recommendations_placement_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&tcins=1011209279&placement_id=adapt_pdp_oos_01&purchasable_store_ids=2272&pricing_store_id=2272&channel=WEB&page=%2Fp%2FA-1011209279",
+        "status": 403,
+        "body": "{\n  \"captchaRelativeURL\":\"/captcha?trackingId=ef465314-fa29-4563-b380-aa764594ddd6\",\n  \"captchaAbsoluteURL\":\"https://redsky.target.com/captcha?trackingId=ef465314-fa29-4563-b380-aa764594ddd6\"\n}"
+      }
+    ],
+    "redskyProbe": [
+      {
+        "url": {
+          "path": "/redsky_aggregations/v1/web/pdp_client_v1",
+          "params": {
+            "tcin": "1011209279",
+            "store_id": "2272"
+          }
+        },
+        "status": 403,
+        "ok": false,
+        "text": "{\n  \"captchaRelativeURL\":\"/captcha?trackingId=dcb88769-6249-4a94-9f13-84fb27c99321\",\n  \"captchaAbsoluteURL\":\"https://redsky.target.com/captcha?trackingId=dcb88769-6249-4a94-9f13-84fb27c99321\"\n}",
+        "json": {
+          "captchaRelativeURL": "/captcha?trackingId=dcb88769-6249-4a94-9f13-84fb27c99321",
+          "captchaAbsoluteURL": "https://redsky.target.com/captcha?trackingId=dcb88769-6249-4a94-9f13-84fb27c99321"
+        }
+      },
+      {
+        "url": {
+          "path": "/redsky_aggregations/v1/web/product_fulfillment_and_variation_hierarchy_v1",
+          "params": {
+            "tcin": "1011209279",
+            "store_id": "2272",
+            "zip": "20147"
+          }
+        },
+        "status": 403,
+        "ok": false,
+        "text": "{\n  \"captchaRelativeURL\":\"/captcha?trackingId=be4ab037-672e-43e5-936a-5d801da00114\",\n  \"captchaAbsoluteURL\":\"https://redsky.target.com/captcha?trackingId=be4ab037-672e-43e5-936a-5d801da00114\"\n}",
+        "json": {
+          "captchaRelativeURL": "/captcha?trackingId=be4ab037-672e-43e5-936a-5d801da00114",
+          "captchaAbsoluteURL": "https://redsky.target.com/captcha?trackingId=be4ab037-672e-43e5-936a-5d801da00114"
+        }
+      },
+      {
+        "url": {
+          "path": "/redsky_aggregations/v1/web/pdp_recommendations_placement_v1",
+          "params": {}
+        },
+        "status": 403,
+        "ok": false,
+        "text": "{\n  \"captchaRelativeURL\":\"/captcha?trackingId=ef465314-fa29-4563-b380-aa764594ddd6\",\n  \"captchaAbsoluteURL\":\"https://redsky.target.com/captcha?trackingId=ef465314-fa29-4563-b380-aa764594ddd6\"\n}",
+        "json": {
+          "captchaRelativeURL": "/captcha?trackingId=ef465314-fa29-4563-b380-aa764594ddd6",
+          "captchaAbsoluteURL": "https://redsky.target.com/captcha?trackingId=ef465314-fa29-4563-b380-aa764594ddd6"
+        }
+      }
+    ],
+    "cartProbe": {
+      "status": 424,
+      "ok": false,
+      "body": "{\"message\":\"Encountered errors with required dependent services.\",\"code\":\"DEPENDENT_SERVICE_ERROR\",\"alerts\":[{\"integration\":\"CARTS.FULFILLMENT_AGGREGATOR\",\"message\":\"inventory is not available for this item\",\"code\":\"INVENTORY_UNAVAILABLE\",\"metadata\":{\"tcin\":\"1011209279\"}}]}"
+    }
+  },
+  "instock": {
+    "label": "instock-reference",
+    "url": "https://www.target.com/p/scotch-3pk-magic-tape-3-4-34-x-350-34/-/A-13356914",
+    "dom": {
+      "url": "https://www.target.com/p/scotch-3pk-magic-tape-3-4-34-x-350-34/-/A-13356914",
+      "tcin": "13356914",
+      "title": "Scotch Magic Tape with Dispensers 3pk : Target",
+      "h1": "Scotch Magic Tape with Dispensers 3pk",
+      "priceArea": "$4.29",
+      "mainButton": {
+        "id": "addToCartButtonOrTextIdFor13356914",
+        "dataTest": "orderPickupButton",
+        "disabled": false,
+        "ariaLabel": "Add to cart for Scotch Magic Tape with Dispensers 3pk",
+        "text": "Add to cart",
+        "rect": {
+          "width": 373.71875,
+          "height": 44
+        }
+      },
+      "fulfillmentSection": {
+        "present": true,
+        "buttons": [
+          {
+            "tag": "button",
+            "id": null,
+            "dataTest": "fulfillment-cell-pickup",
+            "ariaLabel": "pickup - selected - 1 of 3 - Ready within 2 hours",
+            "disabled": false,
+            "href": null,
+            "text": "PickupReady within 2 hours"
+          },
+          {
+            "tag": "button",
+            "id": null,
+            "dataTest": "fulfillment-cell-delivery",
+            "ariaLabel": "delivery - unselected - 2 of 3 - Check availability",
+            "disabled": false,
+            "href": null,
+            "text": "DeliveryCheck availability"
+          },
+          {
+            "tag": "button",
+            "id": null,
+            "dataTest": "fulfillment-cell-shipping",
+            "ariaLabel": "shipping - unselected - 3 of 3 - Arrives by Tue, Jun 30",
+            "disabled": false,
+            "href": null,
+            "text": "ShippingArrives by Tue, Jun 30"
+          },
+          {
+            "tag": "button",
+            "id": "store-name-2272",
+            "dataTest": null,
+            "ariaLabel": null,
+            "disabled": false,
+            "href": null,
+            "text": "Dulles"
+          },
+          {
+            "tag": "button",
+            "id": null,
+            "dataTest": "@web/ATCEditStoreLink",
+            "ariaLabel": null,
+            "disabled": false,
+            "href": null,
+            "text": "Check other stores"
+          },
+          {
+            "tag": "button",
+            "id": "select-_r_2s_",
+            "dataTest": null,
+            "ariaLabel": null,
+            "disabled": false,
+            "href": null,
+            "text": "Qty1"
+          },
+          {
+            "tag": "button",
+            "id": "addToCartButtonOrTextIdFor13356914",
+            "dataTest": "orderPickupButton",
+            "ariaLabel": "Add to cart for Scotch Magic Tape with Dispensers 3pk",
+            "disabled": false,
+            "href": null,
+            "text": "Add to cart"
+          },
+          {
+            "tag": "button",
+            "id": "sign-in-to-buy-now-button",
+            "dataTest": "sign-in-to-buy-now-button",
+            "ariaLabel": "Sign in to buy now for Scotch Magic Tape with Dispensers 3pk",
+            "disabled": false,
+            "href": null,
+            "text": "Sign in to buy now"
+          }
+        ]
+      },
+      "stickySection": {
+        "present": true,
+        "buttons": [
+          {
+            "tag": "button",
+            "id": "select-_r_3r_",
+            "dataTest": null,
+            "ariaLabel": null,
+            "disabled": false,
+            "href": null,
+            "text": "Qty1"
+          },
+          {
+            "tag": "button",
+            "id": "addToCartButtonOrTextIdFor13356914",
+            "dataTest": "orderPickupButton",
+            "ariaLabel": "Add Scotch Magic Tape with Dispensers 3pk to cart",
+            "disabled": false,
+            "href": null,
+            "text": "Add to cart"
+          }
+        ],
+        "text": "Qty1Add to cart"
+      },
+      "oosElements": [],
+      "dropRelatedDataTests": [
+        "@web/AddToCart/FulfillmentSection",
+        "@web/CartIcon",
+        "@web/CartLink",
+        "StickyAddToCartFulfillmentSection",
+        "fulfillment-cell-delivery",
+        "fulfillment-cell-pickup",
+        "fulfillment-cell-shipping",
+        "orderPickupFulfillmentDeliveryMessage",
+        "ratingHistogramDropDown",
+        "sign-in-to-buy-now-button"
+      ],
+      "recommendationTiles": [],
+      "badges": [],
+      "bodyPatterns": {
+        "outOfStock": false,
+        "comingSoon": false,
+        "highTraffic": false,
+        "finalSale": false,
+        "findAlternative": false,
+        "bestseller": true,
+        "newAtTarget": false,
+        "signInBuyNow": true,
+        "notifyMe": false,
+        "countdown": false,
+        "queue": false
+      },
+      "bodySnippet": "skip to main content\nskip to footer\nShip to 20147\nDulles\nTarget Circle™\nTarget Circle™ Card\nTarget Circle 360™\nRegistry & Wish List\nWeekly Ad\nFind Stores\nCategories\nDeals\nPickup & delivery\ntape\nsearch\nAccount\nTargetSchool & Office SuppliesSchool SuppliesTape, Adhesives & FastenersTape\nSkip images\nShow more images\nExplore our college hub\nShop all Scotch\nScotch Magic Tape with Dispensers 3pk\n4.77 out of 5 stars with 1958 reviews\n1958\n4 Questions\nBestseller\nRarely returned\n$4.29 reg $4.59\nSale save $0.30 (7% off)\nPickup\nReady within 2 hours\nDelivery\nCheck availability\nShipping\nArrives by Tue, Jun 30\nPick up at Dulles\nCheck other stores\nReady within 2 hours for pickup inside the store\nQty\n1\nAdd to cart\nSign in to buy now\nFree & easy returns\nReturn this item by mail or in store within 90 days for a full refund.\nEligible for registries and wish lists\nSign in\nAdd to list\nSave 5% every day\nWith Target Circle™ Card\nPay in 4\nPay in 4 interest-free payments on purchases of $30-$1,500\nPay over time\nWith Affirm on orders over $50\n\nSponsored\n\nAbout this item\nDetails\nHighlights\nINVISIBLE TAPE: 3 rolls of Scotch Magic Tape with dispenser mends rips and tears securely, permanently and invisibly\nBONDS SECURELY: Clear tape that gives you a strong, secure and permanent seal using trusted 3M adhesive technology\nBLENDS IN: Matte finish and invisible, this tape blends in with paper, making it a great addition to your back to school supplies\nIDEAL FOR: Use this office tape for permanent, secure paper mending, including mounting, quick fixes, project additions and repairing items like textbooks, library pages, arts and crafts projects or study materials\nREFILLABLE TAPE DISPENSERS INCLUDED: Tape glides off easy-to-use Scotch tape dispensers (included) smoothly and cuts easily\nADDITIONAL BENEFITS: This photo-safe tape is easy to apply; Plus, you can write on it with a pen, pencil or marker for easy labeling\nPACKAGE CONTENTS: One package with three dispensers containing three tape rolls that are 0.75 in. x 350 in., with a 1-in. core\nSCOTCH BRAND: The best projects start with the No. 1-selling home and office tape\nDescription\nScotch Magic Tape lets you magically mend the many rips and tears on school assignments - securely, permanently and invisibly. The original matte-finish invisible tape uses unique 3M adhesive technology to bond tightly with paper and disappear without a trace. It's the ideal matte tape for permanent, secure paper mending, whether you need to make a quick fix or a",
+      "hasShippingSection": false,
+      "signInToBuyNow": true,
+      "qtyControl": []
+    },
+    "network": {
+      "redsky": [
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/redsky_aggregations/v1/web/pdp_personalized_v1?pricing_store_id=2272&tcin=13356914&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&visitor_id=019F10125B580200B6A99C7E39A2FA39&channel=WEB&page=%2Fp%2FA-13356914",
+          "parsed": {
+            "path": "/redsky_aggregations/v1/web/pdp_personalized_v1",
+            "params": {
+              "tcin": "13356914"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/redsky_aggregations/v1/web/product_fulfillment_and_variation_hierarchy_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&required_store_id=2272&latitude=39.030&longitude=-77.490&scheduled_delivery_store_id=2272&state=VA&zip=20147&store_id=2272&paid_membership=false&base_membership=false&card_membership=false&is_bot=false&tcin=13356914&visitor_id=019F10125B580200B6A99C7E39A2FA39&channel=WEB&page=%2Fp%2FA-13356914",
+          "parsed": {
+            "path": "/redsky_aggregations/v1/web/product_fulfillment_and_variation_hierarchy_v1",
+            "params": {
+              "tcin": "13356914",
+              "store_id": "2272",
+              "zip": "20147"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/redsky_aggregations/v1/web/pdp_circle_offers_v1?store_id=2272&tcin=13356914&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&visitor_id=019F10125B580200B6A99C7E39A2FA39&channel=WEB&page=%2Fp%2FA-13356914",
+          "parsed": {
+            "path": "/redsky_aggregations/v1/web/pdp_circle_offers_v1",
+            "params": {
+              "tcin": "13356914",
+              "store_id": "2272"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/redsky_aggregations/v1/web/pdp_client_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&tcin=13356914&is_bot=false&store_id=2272&pricing_store_id=2272&has_pricing_store_id=true&has_financing_options=true&include_obsolete=false&visitor_id=019F10125B580200B6A99C7E39A2FA39&skip_personalized=true&skip_variation_hierarchy=true&channel=WEB&page=%2Fp%2FA-13356914",
+          "parsed": {
+            "path": "/redsky_aggregations/v1/web/pdp_client_v1",
+            "params": {
+              "tcin": "13356914",
+              "store_id": "2272"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "url": "https://redsky.target.com/redsky_aggregations/v1/web/outfitting_v2?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&channel=WEB&placement_ids=web_pdp_outfitting_01%2Cweb_pdp_outfitting_02%2Cweb_pdp_outfitting_03%2Cweb_pdp_outfitting_04%2Cweb_pdp_outfitting_05%2Cweb_pdp_outfitting_06&visitor_id=019F10125B580200B6A99C7E39A2FA39&page=%2Fp%2FA-13356914&pricing_store_id=2272&tcins=13356914",
+          "parsed": {
+            "path": "/redsky_aggregations/v1/web/outfitting_v2",
+            "params": {}
+          }
+        },
+        {
+          "status": 403,
+          "url": "https://redsky.target.com/redsky_aggregations/v1/web/pdp_client_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&tcin=13356914&is_bot=false&store_id=2272&pricing_store_id=2272&has_pricing_store_id=true&has_financing_options=true&include_obsolete=false&skip_personalized=true&skip_variation_hierarchy=true&channel=WEB&page=%2Fp%2FA-13356914",
+          "parsed": {
+            "path": "/redsky_aggregations/v1/web/pdp_client_v1",
+            "params": {
+              "tcin": "13356914",
+              "store_id": "2272"
+            }
+          }
+        },
+        {
+          "status": 403,
+          "url": "https://redsky.target.com/redsky_aggregations/v1/web/product_fulfillment_and_variation_hierarchy_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&required_store_id=2272&latitude=39.030&longitude=-77.490&scheduled_delivery_store_id=2272&state=VA&zip=20147&store_id=2272&paid_membership=false&base_membership=false&card_membership=false&is_bot=false&tcin=13356914&channel=WEB&page=%2Fp%2FA-13356914",
+          "parsed": {
+            "path": "/redsky_aggregations/v1/web/product_fulfillment_and_variation_hierarchy_v1",
+            "params": {
+              "tcin": "13356914",
+              "store_id": "2272",
+              "zip": "20147"
+            }
+          }
+        },
+        {
+          "status": 403,
+          "url": "https://redsky.target.com/redsky_aggregations/v1/web/pdp_recommendations_placement_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&tcins=13356914&placement_id=adapt_pdp_oos_01&purchasable_store_ids=2272&pricing_store_id=2272&channel=WEB&page=%2Fp%2FA-13356914",
+          "parsed": {
+            "path": "/redsky_aggregations/v1/web/pdp_recommendations_placement_v1",
+            "params": {}
+          }
+        }
+      ],
+      "carts": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "https://carts.target.com/web_checkouts/v1/cart?cart_type=REGULAR&field_groups=ADDRESSES%2CCART_ITEMS%2CSUMMARY&key=9f36aeafbe60771e321a7cc95a78140772ab3e96&client_feature=add_to_cart",
+          "body": "{\"channel_id\":\"10\",\"cart_id\":\"e8ff1c50-7335-11f1-b220-7765214387a5\",\"test_cart\":false,\"reference_id\":\"102003562748672\",\"guest_id\":\"6160b73b-a88f-4023-b37b-d203ee7460ff\",\"cart_state\":\"PENDING\",\"cart_type\":\"REGULAR\",\"guest_type\":\"GUEST\",\"guest_location\":{\"zip_code\":\"55401\",\"state\":\"MN\",\"country\":\"US\"},\"guest_profile\":{},\"shipt_available_memberships_type\":[\"PAY_PER_ORDER\"],\"eligible_paid_membership_types\":[\"SUBSCRIPTION\",\"TRIAL\"],\"summary\":{\"total_discounts\":0.00,\"total_gift_wrap_amount\":0,\"total_product_amount\":0.00,\"total_shipping_discount\":0.00,\"total_shipping_amount\":0.00,\"total_shipping_tax\":0.00,\"total_tax\":0.00,\"total_surcharge_fee\":0.00,\"total_handling_fee\":0.00,\"total_handling_discount\":0.00,\"total_handling_fee_tax\":0.00,\"grand_total\":0.00,\"balance_due\":0.00,\"items_quantity\":0,\"total_authorization_amount\":0.00,\"total_bag_fee\":0.00,\"red_card_banner\":{\"order_total\":\"0.00\",\"discounted_order_total\":\"0.00\"},\"eligible_snap_total\":0.00,\"eligible_snap_balance\":0.00,\"snap_total\":0.00,\"taxes\":{\"total\":0.00,\"sales\":0.00,\"shipping\":0.00,\"handling_fee\":0.00,\"service_fee\":0.00,\"gift_wrap\":0.00},\"delivery_charges\":{\"total\":0.00,\"categories\":[]},\"max_eligible_amount_for_non_primary_tender\":0,\"qualified_medical_expense_total\":0.00},\"indicators\":{\"has_digital_delivery_item\":false,\"has_gift_option_applied\":false,\"has_registry_item\":false,\"has_scheduled_delivery_item\":false,\"has_ship_to_store_item\":false,\"has_store_pickup_item\":false,\"has_subscription_item\":false,\"has_shipping_required_item\":false,\"has_payment_applied\":false,\"has_payment_satisfied\":true,\"has_only_giftcard_items\":false,\"has_address_associated_all\":true,\"has_only_giftcard_tender\":false,\"has_paypal_tender_enabled\":true,\"has_applepay_tender_enabled\":true,\"has_giftcard_tender_enabled\":true,\"has_thirdparty_tender_enabled\":true,\"has_target_tender_enabled\":true,\"has_target_debit_card_tender_enabled\":true,\"has_store_front_item\":false,\"is_credit_card_compare_required\":false,\"would_credit_card_compare_be_required\":false,\"ha"
+        },
+        {
+          "method": "POST",
+          "status": 201,
+          "url": "https://carts.target.com/web_checkouts/v1/cart_items?field_groups=CART%2CCART_ITEMS%2CSUMMARY&key=9f36aeafbe60771e321a7cc95a78140772ab3e96",
+          "body": "{\"cart_id\":\"e8ff1c50-7335-11f1-b220-7765214387a5\",\"total_cart_item_quantity\":1,\"cart_item_id\":\"ee5a43f1-7335-11f1-acf4-2771f635bb46\",\"cart_item_type\":\"REGULARITEM\",\"return_policy\":[{\"type\":\"default\",\"day_count\":120,\"user_type\":\"best_guest\"},{\"type\":\"default\",\"day_count\":90,\"user_type\":\"regular_guest\"}],\"tcin\":\"13356914\",\"dpci\":\"081-06-0301\",\"quantity\":1,\"unit_price\":4.29,\"list_price\":4.59,\"current_price\":4.29,\"msrp\":4.59,\"eyebrow\":\"S\",\"limited_quantity\":false,\"available_quantity_in_inventory\":99,\"handling\":{\"buy_unit_of_measure\":\"Each\"},\"fulfillment\":{\"type\":\"SHIP\",\"location_data\":{},\"ship_method\":\"STANDARD\",\"price\":{\"shipping_price\":0.00,\"handling_price\":0.00,\"service_fee\":0.00},\"estimated_arrival_start_date\":\"2026-06-29\",\"estimated_arrival_end_date\":\"2026-06-29\",\"ship_method_service_level_description\":\"2-day shipping\",\"available_ship_methods\":[{\"type\":\"SHIP\",\"ship_method\":\"STANDARD\",\"estimated_arrival_start_date\":\"2026-06-29\",\"estimated_arrival_end_date\":\"2026-06-29\",\"preferred\":true,\"base\":true,\"selected\":true,\"seasonal\":false,\"ship_method_short_description\":\"Standard\",\"ship_method_long_description\":\"Ground\",\"ship_method_service_level_description\":\"2-day shipping\",\"order_cutoff\":\"2026-06-28T22:00+0000\",\"ship_date\":\"2026-06-28\",\"location_id\":\"9407-1\",\"two_day_shipping_eligible\":true,\"line_consolidated\":false,\"minimum_order_quantity\":1.0}]},\"item_attributes\":{\"description\":\"Scotch Magic Tape with Dispensers 3pk\",\"image_path\":\"https://target.scene7.com/is/image/Target//GUEST_e70feecd-aee3-4dab-8692-f68309a26a83\",\"max_purchase_quantity\":99,\"product_subtype_name\":\"OFFICE SUPPLIES\",\"product_type_name\":\"STATIONERY & OFFICE SUPPLIES\"},\"item_summary\":{\"shipping_discount\":0.00,\"shipping_charge\":0.00,\"total_discount\":0.00,\"partial_discount\":0.00,\"total_product\":4.29,\"tax_amount\":0.00,\"price\":4.29,\"shipping_tax\":0.00,\"handling_fee\":0.00,\"surcharge_fee\":0.00,\"handling_fee_tax\":0.00,\"handling_fee_discount\":0.00,\"gift_wrap_fee\":0.00,\"gift_wrap_tax\":0.00,\"delivery_charge\":0.00,\""
+        }
+      ],
+      "captcha": [],
+      "fulfillment": []
+    },
+    "redskyBodies": [
+      {
+        "url": "https://redsky.target.com/redsky_aggregations/v1/web/product_fulfillment_and_variation_hierarchy_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&required_store_id=2272&latitude=39.030&longitude=-77.490&scheduled_delivery_store_id=2272&state=VA&zip=20147&store_id=2272&paid_membership=false&base_membership=false&card_membership=false&is_bot=false&tcin=13356914&visitor_id=019F10125B580200B6A99C7E39A2FA39&channel=WEB&page=%2Fp%2FA-13356914",
+        "status": 200,
+        "body": "{\"data\":{\"product\":{\"__typename\":\"Product\",\"tcin\":\"13356914\",\"store_positions\":[{\"aisle\":51,\"block\":\"B\"}],\"pay_per_order_charges\":{\"one_day\":7.99,\"scheduled_delivery\":9.99},\"fulfillment\":{\"product_id\":\"13356914\",\"is_out_of_stock_in_all_store_locations\":false,\"sold_out\":false,\"store_options\":[{\"location_id\":\"2272\",\"store\":{\"location_name\":\"Dulles\",\"mailing_address\":{\"address_line1\":\"45130 Columbia Pl\",\"city\":\"Sterling\",\"state\":\"Virginia\",\"postal_code\":\"20166-2500\"}},\"search_response_store_type\":\"PRIMARY\",\"location_available_to_promise_quantity\":21.0,\"pre_order_location_available_to_promise_quantity\":0.0,\"order_pickup\":{\"pickup_date\":\"2026-06-28\",\"guest_pick_sla\":120,\"availability_status\":\"IN_STOCK\",\"location_locale\":\"America/New_York\"},\"in_store_only\":{\"availability_status\":\"IN_STOCK\"}}],\"shipping_options\":{\"availability_status\":\"IN_STOCK\",\"loyalty_availability_status\":\"IN_STOCK\",\"available_to_promise_quantity\":99.0,\"services\":[{\"is_two_day_shipping\":true,\"is_base_shipping_method\":true,\"shipping_method_id\":\"STANDARD\",\"cutoff\":\"2026-06-29T18:30:00Z\",\"max_delivery_date\":\"2026-06-30\",\"min_delivery_date\":\"2026-06-30\",\"shipping_method_short_description\":\"Standard\",\"service_level_description\":\"2-day shipping\"}]},\"scheduled_delivery\":{\"location_id\":\"2272\",\"availability_status\":\"IN_STOCK\",\"location_available_to_promise_quantity\":21.0}}}}}"
+      },
+      {
+        "url": "https://redsky.target.com/redsky_aggregations/v1/web/pdp_client_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&tcin=13356914&is_bot=false&store_id=2272&pricing_store_id=2272&has_pricing_store_id=true&has_financing_options=true&include_obsolete=false&visitor_id=019F10125B580200B6A99C7E39A2FA39&skip_personalized=true&skip_variation_hierarchy=true&channel=WEB&page=%2Fp%2FA-13356914",
+        "status": 200,
+        "body": "{\"data\":{\"product\":{\"__typename\":\"Product\",\"tcin\":\"13356914\",\"category\":{\"parent_category_id\":\"5xsxi\",\"name\":\"Tape\",\"breadcrumbs\":[{\"canonical_url\":\"/\",\"category_id\":\"root\",\"name\":\"target\"},{\"canonical_url\":\"/c/school-office-supplies/-/N-5xsxr\",\"category_id\":\"5xsxr\",\"name\":\"School & Office Supplies\"},{\"canonical_url\":\"/c/school-supplies-office/-/N-my2p6\",\"category_id\":\"my2p6\",\"name\":\"School Supplies\"},{\"canonical_url\":\"/c/tape-adhesives-fasteners-school-supplies-office/-/N-5xsxi\",\"category_id\":\"5xsxi\",\"name\":\"Tape, Adhesives & Fasteners\"},{\"canonical_url\":\"/c/tape-adhesives-fasteners-school-supplies-office/-/N-4yjv5\",\"category_id\":\"4yjv5\",\"name\":\"Tape\"}]},\"sales_classification_nodes\":{\"node_ids\":[\"4yjv5\",\"x26ug\",\"h334a\",\"5q0g0\",\"klijb\",\"btldv\",\"n6qub\"]},\"ratings_and_reviews\":{\"has_verified\":true,\"statistics\":{\"not_recommended_count\":5,\"question_count\":4,\"rating\":{\"average\":4.77,\"count\":1958,\"distribution\":{\"rating1\":37,\"rating2\":15,\"rating3\":50,\"rating4\":160,\"rating5\":1696},\"secondary_averages\":[{\"id\":\"quality\",\"label\":\"quality\",\"range\":5,\"type\":\"RATING\",\"value\":4.81},{\"id\":\"value\",\"label\":\"value\",\"range\":5,\"type\":\"RATING\",\"value\":4.57}]},\"recommended_count\":49,\"recommended_percentage\":90,\"review_count\":97},\"most_recent\":[{\"id\":\"83063aff-84f9-4af1-81c8-ea7df8b2a614\",\"text\":\"Good price by buying 2\",\"author\":{\"nickname\":\"Green part of the squash\",\"external_id\":\"1707800481\"},\"rating\":{\"value\":5.0,\"submitted_at\":\"2026-05-30T23:43:03.176Z\"}},{\"id\":\"2c57c9d5-39bd-49e3-95b5-bbfc9adea7ff\",\"text\":\"Works!\",\"author\":{\"nickname\":\"B\",\"external_id\":\"494833018\"},\"rating\":{\"value\":5.0,\"submitted_at\":\"2026-05-20T23:15:57.043Z\"}},{\"id\":\"02f570b3-1255-4ef9-aafa-18d4bf19ec2d\",\"text\":\"I like this tape because I can write on it\",\"author\":{\"nickname\":\"Suzy\",\"external_id\":\"20060261001\"},\"rating\":{\"value\":5.0,\"submitted_at\":\"2026-05-08T19:02:20.209Z\"}},{\"id\":\"5398c5f7-fe20-4ebb-9b31-4571b6164ce0\",\"text\":\"I love this tape. It takes very well and is clear and blends in easily especially when you wrap presents.\",\"author\":{\"nickname\":\"Kd\",\"external_id\":\"1165176086\"},\"rating\":{\"value\":5.0,\"submitted_at\":\"2026-04-03T01:17:29.603Z\"}},{\"id\":\"acbdcfc4-69f9-40f2-8e25-61a28d9dd077\",\"text\":\"cant go wrong with scotch\",\"author\":{\"nickname\":\"TargetLover\",\"external_id\":\"7987960063\"},\"rating\":{\"value\":5.0,\"submitted_at\":\"2026-03-02T01:12:40.061Z\"}},{\"id\":\"e215957b-5285-49e4-b420-c7d306e6ca0a\",\"text\":\"I used only Scotch magic tape to put up this streamer decor and it stayed up for a whole month… when I eventually took it down myself! No doubt it could have stayed longer I’ve used tape I’ve gotten for a dollar and many other brands… but I can’t deny that Scotch magic tape is the best around. I didn’t think much of it, I means it’s just tape? BUT my husband and I both work in education and have used a lot different kinds of tape at work. We both agree that Scotch magic tape is THE BEST and the only tape we will buy!\",\"author\":{\"nickname\":\"Goodjuju\",\"external_id\":\"1687671134\"},\"title\":\"The best tape! Hands down!\",\"rating\":{\"value\":5.0,\"submitted_at\":\"2026-02-27T17:41:38.199Z\"}},{\"id\":\"412ea907-e37b-4dbb-ae80-67547c0d4103\",\"text\":\"Perfect.\",\"author\":{\"nickname\":\"Howard\",\"external_id\":\"20071743616\"},\"rating\":{\"value\":5.0,\"submitted_at\":\"2026-02-17T16:21:12.663Z\"}},{\"id\":\"a3f7dad3-6f9e-4346-877c-c1a64a1b79ba\",\"text\":\"[This review was collected as part of a promotion.] I use this all the time now. It is the only tape I have. Very strong for this type. Disappears into the wrapping paper. Good easy dispenser. A nice amount of tape on the reel. I will continue to purchase.\",\"author\":{\"nickname\":\"Kmt1\",\"external_id\":\"6c015ee9-2b6e-5e9a-865a-003eeffe7aa0\"},\"title\":\"Perfect gift tape.\",\"rating\":{\"value\":5.0,\"submitted_at\":\"2026-01-22T05:47:55.000Z\"}}],\"photos\":[\"https://target.scene7.com/is/image/Target/GUEST_bbebac9d-bfee-47c7-ab18-bc0ce42f89f4\",\"https://target.scene7.com/is/image/Target/GUEST_1ed33885-2a3d-4ea5-b0db-8a8a1787dde3\",\"https://target.scene7.com/is/image/Target/GUEST_d4e7df0b-9c57-43d6-b459-a11ba0a1b2f6\",\"https://target.scene7.com/is/image/Target/GUEST_5ecffbfe-4200-4bf1-ad3f-a6c0262d37fd\",\"https://target.scene7.com/is/image/Target/GUEST_e3e07b30-e01b-472c-b510-bb0d84ab0e60\"]},\"financing_options\":{\"channel\":\"DIGITAL\",\"providers\":[{\"finance_minimum_loan_amount\":30.0,\"finance_provider\":\"PayPal\",\"financing_terms_url\":\"https://www.paypal.com/credit-presentment/lander/modal?client_id=AZ_XI7q1Eg3_B6ho8bkB1B06juS0UYjNs0hXDrDbxu4GzhtTUOj0xhb8VB0KigC5pV0Qljr95-Kp8JKE&amount=0&currency=USD&buyer_country=US&offer=PAY_LATER_SHORT_TERM&integrationType=API\",\"financing_cell_header\":\"Pay in 4\",\"financing_cell_body\":\"Pay in 4 interest-free payments on purchases of $30-$1,500\",\"is_finance_eligible\":true,\"is_finance_message_eligible\":true},{\"finance_footer\":\"Rates are between 10–36% APR. Subject to credit check and approval. Options depend on your purchase amount, and a down payment may be required. Estimated payment amount may exclude taxes and shipping. Payment options through Affirm are provided by these lending partners: <a class='affirm-loan-originator' href='https://www.affirm.com/lenders'>affirm.com/lenders</a>. Please note that you can’t use Affirm to pay for pre-ordered items. See <a class='affirm-loan-originator' href='https://www.affirm.com/faqs'>affirm.com/faqs</a> for details.\",\"finance_header\":\"Make easy monthly payments over 3, 6 or 12 months\",\"finance_message\":\"Pay over time on $50+ orders with Affirm. <a class='affirm-modal-trigger'>Learn more</a>\",\"finance_minimum_loan_amount\":50.0,\"finance_provider\":\"Affirm\",\"finance_terms\":[{\"amount\":103.35,\"apr\":19.99,\"installment_amount\":34.45,\"installment_count\":3,\"interest_amount\":3.35,\"minimum_loan_amount\":100.0,\"billing_frequency\":\"3 months\",\"installment_interval\":\"$34.45 every month\"},{\"amount\":105.93,\"apr\":20.06,\"installment_amount\":17.66,\"installment_count\":6,\"interest_amount\":5.93,\"minimum_loan_amount\":100.0,\"billing_frequency\":\"6 months\",\"installment_interval\":\"$17.66 every month\"},{\"amount\":111.27,\"apr\":20.18,\"installment_amount\":9.27,\"installment_count\":12,\"interest_amount\":11.27,\"minimum_loan_amount\":100.0,\"billing_frequency\":\"12 months\",\"installment_interval\":\"$9.27 every month\"}],\"financing_terms_url\":\"www.affirm.com/lenders\",\"financing_cell_header\":\"Pay over time\",\"financing_cell_body\":\"With Affirm on orders over $50\",\"is_finance_eligible\":true,\"is_finance_message_eligible\":true}]},\"free_shipping\":{\"enabled\":false},\"desirability_cues\":[{\"code\":\"bestseller\",\"display\":\"Bestseller\",\"long_description\":\"Based on sales and guest views of this item within the last 30 days.\"}],\"ornaments\":[{\"ornament\":\"bestseller\",\"display\":\"Bestseller\",\"long_description\":\"Based on sales and guest views of this item within the last 30 days.\",\"ornament_type\":\"guest\",\"template_type\":\"dark_marker_with_trophy\"},{\"ornament\":\"low_returns\",\"display\":\"Rarely returned\",\"ornament_type\":\"enterprise\",\"template_type\":\"thumbs_up_with_bold_text\"}],\"item\":{\"product_classification\":{\"item_type\":{\"name\":\"Tape\",\"type\":\"234198\"},\"product_type\":106032,\"product_type_name\":\"STATIONERY & OFFICE SUPPLIES\",\"purchase_behavior\":\"Frequency\"},\"compliance\":{},\"enrichment\":{\"buy_url\":\"https://www.target.com/p/scotch-3pk-magic-tape-3-4-34-x-350-34/-/A-13356914\",\"image_info\":{\"base_url\":\"//target.scene7.com/is/image/Target/\",\"primary_image\":{\"alt_text\":\"A package of Scotch Magic Tape containing three rolls, with one roll in a clear dispenser, featuring green and black plaid packaging with the text \\\"Scotch Magic Tape 3 ROLLS\\\" and \\\"100s of uses.\\\"\",\"image_name\":\"GUEST_e70feecd-aee3-4dab-8692-f68309a26a83\",\"url\":\"https://target.scene7.com/is/image/Target/GUEST_e70feecd-aee3-4dab-8692-f68309a26a83\"},\"content_labels\":[{\"image_url\":\"https://target.scene7.com/is/image/Target/GUEST_343babae-6d56-4ef4-b794-99e1fbaefb2a\"},{\"image_url\":\"https://target.scene7.com/is/image/Target/GUEST_6e98d9bd-c5db-4f34-825a-06d83d882bf3\"},{\"image_url\":\"https://target.scene7.com/is/image/Target/GUEST_327e9cb7-9a27-4940-8b5d-92ef7ffa8bfa\"},{\"image_url\":\"https://target.scene7.com/is/image/Target/GUEST_1f3d1140-ff6f-4d78-a739-780c580f2f53\"},{\"image_url\":\"https://target.scene7.com/is/image/Target/GUEST_7e62f3f0-1632-4835-b35b-0788e88e55ef\"},{\"image_url\":\"https://target.scene7.com/is/image/Target/GUEST_736ce5e3-a02f-4ced-a6b8-54b68004ed6b\"},{\"image_url\":\"https://target.scene7.com/is/image/Target/GUEST_374abbc7-42e7-4daa-bdab-2fb059df9b41\"},{\"image_url\":\"https://target.scene7.com/is/image/Target/GUEST_a1a3e08b-7e87-4e32-97dc-8e2863b2241f\"},{\"image_url\":\"https://target.scene7.com/is/image/Target/GUEST_d7cd2d2d-aef5-4283-b84e-bf34837ce732\"},{\"image_url\":\"https://target.scene7.com/is/image/Target/GUEST_e70feecd-aee3-4dab-8692-f68309a26a83\"},{\"image_url\":\"https://target.scene7.com/is/image/Target/GUEST_d7b6fe39-4f1c-4750-97a0-4cb5bfffe915\"},{\"image_url\":\"https://target.scene7.com/is/image/Target/GUEST_af0ed93e-cbac-4d6d-b610-8fc45404bc29\"},{\"image_url\":\"https://target.scene7.com/is/image/Target/GUEST_82d926db-7e15-423a-81bb-edc247e48d92\"}],\"alternate_images\":[{\"url\":\"https://target.scene7.com/is/image/Target/GUEST_82d926db-7e15-423a-81bb-edc247e48d92\",\"image_name\":\"GUEST_82d926db-7e15-423a-81bb-edc247e48d92\",\"alt_text\":\"Three rolls of Scotch Magic Tape in a green plaid patterned box labeled \\\"3 PACK\\\" and \\\"100s of Uses.\\\"\"},{\"url\":\"https://target.scene7.com/is/image/Target/GUEST_1f3d1140-ff6f-4d78-a739-780c580f2f53\",\"image_name\":\"GUEST_1f3d1140-ff6f-4d78-a739-780c580f2f53\",\"alt_text\":\"Green colored tape dispenser with \\\"Magic Tape,\\\" \\\"Scotch,\\\" and \\\"3M\\\" logos, featuring a matte finish and 3/4 inch width label.\"},{\"url\":\"https://target.scene7.com/is/image/Target/GUEST_a1a3e08b-7e87-4e32-97dc-8e2863b2241f\",\"image_name\":\"GUEST_a1a3e08b-7e87-4e32-97dc-8e2863b2241f\",\"alt_text\":\"A green and white graphic with the text \\\"#1 SELLING home & office tape brand* Based on 2022 NPD data\\\" and a yellow banner, featuring the Scotch Brand logo.\"},{\"url\":\"https://target.scene7.com/is/image/Target/GUEST_736ce5e3-a02f-4ced-a6b8-54b68004ed6b\",\"image_name\":\"GUEST_736ce5e3-a02f-4ced-a6b8-54b68004ed6b\",\"alt_text\":\"A hand holds a green plaid-patterned tape dispenser labeled \\\"Magic Tape\\\" and \\\"Scotch,\\\" with a strip of tape being pulled out.\"},{\"url\":\"https://target.scene7.com/is/image/Target/GUEST_327e9cb7-9a27-4940-8b5d-92ef7ffa8bfa\",\"image_name\":\"GUEST_327e9cb7-9a27-4940-8b5d-92ef7ffa8bfa\",\"alt_text\":\"A roll of Scotch Magic Tape is placed on a marble surface next to labeled food containers.\"},{\"url\":\"https://target.scene7.com/is/image/Target/GUEST_343babae-6d56-4ef4-b794-99e1fbaefb2a\",\"image_name\":\"GUEST_343babae-6d56-4ef4-b794-99e1fbaefb2a\"},{\"url\":\"https://target.scene7.com/is/image/Target/GUEST_6e98d9bd-c5db-4f34-825a-06d83d882bf3\",\"image_name\":\"GUEST_6e98d9bd-c5db-4f34-825a-06d83d882bf3\"},{\"url\":\"https://target.scene7.com/is/image/Target/GUEST_7e62f3f0-1632-4835-b35b-0788e88e55ef\",\"image_name\":\"GUEST_7e62f3f0-1632-4835-b35b-0788e88e55ef\",\"alt_text\":\"A roll of invisible tape in a dispenser is placed on a wooden surface next to a pair of scissors and a hand holding a craft airplane made from a plastic bottle and colored paper.\"},{\"url\":\"https://target.scene7.com/is/image/Target/GUEST_af0ed93e-cbac-4d6d-b610-8fc45404bc29\",\"image_name\":\"GUEST_af0ed93e-cbac-4d6d-b610-8fc45404bc29\",\"alt_text\":\"Clear tape in a green plaid patterned dispenser with \\\"Magic Tape,\\\" \\\"Scotch,\\\" and \\\"3M\\\" text.\"},{\"url\":\"https://target.scene7.com/is/image/Target/GUEST_d7b6fe39-4f1c-4750-97a0-4cb5bfffe915\",\"image_name\":\"GUEST_d7b6fe39-4f1c-4750-97a0-4cb5bfffe915\",\"alt_text\":\"Green and black plaid dispenser of Scotch Magic Tape with text \\\"2024 Winner\\\" and \\\"Coolest Thing Made in Minnesota\\\" alongside a yellow silhouette of Minnesota.\"},{\"url\":\"https://target.scene7.com/is/image/Target/GUEST_374abbc7-42e7-4daa-bdab-2fb059df9b41\",\"image_name\":\"GUEST_374abbc7-42e7-4daa-bdab-2fb059df9b41\",\"alt_text\":\"Three rolls of Scotch Magic Tape in a green box with \\\"100s of Uses\\\" and \\\"3 ROLLS\\\" text visible.\"},{\"url\":\"https://target.scene7.com/is/image/Target/GUEST_d7cd2d2d-aef5-4283-b84e-bf34837ce732\",\"image_name\":\"GUEST_d7cd2d2d-aef5-4283-b84e-bf34837ce732\",\"alt_text\":\"A pack of Scotch Magic Tape with six rolls in a green and black plaid patterned box, featuring the text \\\"100s of Uses\\\" and the 3M logo.\"}],\"swatch_image\":{}},\"videos\":[{\"video_captions\":[{\"caption_url\":\"https://target.scene7.com/is/content/Target/GUEST_938d343f-e32f-4ba3-b33d-adeabdf3bf16\",\"language\":\"EN\"}],\"video_files\":[{\"mime_type\":\"video/mp4\",\"video_height_pixels\":\"720\",\"video_url\":\"https://target.scene7.com/is/content/Target/GUEST_d8bd0bd7-ec2b-4f6c-8db3-94ece98ddaa0\"}],\"video_length_seconds\":\"31\",\"video_poster_image\":\"https://target.scene7.com/is/image/Target/GUEST_d8bd0bd7-ec2b-4f6c-8db3-94ece98ddaa0\",\"video_title\":\"Video 1\"}],\"return_policies\":[{\"user_type\":\"best_guest\",\"day_count\":120},{\"user_type\":\"regular_guest\",\"day_count\":90}]},\"environmental_segmentation\":{\"is_hazardous_material\":false},\"formatted_return_method\":\"This item can be returned to any Target store or Target.com.\",\"fulfillment\":{\"is_gift_wrap_eligible\":true,\"purchase_limit\":99},\"package_dimensions\":{\"depth\":4.0157,\"dimension_unit_of_measure\":\"INCH\",\"weight\":0.2,\"weight_unit_of_measure\":\"POUND\",\"height\":2.3622,\"width\":2.4409},\"product_description\":{\"bullet_descriptions\":[\"<B>Tape Dimensions:</B> .75 Inches (W) x 350 Inches (L)\",\"<B>Package Quantity:</B> 3\",\"<B>Material:</B> Plastic\"],\"downstream_description\":\"Scotch Magic Tape lets you magically mend the many rips and tears on school assignments - securely, permanently and invisibly. The original matte-finish invisible tape uses unique 3M adhesive technology to bond tightly with paper and disappear without a trace. It's the ideal matte tape for permanent, secure paper mending, whether you need to make a quick fix or an addition to your school projects. This clear tape is also perfect for fixing torn or ripped originals, like ripped college notebooks, essays, drawings, arts and crafts projects, library book pages and other paper projects. Easy to apply, this tape is photo-safe for worry-free mounting or mending of special photos for your dorm room or classroom. You can even write on this adhesive tape with a pen, pencil or marker, making it easy to label items. With the easy-to-use Scotch tape dispenser (included), Scotch Magic Tape rolls out smoothly and cuts easily with no time, energy or tape wasted. These dispensers are a convenient addition to teacher supplies and classroom supplies. Refill and reuse the included hand-held office tape dispenser with Scotch Brand Tape. The best projects start with the No. 1-selling home and office tape (based on 2022 NPD data).\",\"soft_bullets\":{\"bullets\":[\"INVISIBLE TAPE: 3 rolls of Scotch Magic Tape with dispenser mends rips and tears securely, permanently and invisibly\",\"BONDS SECURELY: Clear tape that gives you a strong, secure and permanent seal using trusted 3M adhesive technology\",\"BLENDS IN: Matte finish and invisi"
+      },
+      {
+        "url": "https://redsky.target.com/redsky_aggregations/v1/web/pdp_client_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&tcin=13356914&is_bot=false&store_id=2272&pricing_store_id=2272&has_pricing_store_id=true&has_financing_options=true&include_obsolete=false&skip_personalized=true&skip_variation_hierarchy=true&channel=WEB&page=%2Fp%2FA-13356914",
+        "status": 403,
+        "body": "{\n  \"captchaRelativeURL\":\"/captcha?trackingId=62522179-25c4-46ed-be7e-37f21a933758\",\n  \"captchaAbsoluteURL\":\"https://redsky.target.com/captcha?trackingId=62522179-25c4-46ed-be7e-37f21a933758\"\n}"
+      },
+      {
+        "url": "https://redsky.target.com/redsky_aggregations/v1/web/product_fulfillment_and_variation_hierarchy_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&required_store_id=2272&latitude=39.030&longitude=-77.490&scheduled_delivery_store_id=2272&state=VA&zip=20147&store_id=2272&paid_membership=false&base_membership=false&card_membership=false&is_bot=false&tcin=13356914&channel=WEB&page=%2Fp%2FA-13356914",
+        "status": 403,
+        "body": "{\n  \"captchaRelativeURL\":\"/captcha?trackingId=f88ec062-2337-4ac9-873e-b4c7467b8755\",\n  \"captchaAbsoluteURL\":\"https://redsky.target.com/captcha?trackingId=f88ec062-2337-4ac9-873e-b4c7467b8755\"\n}"
+      },
+      {
+        "url": "https://redsky.target.com/redsky_aggregations/v1/web/pdp_recommendations_placement_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&tcins=13356914&placement_id=adapt_pdp_oos_01&purchasable_store_ids=2272&pricing_store_id=2272&channel=WEB&page=%2Fp%2FA-13356914",
+        "status": 403,
+        "body": "{\n  \"captchaRelativeURL\":\"/captcha?trackingId=35ea2e68-7d66-45bb-8d0d-7cb3f10613ff\",\n  \"captchaAbsoluteURL\":\"https://redsky.target.com/captcha?trackingId=35ea2e68-7d66-45bb-8d0d-7cb3f10613ff\"\n}"
+      }
+    ],
+    "redskyProbe": [
+      {
+        "url": {
+          "path": "/redsky_aggregations/v1/web/pdp_client_v1",
+          "params": {
+            "tcin": "13356914",
+            "store_id": "2272"
+          }
+        },
+        "status": 403,
+        "ok": false,
+        "text": "{\n  \"captchaRelativeURL\":\"/captcha?trackingId=62522179-25c4-46ed-be7e-37f21a933758\",\n  \"captchaAbsoluteURL\":\"https://redsky.target.com/captcha?trackingId=62522179-25c4-46ed-be7e-37f21a933758\"\n}",
+        "json": {
+          "captchaRelativeURL": "/captcha?trackingId=62522179-25c4-46ed-be7e-37f21a933758",
+          "captchaAbsoluteURL": "https://redsky.target.com/captcha?trackingId=62522179-25c4-46ed-be7e-37f21a933758"
+        }
+      },
+      {
+        "url": {
+          "path": "/redsky_aggregations/v1/web/product_fulfillment_and_variation_hierarchy_v1",
+          "params": {
+            "tcin": "13356914",
+            "store_id": "2272",
+            "zip": "20147"
+          }
+        },
+        "status": 403,
+        "ok": false,
+        "text": "{\n  \"captchaRelativeURL\":\"/captcha?trackingId=f88ec062-2337-4ac9-873e-b4c7467b8755\",\n  \"captchaAbsoluteURL\":\"https://redsky.target.com/captcha?trackingId=f88ec062-2337-4ac9-873e-b4c7467b8755\"\n}",
+        "json": {
+          "captchaRelativeURL": "/captcha?trackingId=f88ec062-2337-4ac9-873e-b4c7467b8755",
+          "captchaAbsoluteURL": "https://redsky.target.com/captcha?trackingId=f88ec062-2337-4ac9-873e-b4c7467b8755"
+        }
+      },
+      {
+        "url": {
+          "path": "/redsky_aggregations/v1/web/pdp_recommendations_placement_v1",
+          "params": {}
+        },
+        "status": 403,
+        "ok": false,
+        "text": "{\n  \"captchaRelativeURL\":\"/captcha?trackingId=35ea2e68-7d66-45bb-8d0d-7cb3f10613ff\",\n  \"captchaAbsoluteURL\":\"https://redsky.target.com/captcha?trackingId=35ea2e68-7d66-45bb-8d0d-7cb3f10613ff\"\n}",
+        "json": {
+          "captchaRelativeURL": "/captcha?trackingId=35ea2e68-7d66-45bb-8d0d-7cb3f10613ff",
+          "captchaAbsoluteURL": "https://redsky.target.com/captcha?trackingId=35ea2e68-7d66-45bb-8d0d-7cb3f10613ff"
+        }
+      }
+    ],
+    "cartProbe": {
+      "status": 201,
+      "ok": true,
+      "body": "{\"cart_id\":\"e8ff1c50-7335-11f1-b220-7765214387a5\",\"total_cart_item_quantity\":1,\"cart_item_id\":\"ee5a43f1-7335-11f1-acf4-2771f635bb46\",\"cart_item_type\":\"REGULARITEM\",\"return_policy\":[{\"type\":\"default\",\"day_count\":120,\"user_type\":\"best_guest\"},{\"type\":\"default\",\"day_count\":90,\"user_type\":\"regular_guest\"}],\"tcin\":\"13356914\",\"dpci\":\"081-06-0301\",\"quantity\":1,\"unit_price\":4.29,\"list_price\":4.59,\"current_price\":4.29,\"msrp\":4.59,\"eyebrow\":\"S\",\"limited_quantity\":false,\"available_quantity_in_inventory\":99,\"handling\":{\"buy_unit_of_measure\":\"Each\"},\"fulfillment\":{\"type\":\"SHIP\",\"location_data\":{},\"ship_method\":\"STANDARD\",\"price\":{\"shipping_price\":0.00,\"handling_price\":0.00,\"service_fee\":0.00},\"estimated_arrival_start_date\":\"2026-06-29\",\"estimated_arrival_end_date\":\"2026-06-29\",\"ship_method_service_level_description\":\"2-day shipping\",\"available_ship_methods\":[{\"type\":\"SHIP\",\"ship_method\":\"STANDARD\",\"estimated_arrival_start_date\":\"2026-06-29\",\"estimated_arrival_end_date\":\"2026-06-29\",\"preferred\":true,\"base\":true,\"selected\":true,\"seasonal\":false,\"ship_method_short_description\":\"Standard\",\"ship_method_long_description\":\"Ground\",\"ship_method_service_level_description\":\"2-day shipping\",\"order_cutoff\":\"2026-06-28T22:00+0000\",\"ship_date\":\"2026-06-28\",\"location_id\":\"9407-1\",\"two_day_shipping_eligible\":true,\"line_consolidated\":false,\"minimum_order_quantity\":1.0}]},\"item_attributes\":{\"description\":\"Scotch Magic Tape with Dispensers 3pk\",\"image_path\":\"https://target.scene7.com/is/image/Target//GUEST_e70feecd-aee3-4dab-8692-f68309a26a83\",\"max_purchase_quantity\":99,\"product_subtype_name\":\"OFFICE SUPPLIES\",\"product_type_name\":\"STATIONERY & OFFICE SUPPLIES\"},\"item_summary\":{\"shipping_discount\":0.00,\"shipping_charge\":0.00,\"total_discount\":0.00,\"partial_discount\":0.00,\"total_product\":4.29,\"tax_amount\":0.00,\"price\":4.29,\"shipping_tax\":0.00,\"handling_fee\":0.00,\"surcharge_fee\":0.00,\"handling_fee_tax\":0.00,\"handling_fee_discount\":0.00,\"gift_wrap_fee\":0.00,\"gift_wrap_tax\":0.00,\"delivery_charge\":0.00,\"taxes\":{\"total\":0.00,\"sales\":0.00,\"shipping\":0.00,\"handling_fee\":0.00,\"service_fee\":0.00,\"gift_wrap\":0.00},\"total_list_price\":4.59,\"personalized_price\":4.29,\"personalized_price_has_discounts\":true},\"subscription\":{},\"inventory_info\":{\"availability_status\":\"IN_STOCK\",\"location_type\":\"DISTRIBUTION_CENTER\",\"demand_type\":\"NETWORK\",\"online_available_to_promise_quantity\":1,\"stores_available_to_promise_quantity\":1,\"is_out_of_stock_in_all_store_locations\":false},\"item_indicators\":{\"is_store_pickup_eligible\":false,\"is_ship_to_store_eligible\":false,\"is_gift_wrap_eligible\":false,\"is_gift_message_eligible\":true,\"is_gift_options_eligible\":true,\"is_third_party_giftcard\":false,\"is_shipping_in_original_container\":false,\"is_loyalty_purchase_eligible\":false,\"is_add_on\":true,\"is_free_gift\":false,\"is_subscription\":false,\"is_subscription_eligible\":false,\"is_coming_soon\":false,\"is_bulky\":false,\"is_marketplace\":false,\"is_pre_order\":false,\"is_retail_ticketed\":false,\"is_pickup_window_item\":false,\"is_affirm_eli"
+    }
+  },
+  "comparison": {
+    "drop": {
+      "mainDisabled": true,
+      "mainDataTest": null,
+      "fulfillmentTabs": [],
+      "stickyAction": "Find alternative",
+      "bodyPatterns": {
+        "outOfStock": true,
+        "comingSoon": false,
+        "highTraffic": false,
+        "finalSale": true,
+        "findAlternative": true,
+        "bestseller": true,
+        "newAtTarget": true,
+        "signInBuyNow": false,
+        "notifyMe": false,
+        "countdown": false,
+        "queue": false
+      },
+      "oosPlacement": true
+    },
+    "instock": {
+      "mainDisabled": false,
+      "mainDataTest": "orderPickupButton",
+      "fulfillmentTabs": [
+        {
+          "tag": "button",
+          "id": null,
+          "dataTest": "fulfillment-cell-pickup",
+          "ariaLabel": "pickup - selected - 1 of 3 - Ready within 2 hours",
+          "disabled": false,
+          "href": null,
+          "text": "PickupReady within 2 hours"
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "dataTest": "fulfillment-cell-delivery",
+          "ariaLabel": "delivery - unselected - 2 of 3 - Check availability",
+          "disabled": false,
+          "href": null,
+          "text": "DeliveryCheck availability"
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "dataTest": "fulfillment-cell-shipping",
+          "ariaLabel": "shipping - unselected - 3 of 3 - Arrives by Tue, Jun 30",
+          "disabled": false,
+          "href": null,
+          "text": "ShippingArrives by Tue, Jun 30"
+        }
+      ],
+      "stickyAction": "Qty1",
+      "bodyPatterns": {
+        "outOfStock": false,
+        "comingSoon": false,
+        "highTraffic": false,
+        "finalSale": false,
+        "findAlternative": false,
+        "bestseller": true,
+        "newAtTarget": false,
+        "signInBuyNow": true,
+        "notifyMe": false,
+        "countdown": false,
+        "queue": false
+      }
+    }
+  },
+  "fulfillmentSummary": {
+    "drop": {
+      "pdp_client": {},
+      "fulfillment_hierarchy": {},
+      "oos_recommendations": {
+        "placement_id": "adapt_pdp_oos_01"
+      }
+    },
+    "instock": {
+      "fulfillment_hierarchy": {},
+      "pdp_client": {},
+      "oos_recommendations": {
+        "placement_id": "adapt_pdp_oos_01"
+      }
+    }
+  },
+  "cartProbe": {
+    "drop": {
+      "status": 424,
+      "ok": false,
+      "body": "{\"message\":\"Encountered errors with required dependent services.\",\"code\":\"DEPENDENT_SERVICE_ERROR\",\"alerts\":[{\"integration\":\"CARTS.FULFILLMENT_AGGREGATOR\",\"message\":\"inventory is not available for this item\",\"code\":\"INVENTORY_UNAVAILABLE\",\"metadata\":{\"tcin\":\"1011209279\"}}]}"
+    },
+    "instock": {
+      "status": 201,
+      "ok": true,
+      "body": "{\"cart_id\":\"e8ff1c50-7335-11f1-b220-7765214387a5\",\"total_cart_item_quantity\":1,\"cart_item_id\":\"ee5a43f1-7335-11f1-acf4-2771f635bb46\",\"cart_item_type\":\"REGULARITEM\",\"return_policy\":[{\"type\":\"default\",\"day_count\":120,\"user_type\":\"best_guest\"},{\"type\":\"default\",\"day_count\":90,\"user_type\":\"regular_guest\"}],\"tcin\":\"13356914\",\"dpci\":\"081-06-0301\",\"quantity\":1,\"unit_price\":4.29,\"list_price\":4.59,\"current_price\":4.29,\"msrp\":4.59,\"eyebrow\":\"S\",\"limited_quantity\":false,\"available_quantity_in_inventory\":99,\"handling\":{\"buy_unit_of_measure\":\"Each\"},\"fulfillment\":{\"type\":\"SHIP\",\"location_data\":{},\"ship_method\":\"STANDARD\",\"price\":{\"shipping_price\":0.00,\"handling_price\":0.00,\"service_fee\":0.00},\"estimated_arrival_start_date\":\"2026-06-29\",\"estimated_arrival_end_date\":\"2026-06-29\",\"ship_method_service_level_description\":\"2-day shipping\",\"available_ship_methods\":[{\"type\":\"SHIP\",\"ship_method\":\"STANDARD\",\"estimated_arrival_start_date\":\"2026-06-29\",\"estimated_arrival_end_date\":\"2026-06-29\",\"preferred\":true,\"base\":true,\"selected\":true,\"seasonal\":false,\"ship_method_short_description\":\"Standard\",\"ship_method_long_description\":\"Ground\",\"ship_method_service_level_description\":\"2-day shipping\",\"order_cutoff\":\"2026-06-28T22:00+0000\",\"ship_date\":\"2026-06-28\",\"location_id\":\"9407-1\",\"two_day_shipping_eligible\":true,\"line_consolidated\":false,\"minimum_order_quantity\":1.0}]},\"item_attributes\":{\"description\":\"Scotch Magic Tape with Dispensers 3pk\",\"image_path\":\"https://target.scene7.com/is/image/Target//GUEST_e70feecd-aee3-4dab-8692-f68309a26a83\",\"max_purchase_quantity\":99,\"product_subtype_name\":\"OFFICE SUPPLIES\",\"product_type_name\":\"STATIONERY & OFFICE SUPPLIES\"},\"item_summary\":{\"shipping_discount\":0.00,\"shipping_charge\":0.00,\"total_discount\":0.00,\"partial_discount\":0.00,\"total_product\":4.29,\"tax_amount\":0.00,\"price\":4.29,\"shipping_tax\":0.00,\"handling_fee\":0.00,\"surcharge_fee\":0.00,\"handling_fee_tax\":0.00,\"handling_fee_discount\":0.00,\"gift_wrap_fee\":0.00,\"gift_wrap_tax\":0.00,\"delivery_charge\":0.00,\"taxes\":{\"total\":0.00,\"sales\":0.00,\"shipping\":0.00,\"handling_fee\":0.00,\"service_fee\":0.00,\"gift_wrap\":0.00},\"total_list_price\":4.59,\"personalized_price\":4.29,\"personalized_price_has_discounts\":true},\"subscription\":{},\"inventory_info\":{\"availability_status\":\"IN_STOCK\",\"location_type\":\"DISTRIBUTION_CENTER\",\"demand_type\":\"NETWORK\",\"online_available_to_promise_quantity\":1,\"stores_available_to_promise_quantity\":1,\"is_out_of_stock_in_all_store_locations\":false},\"item_indicators\":{\"is_store_pickup_eligible\":false,\"is_ship_to_store_eligible\":false,\"is_gift_wrap_eligible\":false,\"is_gift_message_eligible\":true,\"is_gift_options_eligible\":true,\"is_third_party_giftcard\":false,\"is_shipping_in_original_container\":false,\"is_loyalty_purchase_eligible\":false,\"is_add_on\":true,\"is_free_gift\":false,\"is_subscription\":false,\"is_subscription_eligible\":false,\"is_coming_soon\":false,\"is_bulky\":false,\"is_marketplace\":false,\"is_pre_order\":false,\"is_retail_ticketed\":false,\"is_pickup_window_item\":false,\"is_affirm_eli"
+    }
+  }
+}
