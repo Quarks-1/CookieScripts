@@ -15,6 +15,7 @@ export type RetailerTabUiState = {
 };
 
 const tabUiState = new Map<number, RetailerTabUiState>();
+const manualAutoStoppedTabs = new Set<number>();
 
 const DEFAULT_TAB_UI_STATE: RetailerTabUiState = {
   status: "Ready — open a product page and press Start",
@@ -52,6 +53,7 @@ export function onRetailerTabRemoved(tabId: number): void {
   }
   tabChannelMap.delete(tabId);
   tabUiState.delete(tabId);
+  manualAutoStoppedTabs.delete(tabId);
   for (const [windowId, mappedTabId] of windowTabMap.entries()) {
     if (mappedTabId === tabId) {
       windowTabMap.delete(windowId);
@@ -72,11 +74,33 @@ export async function broadcastRetailerStopAuto(channelId?: string): Promise<voi
     if (channelId && boundChannel !== channelId) {
       continue;
     }
-    try {
-      await chrome.tabs.sendMessage(tabId, { type: "RETAILER_STOP_AUTO" });
-    } catch {
-      // Tab may have navigated away or closed.
-    }
+    await stopRetailerTabAuto(tabId);
+  }
+}
+
+export function markRetailerManualAutoStopped(tabId: number): void {
+  manualAutoStoppedTabs.add(tabId);
+  setRetailerTabUiState(tabId, { status: "Stopped", running: false });
+}
+
+export function clearRetailerManualAutoStopped(tabId: number): void {
+  manualAutoStoppedTabs.delete(tabId);
+  const current = tabUiState.get(tabId);
+  if (current && !current.running && current.status === "Stopped") {
+    tabUiState.delete(tabId);
+  }
+}
+
+export function isRetailerManualAutoStopped(tabId: number): boolean {
+  return manualAutoStoppedTabs.has(tabId);
+}
+
+export async function stopRetailerTabAuto(tabId: number): Promise<void> {
+  markRetailerManualAutoStopped(tabId);
+  try {
+    await chrome.tabs.sendMessage(tabId, { type: "RETAILER_STOP_AUTO" });
+  } catch {
+    // Tab may be reloading — the service worker stop flag still applies.
   }
 }
 
@@ -85,6 +109,7 @@ export function clearRetailerRuntimeState(): void {
   tabChannelMap.clear();
   windowTabMap.clear();
   tabUiState.clear();
+  manualAutoStoppedTabs.clear();
 }
 
 export function setRetailerTabUiState(tabId: number, state: RetailerTabUiState): void {
@@ -92,5 +117,8 @@ export function setRetailerTabUiState(tabId: number, state: RetailerTabUiState):
 }
 
 export function getRetailerTabUiState(tabId: number): RetailerTabUiState {
+  if (isRetailerManualAutoStopped(tabId)) {
+    return { status: "Stopped", running: false };
+  }
   return tabUiState.get(tabId) ?? DEFAULT_TAB_UI_STATE;
 }

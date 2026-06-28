@@ -53,11 +53,13 @@ describe("isSectionVisible", () => {
     expect(isSectionVisible("retailerAuto", status({ active_tab_kind: "other" }))).toBe(false);
   });
 
-  it("always shows link history", () => {
-    expect(isSectionVisible("linkHistory", status({ active_tab_kind: "other" }))).toBe(true);
-    expect(isSectionVisible("linkHistory", status({ active_tab_kind: "retailer" }))).toBe(true);
-    expect(
-      isSectionVisible("linkHistory", status({ active_tab_kind: "discord_channel" })),
-    ).toBe(true);
+  it("shows link history only on discord_channel surface", () => {
+    const discord = status({ active_tab_kind: "discord_channel", active_channel_id: "1" });
+    const retailer = status({ active_tab_kind: "retailer", retailer_tab_detected: true });
+    const other = status({ active_tab_kind: "other" });
+
+    expect(isSectionVisible("linkHistory", discord)).toBe(true);
+    expect(isSectionVisible("linkHistory", retailer)).toBe(false);
+    expect(isSectionVisible("linkHistory", other)).toBe(false);
   });
 });

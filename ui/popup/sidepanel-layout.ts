@@ -14,7 +14,7 @@ const VISIBILITY: Record<SidepanelSection, ActiveTabKind | "always"> = {
   detectedLinks: "discord_channel",
   retailerAuto: "retailer",
   globalHint: "other",
-  linkHistory: "always",
+  linkHistory: "discord_channel",
 };
 
 export function isSectionVisible(

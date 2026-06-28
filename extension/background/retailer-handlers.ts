@@ -1,5 +1,8 @@
 import {
+  clearRetailerManualAutoStopped,
   getRetailerTabChannel,
+  isRetailerManualAutoStopped,
+  markRetailerManualAutoStopped,
   releaseRetailerJob,
   setRetailerTabUiState,
 } from "@ext/background/retailer-runtime-state.ts";
@@ -16,6 +19,14 @@ export async function handleRetailerMessage(
 
   switch (message.type) {
     case "RETAILER_PING":
+      return { ok: true };
+    case "RETAILER_GET_TAB_AUTO_STATE":
+      return { ok: true, manual_auto_stopped: isRetailerManualAutoStopped(tabId) };
+    case "RETAILER_SYNC_MANUAL_STOP":
+      markRetailerManualAutoStopped(tabId);
+      return { ok: true };
+    case "RETAILER_SYNC_MANUAL_START":
+      clearRetailerManualAutoStopped(tabId);
       return { ok: true };
     case "RETAILER_GET_AUTO_CONFIG": {
       const settings = await getSettings();
@@ -58,6 +69,9 @@ export async function handleRetailerMessage(
       return { ok: true };
     }
     case "RETAILER_UI_STATE": {
+      if (isRetailerManualAutoStopped(tabId) && message.running) {
+        return { ok: true };
+      }
       setRetailerTabUiState(tabId, {
         status: message.status,
         running: message.running,

@@ -33,6 +33,9 @@ function isRetailerContentMessage(message: RuntimeMessage): message is RetailerT
     message.type === "RETAILER_SET_REFRESH_INTERVAL" ||
     message.type === "RETAILER_HARD_RELOAD" ||
     message.type === "RETAILER_PING" ||
+    message.type === "RETAILER_GET_TAB_AUTO_STATE" ||
+    message.type === "RETAILER_SYNC_MANUAL_STOP" ||
+    message.type === "RETAILER_SYNC_MANUAL_START" ||
     message.type === "RETAILER_UI_STATE"
   );
 }

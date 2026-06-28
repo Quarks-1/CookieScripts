@@ -1,6 +1,12 @@
 import { buildStatus, setRetailerAutoEnabledForChannel, setRetailerRefreshIntervalForChannel } from "@ext/background/status.ts";
-import { sendToActiveRetailerTab } from "@ext/background/retailer-tab-message.ts";
-import { broadcastRetailerStopAuto } from "@ext/background/retailer-runtime-state.ts";
+import { getActiveRetailerTab } from "@ext/background/retailer-tab-message.ts";
+import {
+  bindRetailerTab,
+  broadcastRetailerStopAuto,
+  clearRetailerManualAutoStopped,
+  setRetailerTabUiState,
+  stopRetailerTabAuto,
+} from "@ext/background/retailer-runtime-state.ts";
 import {
   clearHistory,
   getHistory,
@@ -82,12 +88,31 @@ export async function handleUiMessage(
       }
       return { ok: true, domains: [] };
     }
-    case "RETAILER_START_MANUAL_AUTO":
-      return sendToActiveRetailerTab(
-        { type: "RETAILER_START_MANUAL_AUTO" },
-        { bindManual: true },
-      );
-    case "RETAILER_STOP_MANUAL_AUTO":
-      return sendToActiveRetailerTab({ type: "RETAILER_STOP_AUTO" });
+    case "RETAILER_START_MANUAL_AUTO": {
+      const tab = await getActiveRetailerTab();
+      if (!tab?.id) {
+        return { ok: false, error: "Open a Target tab in this window" };
+      }
+      bindRetailerTab(tab.id, "manual");
+      clearRetailerManualAutoStopped(tab.id);
+      setRetailerTabUiState(tab.id, { status: "Starting auto mode…", running: true });
+      try {
+        await chrome.tabs.sendMessage(tab.id, { type: "RETAILER_START_MANUAL_AUTO" });
+      } catch {
+        return {
+          ok: false,
+          error: "Target tab is not ready — refresh the page",
+        };
+      }
+      return { ok: true };
+    }
+    case "RETAILER_STOP_MANUAL_AUTO": {
+      const tab = await getActiveRetailerTab();
+      if (!tab?.id) {
+        return { ok: false, error: "Open a Target tab in this window" };
+      }
+      await stopRetailerTabAuto(tab.id);
+      return { ok: true };
+    }
   }
 }

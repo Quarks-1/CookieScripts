@@ -48,6 +48,7 @@ let cachedRefreshIntervalSec = 0;
 function requestStopAutoMode(): void {
   stopAutoRequested = true;
   markRetailerAutoUserStopped();
+  syncManualAutoStopToBackground();
   session.syncGeneration += 1;
   session.running = false;
 }
@@ -55,6 +56,7 @@ function requestStopAutoMode(): void {
 function allowAutoModeStart(): void {
   stopAutoRequested = false;
   clearRetailerAutoUserStopped();
+  syncManualAutoStartToBackground();
 }
 
 function shouldContinueAutoMode(): boolean {
@@ -87,6 +89,36 @@ function publishUiState(status: string, running?: boolean): void {
       endSession();
     }
   });
+}
+
+function syncManualAutoStopToBackground(): void {
+  void sendToBackground({ type: "RETAILER_SYNC_MANUAL_STOP" }).catch((err) => {
+    if (isExtensionContextInvalidatedError(err)) {
+      endSession();
+    }
+  });
+}
+
+function syncManualAutoStartToBackground(): void {
+  void sendToBackground({ type: "RETAILER_SYNC_MANUAL_START" }).catch((err) => {
+    if (isExtensionContextInvalidatedError(err)) {
+      endSession();
+    }
+  });
+}
+
+async function isManualAutoStoppedInBackground(): Promise<boolean> {
+  try {
+    const response = (await sendToBackground({
+      type: "RETAILER_GET_TAB_AUTO_STATE",
+    })) as { ok?: boolean; manual_auto_stopped?: boolean };
+    return response?.ok === true && response.manual_auto_stopped === true;
+  } catch (err) {
+    if (isExtensionContextInvalidatedError(err)) {
+      endSession();
+    }
+    return false;
+  }
 }
 
 function watchSettings(): void {
@@ -325,6 +357,7 @@ function handleStartAuto(message: Extract<BackgroundToContent, { type: "RETAILER
 function handleStartManualAuto(): void {
   allowAutoModeStart();
   armManualSession();
+  publishUiState("Starting auto mode…", true);
   scheduleAutoModeRun();
 }
 
@@ -349,20 +382,6 @@ export function startRetailerSession(): void {
   }
 
   watchSettings();
-  armManualSession();
-
-  if (shouldResumeRetailerAuto(location.href)) {
-    tryResumeAutoMode();
-  } else if (isRetailerAutoUserStopped()) {
-    publishUiState("Stopped", false);
-  } else {
-    publishUiState(
-      isRetailerProductUrl(location.href)
-        ? "Ready — press Start Auto Mode"
-        : "Ready — open a product page and press Start",
-      false,
-    );
-  }
 
   chrome.runtime.onMessage.addListener((message: BackgroundToContent) => {
     if (!isExtensionContextValid()) {
@@ -387,4 +406,29 @@ export function startRetailerSession(): void {
         return undefined;
     }
   });
+
+  void initRetailerSession();
+}
+
+async function initRetailerSession(): Promise<void> {
+  armManualSession();
+
+  if (await isManualAutoStoppedInBackground()) {
+    markRetailerAutoUserStopped();
+    publishUiState("Stopped", false);
+    return;
+  }
+
+  if (shouldResumeRetailerAuto(location.href)) {
+    tryResumeAutoMode();
+  } else if (isRetailerAutoUserStopped()) {
+    publishUiState("Stopped", false);
+  } else {
+    publishUiState(
+      isRetailerProductUrl(location.href)
+        ? "Ready — press Start Auto Mode"
+        : "Ready — open a product page and press Start",
+      false,
+    );
+  }
 }

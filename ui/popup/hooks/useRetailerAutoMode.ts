@@ -111,8 +111,16 @@ export function useRetailerAutoMode(
 
   const runTabAction = useCallback(
     async (type: "RETAILER_START_MANUAL_AUTO" | "RETAILER_STOP_MANUAL_AUTO") => {
+      const starting = type === "RETAILER_START_MANUAL_AUTO";
       setActing(true);
       setActionError(null);
+      if (starting) {
+        setManualRunning(true);
+        setManualStatus("Starting auto mode…");
+      } else {
+        setManualRunning(false);
+        setManualStatus("Stopped");
+      }
       try {
         const response = await sendToBackground<BackgroundResponse>({ type });
         if ("ok" in response && response.ok === false) {
@@ -121,6 +129,7 @@ export function useRetailerAutoMode(
         await refresh();
       } catch (err) {
         setActionError(err instanceof Error ? err.message : "Action failed");
+        await refresh();
       } finally {
         setActing(false);
       }

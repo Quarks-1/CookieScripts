@@ -72,6 +72,9 @@ export type RetailerToBackground =
   | { type: "RETAILER_SET_REFRESH_INTERVAL"; channel_id: string; interval_sec: number }
   | { type: "RETAILER_HARD_RELOAD" }
   | { type: "RETAILER_PING" }
+  | { type: "RETAILER_GET_TAB_AUTO_STATE" }
+  | { type: "RETAILER_SYNC_MANUAL_STOP" }
+  | { type: "RETAILER_SYNC_MANUAL_START" }
   | {
       type: "RETAILER_UI_STATE";
       status: string;
@@ -123,6 +126,7 @@ export type BackgroundResponse =
   | { ok: true; opened: string[]; duplicates: string[] }
   | { ok: true; domains: string[] }
   | { ok: true; refresh_interval_sec: number }
+  | { ok: true; manual_auto_stopped: boolean }
   | { ok: true }
   | { ok: false; error: string }
   | WatchConfig;
