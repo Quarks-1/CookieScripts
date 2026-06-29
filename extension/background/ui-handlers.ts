@@ -1,4 +1,4 @@
-import { buildStatus, setRetailerAutoEnabledForChannel, setRetailerRefreshIntervalForChannel } from "@ext/background/status.ts";
+import { buildStatus, setRetailerAtcModesForSettings, setRetailerAutoEnabledForChannel, setRetailerRefreshIntervalForChannel } from "@ext/background/status.ts";
 import { getActiveRetailerTab } from "@ext/background/retailer-tab-message.ts";
 import {
   bindRetailerTab,
@@ -54,6 +54,14 @@ export async function handleUiMessage(
     case "SET_RETAILER_REFRESH_INTERVAL": {
       try {
         await setRetailerRefreshIntervalForChannel(message.channel_id, message.interval_sec);
+        return { ok: true };
+      } catch (error) {
+        return { ok: false, error: error instanceof Error ? error.message : "Save failed" };
+      }
+    }
+    case "SET_RETAILER_ATC_MODES": {
+      try {
+        await setRetailerAtcModesForSettings(message.frontend_enabled, message.backend_enabled);
         return { ok: true };
       } catch (error) {
         return { ok: false, error: error instanceof Error ? error.message : "Save failed" };

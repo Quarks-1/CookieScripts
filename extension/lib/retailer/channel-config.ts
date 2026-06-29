@@ -72,3 +72,35 @@ export function setRetailerRefreshInterval(
     retailer_refresh_interval_sec: normalized > 0 ? normalized : undefined,
   });
 }
+
+export function getRetailerFrontendAtcEnabled(settings: ExtensionSettings): boolean {
+  return settings.retailer_frontend_atc_enabled !== false;
+}
+
+export function getRetailerBackendAtcEnabled(settings: ExtensionSettings): boolean {
+  return settings.retailer_backend_atc_enabled === true;
+}
+
+export function setRetailerAtcModes(
+  settings: ExtensionSettings,
+  modes: { frontend: boolean; backend: boolean },
+): ExtensionSettings {
+  if (!modes.frontend && !modes.backend) {
+    throw new Error("Enable at least one ATC method");
+  }
+
+  const next = { ...settings };
+  if (modes.frontend) {
+    delete next.retailer_frontend_atc_enabled;
+  } else {
+    next.retailer_frontend_atc_enabled = false;
+  }
+
+  if (modes.backend) {
+    next.retailer_backend_atc_enabled = true;
+  } else {
+    delete next.retailer_backend_atc_enabled;
+  }
+
+  return next;
+}

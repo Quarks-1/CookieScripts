@@ -6,7 +6,7 @@ import {
   releaseRetailerJob,
   setRetailerTabUiState,
 } from "@ext/background/retailer-runtime-state.ts";
-import { getRetailerRefreshIntervalSec } from "@ext/lib/retailer/channel-config.ts";
+import { getRetailerBackendAtcEnabled, getRetailerFrontendAtcEnabled, getRetailerRefreshIntervalSec } from "@ext/lib/retailer/channel-config.ts";
 import { setRetailerRefreshIntervalForChannel } from "@ext/background/status.ts";
 import { getSettings, prependHistory } from "@ext/lib/storage.ts";
 import type { BackgroundResponse, RetailerToBackground } from "@ext/types/index.ts";
@@ -33,6 +33,8 @@ export async function handleRetailerMessage(
       return {
         ok: true,
         refresh_interval_sec: getRetailerRefreshIntervalSec(settings, message.channel_id),
+        frontend_atc_enabled: getRetailerFrontendAtcEnabled(settings),
+        backend_atc_enabled: getRetailerBackendAtcEnabled(settings),
       };
     }
     case "RETAILER_SET_REFRESH_INTERVAL": {

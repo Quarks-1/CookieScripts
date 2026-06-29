@@ -1,4 +1,17 @@
+import { useEffect, useRef, useState } from "react";
+
 import { EnableSlider } from "@shared/components/EnableSlider.tsx";
+
+function parseRefreshIntervalDraft(raw: string): number {
+  if (raw.trim() === "") {
+    return 0;
+  }
+  const parsed = Number(raw);
+  if (!Number.isFinite(parsed)) {
+    return 0;
+  }
+  return Math.max(0, Math.min(3600, Math.floor(parsed)));
+}
 
 interface RetailerAutoModeSectionProps {
   retailerAutoEnabled: boolean;
@@ -40,6 +53,23 @@ export function RetailerAutoModeSection({
   onStopManual,
 }: RetailerAutoModeSectionProps) {
   const controlsDisabled = acting || savingRefresh;
+  const [draftInterval, setDraftInterval] = useState(() => String(refreshIntervalSec));
+  const intervalFocusedRef = useRef(false);
+
+  useEffect(() => {
+    if (!intervalFocusedRef.current) {
+      setDraftInterval(String(refreshIntervalSec));
+    }
+  }, [refreshIntervalSec]);
+
+  const commitRefreshInterval = (): void => {
+    intervalFocusedRef.current = false;
+    const normalized = parseRefreshIntervalDraft(draftInterval);
+    setDraftInterval(String(normalized));
+    if (normalized !== refreshIntervalSec) {
+      onRefreshIntervalChange(normalized);
+    }
+  };
 
   return (
     <section aria-labelledby="retailer-auto-heading">
@@ -96,9 +126,18 @@ export function RetailerAutoModeSection({
           min={0}
           max={3600}
           step={1}
-          value={refreshIntervalSec}
-          disabled={refreshDisabled || savingRefresh}
-          onChange={(event) => onRefreshIntervalChange(Number(event.target.value))}
+          value={draftInterval}
+          disabled={refreshDisabled}
+          onFocus={() => {
+            intervalFocusedRef.current = true;
+          }}
+          onChange={(event) => setDraftInterval(event.target.value)}
+          onBlur={commitRefreshInterval}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.currentTarget.blur();
+            }
+          }}
           className="mt-1 w-full rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm text-zinc-100"
         />
         <p className="mt-1 text-xs text-zinc-500">

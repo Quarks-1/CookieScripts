@@ -10,11 +10,13 @@ import { WatchStatusBadge } from "@shared/components/WatchStatusBadge.tsx";
 import { ChannelDomainsSection } from "./components/ChannelDomainsSection.tsx";
 import { DetectedLinksSection } from "./components/DetectedLinksSection.tsx";
 import { RetailerAutoModeSection } from "./components/RetailerAutoModeSection.tsx";
+import { TargetAtcToggles } from "./components/TargetAtcToggles.tsx";
 import { VersionStatus } from "./components/VersionStatus.tsx";
 import { useChannelDomainsEditor } from "./hooks/useChannelDomainsEditor.ts";
 import { useDetectedLinks } from "./hooks/useDetectedLinks.ts";
 import { useLinkHistory } from "./hooks/useLinkHistory.ts";
 import { usePopupStatus } from "./hooks/usePopupStatus.ts";
+import { useRetailerAtcMode } from "./hooks/useRetailerAtcMode.ts";
 import { useRetailerAutoMode } from "./hooks/useRetailerAutoMode.ts";
 import { useUpdateCheck } from "./hooks/useUpdateCheck.ts";
 import { isSectionVisible } from "./sidepanel-layout.ts";
@@ -40,6 +42,7 @@ export default function App() {
     domainsEditor.domains,
     retailerSurface,
   );
+  const retailerAtc = useRetailerAtcMode(status?.retailer_tab_detected === true);
   const [enabling, setEnabling] = useState(false);
   const [enableError, setEnableError] = useState<string | null>(null);
 
@@ -96,6 +99,18 @@ export default function App() {
           </p>
         )}
       </section>
+
+      {status?.retailer_tab_detected && (
+        <TargetAtcToggles
+          frontendEnabled={retailerAtc.frontendEnabled}
+          backendEnabled={retailerAtc.backendEnabled}
+          disabled={!status.enabled || enabling}
+          saving={retailerAtc.saving}
+          saveError={retailerAtc.saveError}
+          onFrontendChange={(next) => void retailerAtc.handleFrontendChange(next)}
+          onBackendChange={(next) => void retailerAtc.handleBackendChange(next)}
+        />
+      )}
 
       {loading && <p className="mt-3 text-sm text-zinc-400">Loading…</p>}
 

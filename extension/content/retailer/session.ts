@@ -11,6 +11,7 @@ import {
   startRetailerAutoResume,
 } from "@ext/lib/retailer/auto-resume.ts";
 import { isRetailerProductUrl } from "@ext/lib/retailer/host.ts";
+import { ensurePageCartProbeBridge } from "@ext/lib/retailer/page-cart-probe-bridge.ts";
 import { defaultTargetAutomationSteps } from "@ext/lib/retailer/playback-engine.ts";
 import { DEFAULT_ADD_TO_CART_SELECTORS } from "@ext/lib/retailer/selectors.ts";
 import { sleep } from "@ext/lib/sleep.ts";
@@ -44,6 +45,8 @@ let bootstrapTimer: ReturnType<typeof setTimeout> | null = null;
 let bootstrapActive = false;
 let stopAutoRequested = false;
 let cachedRefreshIntervalSec = 0;
+let cachedFrontendAtcEnabled = true;
+let cachedBackendAtcEnabled = false;
 
 function requestStopAutoMode(): void {
   stopAutoRequested = true;
@@ -135,6 +138,9 @@ function watchSettings(): void {
       if (session.channelId) {
         void loadAutoConfig(session.channelId).then((config) => {
           cachedRefreshIntervalSec = config.refreshIntervalSec;
+          cachedFrontendAtcEnabled = config.frontendAtcEnabled;
+          cachedBackendAtcEnabled = config.backendAtcEnabled;
+          syncCartProbeBridge();
         });
       }
     }
@@ -188,17 +194,35 @@ function beginBootstrapQuiet(): void {
   }, BOOTSTRAP_QUIET_MS);
 }
 
-async function loadAutoConfig(channelId: string): Promise<{ refreshIntervalSec: number }> {
+async function loadAutoConfig(channelId: string): Promise<{
+  refreshIntervalSec: number;
+  frontendAtcEnabled: boolean;
+  backendAtcEnabled: boolean;
+}> {
   const response = (await sendToBackground({
     type: "RETAILER_GET_AUTO_CONFIG",
     channel_id: channelId,
-  })) as { ok?: boolean; refresh_interval_sec?: number };
+  })) as {
+    ok?: boolean;
+    refresh_interval_sec?: number;
+    frontend_atc_enabled?: boolean;
+    backend_atc_enabled?: boolean;
+  };
   return {
     refreshIntervalSec:
       response?.ok === true && typeof response.refresh_interval_sec === "number"
         ? response.refresh_interval_sec
         : 0,
+    frontendAtcEnabled:
+      response?.ok === true && response.frontend_atc_enabled === false ? false : true,
+    backendAtcEnabled: response?.ok === true && response.backend_atc_enabled === true,
   };
+}
+
+function syncCartProbeBridge(): void {
+  if (cachedBackendAtcEnabled && isRetailerProductUrl(location.href)) {
+    void ensurePageCartProbeBridge(document);
+  }
 }
 
 async function requestHardReload(): Promise<void> {
@@ -207,12 +231,16 @@ async function requestHardReload(): Promise<void> {
 
 function autoModePlaybackOptions(
   getRefreshIntervalSec: () => number,
+  cartAlreadyAdded = false,
 ): import("@ext/content/retailer/automation/playback.ts").AutomationPlaybackOptions {
   return {
     shouldContinue: shouldContinueAutoMode,
     refreshIntervalSec: getRefreshIntervalSec(),
     getRefreshIntervalSec,
     requestHardReload,
+    frontendAtcEnabled: cachedFrontendAtcEnabled,
+    backendAtcEnabled: cachedBackendAtcEnabled,
+    cartAlreadyAdded,
   };
 }
 
@@ -242,7 +270,19 @@ async function runAutoMode(): Promise<void> {
       startRetailerAutoResume(session.channelId, location.href);
     }
 
-    cachedRefreshIntervalSec = (await loadAutoConfig(session.channelId)).refreshIntervalSec;
+    const config = await loadAutoConfig(session.channelId);
+    cachedRefreshIntervalSec = config.refreshIntervalSec;
+    cachedFrontendAtcEnabled = config.frontendAtcEnabled;
+    cachedBackendAtcEnabled = config.backendAtcEnabled;
+    syncCartProbeBridge();
+
+    if (!cachedFrontendAtcEnabled && !cachedBackendAtcEnabled) {
+      publishUiState("Error: Enable Frontend ATC or Backend ATC", false);
+      await reportAutoStatus("failed", "Enable Frontend ATC or Backend ATC");
+      clearRetailerAutoResume();
+      return;
+    }
+
     const getRefreshIntervalSec = () => cachedRefreshIntervalSec;
 
     const steps = defaultTargetAutomationSteps();
@@ -251,7 +291,7 @@ async function runAutoMode(): Promise<void> {
       DEFAULT_ADD_TO_CART_SELECTORS;
 
     publishUiState("Waiting for product page…", true);
-    const ready = await waitForMainAddToCartButton({
+    const waitResult = await waitForMainAddToCartButton({
       selectors: readySelectors,
       timeoutMs: null,
       shouldContinue: shouldContinueAutoMode,
@@ -260,8 +300,10 @@ async function runAutoMode(): Promise<void> {
       refreshIntervalSec: cachedRefreshIntervalSec,
       getRefreshIntervalSec,
       requestHardReload,
+      frontendAtcEnabled: cachedFrontendAtcEnabled,
+      backendAtcEnabled: cachedBackendAtcEnabled,
     });
-    if (!ready) {
+    if (!waitResult) {
       if (stopAutoRequested) {
         publishUiState("Stopped", false);
         await reportAutoStatus("failed", "Stopped");
@@ -276,10 +318,12 @@ async function runAutoMode(): Promise<void> {
       return;
     }
 
+    const cartAlreadyAdded = waitResult.kind === "api_added";
+
     const result = await runAutomationPlayback(
       steps,
       (text) => publishUiState(text, true),
-      autoModePlaybackOptions(getRefreshIntervalSec),
+      autoModePlaybackOptions(getRefreshIntervalSec, cartAlreadyAdded),
     );
 
     clearRetailerAutoResume();
@@ -379,6 +423,14 @@ function tryResumeAutoMode(): void {
 export function startRetailerSession(): void {
   if (!isExtensionContextValid()) {
     return;
+  }
+
+  if (isRetailerProductUrl(location.href)) {
+    void loadAutoConfig("manual").then((config) => {
+      cachedFrontendAtcEnabled = config.frontendAtcEnabled;
+      cachedBackendAtcEnabled = config.backendAtcEnabled;
+      syncCartProbeBridge();
+    });
   }
 
   watchSettings();

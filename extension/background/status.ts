@@ -1,7 +1,10 @@
 import { getChannelDomains } from "@ext/lib/channel-targets.ts";
 import {
   getRetailerAutoEnabled,
+  getRetailerBackendAtcEnabled,
+  getRetailerFrontendAtcEnabled,
   getRetailerRefreshIntervalSec,
+  setRetailerAtcModes,
   setRetailerAutoEnabled,
   setRetailerRefreshInterval,
 } from "@ext/lib/retailer/channel-config.ts";
@@ -69,6 +72,8 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     allowed_domains: allowedDomains,
     retailer_auto_enabled: retailerAutoEnabled && allowlistIncludesRetailerHost(allowedDomains),
     retailer_refresh_interval_sec: retailerRefreshIntervalSec,
+    retailer_frontend_atc_enabled: getRetailerFrontendAtcEnabled(settings),
+    retailer_backend_atc_enabled: getRetailerBackendAtcEnabled(settings),
     retailer_manual_status: tabUi.status,
     retailer_manual_running: tabUi.running,
   };
@@ -90,6 +95,19 @@ export async function setRetailerRefreshIntervalForChannel(
 ): Promise<ExtensionSettings> {
   const settings = await getSettings();
   const next = setRetailerRefreshInterval(settings, channelId, intervalSec);
+  await saveSettings(next);
+  return next;
+}
+
+export async function setRetailerAtcModesForSettings(
+  frontendEnabled: boolean,
+  backendEnabled: boolean,
+): Promise<ExtensionSettings> {
+  const settings = await getSettings();
+  const next = setRetailerAtcModes(settings, {
+    frontend: frontendEnabled,
+    backend: backendEnabled,
+  });
   await saveSettings(next);
   return next;
 }

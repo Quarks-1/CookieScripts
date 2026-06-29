@@ -118,4 +118,62 @@ describe("main-add-to-cart", () => {
       "addToCartButtonOrTextIdFor1011209279",
     );
   });
+
+  it("ignores sticky Find alternative button", () => {
+    document.body.innerHTML = `
+      <div data-test="@web/AddToCart/FulfillmentSection">
+        <button
+          id="addToCartButtonOrTextIdFor1011209279"
+          type="button"
+          disabled
+        >Add to cart</button>
+      </div>
+      <div data-test="StickyAddToCartFulfillmentSection">
+        <button type="button">Find alternative</button>
+      </div>
+    `;
+
+    const button = findMainAddToCartButton(DEFAULT_ADD_TO_CART_SELECTORS, {
+      pageUrl: PAGE_URL,
+      requireActionable: true,
+    });
+
+    expect(button).toBeNull();
+  });
+
+  it("excludes showInStockPrimaryButton in fulfillment scope", () => {
+    document.body.innerHTML = `
+      <div data-test="@web/AddToCart/FulfillmentSection">
+        <button data-test="showInStockPrimaryButton" type="button">Show in stock</button>
+        <button
+          id="addToCartButtonOrTextIdFor1011209279"
+          type="button"
+        >Add to cart</button>
+      </div>
+    `;
+
+    const button = findMainAddToCartButton(DEFAULT_ADD_TO_CART_SELECTORS, {
+      pageUrl: PAGE_URL,
+    });
+
+    expect(button?.id).toBe("addToCartButtonOrTextIdFor1011209279");
+  });
+
+  it("finds actionable TCIN button in sticky scope", () => {
+    document.body.innerHTML = `
+      <div data-test="StickyAddToCartFulfillmentSection">
+        <button type="button">Find alternative</button>
+        <button
+          id="addToCartButtonOrTextIdFor1011209279"
+          type="button"
+        >Add to cart</button>
+      </div>
+    `;
+
+    const button = findMainAddToCartButton(DEFAULT_ADD_TO_CART_SELECTORS, {
+      pageUrl: PAGE_URL,
+    });
+
+    expect(button?.id).toBe("addToCartButtonOrTextIdFor1011209279");
+  });
 });

@@ -50,6 +50,7 @@ function isUiMessage(message: RuntimeMessage): message is UiToBackground {
     message.type === "GET_DETECTED_DOMAINS" ||
     message.type === "SET_RETAILER_AUTO_ENABLED" ||
     message.type === "SET_RETAILER_REFRESH_INTERVAL" ||
+    message.type === "SET_RETAILER_ATC_MODES" ||
     message.type === "RETAILER_START_MANUAL_AUTO" ||
     message.type === "RETAILER_STOP_MANUAL_AUTO"
   );

@@ -5,10 +5,11 @@ import {
 import { retryUntilConfirmed } from "@ext/lib/retailer/cart-retry.ts";
 import {
   findMainAddToCartButton,
+  parseTargetTcinFromUrl,
   resolveMainAddToCartWaitState,
   waitForMainAddToCartButton,
 } from "@ext/lib/retailer/main-add-to-cart.ts";
-import { maybeHardRefreshWhileWaiting } from "@ext/lib/retailer/page-refresh.ts";
+import { runWaitingDisabledTick } from "@ext/lib/retailer/waiting-disabled.ts";
 import { readRetailerAutoResume } from "@ext/lib/retailer/auto-resume.ts";
 import { activateElement } from "@ext/lib/retailer/dom.ts";
 import { runPlaybackEngine } from "@ext/lib/retailer/playback-engine.ts";
@@ -25,6 +26,9 @@ export type AutomationPlaybackOptions = {
   refreshIntervalSec: number;
   getRefreshIntervalSec?: () => number;
   requestHardReload: () => Promise<void>;
+  frontendAtcEnabled: boolean;
+  backendAtcEnabled: boolean;
+  cartAlreadyAdded?: boolean;
 };
 
 function cartMinDelta(steps: AutomationStep[]): number {
@@ -58,32 +62,77 @@ async function addToCartUntilConfirmed(
   minDelta: number,
   options: AutomationPlaybackOptions,
   onStatus: (status: string) => void,
+  atcState: { confirmedViaApi: boolean },
 ): Promise<"confirmed" | "aborted" | "reloading"> {
   const resolvedSelectors = selectors.length ? selectors : DEFAULT_ADD_TO_CART_SELECTORS;
   let attempts = 0;
   let reportedWaiting = false;
   let reloading = false;
+  let confirmedViaApi = atcState.confirmedViaApi;
+  let lastCartApiProbeMs: number | null = null;
+  const pageUrl = location.href;
+  const tcin = parseTargetTcinFromUrl(pageUrl);
 
   const result = await retryUntilConfirmed({
     retryIntervalMs: ADD_TO_CART_RETRY_INTERVAL_MS,
     shouldContinue: () => options.shouldContinue() && !reloading,
-    isConfirmed: () => isCartConfirmed(document, baselineCount, minDelta),
+    isConfirmed: () => confirmedViaApi || isCartConfirmed(document, baselineCount, minDelta),
     tryAction: async () => {
-      const waitState = resolveMainAddToCartWaitState(resolvedSelectors, location.href);
-      if (waitState.kind === "waiting_disabled") {
-        if (!reportedWaiting) {
-          onStatus("Waiting for main Add to cart…");
-          reportedWaiting = true;
-        }
-        const refresh = await maybeHardRefreshWhileWaiting({
-          refreshIntervalSec: options.getRefreshIntervalSec?.() ?? options.refreshIntervalSec,
-          shouldContinue: options.shouldContinue,
+      const waitState = resolveMainAddToCartWaitState(resolvedSelectors, pageUrl);
+      const shouldPollBackend =
+        options.backendAtcEnabled &&
+        (waitState.kind === "waiting_disabled" ||
+          (waitState.kind === "ready" && !options.frontendAtcEnabled));
+
+      if (shouldPollBackend) {
+        const tick = await runWaitingDisabledTick({
+          pageUrl,
+          tcin,
+          backendAtcEnabled: true,
           onStatus,
+          shouldContinue: options.shouldContinue,
+          refreshIntervalSec: options.getRefreshIntervalSec?.() ?? options.refreshIntervalSec,
+          getRefreshIntervalSec: options.getRefreshIntervalSec,
           requestHardReload: options.requestHardReload,
+          lastCartApiProbeMs,
+          reportedWaiting,
         });
-        if (refresh === "reloading") {
+        lastCartApiProbeMs = tick.lastCartApiProbeMs;
+        reportedWaiting = tick.reportedWaiting;
+
+        if (tick.outcome === "reloading") {
           reloading = true;
         }
+        if (tick.outcome === "cart_added") {
+          confirmedViaApi = true;
+          atcState.confirmedViaApi = true;
+        }
+        return;
+      }
+
+      if (waitState.kind === "waiting_disabled") {
+        const tick = await runWaitingDisabledTick({
+          pageUrl,
+          tcin,
+          backendAtcEnabled: false,
+          onStatus,
+          shouldContinue: options.shouldContinue,
+          refreshIntervalSec: options.getRefreshIntervalSec?.() ?? options.refreshIntervalSec,
+          getRefreshIntervalSec: options.getRefreshIntervalSec,
+          requestHardReload: options.requestHardReload,
+          lastCartApiProbeMs,
+          reportedWaiting,
+        });
+        lastCartApiProbeMs = tick.lastCartApiProbeMs;
+        reportedWaiting = tick.reportedWaiting;
+
+        if (tick.outcome === "reloading") {
+          reloading = true;
+        }
+        return;
+      }
+
+      if (!options.frontendAtcEnabled) {
         return;
       }
 
@@ -108,6 +157,10 @@ async function addToCartUntilConfirmed(
     return "reloading";
   }
 
+  if (confirmedViaApi) {
+    return "confirmed";
+  }
+
   return result;
 }
 
@@ -116,15 +169,31 @@ export async function runAutomationPlayback(
   onStatus: (status: string) => void,
   options: AutomationPlaybackOptions,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
+  const playbackSteps = options.cartAlreadyAdded
+    ? steps.filter((step) => step.type === "navigate")
+    : steps;
+
   const baselineCartCount = readCartCountFromDocument(document);
   const minDelta = cartMinDelta(steps);
-  const { shouldContinue, refreshIntervalSec, getRefreshIntervalSec, requestHardReload } = options;
+  const {
+    shouldContinue,
+    refreshIntervalSec,
+    getRefreshIntervalSec,
+    requestHardReload,
+    frontendAtcEnabled,
+    backendAtcEnabled,
+  } = options;
   const resolveRefreshIntervalSec = () => getRefreshIntervalSec?.() ?? refreshIntervalSec;
+  const atcState = { confirmedViaApi: options.cartAlreadyAdded === true };
 
-  const addResult = await runPlaybackEngine(steps, {
+  const addResult = await runPlaybackEngine(playbackSteps, {
     click: async (selectors, optional = false) => {
+      if (!frontendAtcEnabled) {
+        return optional;
+      }
+
       onStatus(optional ? "Checking fulfillment…" : "Clicking…");
-      const element = await waitForMainAddToCartButton({
+      const result = await waitForMainAddToCartButton({
         selectors,
         timeoutMs: optional ? OPTIONAL_CLICK_TIMEOUT_MS : null,
         shouldContinue,
@@ -133,11 +202,13 @@ export async function runAutomationPlayback(
         refreshIntervalSec: optional ? 0 : resolveRefreshIntervalSec(),
         getRefreshIntervalSec: optional ? undefined : resolveRefreshIntervalSec,
         requestHardReload: optional ? undefined : requestHardReload,
+        frontendAtcEnabled,
+        backendAtcEnabled,
       });
-      if (!element) {
+      if (!result || result.kind === "api_added") {
         return optional;
       }
-      activateElement(element);
+      activateElement(result.element);
       await sleep(POST_ACTION_DELAY_MS);
       return true;
     },
@@ -149,6 +220,7 @@ export async function runAutomationPlayback(
         minDelta,
         options,
         onStatus,
+        atcState,
       );
       if (result === "reloading") {
         return false;
@@ -156,6 +228,9 @@ export async function runAutomationPlayback(
       return result === "confirmed";
     },
     waitForCartDelta: async (waitMinDelta) => {
+      if (atcState.confirmedViaApi) {
+        return true;
+      }
       onStatus("Waiting for cart…");
       return isCartConfirmed(document, baselineCartCount, waitMinDelta);
     },

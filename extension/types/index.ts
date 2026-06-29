@@ -13,6 +13,10 @@ export interface ExtensionSettings {
   enabled: boolean;
   /** Used when auto mode runs with channel_id "manual". */
   retailer_refresh_interval_sec?: number;
+  /** Default true when undefined — DOM button click add-to-cart. */
+  retailer_frontend_atc_enabled?: boolean;
+  /** Default false when undefined — cart API POST probe. */
+  retailer_backend_atc_enabled?: boolean;
 }
 
 export type HistoryItemKind =
@@ -48,6 +52,8 @@ export interface ExtensionStatus {
   allowed_domains: string[];
   retailer_auto_enabled: boolean;
   retailer_refresh_interval_sec: number;
+  retailer_frontend_atc_enabled: boolean;
+  retailer_backend_atc_enabled: boolean;
   /** Live status from the active Target tab's automation session. */
   retailer_manual_status: string;
   retailer_manual_running: boolean;
@@ -104,6 +110,7 @@ export type UiToBackground =
   | { type: "GET_DETECTED_DOMAINS" }
   | { type: "SET_RETAILER_AUTO_ENABLED"; channel_id: string; enabled: boolean }
   | { type: "SET_RETAILER_REFRESH_INTERVAL"; channel_id: string; interval_sec: number }
+  | { type: "SET_RETAILER_ATC_MODES"; frontend_enabled: boolean; backend_enabled: boolean }
   | { type: "RETAILER_START_MANUAL_AUTO" }
   | { type: "RETAILER_STOP_MANUAL_AUTO" };
 
@@ -125,7 +132,7 @@ export type BackgroundResponse =
   | { ok: true; history: HistoryItem[] }
   | { ok: true; opened: string[]; duplicates: string[] }
   | { ok: true; domains: string[] }
-  | { ok: true; refresh_interval_sec: number }
+  | { ok: true; refresh_interval_sec: number; frontend_atc_enabled: boolean; backend_atc_enabled: boolean }
   | { ok: true; manual_auto_stopped: boolean }
   | { ok: true }
   | { ok: false; error: string }

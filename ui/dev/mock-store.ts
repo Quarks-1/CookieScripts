@@ -1,7 +1,10 @@
 import { STORAGE_KEYS } from "@ext/lib/constants.ts";
 import { getChannelTarget } from "@ext/lib/channel-targets.ts";
 import {
+  getRetailerBackendAtcEnabled,
+  getRetailerFrontendAtcEnabled,
   getRetailerRefreshIntervalSec,
+  setRetailerAtcModes,
   setRetailerAutoEnabled,
   setRetailerRefreshInterval,
 } from "@ext/lib/retailer/channel-config.ts";
@@ -93,6 +96,12 @@ function buildStatus(): ExtensionStatus {
     popupScenario === "retailer_auto" ||
     getChannelTarget(settings, SAMPLE_CHANNEL_ID)?.retailer_auto_enabled === true;
 
+  const refreshIntervalSec = getRetailerRefreshIntervalSec(settings, SAMPLE_CHANNEL_ID);
+  const atcFlags = {
+    retailer_frontend_atc_enabled: getRetailerFrontendAtcEnabled(settings),
+    retailer_backend_atc_enabled: getRetailerBackendAtcEnabled(settings),
+  };
+
   if (!settings.enabled) {
     return {
       enabled: false,
@@ -108,12 +117,12 @@ function buildStatus(): ExtensionStatus {
       allowed_domains: [],
       retailer_auto_enabled: false,
       retailer_refresh_interval_sec: 0,
+      ...atcFlags,
       retailer_manual_status: "",
       retailer_manual_running: false,
     };
   }
 
-  const refreshIntervalSec = getRetailerRefreshIntervalSec(settings, SAMPLE_CHANNEL_ID);
   const manualUi = {
     retailer_manual_status: retailerTabDetected ? "Ready — press Start Auto Mode" : "",
     retailer_manual_running: false,
@@ -132,6 +141,7 @@ function buildStatus(): ExtensionStatus {
         allowed_domains: [],
         retailer_auto_enabled: false,
         retailer_refresh_interval_sec: 0,
+        ...atcFlags,
         ...manualUi,
       };
     case "target_manual":
@@ -146,6 +156,7 @@ function buildStatus(): ExtensionStatus {
         allowed_domains: [],
         retailer_auto_enabled: false,
         retailer_refresh_interval_sec: getRetailerRefreshIntervalSec(settings, "manual"),
+        ...atcFlags,
         retailer_manual_status: "Ready — open a product page and press Start",
         retailer_manual_running: false,
       };
@@ -161,6 +172,7 @@ function buildStatus(): ExtensionStatus {
         allowed_domains: [],
         retailer_auto_enabled: false,
         retailer_refresh_interval_sec: 0,
+        ...atcFlags,
         ...manualUi,
       };
     case "retailer_auto":
@@ -175,6 +187,7 @@ function buildStatus(): ExtensionStatus {
         allowed_domains: allowedDomains,
         retailer_auto_enabled: retailerAutoEnabled,
         retailer_refresh_interval_sec: refreshIntervalSec,
+        ...atcFlags,
         ...manualUi,
       };
     case "watching":
@@ -190,6 +203,7 @@ function buildStatus(): ExtensionStatus {
         allowed_domains: allowedDomains,
         retailer_auto_enabled: retailerAutoEnabled,
         retailer_refresh_interval_sec: refreshIntervalSec,
+        ...atcFlags,
         ...manualUi,
       };
   }
@@ -232,6 +246,20 @@ export function handleUiMessage(message: UiToBackground): BackgroundResponse {
         [STORAGE_KEYS.settings]: { oldValue: undefined, newValue: settings },
       });
       return { ok: true };
+    }
+    case "SET_RETAILER_ATC_MODES": {
+      try {
+        settings = setRetailerAtcModes(settings, {
+          frontend: message.frontend_enabled,
+          backend: message.backend_enabled,
+        });
+        notifyStorage({
+          [STORAGE_KEYS.settings]: { oldValue: undefined, newValue: settings },
+        });
+        return { ok: true };
+      } catch (error) {
+        return { ok: false, error: error instanceof Error ? error.message : "Save failed" };
+      }
     }
     case "GET_HISTORY":
       return { ok: true, history: structuredClone(history) };

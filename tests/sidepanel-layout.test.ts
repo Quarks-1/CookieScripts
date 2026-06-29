@@ -15,6 +15,8 @@ function status(overrides: Partial<ExtensionStatus>): ExtensionStatus {
     allowed_domains: [],
     retailer_auto_enabled: false,
     retailer_refresh_interval_sec: 0,
+    retailer_frontend_atc_enabled: true,
+    retailer_backend_atc_enabled: false,
     retailer_manual_status: "",
     retailer_manual_running: false,
     ...overrides,
