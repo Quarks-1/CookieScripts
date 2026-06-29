@@ -4,5 +4,6 @@
 *.log
 node_modules/
 dist/
+dist-dev-ui/
 cookiescripts-*.zip
 *.tsbuildinfo

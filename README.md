@@ -16,7 +16,6 @@ See [BUILD.md](./BUILD.md) for architecture, phases, and upstream references.
 ```bash
 npm install
 npm run dev      # Extension HMR (reload on chrome://extensions for service worker changes)
-npm run dev:ui   # Browser preview for popup with mocked chrome APIs
 npm run build    # Production build → dist/
 npm test         # Vitest unit tests (links, validate, process-links, handlers, content)
 ```

@@ -33,12 +33,11 @@ Chrome MV3 extension that auto-opens allowlisted product links from Discord web 
 | `ui/sidepanel/` | Production side panel entry (`index.html`, `main.tsx` → `ui/popup/App.tsx`) |
 | `ui/popup/` | Shared React app (hooks, components, layout) — name is legacy |
 | `ui/shared/` | Reusable UI primitives (`DomainPills`, `LinkHistory`, …) |
-| `ui/dev/` | Browser preview with mocked `chrome` APIs (`npm run dev:ui`) |
 | `public/injected/` | Web-accessible page-context scripts (cart probe) |
 | `tests/` | Vitest unit tests (`*.test.ts`) |
 | `research/`, `scripts/target-*.mjs` | Target PDP/cart research — not shipped |
 | `manifest.json` | CRXJS source manifest (`.ts` entrypoints, not `dist/`) |
-| `vite.config.ts` | Extension build; `vite.dev.config.ts` for `dev:ui` only |
+| `vite.config.ts` | Extension build (CRXJS + Vite) |
 
 ## Manifest & permissions
 
@@ -147,7 +146,6 @@ Domain edits debounce 400ms (`useChannelDomainsEditor`) and persist via `saveCha
 | Side panel layout | `ui/popup/sidepanel-layout.ts` | Section visibility rules |
 | Side panel hooks / components | `ui/popup/hooks/*`, `ui/popup/components/*` | One hook per feature area |
 | Shared UI | `ui/shared/` | `DomainPills`, `LinkHistory`, `EnableSlider`, `WatchStatusBadge` |
-| Dev UI preview | `ui/dev/` + `npm run dev:ui` | `chrome-mock.ts`, `mock-store.ts`, scenario toolbar |
 | Tests | `tests/` | Vitest; `happy-dom` for DOM tests |
 | Target research | `research/TARGET_AUTOMATION.md`, `scripts/target-*.mjs` | Live PDP/cart research artifacts (not shipped) |
 
@@ -198,7 +196,7 @@ Target detection uses `isRetailerProductUrl` (pathname contains `/p/`).
 
 Per-channel `retailer_auto_enabled` on `ChannelTarget`. When enabled, Target product links from Discord open in a focused new window; content script runs add-to-cart automation and navigates to `/checkout/start`.
 
-**Discord auto toggle** ("Auto-open from Discord") lives in `RetailerAutoModeSection` on the **retailer** surface. It requires `active_channel_id`, `target.com` in that channel's allowlist, and extension enabled. Because `buildStatus` only derives `active_channel_id` from the **active** Discord tab, the toggle is not available when the side panel is opened from a Target-only session — use `dev:ui` scenario **On Target (auto mode)** to preview the full control set.
+**Discord auto toggle** ("Auto-open from Discord") lives in `RetailerAutoModeSection` on the **retailer** surface. It requires `active_channel_id`, `target.com` in that channel's allowlist, and extension enabled. Because `buildStatus` only derives `active_channel_id` from the **active** Discord tab, the toggle is not available when the side panel is opened from a Target-only session — test with a Discord channel tab active or use a Discord tab alongside Target.
 
 **Add-to-cart methods** (global toggles in side panel on Target tabs):
 
@@ -245,7 +243,7 @@ After manifest or service-worker changes, reload the extension and refresh Disco
 2. **Pure logic + tests** — Put decision logic in `extension/lib/*` and cover with `tests/*.test.ts`. Run `npm test` before committing.
 3. **Discord DOM changes** — Only touch `extension/content/selectors.ts`; bump `SELECTOR_VERSION` after manual verification.
 4. **Target automation** — Read `research/TARGET_AUTOMATION.md` for live PDP behavior; keep selectors in `extension/lib/retailer/selectors.ts`.
-5. **UI changes** — Use `npm run dev:ui` and scenario toolbar for all side panel surfaces without Discord/Target login. Production entry is `ui/sidepanel/`, not `ui/popup/index.html`.
+5. **UI changes** — Test via `npm run dev` with the extension loaded in Chrome. Production entry is `ui/sidepanel/`, not `ui/popup/index.html`. Discord and Target tabs are required to exercise all side panel surfaces.
 6. **Extension reload** — `npm run dev` HMR helps for UI; service worker and manifest changes need a manual reload on `chrome://extensions` plus tab refresh.
 
 ## Dev & test
@@ -253,26 +251,13 @@ After manifest or service-worker changes, reload the extension and refresh Disco
 ```bash
 npm install
 npm run dev        # extension HMR (CRXJS + Vite)
-npm run dev:ui     # side panel in browser with mocked chrome APIs
 npm run build      # tsc -b && vite build → dist/
 npm test           # vitest run
 npm run test:watch # vitest watch mode
 npm run package    # build + zip
 ```
 
-**Stack:** Node 20+, React 19, Tailwind CSS 4, Vite 7, `@crxjs/vite-plugin`. Path aliases: `@ext` → `extension/`, `@shared` → `ui/shared/` (`@dev` in dev config only). TypeScript project references: `tsconfig.app.json` (extension + ui + tests), `tsconfig.node.json` (Vite configs). Unused imports fail `tsc -b`.
-
-**`dev:ui`** (`vite.dev.config.ts` → `ui/dev/popup.html`): mocked `chrome.runtime.sendMessage` routes to `mock-store.ts`. Bottom toolbar scenarios:
-
-| Scenario | Exercises |
-|---|---|
-| Watching channel | Discord surface with domains + history |
-| Active, no domains | Discord channel, empty allowlist |
-| No Discord tab | `other` surface + global hint |
-| On Target (auto mode) | Retailer surface + Discord auto toggle (mocked `active_channel_id`) |
-| On Target (manual only) | Retailer surface, manual start/stop only |
-
-Toolbar also has Reset sample data, Empty settings, Add history item.
+**Stack:** Node 20+, React 19, Tailwind CSS 4, Vite 7, `@crxjs/vite-plugin`. Path aliases: `@ext` → `extension/`, `@shared` → `ui/shared/`. TypeScript project references: `tsconfig.app.json` (extension + ui + tests), `tsconfig.node.json` (Vite configs). Unused imports fail `tsc -b`.
 
 ## CI & release
 
@@ -299,6 +284,6 @@ Standard commands live in the `Dev & test` section above and in `package.json`. 
 
 - **Loading the built extension**: `npm run build` emits to `dist/` with `manifest.json` at its root; load it via `chrome://extensions` → Developer mode → Load unpacked → select `/workspace/dist`. The service worker card shows "service worker (inactive)" until woken — that is normal MV3 behavior, not an error.
 - **Opening the UI**: Click the toolbar icon to open the **side panel** (persists across tab reloads). `chrome-extension://<id>/ui/sidepanel/index.html` is blocked if navigated to directly (`ERR_BLOCKED_BY_CLIENT`).
-- **Testing per-channel domain editor and link auto-opening requires a logged-in Discord channel tab.** `buildStatus` derives `active_channel_id` from the active tab's `https://discord.com/channels/<guild>/<channel>` URL; without a Discord session, Discord redirects to login so no channel is detected and the side panel shows the global hint with domains disabled. To exercise the full React UI without Discord, run `npm run dev:ui` and use the scenario buttons in the bottom toolbar.
-- **Flows that work without Discord login** (on `other` tab surface): enable/disable toggle (persists via `SAVE_SETTINGS` → `chrome.storage.local`) and the GitHub version check (live GET to `api.github.com`). Link history and domain editing require the `discord_channel` surface — use `dev:ui` scenarios to preview them.
-- **Target Auto Mode testing** requires a `target.com` product page tab for live automation; use the `retailer_auto` or `target_manual` dev:ui scenarios to preview side panel controls (including ATC toggles) without Target login.
+- **Discord UI surfaces** (domain editor, link history, watch status): require a logged-in Discord channel tab at `https://discord.com/channels/<guild>/<channel>`. Without a session, Discord redirects to login and the side panel shows the global hint with domains disabled.
+- **Flows without Discord login** (on `other` tab surface): global enable/disable toggle (persists via `SAVE_SETTINGS` → `chrome.storage.local`) and GitHub version check (live GET to `api.github.com`).
+- **Target Auto Mode / ATC controls**: require an active `target.com` product page tab; load the extension and open the side panel on that tab.
