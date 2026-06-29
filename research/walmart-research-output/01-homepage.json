@@ -1,0 +1,358 @@
+{
+  "label": "homepage",
+  "url": "https://www.walmart.com/",
+  "title": "Walmart | Save Money. Live better.",
+  "buttons": [
+    {
+      "tag": "button",
+      "text": "",
+      "disabled": false,
+      "automationId": null,
+      "testId": null,
+      "ariaLabel": "Clear search field text",
+      "ariaDisabled": null,
+      "className": "absolute bn bg-transparent h-100 right-2",
+      "id": null
+    },
+    {
+      "tag": "button",
+      "text": "",
+      "disabled": false,
+      "automationId": null,
+      "testId": null,
+      "ariaLabel": "Search",
+      "ariaDisabled": null,
+      "className": "absolute bn br-100 hover-bg-navy search-icon-redesigned-v2",
+      "id": null
+    },
+    {
+      "tag": "a",
+      "text": "ReorderMy Items",
+      "disabled": false,
+      "automationId": null,
+      "testId": null,
+      "ariaLabel": null,
+      "ariaDisabled": null,
+      "className": "flex items-center no-underline desktop-header-trigger lh-title lh-solid redesign-nav-v2 white hover-bg-navy",
+      "id": null
+    },
+    {
+      "tag": "a",
+      "text": "Sign InAccount",
+      "disabled": false,
+      "automationId": null,
+      "testId": null,
+      "ariaLabel": null,
+      "ariaDisabled": null,
+      "className": "flex items-center no-underline desktop-header-trigger lh-title lh-solid redesign-nav-v2 white hover-bg-navy",
+      "id": null
+    },
+    {
+      "tag": "button",
+      "text": "$0.00",
+      "disabled": false,
+      "automationId": "cart-button-header",
+      "testId": null,
+      "ariaLabel": "Cart contains 0 items Total Amount $0.00",
+      "ariaDisabled": null,
+      "className": "bn bg-transparent br2 flex flex-column items-center pa0 pointer relative sans-serif white hover-bg-dark-primary hover-bg",
+      "id": "cart-button-header"
+    },
+    {
+      "tag": "a",
+      "text": "Departments",
+      "disabled": false,
+      "automationId": null,
+      "testId": null,
+      "ariaLabel": null,
+      "ariaDisabled": null,
+      "className": "flex items-center no-underline desktop-header-trigger lh-title b navy secondary-nav-flyout-trigger redesign-secondary-na",
+      "id": null
+    },
+    {
+      "tag": "a",
+      "text": "Services",
+      "disabled": false,
+      "automationId": null,
+      "testId": null,
+      "ariaLabel": null,
+      "ariaDisabled": null,
+      "className": "flex items-center no-underline desktop-header-trigger lh-title b navy secondary-nav-flyout-trigger redesign-secondary-na",
+      "id": null
+    },
+    {
+      "tag": "a",
+      "text": "",
+      "disabled": false,
+      "automationId": null,
+      "testId": "horizontal-scroller-previous",
+      "ariaLabel": "Previous slide for heroCarousel list",
+      "ariaDisabled": null,
+      "className": "z-5 bg-white br-100 pa0 pointer db",
+      "id": null
+    },
+    {
+      "tag": "button",
+      "text": "",
+      "disabled": false,
+      "automationId": null,
+      "testId": null,
+      "ariaLabel": "Pause carousel",
+      "ariaDisabled": null,
+      "className": "bg-transparent flex bn items-center mh2 pa0",
+      "id": null
+    },
+    {
+      "tag": "a",
+      "text": "",
+      "disabled": false,
+      "automationId": null,
+      "testId": "horizontal-scroller-next",
+      "ariaLabel": "Next slide for heroCarousel list",
+      "ariaDisabled": null,
+      "className": "z-5 bg-white br-100 pa0 pointer db",
+      "id": null
+    },
+    {
+      "tag": "a",
+      "text": "",
+      "disabled": false,
+      "automationId": null,
+      "testId": "horizontal-scroller-next",
+      "ariaLabel": "Next slide for Latest fashion obsessions list",
+      "ariaDisabled": "false",
+      "className": "absolute dn z-5 bg-white br-100 pa0 pointer db-l br-100 nav-control right-1",
+      "id": null
+    },
+    {
+      "tag": "button",
+      "text": "Add",
+      "disabled": false,
+      "automationId": "add-to-cart",
+      "testId": null,
+      "ariaLabel": "Add to cart - Carote 3-Piece Nonstick Frying Pan Set, 8\", 9.5\" & 11\" Skillets, Induction Compatible Cookware",
+      "ariaDisabled": null,
+      "className": "Button_button__s6lnv Button_secondary__gV3Mb Button_medium__QLNmo pointer bn sans-serif b flex items-center justify-cent",
+      "id": null
+    },
+    {
+      "tag": "button",
+      "text": "Add",
+      "disabled": false,
+      "automationId": "add-to-cart",
+      "testId": null,
+      "ariaLabel": "Add to cart - Carote 4.5 QT Shallow Dutch Oven with Lid, Lightweight Aluminum Braiser & Casserole Pan for One-Pan Meals, Induction Compatible, Green",
+      "ariaDisabled": null,
+      "className": "Button_button__s6lnv Button_secondary__gV3Mb Button_medium__QLNmo pointer bn sans-serif b flex items-center justify-cent",
+      "id": null
+    },
+    {
+      "tag": "a",
+      "text": "",
+      "disabled": false,
+      "automationId": null,
+      "testId": "horizontal-scroller-next",
+      "ariaLabel": "Next slide for Chef’s kiss kitchen list",
+      "ariaDisabled": "false",
+      "className": "absolute dn z-5 bg-white br-100 pa0 pointer db-l br-100 nav-control right-1",
+      "id": null
+    },
+    {
+      "tag": "a",
+      "text": "",
+      "disabled": false,
+      "automationId": null,
+      "testId": "horizontal-scroller-next",
+      "ariaLabel": "Next slide for Wall-to-wall refresh list",
+      "ariaDisabled": "false",
+      "className": "absolute dn z-5 bg-white br-100 pa0 pointer db-l br-100 nav-control right-1",
+      "id": null
+    },
+    {
+      "tag": "button",
+      "text": "",
+      "disabled": false,
+      "automationId": null,
+      "testId": null,
+      "ariaLabel": "Close dialog",
+      "ariaDisabled": null,
+      "className": "OverlayCloseButton_closeButton__iNZp6",
+      "id": null
+    }
+  ],
+  "atcCandidates": [
+    {
+      "tag": "button",
+      "text": "Add",
+      "disabled": false,
+      "automationId": "add-to-cart",
+      "testId": null,
+      "ariaLabel": "Add to cart - Carote 3-Piece Nonstick Frying Pan Set, 8\", 9.5\" & 11\" Skillets, Induction Compatible Cookware",
+      "ariaDisabled": null,
+      "className": "Button_button__s6lnv Button_secondary__gV3Mb Button_medium__QLNmo pointer bn sans-serif b flex items-center justify-cent",
+      "id": null
+    },
+    {
+      "tag": "button",
+      "text": "Add",
+      "disabled": false,
+      "automationId": "add-to-cart",
+      "testId": null,
+      "ariaLabel": "Add to cart - Carote 4.5 QT Shallow Dutch Oven with Lid, Lightweight Aluminum Braiser & Casserole Pan for One-Pan Meals, Induction Compatible, Green",
+      "ariaDisabled": null,
+      "className": "Button_button__s6lnv Button_secondary__gV3Mb Button_medium__QLNmo pointer bn sans-serif b flex items-center justify-cent",
+      "id": null
+    }
+  ],
+  "dialogs": [
+    {
+      "automationId": null,
+      "testId": null,
+      "ariaLabel": null,
+      "htmlSnippet": "<div class=\"ModalPortal_modal__03HZu ModalPortal_medium__ERIbC\" role=\"dialog\" aria-labelledby=\"react-aria5747799200-:r0:\"><div class=\"ModalPortal_header__UZQEQ\"><button aria-label=\"Close dialog\" class=\"OverlayCloseButton_closeButton__iNZp6 dn\" type=\"button\" data-dca-aid=\"B:352CD26A2E\" data-dca-intent=\"close\" data-dca-name=\"ItemUnnamedDialogCloseButton\"><svg fill=\"currentColor\" height=\"1em\" viewBox=\"0 0 16 16\" width=\"1em\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" role=\"presentation\" style=\"font-size: 1.5rem; vertical-align: -0.25em;\"><path d=\"m8 8.707 4.147 4.147.707-.707L8.707 8l4.147-4.146-.707-.708L8 7.293 3.854 3.146l-.708.708L7.293 8l-4.147 4.147.708.707z\"></path></svg></button><h2 class=\"ModalPortal_title__ExXN7\" id=\"react-aria5747799200-:r0:\"><div class=\"tc\">Virginia Health Information Consent</div></h2></div><div class=\"ModalPortal_content__UkdRQ\"><div class=\"ModalPortal_contentInner__zl6wf\"><div><p class=\"fw4 lh-copy\">VA law requires us to inform you about your data rights. By using our site or app, you agree we may collect limited information as defined by state law to fulfill your request and improve our services.</p></div></div></div><div class=\"ModalPortal_actions__lhQ0R\"><div class=\"\"><button class=\"Button_button__s6lnv Button_primary___r9Bd Button_small__qzQem\" type=\"button\" data-dca-aid=\"B:EB1626AC93\" data-dca-intent=\"__DCA_TBD__\">Continue shopping</button></div></div></div>"
+    },
+    {
+      "automationId": null,
+      "testId": null,
+      "ariaLabel": null,
+      "htmlSnippet": "<div class=\"ModalPortal_modal__03HZu ModalPortal_small__exeUy\" role=\"dialog\" aria-labelledby=\"react-aria5747799200-:r1:\"><div class=\"ModalPortal_header__UZQEQ\"><button aria-label=\"Close dialog\" class=\"OverlayCloseButton_closeButton__iNZp6\" type=\"button\" data-dca-aid=\"B:352CD26A2E\" data-dca-intent=\"close\" data-dca-name=\"ItemUnnamedDialogCloseButton\"><svg fill=\"currentColor\" height=\"1em\" viewBox=\"0 0 16 16\" width=\"1em\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" role=\"presentation\" style=\"font-size: 1.5rem; vertical-align: -0.25em;\"><path d=\"m8 8.707 4.147 4.147.707-.707L8.707 8l4.147-4.146-.707-.708L8 7.293 3.854 3.146l-.708.708L7.293 8l-4.147 4.147.708.707z\"></path></svg></button><h2 class=\"ModalPortal_title__ExXN7\" id=\"react-aria5747799200-:r1:\">Robot or human?</h2></div><div class=\"ModalPortal_content__UkdRQ\"><div class=\"ModalPortal_contentInner__zl6wf\"><div class=\"tc\"><p>Activate and hold the button to confirm that you're human. Thank You!</p><div id=\"px-captcha\" class=\"flex justify-center\" style=\"display: block; min-width: 310px;\"><iframe style=\"display: none; width: 100%; height: 102px; border: 0; -moz-user-select: none; -khtml-user-select: none; -webkit-user-select: none; -ms-user-select: none; user-select: none;\" token=\"56f80709f6389e17bcc5f0e63ac3b881b859fef095558910151ef40443d7f63c2c64a48bdcdf6cf25ffcf84bfd542ce841b4f8f8f614ca9b4c9db008505a22f9\" title=\"Human verification challenge\"></iframe></div></div></div></div></div>"
+    }
+  ],
+  "forms": [
+    {
+      "action": "https://www.walmart.com/search",
+      "method": "get",
+      "automationId": null,
+      "testId": "search-form"
+    }
+  ],
+  "iframes": [
+    {
+      "src": "https://i5.walmartimages.com/dfw/63fd9f59-d6ba/07b8ea82-184c-4ea3-8ac0-5dc1981e40c8/v87/safeframe.html?qp=/",
+      "id": "c6feaf14-83d3-4475-b85a-7585e630a766",
+      "title": "custom html",
+      "automationId": null
+    },
+    {},
+    {
+      "src": "",
+      "id": "",
+      "title": "",
+      "automationId": null
+    },
+    {
+      "src": "https://www.walmart.com/~partytown/partytown-sandbox-sw.html?1782761250376",
+      "id": "",
+      "title": "",
+      "automationId": null
+    }
+  ],
+  "shadowHosts": [],
+  "nextData": {
+    "page": "/",
+    "buildId": "production_20260625T105533606Z-en-US",
+    "keys": [
+      "initialTempoData",
+      "countryRegion",
+      "headerObj",
+      "traceparents",
+      "psych",
+      "isomorphicSessionId",
+      "trace",
+      "isCaching",
+      "queryContextCacheId",
+      "bootstrapData",
+      "enableGqlCsrRedirect",
+      "nonce",
+      "persistedQueriesConfig",
+      "errorLoggingConfig",
+      "excludeBeacon",
+      "isNextPublicMocksEnabled",
+      "isMocksEnabled",
+      "canValidateBeaconWithoutFiring",
+      "reqHost",
+      "enableDca",
+      "enableWcpBeacon",
+      "enableWcpBeaconDebug",
+      "renderViewId",
+      "cookiePreferences",
+      "residencyInfo",
+      "adSessionId"
+    ],
+    "query": {}
+  },
+  "jsonLd": [
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Walmart",
+      "url": "https://www.walmart.com/",
+      "logo": "https://i5.walmartimages.com/dfw/63fd9f59-b3e1/7a569e53-f29a-4c3d-bfaf-6f7a158bfadd/v1/walmartLogo.svg"
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Walmart",
+      "url": "https://www.walmart.com/",
+      "logo": "https://i5.walmartimages.com/dfw/63fd9f59-b3e1/7a569e53-f29a-4c3d-bfaf-6f7a158bfadd/v1/walmartLogo.svg",
+      "potentialAction": [
+        {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://www.walmart.com/search?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      ]
+    }
+  ],
+  "storageKeys": {
+    "local": [
+      "io_lid",
+      "io_olid",
+      "nudgeCounter",
+      "renderViewId",
+      "PXu6b0qd2S_px_fp",
+      "PXu6b0qd2S_px_hvd",
+      "_bc_pulse_seq_num",
+      "_bc_pulse_batch_seq_num",
+      "PXu6b0qd2S_px-ff",
+      "io_lspt"
+    ],
+    "session": [
+      "va-notice-seen",
+      "_bc_cpv_id",
+      "pxsid",
+      "_bc_prev_url",
+      "io_sstk",
+      "PXu6b0qd2S_px_c_p_PXu6b0qd2S",
+      "PXu6b0qd2S_px_nfsp",
+      "_bc_cur_url",
+      "_bc_batch_evts",
+      "is3pcSupported"
+    ]
+  },
+  "cookieNames": [
+    "isoLoc",
+    "_pxvid",
+    "pxcts",
+    "vtc",
+    "bstc",
+    "_astc",
+    "adblocked",
+    "_pxhd",
+    "va-notice-seen",
+    "TS012768cf",
+    "TS2a5e0c5c027",
+    "_px3",
+    "_pxde",
+    "io_id",
+    "if_id",
+    "TS016ef4c8",
+    "TS01f89308",
+    "TS8cb5a80e027"
+  ],
+  "variantSelectors": [],
+  "queueIndicators": []
+}
