@@ -1,0 +1,40 @@
+{
+  "url": "https://www.walmart.com/blocked?url=L2lwL0dyZWF0LVZhbHVlLVdob2xlLVZpdGFtaW4tRC1NaWxrLUdhbGxvbi8xMDQ1MDExNA==&uuid=21b61650-73f1-11f1-9eb1-63edbcd37c13&vid=21c224b3-73f1-11f1-a2dc-3205613300e2&g=b",
+  "title": "Robot or human?",
+  "blocked": true,
+  "atc": [],
+  "oos": [],
+  "checkout": [],
+  "fulfillment": [],
+  "variants": [],
+  "storage": {
+    "l": [
+      "io_lid",
+      "io_olid",
+      "nudgeCounter",
+      "renderViewId",
+      "PXu6b0qd2S_px_fp",
+      "PXu6b0qd2S_px_hvd",
+      "_bc_pulse_seq_num",
+      "_bc_pulse_batch_seq_num",
+      "PXu6b0qd2S_px-ff",
+      "io_lspt",
+      "oneTapSession"
+    ],
+    "s": [
+      "va-notice-seen",
+      "_bc_cpv_id",
+      "pxsid",
+      "_bc_prev_url",
+      "io_sstk",
+      "PXu6b0qd2S_px_c_p_PXu6b0qd2S",
+      "PXu6b0qd2S_px_nfsp",
+      "_bc_cur_url",
+      "_bc_batch_evts",
+      "is3pcSupported"
+    ]
+  },
+  "iframes": [
+    {}
+  ]
+}

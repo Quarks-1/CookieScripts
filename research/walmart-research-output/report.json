@@ -1,0 +1,1804 @@
+{
+  "steps": [
+    {
+      "name": "homepage",
+      "url": "https://www.walmart.com/",
+      "timestamp": "2026-06-29T19:27:39.834Z"
+    },
+    {
+      "name": "search_results",
+      "url": "https://www.walmart.com/search?q=paper+towels",
+      "timestamp": "2026-06-29T19:27:52.003Z"
+    },
+    {
+      "name": "product_fallback",
+      "url": "https://www.walmart.com/blocked?url=L2lwL01haW5zdGF5cy1QbGFzdGljLUhhbmdlci0xMC1QYWNrLzEwNDUyNDEw&uuid=983b89a0-73f0-11f1-9d79-cb6c270efe47&vid=90eed5b1-73f0-11f1-a256-95d1d4981051&g=b",
+      "timestamp": "2026-06-29T19:27:52.444Z"
+    },
+    {
+      "name": "pdp",
+      "url": "https://www.walmart.com/blocked?url=L2lwL01haW5zdGF5cy1QbGFzdGljLUhhbmdlci0xMC1QYWNrLzEwNDUyNDEw&uuid=983b89a0-73f0-11f1-9d79-cb6c270efe47&vid=90eed5b1-73f0-11f1-a256-95d1d4981051&g=b",
+      "timestamp": "2026-06-29T19:28:04.453Z"
+    },
+    {
+      "name": "post_atc",
+      "url": "https://www.walmart.com/blocked?url=L2lwL01haW5zdGF5cy1QbGFzdGljLUhhbmdlci0xMC1QYWNrLzEwNDUyNDEw&uuid=983b89a0-73f0-11f1-9d79-cb6c270efe47&vid=90eed5b1-73f0-11f1-a256-95d1d4981051&g=b",
+      "timestamp": "2026-06-29T19:28:16.487Z",
+      "atcClicked": false
+    },
+    {
+      "name": "cart",
+      "url": "https://www.walmart.com/blocked?url=L2NhcnQ=&uuid=983b89a0-73f0-11f1-9d79-cb6c270efe47&vid=90eed5b1-73f0-11f1-a256-95d1d4981051&g=b",
+      "timestamp": "2026-06-29T19:28:28.835Z"
+    },
+    {
+      "name": "queue_probe",
+      "url": "https://www.walmart.com/blocked?url=L3F1ZXVl&uuid=983b89a0-73f0-11f1-9d79-cb6c270efe47&vid=90eed5b1-73f0-11f1-a256-95d1d4981051&g=b",
+      "timestamp": "2026-06-29T19:28:29.238Z",
+      "status": 200
+    },
+    {
+      "name": "queue_probe",
+      "url": "https://www.walmart.com/blocked?url=L3dhaXRpbmctcm9vbQ==&uuid=983b89a0-73f0-11f1-9d79-cb6c270efe47&vid=90eed5b1-73f0-11f1-a256-95d1d4981051&g=b",
+      "timestamp": "2026-06-29T19:28:29.508Z",
+      "status": 200
+    },
+    {
+      "name": "queue_probe",
+      "url": "https://www.walmart.com/blocked?url=L2Vhcmx5LWFjY2Vzcw==&uuid=983b89a0-73f0-11f1-9d79-cb6c270efe47&vid=90eed5b1-73f0-11f1-a256-95d1d4981051&g=b",
+      "timestamp": "2026-06-29T19:28:29.757Z",
+      "status": 200
+    },
+    {
+      "name": "oos_pdp_probe",
+      "url": "https://www.walmart.com/blocked?url=L3NlYXJjaD9xPXBzNStjb25zb2xl&uuid=983b89a0-73f0-11f1-9d79-cb6c270efe47&vid=90eed5b1-73f0-11f1-a256-95d1d4981051&g=b",
+      "timestamp": "2026-06-29T19:28:52.070Z"
+    }
+  ],
+  "graphqlOps": [
+    "Location"
+  ],
+  "networkSummary": {
+    "www.walmart.com/": 1,
+    "www.walmart.com/px/PXu6b0qd2S/init.js": 1,
+    "i5.walmartimages.com/beacon/beacon.js": 1,
+    "collector-pxu6b0qd2s.px-cloud.net/api/v2/collector": 3,
+    "b.www.walmart.com/rum.js": 1,
+    "www.walmart.com/orchestra/home/graphql": 2,
+    "b.wal.co/rum.js;ZSvGjcrRZ1NUAVQwPZRKMT3uuzI=": 1,
+    "b.wal.co/rum-mappings.js;2cf8F53BZf3lyY0D33QDG9BuV8A=": 1,
+    "b.www.walmart.com/rum.gif": 14,
+    "b.www.walmart.com/log.gif": 5,
+    "gum.criteo.com/fpm/init": 1,
+    "gum.us.criteo.com/fpm/sid": 1,
+    "www.walmart.com/px/PXu6b0qd2S/captcha": 11,
+    "www.walmart.com/~partytown/partytown-sandbox-sw.html": 1,
+    "https://www.walmart.com/0f607d52-4605-4de6-a00d-e44315617e52": 1,
+    "https://www.walmart.com/972d30c5-786d-4a2d-ab66-611debc965eb": 1,
+    "https://www.walmart.com/b1fa5e8b-aa1c-4a9c-bae5-b9d18fec3af0": 1,
+    "https://www.walmart.com/dfb1adc9-ed14-4b0c-8961-0fabf21b3404": 1,
+    "www.walmart.com/si/snr.js": 7,
+    "www.walmart.com/~partytown/proxytown": 110,
+    "www.walmart.com/~partytown/partytown-media.js": 1,
+    "www.walmart.com/si/elh9ie/obs": 12,
+    "www.walmart.com/ip/Mainstays-Plastic-Hanger-10-Pack/10452410": 1,
+    "www.walmart.com/blocked": 6,
+    "https://www.walmart.com/579d112f-fe01-4867-803b-83583d87d35a": 1,
+    "https://www.walmart.com/b97c0427-a9bf-4968-bcfc-241740f862de": 1,
+    "https://www.walmart.com/5a2d4426-ecba-4808-b52c-06370d3d436e": 1,
+    "www.walmart.com/cart": 1,
+    "https://www.walmart.com/b27b8aae-50ef-40a9-af94-571c49b81c42": 1,
+    "https://www.walmart.com/e1479ad4-4aa4-4ce1-91b4-ec1ca1068b3a": 1,
+    "https://www.walmart.com/f96c301a-0dd6-49a5-bd31-0b4b5a006121": 1,
+    "www.walmart.com/queue": 1,
+    "www.walmart.com/waiting-room": 1,
+    "www.walmart.com/early-access": 1,
+    "www.walmart.com/search": 1,
+    "https://www.walmart.com/1c0d0825-06e5-44b9-b1b2-a8c855978466": 1,
+    "https://www.walmart.com/aaeb6ca2-0949-4074-a2e1-77cde86eb8b2": 1,
+    "https://www.walmart.com/93d939f3-a467-4b9e-87dc-268e1b06c38a": 1,
+    "https://www.walmart.com/f1ea32c3-1f67-49bd-b443-c0af5eb5e1fe": 1,
+    "https://www.walmart.com/37ec4a67-d673-4e12-9a6c-0ec40708b6c3": 1,
+    "https://www.walmart.com/4cbcf97b-a043-46cb-8126-1862296ad787": 1
+  },
+  "networkSample": [
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/",
+      "host": "www.walmart.com",
+      "resourceType": "document",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/px/PXu6b0qd2S/init.js",
+      "host": "www.walmart.com",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://i5.walmartimages.com/beacon/beacon.js?bd=b.www.walmart.com&bh=beacon.lightest.walmart.com",
+      "host": "i5.walmartimages.com",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://collector-pxu6b0qd2s.px-cloud.net/api/v2/collector",
+      "host": "collector-pxu6b0qd2s.px-cloud.net",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://b.www.walmart.com/rum.js?bh=beacon.lightest.walmart.com",
+      "host": "b.www.walmart.com",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/orchestra/home/graphql/Location/26e4ca8c866334908ce825a5749f6aa13f772b98a527b0d0b7fe457818c5b349?variables=%7B%7D",
+      "host": "www.walmart.com",
+      "resourceType": "fetch",
+      "headers": {
+        "x-o-correlation-id": "IBRR0HZ4gRJ-f0t8V5WgufRJuYYIn_0m00BL",
+        "x-o-platform": "rweb",
+        "x-o-segment": "oaoh",
+        "wm_qos.correlation_id": "IBRR0HZ4gRJ-f0t8V5WgufRJuYYIn_0m00BL",
+        "x-apollo-operation-name": "Location"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "https://b.wal.co/rum.js;ZSvGjcrRZ1NUAVQwPZRKMT3uuzI=?bh=beacon.lightest.walmart.com",
+      "host": "b.wal.co",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://b.wal.co/rum-mappings.js;2cf8F53BZf3lyY0D33QDG9BuV8A=?bh=beacon.lightest.walmart.com",
+      "host": "b.wal.co",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://b.www.walmart.com/rum.gif",
+      "host": "b.www.walmart.com",
+      "resourceType": "ping",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://b.www.walmart.com/log.gif",
+      "host": "b.www.walmart.com",
+      "resourceType": "ping",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://b.www.walmart.com/rum.gif?param=PAM",
+      "host": "b.www.walmart.com",
+      "resourceType": "image",
+      "headers": {}
+    },
+    {
+      "type": "response",
+      "status": 412,
+      "url": "https://www.walmart.com/orchestra/home/graphql/Location/26e4ca8c866334908ce825a5749f6aa13f772b98a527b0d0b7fe457818c5b349?variables=%7B%7D",
+      "contentType": "application/json; charset=UTF-8",
+      "bodyPreview": null
+    },
+    {
+      "method": "GET",
+      "url": "https://gum.criteo.com/fpm/init?first_party_id=eMd4pPrsUoC6QM9wfGYgYQ&first_party_domain=walmart.com&first_party_name=Walmart&p=8757&Instrumentation=rWeb",
+      "host": "gum.criteo.com",
+      "resourceType": "image",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://b.www.walmart.com/log.gif",
+      "host": "b.www.walmart.com",
+      "resourceType": "ping",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://gum.us.criteo.com/fpm/sid?first_party_id=eMd4pPrsUoC6QM9wfGYgYQ&first_party_domain=walmart.com&first_party_name=Walmart&p=8757&Instrumentation=rWeb",
+      "host": "gum.us.criteo.com",
+      "resourceType": "image",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://b.www.walmart.com/rum.gif",
+      "host": "b.www.walmart.com",
+      "resourceType": "ping",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/px/PXu6b0qd2S/captcha/captcha.js?a=c&m=0&u=90dd17f0-73f0-11f1-9d79-cb6c270efe47&v=90eed5b1-73f0-11f1-a256-95d1d4981051&g=b",
+      "host": "www.walmart.com",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://collector-pxu6b0qd2s.px-cloud.net/api/v2/collector",
+      "host": "collector-pxu6b0qd2s.px-cloud.net",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://b.www.walmart.com/rum.gif",
+      "host": "b.www.walmart.com",
+      "resourceType": "ping",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/~partytown/partytown-sandbox-sw.html?1782761250376",
+      "host": "www.walmart.com",
+      "resourceType": "document",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "blob:https://www.walmart.com/0f607d52-4605-4de6-a00d-e44315617e52",
+      "host": "",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "blob:https://www.walmart.com/972d30c5-786d-4a2d-ab66-611debc965eb",
+      "host": "",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "blob:https://www.walmart.com/b1fa5e8b-aa1c-4a9c-bae5-b9d18fec3af0",
+      "host": "",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "blob:https://www.walmart.com/dfb1adc9-ed14-4b0c-8961-0fabf21b3404",
+      "host": "",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/si/snr.js",
+      "host": "www.walmart.com",
+      "resourceType": "fetch",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/~partytown/partytown-media.js?v=0.10.1",
+      "host": "www.walmart.com",
+      "resourceType": "other",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/si/elh9ie/obs",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/~partytown/proxytown",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://b.www.walmart.com/rum.gif",
+      "host": "b.www.walmart.com",
+      "resourceType": "ping",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://b.www.walmart.com/log.gif",
+      "host": "b.www.walmart.com",
+      "resourceType": "ping",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://b.www.walmart.com/rum.gif",
+      "host": "b.www.walmart.com",
+      "resourceType": "ping",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://b.www.walmart.com/rum.gif",
+      "host": "b.www.walmart.com",
+      "resourceType": "ping",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://b.www.walmart.com/rum.gif",
+      "host": "b.www.walmart.com",
+      "resourceType": "ping",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://b.www.walmart.com/rum.gif",
+      "host": "b.www.walmart.com",
+      "resourceType": "ping",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://b.www.walmart.com/rum.gif",
+      "host": "b.www.walmart.com",
+      "resourceType": "ping",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://b.www.walmart.com/rum.gif",
+      "host": "b.www.walmart.com",
+      "resourceType": "ping",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://b.www.walmart.com/rum.gif",
+      "host": "b.www.walmart.com",
+      "resourceType": "ping",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://b.www.walmart.com/log.gif",
+      "host": "b.www.walmart.com",
+      "resourceType": "ping",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://b.www.walmart.com/rum.gif",
+      "host": "b.www.walmart.com",
+      "resourceType": "ping",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://b.www.walmart.com/log.gif",
+      "host": "b.www.walmart.com",
+      "resourceType": "ping",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/ip/Mainstays-Plastic-Hanger-10-Pack/10452410",
+      "host": "www.walmart.com",
+      "resourceType": "document",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/blocked?url=L2lwL01haW5zdGF5cy1QbGFzdGljLUhhbmdlci0xMC1QYWNrLzEwNDUyNDEw&uuid=983b89a0-73f0-11f1-9d79-cb6c270efe47&vid=90eed5b1-73f0-11f1-a256-95d1d4981051&g=b",
+      "host": "www.walmart.com",
+      "resourceType": "document",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://collector-pxu6b0qd2s.px-cloud.net/api/v2/collector/beacon",
+      "host": "collector-pxu6b0qd2s.px-cloud.net",
+      "resourceType": "ping",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://b.www.walmart.com/rum.gif",
+      "host": "b.www.walmart.com",
+      "resourceType": "ping",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/si/snr.js",
+      "host": "www.walmart.com",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/px/PXu6b0qd2S/captcha/captcha.js?a=c&m=0&g=b",
+      "host": "www.walmart.com",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "blob:https://www.walmart.com/579d112f-fe01-4867-803b-83583d87d35a",
+      "host": "",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "blob:https://www.walmart.com/b97c0427-a9bf-4968-bcfc-241740f862de",
+      "host": "",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "blob:https://www.walmart.com/5a2d4426-ecba-4808-b52c-06370d3d436e",
+      "host": "",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "HEAD",
+      "url": "https://www.walmart.com/px/PXu6b0qd2S/captcha/captcha.js?a=c&m=0&g=b",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/si/elh9ie/obs",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/cart",
+      "host": "www.walmart.com",
+      "resourceType": "document",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/blocked?url=L2NhcnQ=&uuid=983b89a0-73f0-11f1-9d79-cb6c270efe47&vid=90eed5b1-73f0-11f1-a256-95d1d4981051&g=b",
+      "host": "www.walmart.com",
+      "resourceType": "document",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/si/elh9ie/obs",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/si/snr.js",
+      "host": "www.walmart.com",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/px/PXu6b0qd2S/captcha/captcha.js?a=c&m=0&g=b",
+      "host": "www.walmart.com",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/si/elh9ie/obs",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "blob:https://www.walmart.com/b27b8aae-50ef-40a9-af94-571c49b81c42",
+      "host": "",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "blob:https://www.walmart.com/e1479ad4-4aa4-4ce1-91b4-ec1ca1068b3a",
+      "host": "",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "blob:https://www.walmart.com/f96c301a-0dd6-49a5-bd31-0b4b5a006121",
+      "host": "",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "HEAD",
+      "url": "https://www.walmart.com/px/PXu6b0qd2S/captcha/captcha.js?a=c&m=0&g=b",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/queue",
+      "host": "www.walmart.com",
+      "resourceType": "document",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/blocked?url=L3F1ZXVl&uuid=983b89a0-73f0-11f1-9d79-cb6c270efe47&vid=90eed5b1-73f0-11f1-a256-95d1d4981051&g=b",
+      "host": "www.walmart.com",
+      "resourceType": "document",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/si/elh9ie/obs",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/si/snr.js",
+      "host": "www.walmart.com",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/px/PXu6b0qd2S/captcha/captcha.js?a=c&m=0&g=b",
+      "host": "www.walmart.com",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/waiting-room",
+      "host": "www.walmart.com",
+      "resourceType": "document",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/si/elh9ie/obs",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/blocked?url=L3dhaXRpbmctcm9vbQ==&uuid=983b89a0-73f0-11f1-9d79-cb6c270efe47&vid=90eed5b1-73f0-11f1-a256-95d1d4981051&g=b",
+      "host": "www.walmart.com",
+      "resourceType": "document",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/si/elh9ie/obs",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/si/snr.js",
+      "host": "www.walmart.com",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/px/PXu6b0qd2S/captcha/captcha.js?a=c&m=0&g=b",
+      "host": "www.walmart.com",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/si/elh9ie/obs",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/early-access",
+      "host": "www.walmart.com",
+      "resourceType": "document",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/blocked?url=L2Vhcmx5LWFjY2Vzcw==&uuid=983b89a0-73f0-11f1-9d79-cb6c270efe47&vid=90eed5b1-73f0-11f1-a256-95d1d4981051&g=b",
+      "host": "www.walmart.com",
+      "resourceType": "document",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/si/elh9ie/obs",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/si/snr.js",
+      "host": "www.walmart.com",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/px/PXu6b0qd2S/captcha/captcha.js?a=c&m=0&g=b",
+      "host": "www.walmart.com",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/si/elh9ie/obs",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/search?q=ps5+console",
+      "host": "www.walmart.com",
+      "resourceType": "document",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "blob:https://www.walmart.com/1c0d0825-06e5-44b9-b1b2-a8c855978466",
+      "host": "",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "blob:https://www.walmart.com/aaeb6ca2-0949-4074-a2e1-77cde86eb8b2",
+      "host": "",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "blob:https://www.walmart.com/93d939f3-a467-4b9e-87dc-268e1b06c38a",
+      "host": "",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/blocked?url=L3NlYXJjaD9xPXBzNStjb25zb2xl&uuid=983b89a0-73f0-11f1-9d79-cb6c270efe47&vid=90eed5b1-73f0-11f1-a256-95d1d4981051&g=b",
+      "host": "www.walmart.com",
+      "resourceType": "document",
+      "headers": {}
+    },
+    {
+      "method": "HEAD",
+      "url": "https://www.walmart.com/px/PXu6b0qd2S/captcha/captcha.js?a=c&m=0&g=b",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/si/elh9ie/obs",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/si/snr.js",
+      "host": "www.walmart.com",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "https://www.walmart.com/px/PXu6b0qd2S/captcha/captcha.js?a=c&m=0&g=b",
+      "host": "www.walmart.com",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "POST",
+      "url": "https://www.walmart.com/si/elh9ie/obs",
+      "host": "www.walmart.com",
+      "resourceType": "xhr",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "blob:https://www.walmart.com/f1ea32c3-1f67-49bd-b443-c0af5eb5e1fe",
+      "host": "",
+      "resourceType": "script",
+      "headers": {}
+    },
+    {
+      "method": "GET",
+      "url": "blob:https://www.walmart.com/37ec4a67-d673-4e12-9a6c-0ec40708b6c3",
+      "host": "",
+      "resourceType": "script",
+      "headers": {}
+    }
+  ],
+  "wsConnections": [],
+  "storage": {
+    "localStorage": {
+      "io_lid": "98ddea84-b985-4c70-992d-20d491b7b98a",
+      "io_olid": "98ddea84-b985-4c70-992d-20d491b7b98a",
+      "nudgeCounter": "\"0\"",
+      "renderViewId": "\"ca1edf86-de1d-404f-9d3c-bf4596d615d8\"",
+      "PXu6b0qd2S_px_fp": "eyJLeEFRRVc1N0d5TT0iOiI2NmZmYjRiN2Q2NzQ1ODNmYjdkZjk2MGRlZjBiYmRmYyIsIlVCZHJWaFo2WW1ZPSI6Ijk4MWY3ZDQxYWJjZDQ0NTM1NDBlODU1NTRlZjc4NjEyIiwiQkZzL0drRTNPaW89IjoiV2ViS2l0IiwiZXlCQVlUMUxTbFE9IjoiV2ViS2l0IFdl",
+      "PXu6b0qd2S_px_hvd": "32b43c63ca07e7a78b2ec2ff7e2dac46",
+      "_bc_pulse_seq_num": "{\"data\":\"eMd4pPrsUoC6QM9wfGYgYQ20\"}",
+      "_bc_pulse_batch_seq_num": "{\"data\":\"eMd4pPrsUoC6QM9wfGYgYQ9\"}",
+      "PXu6b0qd2S_px-ff": "eyJjYyI6eyJ0dGwiOjE3ODI3NjEzNTcsInZhbCI6IlUyRnRaVk5wZEdVOVRHRjRPdz09In0sInJmIjp7InR0bCI6MTc4Mjc2MTM1NywidmFsIjoiMSJ9LCJmcCI6eyJ0dGwiOjE3ODI3NjEzNTcsInZhbCI6IjEifX0=",
+      "previous_typeahead_query": "{\"query\":\"paper towels\",\"ts\":1782761259987}",
+      "io_lspt": "141"
+    },
+    "sessionStorage": {
+      "_bc_rpv_id": "{\"data\":\"da5a2c23-e5a8-4927-ada0-1482c6ea9c0f\"}",
+      "va-notice-seen": "1",
+      "_bc_cpv_id": "{\"data\":\"431c50ac-d761-492b-8d85-865e6fd44d55\"}",
+      "pxsid": "90eedb4f-73f0-11f1-a256-d1b8ab9a98bf",
+      "_bc_prev_url": "{\"data\":\"https://www.walmart.com/\"}",
+      "io_sstk": "bc1c-19f14d9e4f8",
+      "PXu6b0qd2S_px_c_p_PXu6b0qd2S": "0",
+      "PXu6b0qd2S_px_nfsp": "1",
+      "_bc_cur_url": "{\"data\":\"https://www.walmart.com/search?q=paper+towels\"}",
+      "_bc_batch_evts": "{\"data\":{}}",
+      "is3pcSupported": "true"
+    }
+  },
+  "cookies": [
+    {
+      "name": "s",
+      "domain": "i5.walmartimages.com",
+      "path": "/dfw/63fd9f59-4c54/7adb6fe1-4149-4ebe-b4c7-2ea1921d4a19/v344",
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "isoLoc",
+      "domain": ".www.walmart.com",
+      "path": "/",
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_pxvid",
+      "domain": ".walmart.com",
+      "path": "/",
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "pxcts",
+      "domain": ".walmart.com",
+      "path": "/",
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "btc",
+      "domain": "b.www.walmart.com",
+      "path": "/",
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "bsc",
+      "domain": "b.www.walmart.com",
+      "path": "/",
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "b30msc",
+      "domain": "b.www.walmart.com",
+      "path": "/",
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "vtc",
+      "domain": ".walmart.com",
+      "path": "/",
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "bstc",
+      "domain": ".walmart.com",
+      "path": "/",
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_astc",
+      "domain": "www.walmart.com",
+      "path": "/",
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "adblocked",
+      "domain": "www.walmart.com",
+      "path": "/",
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_pxhd",
+      "domain": "www.walmart.com",
+      "path": "/",
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "akavpau_p5",
+      "domain": "www.walmart.com",
+      "path": "/",
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_tap-criteo",
+      "domain": "b.www.walmart.com",
+      "path": "/",
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_tap_path",
+      "domain": "b.www.walmart.com",
+      "path": "/",
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "uid",
+      "domain": ".criteo.com",
+      "path": "/",
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "va-notice-seen",
+      "domain": "www.walmart.com",
+      "path": "/",
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "io_id",
+      "domain": ".walmart.com",
+      "path": "/",
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ak_bmsc",
+      "domain": ".walmart.com",
+      "path": "/",
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "akavpau_p2",
+      "domain": "www.walmart.com",
+      "path": "/",
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "TS012768cf",
+      "domain": ".www.walmart.com",
+      "path": "/",
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "TS2a5e0c5c027",
+      "domain": "www.walmart.com",
+      "path": "/",
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "akavpau_p1",
+      "domain": "www.walmart.com",
+      "path": "/",
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "if_id",
+      "domain": ".walmart.com",
+      "path": "/",
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "TS016ef4c8",
+      "domain": "www.walmart.com",
+      "path": "/",
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "TS01f89308",
+      "domain": ".walmart.com",
+      "path": "/",
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "TS8cb5a80e027",
+      "domain": "www.walmart.com",
+      "path": "/",
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_px3",
+      "domain": ".walmart.com",
+      "path": "/",
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_pxde",
+      "domain": ".walmart.com",
+      "path": "/",
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "selectors": {
+    "atc": [],
+    "checkout": [],
+    "queue": [],
+    "variants": [],
+    "other": []
+  },
+  "thirdPartyHosts": [
+    "",
+    "b.wal.co",
+    "client.px-cloud.net",
+    "collector-pxu6b0qd2s.px-client.net",
+    "collector-pxu6b0qd2s.px-cloud.net",
+    "crcldu.com",
+    "fonts.googleapis.com",
+    "fst-ec.perimeterx.net",
+    "gum.criteo.com",
+    "gum.us.criteo.com",
+    "i5.wal.co",
+    "ift.px-cloud.net",
+    "tpc.googlesyndication.com"
+  ],
+  "serviceWorkers": [
+    {
+      "scope": "https://www.walmart.com/~partytown/",
+      "scriptURL": "https://www.walmart.com/~partytown/partytown-sw.js"
+    }
+  ],
+  "errors": []
+}
