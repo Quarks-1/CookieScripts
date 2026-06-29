@@ -57,7 +57,7 @@ Single React app (`ui/popup/App.tsx`) loaded from `ui/sidepanel/index.html`. Sec
 |---|---|
 | `discord_channel` | Watch status, channel domains, detected links, link history |
 | `retailer` | Target Auto Mode controls (when extension enabled) |
-| `other` | Global hint (“open a Discord channel tab…”) |
+| `other` | Global hint ("open a Discord channel tab…") |
 
 Always visible: enable slider, version/update banner.
 
@@ -96,6 +96,7 @@ Always visible: enable slider, version/update banner.
 | Shared UI | `ui/shared/` | `DomainPills`, `LinkHistory`, `EnableSlider`, `WatchStatusBadge` |
 | Dev UI preview | `ui/dev/` + `npm run dev:ui` | Mocked `chrome` APIs + scenario toolbar |
 | Tests | `tests/` | Vitest; `happy-dom` for DOM tests |
+| Target research | `research/TARGET_AUTOMATION.md`, `scripts/target-*.mjs` | Live PDP/cart research artifacts (not shipped) |
 
 ## Storage (`extension/lib/constants.ts`)
 
@@ -195,7 +196,7 @@ npm run package    # build + zip
 
 ## Porting from autoopen
 
-When changing link parsing, validation, or domain matching, check BUILD.md “Logic to port”. Primary files: `extension/lib/links.ts`, `validate.ts`, `affiliate-unwrap.ts`.
+When changing link parsing, validation, or domain matching, check BUILD.md "Logic to port". Primary files: `extension/lib/links.ts`, `validate.ts`, `affiliate-unwrap.ts`.
 
 ## Non-goals
 
