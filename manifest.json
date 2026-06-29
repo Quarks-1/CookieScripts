@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "CookieScripts",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "description": "Auto-open allowlisted links from Discord web channels.",
   "permissions": [
     "storage",
