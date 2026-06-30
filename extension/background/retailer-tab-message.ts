@@ -1,9 +1,12 @@
 import { bindRetailerTab } from "@ext/background/retailer-runtime-state.ts";
+import { getActiveTabInWindow } from "@ext/background/window-active-tab.ts";
 import { isRetailerUrl } from "@ext/lib/retailer/host.ts";
 import type { BackgroundResponse, BackgroundToContent } from "@ext/types/index.ts";
 
-export async function getActiveRetailerTab(): Promise<chrome.tabs.Tab | null> {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+export async function getActiveRetailerTabInWindow(
+  windowId?: number,
+): Promise<chrome.tabs.Tab | null> {
+  const tab = await getActiveTabInWindow(windowId);
   if (tab?.id == null || !tab.url || !isRetailerUrl(tab.url)) {
     return null;
   }
@@ -12,9 +15,9 @@ export async function getActiveRetailerTab(): Promise<chrome.tabs.Tab | null> {
 
 export async function sendToActiveRetailerTab(
   message: BackgroundToContent,
-  options?: { bindManual?: boolean },
+  options?: { bindManual?: boolean; windowId?: number },
 ): Promise<BackgroundResponse> {
-  const tab = await getActiveRetailerTab();
+  const tab = await getActiveRetailerTabInWindow(options?.windowId);
   if (!tab?.id) {
     return { ok: false, error: "Open a Target tab in this window" };
   }

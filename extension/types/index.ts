@@ -150,17 +150,17 @@ export type BackgroundToContent =
   | { type: "WALMART_RECORDING_MARK"; label: import("./walmart.ts").MarkerLabel };
 
 export type UiToBackground =
-  | { type: "GET_STATUS" }
+  | { type: "GET_STATUS"; window_id?: number }
   | { type: "GET_SETTINGS" }
   | { type: "SAVE_SETTINGS"; settings: ExtensionSettings }
   | { type: "GET_HISTORY" }
   | { type: "CLEAR_HISTORY" }
-  | { type: "GET_DETECTED_DOMAINS" }
+  | { type: "GET_DETECTED_DOMAINS"; window_id?: number }
   | { type: "SET_RETAILER_AUTO_ENABLED"; channel_id: string; enabled: boolean }
   | { type: "SET_RETAILER_REFRESH_INTERVAL"; channel_id: string; interval_sec: number }
   | { type: "SET_RETAILER_ATC_MODES"; frontend_enabled: boolean; backend_enabled: boolean }
-  | { type: "RETAILER_START_MANUAL_AUTO" }
-  | { type: "RETAILER_STOP_MANUAL_AUTO" }
+  | { type: "RETAILER_START_MANUAL_AUTO"; window_id?: number }
+  | { type: "RETAILER_STOP_MANUAL_AUTO"; window_id?: number }
   | {
       type: "WALMART_RECORDING";
       action: import("./walmart.ts").WalmartRecordingAction;

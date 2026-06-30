@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { sendToBackground } from "@ext/lib/messages.ts";
+import { getSidePanelWindowId, sendToBackground } from "@ext/lib/messages.ts";
 import type { BackgroundResponse } from "@ext/types/index.ts";
 
 export function useRetailerAtcMode(retailerTabDetected: boolean) {
@@ -10,7 +10,8 @@ export function useRetailerAtcMode(retailerTabDetected: boolean) {
   const [saveError, setSaveError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
-    const response = await sendToBackground<BackgroundResponse>({ type: "GET_STATUS" });
+    const window_id = await getSidePanelWindowId();
+    const response = await sendToBackground<BackgroundResponse>({ type: "GET_STATUS", window_id });
     if ("status" in response && response.ok) {
       setFrontendEnabled(response.status.retailer_frontend_atc_enabled);
       setBackendEnabled(response.status.retailer_backend_atc_enabled);

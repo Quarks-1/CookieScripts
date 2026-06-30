@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { sendToBackground } from "@ext/lib/messages.ts";
+import { getSidePanelWindowId, sendToBackground } from "@ext/lib/messages.ts";
 import { allowlistIncludesRetailerHost } from "@ext/lib/retailer/host.ts";
 import type { BackgroundResponse } from "@ext/types/index.ts";
 
@@ -25,7 +25,8 @@ export function useRetailerAutoMode(
   const settingsChannelId = channelId ?? "manual";
 
   const refresh = useCallback(async () => {
-    const response = await sendToBackground<BackgroundResponse>({ type: "GET_STATUS" });
+    const window_id = await getSidePanelWindowId();
+    const response = await sendToBackground<BackgroundResponse>({ type: "GET_STATUS", window_id });
     if ("status" in response && response.ok) {
       setRefreshIntervalSec(response.status.retailer_refresh_interval_sec);
       setManualStatus(response.status.retailer_manual_status);
@@ -122,7 +123,8 @@ export function useRetailerAutoMode(
         setManualStatus("Stopped");
       }
       try {
-        const response = await sendToBackground<BackgroundResponse>({ type });
+        const window_id = await getSidePanelWindowId();
+        const response = await sendToBackground<BackgroundResponse>({ type, window_id });
         if ("ok" in response && response.ok === false) {
           throw new Error(response.error);
         }

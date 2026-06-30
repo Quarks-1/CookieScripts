@@ -1,5 +1,6 @@
 import { buildStatus, setRetailerAtcModesForSettings, setRetailerAutoEnabledForChannel, setRetailerRefreshIntervalForChannel } from "@ext/background/status.ts";
-import { getActiveRetailerTab } from "@ext/background/retailer-tab-message.ts";
+import { getActiveRetailerTabInWindow } from "@ext/background/retailer-tab-message.ts";
+import { getActiveTabInWindow } from "@ext/background/window-active-tab.ts";
 import {
   bindRetailerTab,
   broadcastRetailerStopAuto,
@@ -28,11 +29,7 @@ export async function handleUiMessage(
 
   switch (message.type) {
     case "GET_STATUS": {
-      const focusedWindow = await chrome.windows.getLastFocused();
-      const [activeTab] =
-        focusedWindow.id != null
-          ? await chrome.tabs.query({ active: true, windowId: focusedWindow.id })
-          : [];
+      const activeTab = await getActiveTabInWindow(message.window_id);
       const status = await buildStatus(activeTab);
       return { ok: true, status };
     }
@@ -89,7 +86,7 @@ export async function handleUiMessage(
       return { ok: true };
     }
     case "GET_DETECTED_DOMAINS": {
-      const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      const activeTab = await getActiveTabInWindow(message.window_id);
       if (
         activeTab?.id == null ||
         !activeTab.url?.startsWith("https://discord.com/channels/")
@@ -109,7 +106,7 @@ export async function handleUiMessage(
       return { ok: true, domains: [] };
     }
     case "RETAILER_START_MANUAL_AUTO": {
-      const tab = await getActiveRetailerTab();
+      const tab = await getActiveRetailerTabInWindow(message.window_id);
       if (!tab?.id) {
         return { ok: false, error: "Open a Target tab in this window" };
       }
@@ -127,7 +124,7 @@ export async function handleUiMessage(
       return { ok: true };
     }
     case "RETAILER_STOP_MANUAL_AUTO": {
-      const tab = await getActiveRetailerTab();
+      const tab = await getActiveRetailerTabInWindow(message.window_id);
       if (!tab?.id) {
         return { ok: false, error: "Open a Target tab in this window" };
       }

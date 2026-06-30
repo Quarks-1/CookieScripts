@@ -173,8 +173,14 @@ function assertOk(response: BackgroundResponse): void {
   }
 }
 
+export async function getSidePanelWindowId(): Promise<number | undefined> {
+  const currentWindow = await chrome.windows.getCurrent();
+  return currentWindow.id ?? undefined;
+}
+
 export async function getExtensionStatus(): Promise<ExtensionStatus> {
-  const response = await sendUiMessage({ type: "GET_STATUS" });
+  const window_id = await getSidePanelWindowId();
+  const response = await sendUiMessage({ type: "GET_STATUS", window_id });
   assertOk(response);
   if (!("status" in response)) {
     throw new Error("Unexpected GET_STATUS response");
@@ -211,7 +217,8 @@ export async function clearLinkHistory(): Promise<void> {
 }
 
 export async function getDetectedDomains(): Promise<string[]> {
-  const response = await sendUiMessage({ type: "GET_DETECTED_DOMAINS" });
+  const window_id = await getSidePanelWindowId();
+  const response = await sendUiMessage({ type: "GET_DETECTED_DOMAINS", window_id });
   assertOk(response);
   if (!("domains" in response)) {
     throw new Error("Unexpected GET_DETECTED_DOMAINS response");

@@ -55,6 +55,8 @@ function setupChromeMocks() {
     },
     windows: {
       create: vi.fn(async () => ({ id: 10, tabs: [{ id: 99 }] })),
+      getLastFocused: vi.fn(async () => ({ id: 1 })),
+      getCurrent: vi.fn(async () => ({ id: 1 })),
       onRemoved: { addListener: vi.fn() },
     },
   });
