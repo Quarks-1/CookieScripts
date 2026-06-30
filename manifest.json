@@ -25,7 +25,7 @@
         "https://discord.com/channels/*"
       ],
       "js": [
-        "extension/content/discord.ts"
+        "extension/domains/discord/content/entry.ts"
       ],
       "run_at": "document_idle"
     },
@@ -35,7 +35,7 @@
         "https://target.com/*"
       ],
       "js": [
-        "extension/content/retailer-early.ts"
+        "extension/domains/target/content/entry-early.ts"
       ],
       "run_at": "document_start"
     },
@@ -45,7 +45,7 @@
         "https://target.com/*"
       ],
       "js": [
-        "extension/content/retailer.ts"
+        "extension/domains/target/content/entry.ts"
       ],
       "run_at": "document_end"
     },
@@ -55,13 +55,13 @@
         "https://walmart.com/*"
       ],
       "js": [
-        "extension/content/walmart.ts"
+        "extension/domains/walmart/content/entry.ts"
       ],
       "run_at": "document_idle"
     }
   ],
   "background": {
-    "service_worker": "extension/background/service-worker.ts",
+    "service_worker": "extension/core/background/service-worker.ts",
     "type": "module"
   },
   "action": {

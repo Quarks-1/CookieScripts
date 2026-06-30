@@ -1,0 +1,16 @@
+---
+description: CookieScripts core invariants and layout
+alwaysApply: true
+---
+
+# Core invariants
+
+- Read [AGENTS.md](../../AGENTS.md) for task routing and import rules.
+- Production types: `@ext/core/types/index.ts` only.
+- Domains import `@ext/core/**` + own domain only; never cross-import domains.
+- Core/UI-core domain lib: `@ext/domains/{target,walmart}/lib/index.ts` barrels only.
+- Content scripts never open tabs — service worker does.
+- Never add `cookies`, `webRequest`, or `<all_urls>` permissions.
+- After service-worker/manifest changes: reload extension + refresh Discord, Target, Walmart tabs.
+- Prefer pure logic in `extension/core/lib/*` or domain `lib/*` with Vitest; keep `chrome.*` in background/content layers.
+- Run `npm test` and `npm run lint` before committing.

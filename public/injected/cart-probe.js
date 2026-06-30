@@ -1,5 +1,5 @@
 (function () {
-  // Keep in sync with TARGET_CART_API_KEY in extension/lib/retailer/cart-api.ts
+  // Keep in sync with TARGET_CART_API_KEY in extension/domains/target/lib/cart-api.ts
   var CART_API_KEY = "9f36aeafbe60771e321a7cc95a78140772ab3e96";
   var CART_WARMUP_URL =
     "https://carts.target.com/web_checkouts/v1/cart?cart_type=REGULAR&field_groups=CART,CART_ITEMS,SUMMARY&key=" +

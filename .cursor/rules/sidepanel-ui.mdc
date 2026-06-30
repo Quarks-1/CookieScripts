@@ -1,0 +1,18 @@
+---
+description: Side panel React UI and status
+globs:
+  - ui/popup/**
+  - extension/core/background/status.ts
+  - extension/core/background/ui-handlers.ts
+---
+
+# Side panel UI
+
+- Production entry: `ui/sidepanel/` → `ui/popup/core/App.tsx`.
+- Section visibility: `ui/popup/core/sidepanel-layout.ts` (`isSectionVisible` by `active_tab_kind`).
+- One hook per feature in `ui/popup/core/hooks/` or `ui/popup/domains/*/hooks/`.
+- `buildStatus` in `extension/core/background/status.ts` is the status contract — update types in `extension/core/types/status.ts`.
+- UI messages needing focused window pass optional `window_id`; hooks use `getSidePanelWindowId()`.
+- Target ATC toggles appear on any Target tab (exception to surface gating).
+
+See root [AGENTS.md](../../AGENTS.md) side panel section.

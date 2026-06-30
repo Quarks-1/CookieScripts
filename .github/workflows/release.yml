@@ -63,6 +63,7 @@ jobs:
         run: |
           npm ci
           npm test
+          npm run lint
           npm run build
 
       - name: Package extension zip

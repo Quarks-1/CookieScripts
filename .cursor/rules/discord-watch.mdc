@@ -1,0 +1,18 @@
+---
+description: Discord link watch and allowlist pipeline
+globs:
+  - extension/domains/discord/**
+  - extension/core/lib/process-links.ts
+  - extension/core/lib/links.ts
+---
+
+# Discord watch
+
+- DOM selectors live **only** in `extension/domains/discord/content/selectors.ts` — bump `SELECTOR_VERSION` after manual verification.
+- Bootstrap quiet period (`MESSAGE_BOOTSTRAP_QUIET_MS`) prevents historical links opening on page load.
+- Empty allowlist = observe only; `process-links` no-ops.
+- Own messages are skipped (`isOwnMessage` in extract/session).
+- Thread URLs share parent channel allowlist (`parseChannelId` uses parent segment).
+- Side panel domain editor is Discord-surface only; edits debounce 400ms.
+
+See `extension/domains/discord/AGENTS.md`.

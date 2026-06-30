@@ -1,6 +1,6 @@
 import { useState, type KeyboardEvent } from "react";
 
-import { normalizeDomain } from "@ext/lib/domains.ts";
+import { normalizeDomain } from "@ext/core/lib/domains.ts";
 
 interface DomainPillsProps {
   domains: string[];

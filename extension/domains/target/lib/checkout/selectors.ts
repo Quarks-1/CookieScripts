@@ -1,0 +1,10 @@
+/** Target checkout selectors — see extension/domains/target/docs/TARGET_AUTOMATION.md when updating. */
+export const CHECKOUT_CONTAINER_SELECTOR = '[data-test="checkout-container"]';
+export const ACTIVE_STEP_HEADING_SELECTOR = "#active-step-heading-text";
+export const SAVE_AND_CONTINUE_PREFIX = '[data-test^="save_and_continue_button_step_"]';
+export const ADDRESS_SELECTION_RADIO = 'input[name="addressSelection"]';
+export const PLACE_ORDER_BUTTON_SELECTOR = '[data-test="placeOrderButton"]';
+export const PLACE_ORDER_ENABLED_SELECTOR = '[data-test="placeOrderButton"]:not([disabled])';
+export const AUTH_SIGN_IN_FLYOUT_SELECTOR = '[data-test="@web/auth-components/AuthSignInFlyout"]';
+export const STEP_SHIPPING_SELECTOR = "#STEP_SHIPPING";
+export const STEP_PAYMENT_SELECTOR = "#STEP_PAYMENT";

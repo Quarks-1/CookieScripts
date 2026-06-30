@@ -1,0 +1,26 @@
+export {
+  RETAILER_HOST,
+  allowlistIncludesRetailerHost,
+  isRetailerProductUrl,
+  isRetailerUrl,
+} from "@ext/domains/target/lib/host.ts";
+
+export {
+  getRetailerAtcQuantity,
+  getRetailerAutoAtcEnabled,
+  getRetailerAutoCheckoutEnabled,
+  getRetailerBackendAtcEnabled,
+  getRetailerFrontendAtcEnabled,
+  getRetailerRefreshIntervalSec,
+  getRetailerUseMaxQuantity,
+  migrateRetailerAutoAtcChannelFlags,
+  normalizeRetailerAtcQuantity,
+  normalizeRetailerRefreshIntervalSec,
+  setRetailerAtcModes,
+  setRetailerAtcQuantity,
+  setRetailerAutoAtcEnabled,
+  setRetailerAutoCheckoutEnabled,
+  setRetailerRefreshInterval,
+} from "@ext/domains/target/lib/channel-config.ts";
+
+export { buildQuantityStatusFields } from "@ext/domains/target/lib/quantity-limit.ts";

@@ -1,7 +1,7 @@
 # CookieScripts
 
 Chrome extension that auto-opens allowlisted links from Discord web channels.
-See [BUILD.md](./BUILD.md) for architecture, phases, and upstream references.
+See [AGENTS.md](./AGENTS.md) for architecture and where to edit.
 
 **Repo:** [Quarks-1/CookieScripts](https://github.com/Quarks-1/CookieScripts)  
 **Upstream desktop app:** [Quarks-1/autoopen](https://github.com/Quarks-1/autoopen)
@@ -65,7 +65,7 @@ Releases are created automatically on every push to `main` (patch version bump).
 
 - **Thread URLs:** allowlists use the parent channel ID from `/channels/guild/parent/threadId` paths
 - **Message edits:** links added by editing an existing message are not detected until v0.2
-- **Selector fragility:** Discord UI changes may require updates to `extension/content/selectors.ts`
+- **Selector fragility:** Discord UI changes may require updates to `extension/domains/discord/content/selectors.ts`
 - **Target Auto Mode:** Automating add-to-cart on target.com may conflict with Target's terms of service; automation uses synthetic keyboard events and may fail on bot-protected pages. Use at your own risk.
 - **Masked links:** external URLs in visible message text are preferred over Discord redirect `href`s
 

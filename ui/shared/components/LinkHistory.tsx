@@ -1,4 +1,4 @@
-import type { HistoryItem } from "@ext/types/index.ts";
+import type { HistoryItem } from "@ext/core/types/index.ts";
 
 interface LinkHistoryProps {
   items: HistoryItem[];

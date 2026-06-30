@@ -1,0 +1,18 @@
+---
+description: Walmart research recorder
+globs:
+  - extension/domains/walmart/**
+  - ui/popup/domains/walmart/**
+  - tests/walmart/**
+---
+
+# Walmart recording
+
+- Manual research only — no auto-checkout, no Discord link opening.
+- One global recording session across all Walmart tabs; content batches via `WALMART_RECORDING_APPEND`.
+- Content never writes IndexedDB directly — background handlers persist via IDB lib.
+- Inject research probe only while recording (`page-probe-bridge.ts`).
+- Export mutex (`tryAcquireExport`) — tab-close and stop share pipeline.
+- Handlers split under `background/handlers/` — extend existing modules, do not merge into monolith.
+
+See `extension/domains/walmart/AGENTS.md` and `extension/domains/walmart/docs/WALMART_RECORDING.md`.

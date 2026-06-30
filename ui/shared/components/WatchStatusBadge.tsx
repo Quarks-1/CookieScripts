@@ -1,4 +1,4 @@
-import type { ExtensionStatus } from "@ext/types/index.ts";
+import type { ExtensionStatus } from "@ext/core/types/index.ts";
 
 interface WatchStatusBadgeProps {
   status: ExtensionStatus;
