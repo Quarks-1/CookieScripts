@@ -326,7 +326,7 @@ async function runAutoMode(): Promise<void> {
       autoModePlaybackOptions(getRefreshIntervalSec, cartAlreadyAdded),
     );
 
-    if (result.error === "Reloading") {
+    if (!result.ok && result.error === "Reloading") {
       return;
     }
 
