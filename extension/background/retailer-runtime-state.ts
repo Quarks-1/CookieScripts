@@ -15,7 +15,22 @@ export type RetailerTabUiState = {
 };
 
 const tabUiState = new Map<number, RetailerTabUiState>();
+type TabPurchaseLimitEntry = {
+  url: string;
+  purchaseLimit: number | null;
+};
+const tabPurchaseLimits = new Map<number, TabPurchaseLimitEntry>();
 const manualAutoStoppedTabs = new Set<number>();
+
+/** Strip hash so SPA navigations with tracking fragments still match. */
+export function normalizeRetailerTabUrl(url: string): string {
+  try {
+    const parsed = new URL(url);
+    return `${parsed.origin}${parsed.pathname}${parsed.search}`;
+  } catch {
+    return url.split("#")[0] ?? url;
+  }
+}
 
 const DEFAULT_TAB_UI_STATE: RetailerTabUiState = {
   status: "Ready — open a product page and press Start",
@@ -53,6 +68,7 @@ export function onRetailerTabRemoved(tabId: number): void {
   }
   tabChannelMap.delete(tabId);
   tabUiState.delete(tabId);
+  tabPurchaseLimits.delete(tabId);
   manualAutoStoppedTabs.delete(tabId);
   for (const [windowId, mappedTabId] of windowTabMap.entries()) {
     if (mappedTabId === tabId) {
@@ -109,7 +125,33 @@ export function clearRetailerRuntimeState(): void {
   tabChannelMap.clear();
   windowTabMap.clear();
   tabUiState.clear();
+  tabPurchaseLimits.clear();
   manualAutoStoppedTabs.clear();
+}
+
+export function setRetailerTabPurchaseLimit(
+  tabId: number,
+  tabUrl: string,
+  purchaseLimit: number | null,
+): void {
+  tabPurchaseLimits.set(tabId, {
+    url: normalizeRetailerTabUrl(tabUrl),
+    purchaseLimit,
+  });
+}
+
+export function getRetailerTabPurchaseLimit(
+  tabId: number,
+  tabUrl?: string,
+): number | null | undefined {
+  const entry = tabPurchaseLimits.get(tabId);
+  if (!entry) {
+    return undefined;
+  }
+  if (tabUrl != null && entry.url !== normalizeRetailerTabUrl(tabUrl)) {
+    return undefined;
+  }
+  return entry.purchaseLimit;
 }
 
 export function setRetailerTabUiState(tabId: number, state: RetailerTabUiState): void {

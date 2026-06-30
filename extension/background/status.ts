@@ -1,18 +1,28 @@
 import { getChannelDomains } from "@ext/lib/channel-targets.ts";
 import {
+  getRetailerAtcQuantity,
   getRetailerAutoEnabled,
   getRetailerBackendAtcEnabled,
   getRetailerFrontendAtcEnabled,
   getRetailerRefreshIntervalSec,
+  getRetailerUseMaxQuantity,
   setRetailerAtcModes,
+  setRetailerAtcQuantity,
   setRetailerAutoEnabled,
   setRetailerRefreshInterval,
 } from "@ext/lib/retailer/channel-config.ts";
+import { buildQuantityStatusFields } from "@ext/lib/retailer/quantity-limit.ts";
+import { sleep } from "@ext/lib/sleep.ts";
 import { resolveActiveTabKind } from "@ext/lib/active-tab.ts";
 import { allowlistIncludesRetailerHost } from "@ext/lib/retailer/host.ts";
 import { getSettings, saveSettings } from "@ext/lib/storage.ts";
 import { activeChannels } from "@ext/background/runtime-state.ts";
-import { getRetailerTabUiState } from "@ext/background/retailer-runtime-state.ts";
+import {
+  getRetailerTabPurchaseLimit,
+  getRetailerTabUiState,
+  normalizeRetailerTabUrl,
+  setRetailerTabPurchaseLimit,
+} from "@ext/background/retailer-runtime-state.ts";
 import {
   isAnyWalmartRecording,
   isWalmartTabRecording,
@@ -67,6 +77,56 @@ async function buildWalmartOpenTabs(
   return summaries;
 }
 
+const PURCHASE_LIMIT_QUERY_ATTEMPTS = 4;
+const PURCHASE_LIMIT_QUERY_RETRY_MS = 150;
+
+function normalizePurchaseLimit(limit: unknown): number | null {
+  if (typeof limit === "number" && Number.isFinite(limit) && limit >= 1) {
+    return Math.floor(limit);
+  }
+  return null;
+}
+
+async function readRetailerPurchaseLimit(
+  tabId: number,
+  tabUrl: string,
+): Promise<number | null> {
+  for (let attempt = 0; attempt < PURCHASE_LIMIT_QUERY_ATTEMPTS; attempt++) {
+    try {
+      const response = (await chrome.tabs.sendMessage(tabId, {
+        type: "RETAILER_GET_PURCHASE_LIMIT",
+      })) as { ok?: boolean; purchase_limit?: number | null } | undefined;
+      if (response?.ok === true) {
+        const limit = normalizePurchaseLimit(response.purchase_limit);
+        setRetailerTabPurchaseLimit(tabId, tabUrl, limit);
+        return limit;
+      }
+    } catch {
+      // Content script may not be injected yet.
+    }
+
+    if (attempt < PURCHASE_LIMIT_QUERY_ATTEMPTS - 1) {
+      await sleep(PURCHASE_LIMIT_QUERY_RETRY_MS);
+    }
+  }
+  return null;
+}
+
+async function resolveRetailerPurchaseLimit(
+  tabId: number,
+  tabUrl: string | undefined,
+): Promise<number | null> {
+  if (!tabUrl) {
+    return null;
+  }
+  const normalizedUrl = normalizeRetailerTabUrl(tabUrl);
+  const cached = getRetailerTabPurchaseLimit(tabId, normalizedUrl);
+  if (cached !== undefined) {
+    return cached;
+  }
+  return readRetailerPurchaseLimit(tabId, tabUrl);
+}
+
 export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<ExtensionStatus> {
   const settings = await getSettings();
 
@@ -119,6 +179,18 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
       ? getRetailerTabUiState(activeTab.id)
       : { status: "", running: false };
 
+  const retailerAtcQuantity = getRetailerAtcQuantity(settings);
+  const retailerUseMaxQuantity = getRetailerUseMaxQuantity(settings);
+  const retailerPurchaseLimit =
+    activeTab?.id != null && retailerTabDetected
+      ? await resolveRetailerPurchaseLimit(activeTab.id, activeTab.url)
+      : null;
+  const quantityStatus = buildQuantityStatusFields(
+    retailerAtcQuantity,
+    retailerUseMaxQuantity,
+    retailerPurchaseLimit,
+  );
+
   return {
     enabled: settings.enabled,
     active_tab_kind: activeTabKind,
@@ -144,6 +216,11 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     retailer_backend_atc_enabled: getRetailerBackendAtcEnabled(settings),
     retailer_manual_status: tabUi.status,
     retailer_manual_running: tabUi.running,
+    retailer_atc_quantity: retailerAtcQuantity,
+    retailer_use_max_quantity: retailerUseMaxQuantity,
+    retailer_purchase_limit: retailerPurchaseLimit,
+    retailer_quantity_invalid: quantityStatus.retailer_quantity_invalid,
+    retailer_auto_start_blocked: quantityStatus.retailer_auto_start_blocked,
   };
 }
 
@@ -176,6 +253,16 @@ export async function setRetailerAtcModesForSettings(
     frontend: frontendEnabled,
     backend: backendEnabled,
   });
+  await saveSettings(next);
+  return next;
+}
+
+export async function setRetailerAtcQuantityForSettings(
+  quantity: number,
+  useMaxQuantity: boolean,
+): Promise<ExtensionSettings> {
+  const settings = await getSettings();
+  const next = setRetailerAtcQuantity(settings, { quantity, useMaxQuantity });
   await saveSettings(next);
   return next;
 }

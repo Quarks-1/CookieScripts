@@ -18,6 +18,7 @@ import { useDetectedLinks } from "./hooks/useDetectedLinks.ts";
 import { useLinkHistory } from "./hooks/useLinkHistory.ts";
 import { usePopupStatus } from "./hooks/usePopupStatus.ts";
 import { useRetailerAtcMode } from "./hooks/useRetailerAtcMode.ts";
+import { useRetailerAtcQuantity } from "./hooks/useRetailerAtcQuantity.ts";
 import { useRetailerAutoMode } from "./hooks/useRetailerAutoMode.ts";
 import { useWalmartRecording } from "./hooks/useWalmartRecording.ts";
 import { useUpdateCheck } from "./hooks/useUpdateCheck.ts";
@@ -45,6 +46,10 @@ export default function App() {
     retailerSurface,
   );
   const retailerAtc = useRetailerAtcMode(status?.retailer_tab_detected === true);
+  const retailerAtcQuantity = useRetailerAtcQuantity(
+    status?.retailer_tab_detected === true,
+    status,
+  );
   const walmartRecording = useWalmartRecording(
     status?.enabled ?? false,
     status?.walmart_recording_active ?? false,
@@ -116,6 +121,18 @@ export default function App() {
           saveError={retailerAtc.saveError}
           onFrontendChange={(next) => void retailerAtc.handleFrontendChange(next)}
           onBackendChange={(next) => void retailerAtc.handleBackendChange(next)}
+          quantityDraft={retailerAtcQuantity.draftQuantity}
+          purchaseLimit={retailerAtcQuantity.purchaseLimit}
+          effectiveUseMax={retailerAtcQuantity.effectiveUseMax}
+          maxToggleChecked={retailerAtcQuantity.maxToggleChecked}
+          quantitySaving={retailerAtcQuantity.saving}
+          quantitySaveError={retailerAtcQuantity.saveError}
+          draftInvalid={retailerAtcQuantity.draftInvalid}
+          showInvalidError={retailerAtcQuantity.showInvalidError}
+          onQuantityChange={retailerAtcQuantity.handleQuantityChange}
+          onQuantityBlur={retailerAtcQuantity.handleQuantityBlur}
+          onQuantityFocus={retailerAtcQuantity.handleQuantityFocus}
+          onUseMaxChange={(next) => void retailerAtcQuantity.handleUseMaxChange(next)}
         />
       )}
 
@@ -161,6 +178,8 @@ export default function App() {
               refreshError={retailerAuto.refreshError}
               acting={retailerAuto.acting}
               actionError={retailerAuto.actionError}
+              autoStartBlocked={status.retailer_auto_start_blocked}
+              purchaseLimit={status.retailer_purchase_limit}
               onChange={(next) => void retailerAuto.handleChange(next)}
               onRefreshIntervalChange={(intervalSec) =>
                 void retailerAuto.handleRefreshIntervalChange(intervalSec)

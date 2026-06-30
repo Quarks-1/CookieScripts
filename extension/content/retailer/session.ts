@@ -1,4 +1,5 @@
 import { runAutomationPlayback } from "@ext/content/retailer/automation/playback.ts";
+import { hookSpaNavigation } from "@ext/content/navigation.ts";
 import { waitForMainAddToCartButton } from "@ext/lib/retailer/main-add-to-cart.ts";
 import {
   clearRetailerAutoUserStopped,
@@ -13,6 +14,15 @@ import {
 import { isRetailerProductUrl } from "@ext/lib/retailer/host.ts";
 import { ensurePageCartProbeBridge } from "@ext/lib/retailer/page-cart-probe-bridge.ts";
 import { defaultTargetAutomationSteps } from "@ext/lib/retailer/playback-engine.ts";
+import {
+  clearPageQuantityApplied,
+  isEffectiveUseMax,
+  isQuantityInvalid,
+  readPurchaseLimitForAutomation,
+  readPurchaseLimitForStatus,
+  readPurchaseLimitFromNextData,
+  resolveEffectiveQuantity,
+} from "@ext/lib/retailer/quantity-limit.ts";
 import { DEFAULT_ADD_TO_CART_SELECTORS } from "@ext/lib/retailer/selectors.ts";
 import { sleep } from "@ext/lib/sleep.ts";
 import { STORAGE_KEYS } from "@ext/lib/constants.ts";
@@ -47,6 +57,10 @@ let stopAutoRequested = false;
 let cachedRefreshIntervalSec = 0;
 let cachedFrontendAtcEnabled = true;
 let cachedBackendAtcEnabled = false;
+let cachedAtcQuantity = 1;
+let cachedUseMaxQuantity = false;
+let trackedPurchaseLimitHref = location.href;
+let unhookRetailerNavigation: (() => void) | null = null;
 
 function requestStopAutoMode(): void {
   stopAutoRequested = true;
@@ -140,6 +154,8 @@ function watchSettings(): void {
           cachedRefreshIntervalSec = config.refreshIntervalSec;
           cachedFrontendAtcEnabled = config.frontendAtcEnabled;
           cachedBackendAtcEnabled = config.backendAtcEnabled;
+          cachedAtcQuantity = config.atcQuantity;
+          cachedUseMaxQuantity = config.useMaxQuantity;
           syncCartProbeBridge();
         });
       }
@@ -152,6 +168,8 @@ function endSession(): void {
     return;
   }
   sessionEnded = true;
+  unhookRetailerNavigation?.();
+  unhookRetailerNavigation = null;
   session.channelId = null;
   session.url = null;
   session.running = false;
@@ -159,6 +177,60 @@ function endSession(): void {
 
 function sendToBackground(message: RetailerToBackground): Promise<unknown> {
   return chrome.runtime.sendMessage(message);
+}
+
+function publishPurchaseLimitSnapshot(): void {
+  if (!isRetailerProductUrl(location.href)) {
+    return;
+  }
+
+  const purchaseLimit = readPurchaseLimitForStatus(document);
+  void sendToBackground({
+    type: "RETAILER_PURCHASE_LIMIT_SNAPSHOT",
+    purchase_limit: purchaseLimit,
+  }).catch((err) => {
+    if (isExtensionContextInvalidatedError(err)) {
+      endSession();
+    }
+  });
+}
+
+function resetPurchaseLimitSnapshot(): void {
+  void sendToBackground({
+    type: "RETAILER_PURCHASE_LIMIT_SNAPSHOT",
+    purchase_limit: null,
+  }).catch((err) => {
+    if (isExtensionContextInvalidatedError(err)) {
+      endSession();
+    }
+  });
+}
+
+function schedulePurchaseLimitSnapshots(): void {
+  publishPurchaseLimitSnapshot();
+  for (const delayMs of [500, 2_000, 4_000]) {
+    globalThis.setTimeout(() => publishPurchaseLimitSnapshot(), delayMs);
+  }
+}
+
+function handleRetailerNavigation(): void {
+  if (sessionEnded || !isExtensionContextValid()) {
+    endSession();
+    return;
+  }
+
+  const href = location.href;
+  if (href === trackedPurchaseLimitHref) {
+    return;
+  }
+  trackedPurchaseLimitHref = href;
+
+  clearPageQuantityApplied();
+  resetPurchaseLimitSnapshot();
+
+  if (isRetailerProductUrl(href)) {
+    schedulePurchaseLimitSnapshots();
+  }
 }
 
 async function reportAutoStatus(
@@ -198,6 +270,8 @@ async function loadAutoConfig(channelId: string): Promise<{
   refreshIntervalSec: number;
   frontendAtcEnabled: boolean;
   backendAtcEnabled: boolean;
+  atcQuantity: number;
+  useMaxQuantity: boolean;
 }> {
   const response = (await sendToBackground({
     type: "RETAILER_GET_AUTO_CONFIG",
@@ -207,6 +281,8 @@ async function loadAutoConfig(channelId: string): Promise<{
     refresh_interval_sec?: number;
     frontend_atc_enabled?: boolean;
     backend_atc_enabled?: boolean;
+    atc_quantity?: number;
+    use_max_quantity?: boolean;
   };
   return {
     refreshIntervalSec:
@@ -216,7 +292,39 @@ async function loadAutoConfig(channelId: string): Promise<{
     frontendAtcEnabled:
       response?.ok === true && response.frontend_atc_enabled === false ? false : true,
     backendAtcEnabled: response?.ok === true && response.backend_atc_enabled === true,
+    atcQuantity:
+      response?.ok === true && typeof response.atc_quantity === "number"
+        ? Math.max(1, Math.floor(response.atc_quantity))
+        : 1,
+    useMaxQuantity: response?.ok === true && response.use_max_quantity === true,
   };
+}
+
+function getEffectiveQuantityFromPage(purchaseLimit: number | null): number {
+  const effectiveUseMax = isEffectiveUseMax(cachedUseMaxQuantity, purchaseLimit);
+  return resolveEffectiveQuantity({
+    quantity: cachedAtcQuantity,
+    useMaxQuantity: effectiveUseMax,
+    purchaseLimit,
+  });
+}
+
+function failQuantityGate(purchaseLimit: number | null): boolean {
+  if (purchaseLimit == null) {
+    return false;
+  }
+
+  const effectiveUseMax = isEffectiveUseMax(cachedUseMaxQuantity, purchaseLimit);
+  if (!isQuantityInvalid(cachedAtcQuantity, purchaseLimit, effectiveUseMax)) {
+    return false;
+  }
+
+  const message = `Quantity (${cachedAtcQuantity}) exceeds max (${purchaseLimit})`;
+  publishUiState(message, false);
+  void reportAutoStatus("failed", message);
+  clearRetailerAutoResume();
+  session.running = false;
+  return true;
 }
 
 function syncCartProbeBridge(): void {
@@ -231,6 +339,7 @@ async function requestHardReload(): Promise<void> {
 
 function autoModePlaybackOptions(
   getRefreshIntervalSec: () => number,
+  getEffectiveQuantity: () => number,
   cartAlreadyAdded = false,
 ): import("@ext/content/retailer/automation/playback.ts").AutomationPlaybackOptions {
   return {
@@ -241,6 +350,7 @@ function autoModePlaybackOptions(
     frontendAtcEnabled: cachedFrontendAtcEnabled,
     backendAtcEnabled: cachedBackendAtcEnabled,
     cartAlreadyAdded,
+    getEffectiveQuantity,
   };
 }
 
@@ -262,6 +372,8 @@ async function runAutoMode(): Promise<void> {
     return;
   }
 
+  let skipReadyInFinally = false;
+
   try {
     const resuming = shouldResumeRetailerAuto(location.href) !== null;
     if (resuming) {
@@ -274,21 +386,29 @@ async function runAutoMode(): Promise<void> {
     cachedRefreshIntervalSec = config.refreshIntervalSec;
     cachedFrontendAtcEnabled = config.frontendAtcEnabled;
     cachedBackendAtcEnabled = config.backendAtcEnabled;
+    cachedAtcQuantity = config.atcQuantity;
+    cachedUseMaxQuantity = config.useMaxQuantity;
     syncCartProbeBridge();
 
     if (!cachedFrontendAtcEnabled && !cachedBackendAtcEnabled) {
       publishUiState("Error: Enable Frontend ATC or Backend ATC", false);
       await reportAutoStatus("failed", "Enable Frontend ATC or Backend ATC");
       clearRetailerAutoResume();
+      skipReadyInFinally = true;
+      return;
+    }
+
+    const earlyPurchaseLimit = readPurchaseLimitFromNextData(document);
+    if (failQuantityGate(earlyPurchaseLimit)) {
+      skipReadyInFinally = true;
       return;
     }
 
     const getRefreshIntervalSec = () => cachedRefreshIntervalSec;
+    const getEffectiveQuantity = () =>
+      getEffectiveQuantityFromPage(readPurchaseLimitForAutomation(document));
 
-    const steps = defaultTargetAutomationSteps();
-    const readySelectors =
-      steps.find((step) => step.type === "keyboard_enter_hold")?.selectors ??
-      DEFAULT_ADD_TO_CART_SELECTORS;
+    const readySelectors = DEFAULT_ADD_TO_CART_SELECTORS;
 
     publishUiState("Waiting for product page…", true);
     const waitResult = await waitForMainAddToCartButton({
@@ -302,11 +422,13 @@ async function runAutoMode(): Promise<void> {
       requestHardReload,
       frontendAtcEnabled: cachedFrontendAtcEnabled,
       backendAtcEnabled: cachedBackendAtcEnabled,
+      getEffectiveQuantity,
     });
     if (!waitResult) {
       if (stopAutoRequested) {
         publishUiState("Stopped", false);
         await reportAutoStatus("failed", "Stopped");
+        skipReadyInFinally = true;
         return;
       }
       if (readRetailerAutoResume()) {
@@ -315,15 +437,25 @@ async function runAutoMode(): Promise<void> {
       publishUiState("Error: Add to cart button not found", false);
       await reportAutoStatus("failed", "Add to cart button not found");
       clearRetailerAutoResume();
+      skipReadyInFinally = true;
       return;
     }
 
     const cartAlreadyAdded = waitResult.kind === "api_added";
 
+    const purchaseLimit = readPurchaseLimitForAutomation(document);
+    if (failQuantityGate(purchaseLimit)) {
+      skipReadyInFinally = true;
+      return;
+    }
+
+    const effectiveQuantity = getEffectiveQuantityFromPage(purchaseLimit);
+    const steps = defaultTargetAutomationSteps(effectiveQuantity);
+
     const result = await runAutomationPlayback(
       steps,
       (text) => publishUiState(text, true),
-      autoModePlaybackOptions(getRefreshIntervalSec, cartAlreadyAdded),
+      autoModePlaybackOptions(getRefreshIntervalSec, getEffectiveQuantity, cartAlreadyAdded),
     );
 
     if (!result.ok && result.error === "Reloading") {
@@ -341,20 +473,23 @@ async function runAutoMode(): Promise<void> {
     if (result.error === "Stopped") {
       publishUiState("Stopped", false);
       await reportAutoStatus("failed", "Stopped");
+      skipReadyInFinally = true;
       return;
     }
 
     publishUiState(`Error: ${result.error}`, false);
     await reportAutoStatus("failed", result.error);
+    skipReadyInFinally = true;
   } catch (err) {
     if (isExtensionContextInvalidatedError(err)) {
       endSession();
       return;
     }
     publishUiState(err instanceof Error ? err.message : "Auto mode failed", false);
+    skipReadyInFinally = true;
   } finally {
     session.running = false;
-    if (!sessionEnded && !readRetailerAutoResume()) {
+    if (!sessionEnded && !readRetailerAutoResume() && !skipReadyInFinally) {
       publishUiState(
         isRetailerProductUrl(location.href)
           ? "Ready — press Start Auto Mode"
@@ -429,11 +564,19 @@ export function startRetailerSession(): void {
     void loadAutoConfig("manual").then((config) => {
       cachedFrontendAtcEnabled = config.frontendAtcEnabled;
       cachedBackendAtcEnabled = config.backendAtcEnabled;
+      cachedAtcQuantity = config.atcQuantity;
+      cachedUseMaxQuantity = config.useMaxQuantity;
       syncCartProbeBridge();
     });
   }
 
   watchSettings();
+
+  unhookRetailerNavigation = hookSpaNavigation(handleRetailerNavigation);
+
+  if (isRetailerProductUrl(location.href)) {
+    schedulePurchaseLimitSnapshots();
+  }
 
   chrome.runtime.onMessage.addListener((message: BackgroundToContent) => {
     if (!isExtensionContextValid()) {
@@ -454,6 +597,13 @@ export function startRetailerSession(): void {
         requestStopAutoMode();
         publishUiState("Stopped", false);
         return { ok: true };
+      case "RETAILER_GET_PURCHASE_LIMIT": {
+        const purchaseLimit = readPurchaseLimitForStatus(document);
+        return {
+          ok: true as const,
+          purchase_limit: purchaseLimit,
+        };
+      }
       default:
         return undefined;
     }

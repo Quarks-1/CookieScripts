@@ -1,4 +1,10 @@
-import { buildStatus, setRetailerAtcModesForSettings, setRetailerAutoEnabledForChannel, setRetailerRefreshIntervalForChannel } from "@ext/background/status.ts";
+import {
+  buildStatus,
+  setRetailerAtcModesForSettings,
+  setRetailerAtcQuantityForSettings,
+  setRetailerAutoEnabledForChannel,
+  setRetailerRefreshIntervalForChannel,
+} from "@ext/background/status.ts";
 import { getActiveRetailerTabInWindow } from "@ext/background/retailer-tab-message.ts";
 import { getActiveTabInWindow } from "@ext/background/window-active-tab.ts";
 import {
@@ -71,6 +77,14 @@ export async function handleUiMessage(
     case "SET_RETAILER_ATC_MODES": {
       try {
         await setRetailerAtcModesForSettings(message.frontend_enabled, message.backend_enabled);
+        return { ok: true };
+      } catch (error) {
+        return { ok: false, error: error instanceof Error ? error.message : "Save failed" };
+      }
+    }
+    case "SET_RETAILER_ATC_QUANTITY": {
+      try {
+        await setRetailerAtcQuantityForSettings(message.quantity, message.use_max_quantity);
         return { ok: true };
       } catch (error) {
         return { ok: false, error: error instanceof Error ? error.message : "Save failed" };

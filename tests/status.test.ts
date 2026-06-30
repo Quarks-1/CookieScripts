@@ -1,7 +1,11 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { buildStatus } from "@ext/background/status.ts";
 import { activeChannels } from "@ext/background/runtime-state.ts";
+import {
+  clearRetailerRuntimeState,
+  setRetailerTabPurchaseLimit,
+} from "@ext/background/retailer-runtime-state.ts";
 
 vi.mock("@ext/lib/storage.ts", () => ({
   getSettings: vi.fn().mockResolvedValue({ enabled: true, channel_targets: [] }),
@@ -27,6 +31,32 @@ vi.mock("@ext/background/walmart-tabs.ts", () => ({
 }));
 
 describe("buildStatus", () => {
+  beforeEach(() => {
+    clearRetailerRuntimeState();
+    vi.stubGlobal("chrome", {
+      tabs: {
+        sendMessage: vi.fn(),
+      },
+    });
+  });
+
+  it("prefers cached purchase limit over tab pull on Target tabs", async () => {
+    const sendMessage = vi.mocked(chrome.tabs.sendMessage);
+    setRetailerTabPurchaseLimit(
+      5,
+      "https://www.target.com/p/foo/-/A-123",
+      2,
+    );
+
+    const status = await buildStatus({
+      id: 5,
+      url: "https://www.target.com/p/foo/-/A-123",
+    } as chrome.tabs.Tab);
+
+    expect(status.retailer_purchase_limit).toBe(2);
+    expect(sendMessage).not.toHaveBeenCalled();
+  });
+
   it("sets retailer_tab_detected when active tab is on target.com", async () => {
     activeChannels.clear();
     const status = await buildStatus({

@@ -157,8 +157,9 @@ function canUsePageCartProbeBridge(doc: Document | undefined): doc is Document {
 export async function probeAddToCartViaApi(
   tcin: string,
   deps: CartApiProbeDeps = {},
+  quantity = 1,
 ): Promise<CartApiProbeResult> {
-  const bodyJson = JSON.stringify(buildAddToCartBody(tcin));
+  const bodyJson = JSON.stringify(buildAddToCartBody(tcin, quantity));
   const doc = deps.document ?? (typeof document !== "undefined" ? document : undefined);
   const ensureBridge = deps.ensureBridge ?? ensurePageCartProbeBridge;
   const pageProbe = deps.probeInPageContext ?? probeInPageContext;

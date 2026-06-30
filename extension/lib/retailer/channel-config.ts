@@ -104,3 +104,40 @@ export function setRetailerAtcModes(
 
   return next;
 }
+
+export function normalizeRetailerAtcQuantity(value: number): number {
+  if (!Number.isFinite(value) || value < 1) {
+    return 1;
+  }
+  return Math.floor(value);
+}
+
+export function getRetailerAtcQuantity(settings: ExtensionSettings): number {
+  return normalizeRetailerAtcQuantity(settings.retailer_atc_quantity ?? 1);
+}
+
+export function getRetailerUseMaxQuantity(settings: ExtensionSettings): boolean {
+  return settings.retailer_use_max_quantity === true;
+}
+
+export function setRetailerAtcQuantity(
+  settings: ExtensionSettings,
+  options: { quantity: number; useMaxQuantity: boolean },
+): ExtensionSettings {
+  const quantity = normalizeRetailerAtcQuantity(options.quantity);
+  const next = { ...settings };
+
+  if (quantity === 1) {
+    delete next.retailer_atc_quantity;
+  } else {
+    next.retailer_atc_quantity = quantity;
+  }
+
+  if (options.useMaxQuantity) {
+    next.retailer_use_max_quantity = true;
+  } else {
+    delete next.retailer_use_max_quantity;
+  }
+
+  return next;
+}

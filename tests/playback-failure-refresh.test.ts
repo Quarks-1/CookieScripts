@@ -62,6 +62,7 @@ describe("runAutomationPlayback failure modal refresh", () => {
       requestHardReload,
       frontendAtcEnabled: true,
       backendAtcEnabled: false,
+      getEffectiveQuantity: () => 1,
     });
 
     expect(requestHardReload).toHaveBeenCalledOnce();
@@ -84,6 +85,7 @@ describe("runAutomationPlayback failure modal refresh", () => {
       requestHardReload,
       frontendAtcEnabled: true,
       backendAtcEnabled: false,
+      getEffectiveQuantity: () => 1,
     });
 
     expect(requestHardReload).not.toHaveBeenCalled();

@@ -4,9 +4,10 @@ import {
   isRetailerManualAutoStopped,
   markRetailerManualAutoStopped,
   releaseRetailerJob,
+  setRetailerTabPurchaseLimit,
   setRetailerTabUiState,
 } from "@ext/background/retailer-runtime-state.ts";
-import { getRetailerBackendAtcEnabled, getRetailerFrontendAtcEnabled, getRetailerRefreshIntervalSec } from "@ext/lib/retailer/channel-config.ts";
+import { getRetailerAtcQuantity, getRetailerBackendAtcEnabled, getRetailerFrontendAtcEnabled, getRetailerRefreshIntervalSec, getRetailerUseMaxQuantity } from "@ext/lib/retailer/channel-config.ts";
 import { setRetailerRefreshIntervalForChannel } from "@ext/background/status.ts";
 import { getSettings, prependHistory } from "@ext/lib/storage.ts";
 import type { BackgroundResponse, RetailerToBackground } from "@ext/types/index.ts";
@@ -35,6 +36,8 @@ export async function handleRetailerMessage(
         refresh_interval_sec: getRetailerRefreshIntervalSec(settings, message.channel_id),
         frontend_atc_enabled: getRetailerFrontendAtcEnabled(settings),
         backend_atc_enabled: getRetailerBackendAtcEnabled(settings),
+        atc_quantity: getRetailerAtcQuantity(settings),
+        use_max_quantity: getRetailerUseMaxQuantity(settings),
       };
     }
     case "RETAILER_SET_REFRESH_INTERVAL": {
@@ -78,6 +81,23 @@ export async function handleRetailerMessage(
         status: message.status,
         running: message.running,
       });
+      return { ok: true };
+    }
+    case "RETAILER_PURCHASE_LIMIT_SNAPSHOT": {
+      const tabUrl = sender.tab?.url;
+      if (!tabUrl) {
+        return { ok: false, error: "Missing tab URL" };
+      }
+      const limit = message.purchase_limit;
+      if (limit != null && (!Number.isFinite(limit) || limit < 1)) {
+        setRetailerTabPurchaseLimit(tabId, tabUrl, null);
+        return { ok: true };
+      }
+      setRetailerTabPurchaseLimit(
+        tabId,
+        tabUrl,
+        limit == null ? null : Math.floor(limit),
+      );
       return { ok: true };
     }
   }

@@ -24,6 +24,7 @@ describe("runAutomationPlayback cartAlreadyAdded", () => {
         frontendAtcEnabled: true,
         backendAtcEnabled: false,
         cartAlreadyAdded: true,
+        getEffectiveQuantity: () => 1,
       },
     );
 

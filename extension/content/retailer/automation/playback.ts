@@ -13,6 +13,11 @@ import {
 } from "@ext/lib/retailer/main-add-to-cart.ts";
 import { runWaitingDisabledTick } from "@ext/lib/retailer/waiting-disabled.ts";
 import { maybeHardRefreshWhileWaiting } from "@ext/lib/retailer/page-refresh.ts";
+import { ensurePageQuantityBeforeAtc } from "@ext/lib/retailer/quantity-limit.ts";
+import {
+  shouldSetPageQuantityBeforeAtc,
+  shouldUseBackendAtc,
+} from "@ext/lib/retailer/atc-route.ts";
 import { readRetailerAutoResume } from "@ext/lib/retailer/auto-resume.ts";
 import { activateElement } from "@ext/lib/retailer/dom.ts";
 import { runPlaybackEngine } from "@ext/lib/retailer/playback-engine.ts";
@@ -23,6 +28,8 @@ import type { AutomationStep } from "@ext/types/retailer.ts";
 const OPTIONAL_CLICK_TIMEOUT_MS = 3_000;
 const POST_ACTION_DELAY_MS = 600;
 const ADD_TO_CART_RETRY_INTERVAL_MS = 10;
+const QTY_PREP_TIMEOUT_MS = 15_000;
+const QTY_PREP_RETRY_MS = 250;
 
 export type AutomationPlaybackOptions = {
   shouldContinue: () => boolean;
@@ -32,6 +39,7 @@ export type AutomationPlaybackOptions = {
   frontendAtcEnabled: boolean;
   backendAtcEnabled: boolean;
   cartAlreadyAdded?: boolean;
+  getEffectiveQuantity: () => number;
 };
 
 function cartMinDelta(steps: AutomationStep[]): number {
@@ -78,6 +86,32 @@ async function addToCartUntilConfirmed(
   const resolveRefreshIntervalSec = () =>
     options.getRefreshIntervalSec?.() ?? options.refreshIntervalSec;
 
+  if (shouldSetPageQuantityBeforeAtc(
+    options.frontendAtcEnabled,
+    options.backendAtcEnabled,
+    options.getEffectiveQuantity(),
+  )) {
+    const effectiveQuantity = options.getEffectiveQuantity();
+    const qtyDeadline = Date.now() + QTY_PREP_TIMEOUT_MS;
+    let qtyReady = false;
+    while (options.shouldContinue() && Date.now() < qtyDeadline) {
+      const qtyResult = await ensurePageQuantityBeforeAtc(
+        document,
+        effectiveQuantity,
+        pageUrl,
+      );
+      if (qtyResult.ok) {
+        qtyReady = true;
+        break;
+      }
+      onStatus(`Setting quantity (${effectiveQuantity})…`);
+      await sleep(QTY_PREP_RETRY_MS);
+    }
+    if (!qtyReady) {
+      return "aborted";
+    }
+  }
+
   const result = await retryUntilConfirmed({
     retryIntervalMs: ADD_TO_CART_RETRY_INTERVAL_MS,
     shouldContinue: () => options.shouldContinue() && !reloading,
@@ -102,12 +136,15 @@ async function addToCartUntilConfirmed(
       }
 
       const waitState = resolveMainAddToCartWaitState(resolvedSelectors, pageUrl);
-      const shouldPollBackend =
-        options.backendAtcEnabled &&
-        (waitState.kind === "waiting_disabled" ||
-          (waitState.kind === "ready" && !options.frontendAtcEnabled));
+      const effectiveQuantity = options.getEffectiveQuantity();
+      const useBackendAtc = shouldUseBackendAtc(
+        options.backendAtcEnabled,
+        options.frontendAtcEnabled,
+        effectiveQuantity,
+        waitState.kind,
+      );
 
-      if (shouldPollBackend) {
+      if (useBackendAtc) {
         const tick = await runWaitingDisabledTick({
           pageUrl,
           tcin,
@@ -119,6 +156,7 @@ async function addToCartUntilConfirmed(
           requestHardReload: options.requestHardReload,
           lastCartApiProbeMs,
           reportedWaiting,
+          getEffectiveQuantity: options.getEffectiveQuantity,
         });
         lastCartApiProbeMs = tick.lastCartApiProbeMs;
         reportedWaiting = tick.reportedWaiting;
@@ -145,6 +183,7 @@ async function addToCartUntilConfirmed(
           requestHardReload: options.requestHardReload,
           lastCartApiProbeMs,
           reportedWaiting,
+          getEffectiveQuantity: options.getEffectiveQuantity,
         });
         lastCartApiProbeMs = tick.lastCartApiProbeMs;
         reportedWaiting = tick.reportedWaiting;
@@ -227,6 +266,7 @@ export async function runAutomationPlayback(
         requestHardReload: optional ? undefined : requestHardReload,
         frontendAtcEnabled,
         backendAtcEnabled,
+        getEffectiveQuantity: options.getEffectiveQuantity,
       });
       if (!result || result.kind === "api_added") {
         return optional;

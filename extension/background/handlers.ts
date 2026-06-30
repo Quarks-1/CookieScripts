@@ -41,7 +41,8 @@ function isRetailerContentMessage(message: RuntimeMessage): message is RetailerT
     message.type === "RETAILER_GET_TAB_AUTO_STATE" ||
     message.type === "RETAILER_SYNC_MANUAL_STOP" ||
     message.type === "RETAILER_SYNC_MANUAL_START" ||
-    message.type === "RETAILER_UI_STATE"
+    message.type === "RETAILER_UI_STATE" ||
+    message.type === "RETAILER_PURCHASE_LIMIT_SNAPSHOT"
   );
 }
 
@@ -64,6 +65,7 @@ function isUiMessage(message: RuntimeMessage): message is UiToBackground {
     message.type === "SET_RETAILER_AUTO_ENABLED" ||
     message.type === "SET_RETAILER_REFRESH_INTERVAL" ||
     message.type === "SET_RETAILER_ATC_MODES" ||
+    message.type === "SET_RETAILER_ATC_QUANTITY" ||
     message.type === "RETAILER_START_MANUAL_AUTO" ||
     message.type === "RETAILER_STOP_MANUAL_AUTO" ||
     message.type === "WALMART_RECORDING"
@@ -109,6 +111,7 @@ export async function handleMessage(
 
     if (
       message.type === "RETAILER_START_AUTO" ||
+      message.type === "RETAILER_GET_PURCHASE_LIMIT" ||
       message.type === "SCAN_DETECTED_DOMAINS" ||
       message.type === "WALMART_RECORDING_START" ||
       message.type === "WALMART_RECORDING_STOP" ||

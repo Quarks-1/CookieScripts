@@ -14,6 +14,7 @@ export type WaitingDisabledTickOptions = {
   lastCartApiProbeMs: number | null;
   reportedWaiting: boolean;
   document?: Document;
+  getEffectiveQuantity?: () => number;
 };
 
 export type WaitingDisabledTickResult = {
@@ -37,7 +38,11 @@ export async function runWaitingDisabledTick(
     const nowMs = Date.now();
     if (shouldRunCartApiProbe(nowMs, lastCartApiProbeMs)) {
       lastCartApiProbeMs = nowMs;
-      const probeResult = await probeAddToCartViaApi(options.tcin);
+      const probeResult = await probeAddToCartViaApi(
+        options.tcin,
+        { document: doc },
+        options.getEffectiveQuantity?.() ?? 1,
+      );
       if (probeResult.kind === "added") {
         return { lastCartApiProbeMs, reportedWaiting, outcome: "cart_added" };
       }

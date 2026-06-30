@@ -27,6 +27,8 @@ interface RetailerAutoModeSectionProps {
   refreshError: string | null;
   acting: boolean;
   actionError: string | null;
+  autoStartBlocked: boolean;
+  purchaseLimit: number | null;
   onChange: (enabled: boolean) => void;
   onRefreshIntervalChange: (intervalSec: number) => void;
   onStartManual: () => void;
@@ -47,6 +49,8 @@ export function RetailerAutoModeSection({
   refreshError,
   acting,
   actionError,
+  autoStartBlocked,
+  purchaseLimit,
   onChange,
   onRefreshIntervalChange,
   onStartManual,
@@ -83,12 +87,17 @@ export function RetailerAutoModeSection({
               id="popup-retailer-auto-enabled"
               label="Auto-open from Discord"
               checked={retailerAutoEnabled}
-              disabled={disabled || saving}
+              disabled={disabled || saving || autoStartBlocked}
               onChange={onChange}
             />
             <p className="mt-2 text-xs text-zinc-500">
               Opens Target links in a new window, adds to cart, then goes to checkout start.
             </p>
+            {autoStartBlocked && purchaseLimit != null && (
+              <p role="status" aria-live="polite" className="mt-1 text-xs text-red-300">
+                Quantity cannot exceed max ({purchaseLimit})
+              </p>
+            )}
           </>
         )}
 
@@ -101,7 +110,7 @@ export function RetailerAutoModeSection({
         <div className="mt-3 flex flex-col gap-2">
           <button
             type="button"
-            disabled={controlsDisabled || manualRunning}
+            disabled={controlsDisabled || manualRunning || autoStartBlocked}
             onClick={onStartManual}
             className="w-full rounded border border-zinc-600 bg-zinc-800 px-3 py-2 text-sm text-zinc-100 disabled:opacity-50"
           >

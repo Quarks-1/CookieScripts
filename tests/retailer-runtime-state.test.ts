@@ -3,9 +3,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   clearRetailerManualAutoStopped,
   clearRetailerRuntimeState,
+  getRetailerTabPurchaseLimit,
   getRetailerTabUiState,
   isRetailerManualAutoStopped,
   markRetailerManualAutoStopped,
+  normalizeRetailerTabUrl,
+  setRetailerTabPurchaseLimit,
   stopRetailerTabAuto,
 } from "@ext/background/retailer-runtime-state.ts";
 
@@ -32,5 +35,23 @@ describe("retailer runtime manual auto stop", () => {
 
     expect(isRetailerManualAutoStopped(7)).toBe(false);
     expect(getRetailerTabUiState(7).status).toContain("Ready");
+  });
+
+  it("ignores cached purchase limits from a different tab URL", () => {
+    setRetailerTabPurchaseLimit(
+      9,
+      "https://www.target.com/p/old/-/A-111",
+      2,
+    );
+
+    expect(
+      getRetailerTabPurchaseLimit(9, "https://www.target.com/p/new/-/A-222#lnk=sametab"),
+    ).toBeUndefined();
+    expect(
+      getRetailerTabPurchaseLimit(9, "https://www.target.com/p/old/-/A-111"),
+    ).toBe(2);
+    expect(normalizeRetailerTabUrl("https://www.target.com/p/x/-/A-1#foo")).toBe(
+      "https://www.target.com/p/x/-/A-1",
+    );
   });
 });

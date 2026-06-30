@@ -1,6 +1,7 @@
 import { unwrapAffiliateUrl } from "@ext/lib/affiliate-unwrap.ts";
 
 import { runWaitingDisabledTick } from "@ext/lib/retailer/waiting-disabled.ts";
+import { shouldUseBackendAtc } from "@ext/lib/retailer/atc-route.ts";
 import { isElementActionable } from "./dom.ts";
 
 export const MAIN_ADD_TO_CART_SCOPES = [
@@ -206,6 +207,7 @@ export type WaitForMainAddToCartOptions = {
   requestHardReload?: () => Promise<void>;
   frontendAtcEnabled?: boolean;
   backendAtcEnabled?: boolean;
+  getEffectiveQuantity?: () => number;
 };
 
 export async function waitForMainAddToCartButton(
@@ -236,6 +238,7 @@ export async function waitForMainAddToCartButton(
     requestHardReload,
     frontendAtcEnabled = true,
     backendAtcEnabled = false,
+    getEffectiveQuantity,
   } = options;
 
   const resolveRefreshIntervalSec = (): number =>
@@ -253,16 +256,15 @@ export async function waitForMainAddToCartButton(
     }
 
     const waitState = resolveMainAddToCartWaitState(selectors, resolvedPageUrl);
-    if (waitState.kind === "ready" && frontendAtcEnabled) {
-      return { kind: "ready", element: waitState.element };
-    }
+    const effectiveQuantity = getEffectiveQuantity?.() ?? 1;
+    const useBackendAtc = shouldUseBackendAtc(
+      backendAtcEnabled,
+      frontendAtcEnabled,
+      effectiveQuantity,
+      waitState.kind,
+    );
 
-    const shouldPollBackend =
-      backendAtcEnabled &&
-      (waitState.kind === "waiting_disabled" ||
-        (waitState.kind === "ready" && !frontendAtcEnabled));
-
-    if (shouldPollBackend) {
+    if (useBackendAtc) {
       const tick = await runWaitingDisabledTick({
         pageUrl: pageUrlForWait,
         tcin,
@@ -274,6 +276,7 @@ export async function waitForMainAddToCartButton(
         requestHardReload,
         lastCartApiProbeMs,
         reportedWaiting,
+        getEffectiveQuantity,
       });
       lastCartApiProbeMs = tick.lastCartApiProbeMs;
       reportedWaiting = tick.reportedWaiting;
@@ -296,6 +299,7 @@ export async function waitForMainAddToCartButton(
         requestHardReload,
         lastCartApiProbeMs,
         reportedWaiting,
+        getEffectiveQuantity,
       });
       lastCartApiProbeMs = tick.lastCartApiProbeMs;
       reportedWaiting = tick.reportedWaiting;
@@ -303,6 +307,10 @@ export async function waitForMainAddToCartButton(
       if (tick.outcome === "reloading" || tick.outcome === "aborted") {
         return null;
       }
+    }
+
+    if (waitState.kind === "ready" && frontendAtcEnabled) {
+      return { kind: "ready", element: waitState.element };
     }
 
     await new Promise((resolve) => setTimeout(resolve, 200));

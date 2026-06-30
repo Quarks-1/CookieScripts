@@ -32,6 +32,10 @@ export interface ExtensionSettings {
   retailer_frontend_atc_enabled?: boolean;
   /** Default false when undefined — cart API POST probe. */
   retailer_backend_atc_enabled?: boolean;
+  /** Units to add per ATC attempt; default 1 when omitted. */
+  retailer_atc_quantity?: number;
+  /** When true, use page purchase_limit instead of retailer_atc_quantity. */
+  retailer_use_max_quantity?: boolean;
 }
 
 export type HistoryItemKind =
@@ -83,6 +87,11 @@ export interface ExtensionStatus {
   /** Live status from the active Target tab's automation session. */
   retailer_manual_status: string;
   retailer_manual_running: boolean;
+  retailer_atc_quantity: number;
+  retailer_use_max_quantity: boolean;
+  retailer_purchase_limit: number | null;
+  retailer_quantity_invalid: boolean;
+  retailer_auto_start_blocked: boolean;
 }
 
 export type ContentToBackground =
@@ -111,7 +120,8 @@ export type RetailerToBackground =
       type: "RETAILER_UI_STATE";
       status: string;
       running: boolean;
-    };
+    }
+  | { type: "RETAILER_PURCHASE_LIMIT_SNAPSHOT"; purchase_limit: number | null };
 
 export type WalmartToBackground =
   | {
@@ -140,6 +150,7 @@ export type BackgroundToContent =
     }
   | { type: "RETAILER_STOP_AUTO" }
   | { type: "RETAILER_START_MANUAL_AUTO" }
+  | { type: "RETAILER_GET_PURCHASE_LIMIT" }
   | {
       type: "WALMART_RECORDING_START";
       sessionId: string;
@@ -159,6 +170,11 @@ export type UiToBackground =
   | { type: "SET_RETAILER_AUTO_ENABLED"; channel_id: string; enabled: boolean }
   | { type: "SET_RETAILER_REFRESH_INTERVAL"; channel_id: string; interval_sec: number }
   | { type: "SET_RETAILER_ATC_MODES"; frontend_enabled: boolean; backend_enabled: boolean }
+  | {
+      type: "SET_RETAILER_ATC_QUANTITY";
+      quantity: number;
+      use_max_quantity: boolean;
+    }
   | { type: "RETAILER_START_MANUAL_AUTO"; window_id?: number }
   | { type: "RETAILER_STOP_MANUAL_AUTO"; window_id?: number }
   | {
@@ -186,7 +202,15 @@ export type BackgroundResponse =
   | { ok: true; history: HistoryItem[] }
   | { ok: true; opened: string[]; duplicates: string[] }
   | { ok: true; domains: string[] }
-  | { ok: true; refresh_interval_sec: number; frontend_atc_enabled: boolean; backend_atc_enabled: boolean }
+  | {
+      ok: true;
+      refresh_interval_sec: number;
+      frontend_atc_enabled: boolean;
+      backend_atc_enabled: boolean;
+      atc_quantity: number;
+      use_max_quantity: boolean;
+    }
+  | { ok: true; purchase_limit: number | null }
   | { ok: true; manual_auto_stopped: boolean }
   | { ok: true; export: { downloadId: number; filename: string } }
   | { ok: true; ack: true; dropped?: boolean }

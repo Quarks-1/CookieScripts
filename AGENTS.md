@@ -122,6 +122,9 @@ Always visible: enable slider, version/update banner.
 | `retailer_auto_enabled` | Per-channel flag **and** `target.com` in that channel's allowlist (`allowlistIncludesRetailerHost`) |
 | `retailer_refresh_interval_sec` | Per-channel on Discord; global `manual` default on Target-only sessions |
 | `retailer_manual_*` | Live automation status from `retailer-runtime-state.ts` for the active Target tab |
+| `retailer_atc_quantity` / `retailer_use_max_quantity` | Global quantity settings from storage |
+| `retailer_purchase_limit` | Live `purchase_limit` from active Target tab `__NEXT_DATA__` |
+| `retailer_quantity_invalid` / `retailer_auto_start_blocked` | Quantity exceeds max unless max override is effectively on |
 | `walmart_tab_detected` | Active tab URL is Walmart |
 | `walmart_recording_*` | Live recorder metrics from `walmart-runtime-state.ts` + IDB session meta |
 | `walmart_recording_tab_count` | Bound Walmart tabs in the active recording session |
@@ -147,6 +150,7 @@ Domain edits debounce 400ms (`useChannelDomainsEditor`) and persist via `saveCha
 | Retailer wait loop | `extension/lib/retailer/waiting-disabled.ts`, `restock-wait.ts` | Disabled ATC polling, restock vs OOS signals |
 | Retailer hard refresh | `extension/lib/retailer/page-refresh.ts`, `auto-resume.ts` | Interval reload; `sessionStorage` resume across reloads |
 | Retailer ATC | `extension/lib/retailer/main-add-to-cart.ts`, `cart-api.ts` | Frontend click vs backend cart API |
+| Retailer quantity | `extension/lib/retailer/quantity-limit.ts` | `purchase_limit` from `__NEXT_DATA__`, page Qty dropdown, auto-mode gate |
 | Cart probe bridge | `extension/lib/retailer/page-cart-probe-bridge.ts` | Injects `public/injected/cart-probe.js` |
 | Walmart content | `extension/content/walmart.ts` → `walmart/session.ts` | Recording lifecycle; reattach on reload |
 | Walmart recorder | `extension/content/walmart/recorder/*` | Clicks, nav, DOM, batching to background |
@@ -193,7 +197,7 @@ Other limits in constants: `MAX_URLS_PER_MESSAGE` (20), `RECENT_URLS_DEBOUNCE_MS
 
 **Per-channel** on `ChannelTarget`: `allowed_domains`, `retailer_auto_enabled`, `retailer_refresh_interval_sec`.
 
-**Global** on `ExtensionSettings`: `retailer_refresh_interval_sec` (manual-mode default), `retailer_frontend_atc_enabled` (default on), `retailer_backend_atc_enabled` (default off).
+**Global** on `ExtensionSettings`: `retailer_refresh_interval_sec` (manual-mode default), `retailer_frontend_atc_enabled` (default on), `retailer_backend_atc_enabled` (default off), `retailer_atc_quantity` (default 1, omitted when 1), `retailer_use_max_quantity` (default off).
 
 **Target tab `sessionStorage`** (not `chrome.storage`): `cookiescripts:retailerAutoResume`, `cookiescripts:retailerAutoUserStopped` — survive hard reloads during automation (`auto-resume.ts`).
 
@@ -205,13 +209,13 @@ Defined in `extension/types/index.ts`. **Content script never opens tabs** — d
 
 **Discord content → background:** `CHANNEL_ACTIVE`, `CHANNEL_INACTIVE`, `CANDIDATE_LINKS`, `ADD_ALLOWED_DOMAIN`, `IGNORE_DOMAIN`
 
-**Retailer content → background:** `RETAILER_PING`, `RETAILER_AUTO_STATUS`, `RETAILER_GET_AUTO_CONFIG`, `RETAILER_SET_REFRESH_INTERVAL`, `RETAILER_HARD_RELOAD`, `RETAILER_UI_STATE`, `RETAILER_GET_TAB_AUTO_STATE`, `RETAILER_SYNC_MANUAL_STOP`, `RETAILER_SYNC_MANUAL_START`
+**Retailer content → background:** `RETAILER_PING`, `RETAILER_AUTO_STATUS`, `RETAILER_GET_AUTO_CONFIG`, `RETAILER_SET_REFRESH_INTERVAL`, `RETAILER_HARD_RELOAD`, `RETAILER_UI_STATE`, `RETAILER_PURCHASE_LIMIT_SNAPSHOT`, `RETAILER_GET_TAB_AUTO_STATE`, `RETAILER_SYNC_MANUAL_STOP`, `RETAILER_SYNC_MANUAL_START`
 
 **Walmart content → background:** `WALMART_RECORDING_APPEND`, `WALMART_RECORDING_REATTACH`
 
-**Background → content:** `WATCH_CONFIG`, `PING`, `SCAN_DETECTED_DOMAINS`, `RETAILER_PING`, `RETAILER_START_AUTO`, `RETAILER_STOP_AUTO`, `RETAILER_START_MANUAL_AUTO`, `WALMART_RECORDING_START`, `WALMART_RECORDING_STOP`, `WALMART_RECORDING_MARK`
+**Background → content:** `WATCH_CONFIG`, `PING`, `SCAN_DETECTED_DOMAINS`, `RETAILER_PING`, `RETAILER_START_AUTO`, `RETAILER_STOP_AUTO`, `RETAILER_START_MANUAL_AUTO`, `RETAILER_GET_PURCHASE_LIMIT`, `WALMART_RECORDING_START`, `WALMART_RECORDING_STOP`, `WALMART_RECORDING_MARK`
 
-**Side panel ↔ background:** `GET_STATUS`, `GET_SETTINGS`, `SAVE_SETTINGS`, `GET_HISTORY`, `CLEAR_HISTORY`, `GET_DETECTED_DOMAINS`, `SET_RETAILER_AUTO_ENABLED`, `SET_RETAILER_REFRESH_INTERVAL`, `SET_RETAILER_ATC_MODES`, `RETAILER_START_MANUAL_AUTO`, `RETAILER_STOP_MANUAL_AUTO`, `WALMART_RECORDING` (`action`: start | stop | mark | clear | export)
+**Side panel ↔ background:** `GET_STATUS`, `GET_SETTINGS`, `SAVE_SETTINGS`, `GET_HISTORY`, `CLEAR_HISTORY`, `GET_DETECTED_DOMAINS`, `SET_RETAILER_AUTO_ENABLED`, `SET_RETAILER_REFRESH_INTERVAL`, `SET_RETAILER_ATC_MODES`, `SET_RETAILER_ATC_QUANTITY`, `RETAILER_START_MANUAL_AUTO`, `RETAILER_STOP_MANUAL_AUTO`, `WALMART_RECORDING` (`action`: start | stop | mark | clear | export)
 
 ## Link opening
 
@@ -238,6 +242,8 @@ Per-channel `retailer_auto_enabled` on `ChannelTarget`. When enabled, Target pro
 | Backend ATC | `retailer_backend_atc_enabled` | off | Cart API POST via `cart-api.ts`; requests run in page context through `public/injected/cart-probe.js` (`page-cart-probe-bridge.ts`) so Target session cookies apply |
 
 At least one ATC method must remain enabled. Config is fetched by retailer content via `RETAILER_GET_AUTO_CONFIG` and cached in `retailer/session.ts`.
+
+**Quantity** (global, side panel below Backend ATC on Target tabs): `retailer_atc_quantity` (default 1) and `retailer_use_max_quantity` (uses page `purchase_limit` when effectively on). Live max comes from `RETAILER_GET_PURCHASE_LIMIT` (`__NEXT_DATA__` + visible qty options during `GET_STATUS`; content script also pushes `RETAILER_PURCHASE_LIMIT_SNAPSHOT` on PDP load and on Target SPA navigation). Cached limits are keyed by tab URL (hash stripped). Invalid quantity (over max without max override) blocks Start Auto Mode and refuses automation after PDP load. When `retailer_backend_atc_enabled` and quantity &gt; 1, automation uses the cart API (correct `quantity` in POST) instead of the page button. Frontend-only multi-qty uses `ensurePageQuantityBeforeAtc` before click. Cart confirmation uses `minDelta: 1` (header counts line items, not units).
 
 **Manual mode on Target tabs:** Start/Stop Auto Mode (`RETAILER_START_MANUAL_AUTO` / `RETAILER_STOP_MANUAL_AUTO`). Uses `channel_id: "manual"` for refresh-interval settings. Recording/playback profiles were removed in v0.1.11 — automation is selector-driven only.
 

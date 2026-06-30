@@ -47,7 +47,11 @@ describe("waiting-disabled", () => {
       reportedWaiting: false,
     });
 
-    expect(probeAddToCartViaApi).toHaveBeenCalledWith("1011209279");
+    expect(probeAddToCartViaApi).toHaveBeenCalledWith(
+      "1011209279",
+      expect.objectContaining({ document: expect.anything() }),
+      1,
+    );
     expect(result.outcome).toBe("continue");
   });
 
@@ -62,8 +66,14 @@ describe("waiting-disabled", () => {
       refreshIntervalSec: 0,
       lastCartApiProbeMs: null,
       reportedWaiting: false,
+      getEffectiveQuantity: () => 4,
     });
 
+    expect(probeAddToCartViaApi).toHaveBeenCalledWith(
+      "1011209279",
+      expect.objectContaining({ document: expect.anything() }),
+      4,
+    );
     expect(result.outcome).toBe("cart_added");
   });
 });

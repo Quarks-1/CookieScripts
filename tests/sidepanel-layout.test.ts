@@ -29,6 +29,11 @@ function status(overrides: Partial<ExtensionStatus>): ExtensionStatus {
     retailer_backend_atc_enabled: false,
     retailer_manual_status: "",
     retailer_manual_running: false,
+    retailer_atc_quantity: 1,
+    retailer_use_max_quantity: false,
+    retailer_purchase_limit: null,
+    retailer_quantity_invalid: false,
+    retailer_auto_start_blocked: false,
     ...overrides,
   };
 }

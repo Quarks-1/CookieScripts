@@ -6,7 +6,7 @@ import {
 
 export const CHECKOUT_START_URL = "https://www.target.com/checkout/start";
 
-export function defaultTargetAutomationSteps(): AutomationStep[] {
+export function defaultTargetAutomationSteps(_effectiveQuantity = 1): AutomationStep[] {
   return [
     {
       type: "click",
