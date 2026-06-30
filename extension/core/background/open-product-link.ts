@@ -14,8 +14,8 @@ import {
   getRetailerFrontendAtcEnabled,
   getRetailerRefreshIntervalSec,
   getRetailerUseMaxQuantity,
-  isRetailerProductUrl,
-} from "@ext/domains/target/lib/index.ts";
+} from "@ext/domains/target/lib/channel-config.ts";
+import { isRetailerProductUrl } from "@ext/domains/target/lib/host.ts";
 import { sleep } from "@ext/core/lib/sleep.ts";
 import { prependHistory } from "@ext/core/lib/storage.ts";
 import type { ExtensionSettings } from "@ext/core/types/index.ts";

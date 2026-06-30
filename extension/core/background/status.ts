@@ -1,6 +1,5 @@
 import { getChannelDomains } from "@ext/core/lib/channel-targets.ts";
 import {
-  buildQuantityStatusFields,
   getRetailerAtcQuantity,
   getRetailerAutoAtcEnabled,
   getRetailerAutoCheckoutEnabled,
@@ -13,7 +12,8 @@ import {
   setRetailerAutoAtcEnabled,
   setRetailerAutoCheckoutEnabled,
   setRetailerRefreshInterval,
-} from "@ext/domains/target/lib/index.ts";
+} from "@ext/domains/target/lib/channel-config.ts";
+import { buildQuantityStatusFields } from "@ext/domains/target/lib/quantity-limit.ts";
 import { sleep } from "@ext/core/lib/sleep.ts";
 import { resolveActiveTabKind } from "@ext/core/lib/active-tab.ts";
 import { getSettings, saveSettings } from "@ext/core/lib/storage.ts";

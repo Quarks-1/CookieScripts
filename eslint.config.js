@@ -35,8 +35,10 @@ export default tseslint.config(
         {
           patterns: [
             {
-              regex: "^@ext/domains/target/lib/(?!index\\.ts$).+",
-              message: "Import Target lib via @ext/domains/target/lib/index.ts",
+              regex:
+                "^@ext/domains/target/lib/(?!index\\.ts$|host\\.ts$|channel-config\\.ts$|quantity-limit\\.ts$).+",
+              message:
+                "Import Target lib via @ext/domains/target/lib/index.ts (or host/channel-config/quantity-limit for chunk-safe core imports)",
             },
             {
               regex: "^@ext/domains/walmart/lib/(?!index\\.ts$).+",

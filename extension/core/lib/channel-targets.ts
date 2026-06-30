@@ -1,5 +1,5 @@
 import { normalizeDomain } from "@ext/core/lib/domains.ts";
-import { allowlistIncludesRetailerHost } from "@ext/domains/target/lib/index.ts";
+import { allowlistIncludesRetailerHost } from "@ext/domains/target/lib/host.ts";
 import type { ChannelTarget, ExtensionSettings } from "@ext/core/types/index.ts";
 
 export function getChannelTarget(
