@@ -326,6 +326,10 @@ async function runAutoMode(): Promise<void> {
       autoModePlaybackOptions(getRefreshIntervalSec, cartAlreadyAdded),
     );
 
+    if (result.error === "Reloading") {
+      return;
+    }
+
     clearRetailerAutoResume();
 
     if (result.ok) {
@@ -337,10 +341,6 @@ async function runAutoMode(): Promise<void> {
     if (result.error === "Stopped") {
       publishUiState("Stopped", false);
       await reportAutoStatus("failed", "Stopped");
-      return;
-    }
-
-    if (result.error === "Reloading") {
       return;
     }
 
