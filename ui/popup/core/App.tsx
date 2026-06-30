@@ -21,7 +21,9 @@ import { useRetailerAtcMode } from "../domains/target/hooks/useRetailerAtcMode.t
 import { useRetailerAtcQuantity } from "../domains/target/hooks/useRetailerAtcQuantity.ts";
 import { useRetailerAutoMode } from "../domains/target/hooks/useRetailerAutoMode.ts";
 import { WalmartResearchSection } from "../domains/walmart/components/WalmartResearchSection.tsx";
+import { WalmartAutoRefreshSection } from "../domains/walmart/components/WalmartAutoRefreshSection.tsx";
 import { useWalmartRecording } from "../domains/walmart/hooks/useWalmartRecording.ts";
+import { useWalmartAutoRefresh } from "../domains/walmart/hooks/useWalmartAutoRefresh.ts";
 import { VersionStatus } from "./components/VersionStatus.tsx";
 import { usePopupStatus } from "./hooks/usePopupStatus.ts";
 import { useUpdateCheck } from "./hooks/useUpdateCheck.ts";
@@ -57,6 +59,10 @@ export default function App() {
     status?.enabled ?? false,
     status?.walmart_recording_active ?? false,
     status?.any_walmart_tab_open ?? false,
+  );
+  const walmartAutoRefresh = useWalmartAutoRefresh(
+    status?.walmart_tab_detected === true,
+    status?.enabled ?? false,
   );
   const [enabling, setEnabling] = useState(false);
   const [enableError, setEnableError] = useState<string | null>(null);
@@ -141,6 +147,22 @@ export default function App() {
           </p>
         )}
       </section>
+
+      {status?.walmart_tab_detected && (
+        <WalmartAutoRefreshSection
+          enabled={walmartAutoRefresh.autoRefreshEnabled}
+          refreshIntervalSec={walmartAutoRefresh.refreshIntervalSec}
+          disabled={!status.enabled || enabling}
+          savingRefresh={walmartAutoRefresh.savingRefresh}
+          savingEnabled={walmartAutoRefresh.savingEnabled}
+          refreshError={walmartAutoRefresh.refreshError}
+          enableError={walmartAutoRefresh.enableError}
+          onEnabledChange={(next) => void walmartAutoRefresh.handleEnabledChange(next)}
+          onRefreshIntervalChange={(intervalSec) =>
+            void walmartAutoRefresh.handleRefreshIntervalChange(intervalSec)
+          }
+        />
+      )}
 
       {discordSurface && status !== null && (
         <section aria-labelledby="popup-auto-atc-heading" className="mt-2">

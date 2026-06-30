@@ -24,6 +24,7 @@ vi.mock("@ext/domains/walmart/background/runtime-state.ts", () => ({
   isAnyWalmartRecording: vi.fn().mockReturnValue(false),
   isWalmartTabRecording: vi.fn().mockReturnValue(false),
   recordingTabCount: vi.fn().mockReturnValue(0),
+  getWalmartTabAutoRefresh: vi.fn().mockReturnValue(undefined),
 }));
 
 vi.mock("@ext/domains/walmart/background/tabs.ts", () => ({

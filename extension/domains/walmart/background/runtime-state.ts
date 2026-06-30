@@ -132,7 +132,40 @@ export async function loadWalmartRecordingState(): Promise<string | null> {
   return persisted;
 }
 
+export type WalmartTabAutoRefreshState = {
+  enabled: boolean;
+  interval_sec: number;
+  last_refresh_at?: number;
+};
+
+const tabAutoRefreshMap = new Map<number, WalmartTabAutoRefreshState>();
+
+export function getWalmartTabAutoRefresh(tabId: number): WalmartTabAutoRefreshState | undefined {
+  return tabAutoRefreshMap.get(tabId);
+}
+
+export function hasWalmartTabAutoRefresh(tabId: number): boolean {
+  return tabAutoRefreshMap.has(tabId);
+}
+
+export function setWalmartTabAutoRefresh(tabId: number, state: WalmartTabAutoRefreshState): void {
+  tabAutoRefreshMap.set(tabId, state);
+}
+
+export function clearWalmartTabAutoRefresh(tabId: number): void {
+  tabAutoRefreshMap.delete(tabId);
+}
+
+export function listWalmartTabAutoRefreshTabIds(): number[] {
+  return [...tabAutoRefreshMap.keys()];
+}
+
+export function clearAllWalmartTabAutoRefresh(): void {
+  tabAutoRefreshMap.clear();
+}
+
 export function clearWalmartRuntimeState(): void {
+  tabAutoRefreshMap.clear();
   tabSessionMap.clear();
   activeRecordingTabs.clear();
   exportLocks.clear();

@@ -50,7 +50,15 @@ export type WalmartToBackground =
       truncated?: boolean;
     }
   | { type: "WALMART_RECORDING_REATTACH"; sessionId: string }
-  | { type: "WALMART_PING" };
+  | { type: "WALMART_PING" }
+  | { type: "WALMART_GET_AUTO_REFRESH_CONFIG" }
+  | {
+      type: "WALMART_SYNC_AUTO_REFRESH";
+      enabled: boolean;
+      interval_sec: number;
+      last_refresh_at?: number;
+    }
+  | { type: "WALMART_HARD_RELOAD" };
 
 export type BackgroundToContent =
   | { type: "WATCH_CONFIG"; channel_id: string | null; allowed_domains: string[] }
@@ -79,7 +87,13 @@ export type BackgroundToContent =
       joinMode: "primary" | "late";
     }
   | { type: "WALMART_RECORDING_STOP" }
-  | { type: "WALMART_RECORDING_MARK"; label: MarkerLabel };
+  | { type: "WALMART_RECORDING_MARK"; label: MarkerLabel }
+  | {
+      type: "WALMART_AUTO_REFRESH_CONFIG";
+      enabled: boolean;
+      interval_sec: number;
+      pause: boolean;
+    };
 
 export type UiToBackground =
   | { type: "GET_STATUS"; window_id?: number }
@@ -103,7 +117,9 @@ export type UiToBackground =
       type: "WALMART_RECORDING";
       action: WalmartRecordingAction;
       label?: MarkerLabel;
-    };
+    }
+  | { type: "SET_WALMART_AUTO_REFRESH_ENABLED"; enabled: boolean; window_id?: number }
+  | { type: "SET_WALMART_REFRESH_INTERVAL"; interval_sec: number; window_id?: number };
 
 export type RuntimeMessage =
   | ContentToBackground
@@ -138,6 +154,7 @@ export type BackgroundResponse =
   | { ok: true; export: { downloadId: number; filename: string } }
   | { ok: true; ack: true; dropped?: boolean }
   | { ok: true; tabId: number }
+  | { ok: true; enabled: boolean; interval_sec: number; pause: boolean }
   | { ok: true }
   | { ok: false; error: string }
   | WatchConfig;

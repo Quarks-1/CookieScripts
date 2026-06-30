@@ -7,6 +7,7 @@ Manual drop-day research recorder on `walmart.com` tabs. Multi-tab global sessio
 | Area | Path |
 |---|---|
 | Content entry | `content/entry.ts` |
+| Auto refresh | `content/auto-refresh.ts`, `background/handlers/auto-refresh.ts`, `background/auto-refresh-tab-events.ts` |
 | Recorder | `content/recorder/*` |
 | Background handlers | `background/handlers/{index,shared,recording-lifecycle,tab-events,append,ui-messages,content-messages}.ts` |
 | IDB / export | `lib/idb/*`, `background/export.ts` |
@@ -47,8 +48,8 @@ Core/UI-core import `@ext/domains/walmart/lib/index.ts` only (host + open-tab he
 
 Source of truth: [extension/core/types/messages.ts](../../core/types/messages.ts).
 
-- Content → background: `WALMART_RECORDING_APPEND`, `WALMART_RECORDING_REATTACH`, `WALMART_PING`
-- Background → content: `WALMART_RECORDING_START`, `WALMART_RECORDING_STOP`, `WALMART_RECORDING_MARK`
+- Content → background: `WALMART_RECORDING_APPEND`, `WALMART_RECORDING_REATTACH`, `WALMART_PING`, `WALMART_GET_AUTO_REFRESH_CONFIG`, `WALMART_SYNC_AUTO_REFRESH`, `WALMART_HARD_RELOAD`
+- Background → content: `WALMART_RECORDING_START`, `WALMART_RECORDING_STOP`, `WALMART_RECORDING_MARK`, `WALMART_AUTO_REFRESH_CONFIG`
 - UI: `WALMART_RECORDING` (action union)
 
 ## Invariants

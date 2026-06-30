@@ -50,7 +50,10 @@ function isWalmartContentMessage(message: RuntimeMessage): message is WalmartToB
   return (
     message.type === "WALMART_RECORDING_APPEND" ||
     message.type === "WALMART_RECORDING_REATTACH" ||
-    message.type === "WALMART_PING"
+    message.type === "WALMART_PING" ||
+    message.type === "WALMART_GET_AUTO_REFRESH_CONFIG" ||
+    message.type === "WALMART_SYNC_AUTO_REFRESH" ||
+    message.type === "WALMART_HARD_RELOAD"
   );
 }
 
@@ -69,7 +72,9 @@ function isUiMessage(message: RuntimeMessage): message is UiToBackground {
     message.type === "SET_RETAILER_AUTO_CHECKOUT_ENABLED" ||
     message.type === "RETAILER_START_MANUAL_AUTO" ||
     message.type === "RETAILER_STOP_MANUAL_AUTO" ||
-    message.type === "WALMART_RECORDING"
+    message.type === "WALMART_RECORDING" ||
+    message.type === "SET_WALMART_AUTO_REFRESH_ENABLED" ||
+    message.type === "SET_WALMART_REFRESH_INTERVAL"
   );
 }
 
@@ -116,7 +121,8 @@ export async function handleMessage(
       message.type === "SCAN_DETECTED_DOMAINS" ||
       message.type === "WALMART_RECORDING_START" ||
       message.type === "WALMART_RECORDING_STOP" ||
-      message.type === "WALMART_RECORDING_MARK"
+      message.type === "WALMART_RECORDING_MARK" ||
+      message.type === "WALMART_AUTO_REFRESH_CONFIG"
     ) {
       return undefined;
     }

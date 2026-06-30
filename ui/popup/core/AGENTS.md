@@ -24,6 +24,8 @@ React shell for the Chrome side panel — section visibility, global hooks, stat
 
 **Exception:** `TargetAtcToggles` in `App.tsx` renders when `status.retailer_tab_detected` (focused Target tab), independent of `retailerAuto` section gating.
 
+**Exception:** `WalmartAutoRefreshSection` renders when `status.walmart_tab_detected`, directly below Enable extension.
+
 ## Domain UI map
 
 | Domain | Path |

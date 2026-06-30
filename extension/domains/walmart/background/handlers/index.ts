@@ -11,3 +11,8 @@ export {
   onWalmartTabUpdated,
 } from "@ext/domains/walmart/background/handlers/tab-events.ts";
 export { handleWalmartUiMessage } from "@ext/domains/walmart/background/handlers/ui-messages.ts";
+export {
+  stopAllWalmartAutoRefreshForDisable,
+  handleSetWalmartAutoRefreshEnabled,
+  handleSetWalmartRefreshInterval,
+} from "@ext/domains/walmart/background/handlers/auto-refresh.ts";

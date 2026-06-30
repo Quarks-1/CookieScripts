@@ -1,11 +1,18 @@
+import { getActiveTabInWindow } from "@ext/core/background/window-active-tab.ts";
 import { isWalmartUrl } from "@ext/domains/walmart/lib/host.ts";
 
-export async function getActiveWalmartTab(): Promise<chrome.tabs.Tab | null> {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+export async function getActiveWalmartTabInWindow(
+  windowId?: number,
+): Promise<chrome.tabs.Tab | null> {
+  const tab = await getActiveTabInWindow(windowId);
   if (tab?.id == null || !tab.url || !isWalmartUrl(tab.url)) {
     return null;
   }
   return tab;
+}
+
+export async function getActiveWalmartTab(): Promise<chrome.tabs.Tab | null> {
+  return getActiveWalmartTabInWindow();
 }
 
 export async function sendToActiveWalmartTab(

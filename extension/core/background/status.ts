@@ -30,7 +30,9 @@ import {
   readLastExport,
   readMetrics,
   recordingTabCount,
+  getWalmartTabAutoRefresh,
 } from "@ext/domains/walmart/background/runtime-state.ts";
+import { WALMART_AUTO_REFRESH_DEFAULT_INTERVAL_SEC } from "@ext/domains/walmart/lib/index.ts";
 import { listAllWalmartTabs } from "@ext/domains/walmart/background/tabs.ts";
 import { parseChannelId } from "@ext/core/lib/channels.ts";
 import {
@@ -196,6 +198,14 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     retailerPurchaseLimit,
   );
 
+  const walmartAutoRefresh =
+    activeTab?.id != null && walmartTabDetected
+      ? getWalmartTabAutoRefresh(activeTab.id)
+      : undefined;
+  const walmartAutoRefreshEnabled = walmartAutoRefresh?.enabled ?? false;
+  const walmartRefreshIntervalSec =
+    walmartAutoRefresh?.interval_sec ?? WALMART_AUTO_REFRESH_DEFAULT_INTERVAL_SEC;
+
   return {
     enabled: settings.enabled,
     active_tab_kind: activeTabKind,
@@ -227,6 +237,8 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     retailer_quantity_invalid: quantityStatus.retailer_quantity_invalid,
     retailer_auto_start_blocked: quantityStatus.retailer_auto_start_blocked,
     retailer_auto_checkout_enabled: getRetailerAutoCheckoutEnabled(settings),
+    walmart_auto_refresh_enabled: walmartAutoRefreshEnabled,
+    walmart_refresh_interval_sec: walmartRefreshIntervalSec,
   };
 }
 

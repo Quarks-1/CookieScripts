@@ -38,4 +38,6 @@ export interface ExtensionStatus {
   retailer_quantity_invalid: boolean;
   retailer_auto_start_blocked: boolean;
   retailer_auto_checkout_enabled: boolean;
+  walmart_auto_refresh_enabled: boolean;
+  walmart_refresh_interval_sec: number;
 }

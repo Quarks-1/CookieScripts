@@ -1,6 +1,10 @@
 import { flushRecentUrls, initRuntimeState, onTabRemoved } from "@ext/core/background/runtime-state.ts";
 import { onRetailerTabRemoved, onRetailerWindowRemoved } from "@ext/domains/target/background/runtime-state.ts";
 import { onWalmartTabRemoved, loadWalmartRecordingState } from "@ext/domains/walmart/background/handlers/index.ts";
+import {
+  onAutoRefreshTabRemoved,
+  onAutoRefreshTabUpdated,
+} from "@ext/domains/walmart/background/auto-refresh-tab-events.ts";
 import { handleMessage } from "@ext/core/background/handlers.ts";
 import { configureSidePanel } from "@ext/core/background/side-panel.ts";
 import { seedDefaultsIfMissing } from "@ext/core/lib/storage.ts";
@@ -24,7 +28,12 @@ chrome.runtime.onMessage.addListener((message, sender) => {
   return initPromise.then(() => handleMessage(message, sender));
 });
 
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  void onAutoRefreshTabUpdated(tabId, changeInfo, tab);
+});
+
 chrome.tabs.onRemoved.addListener((tabId) => {
+  onAutoRefreshTabRemoved(tabId);
   onTabRemoved(tabId);
   onRetailerTabRemoved(tabId);
   void onWalmartTabRemoved(tabId);

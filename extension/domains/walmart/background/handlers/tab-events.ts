@@ -19,7 +19,6 @@ import {
   unregisterTabUpdateListener,
 } from "@ext/domains/walmart/background/handlers/shared.ts";
 import { finalizeAndExport } from "@ext/domains/walmart/background/handlers/recording-lifecycle.ts";
-
 export async function onWalmartTabUpdated(
   tabId: number,
   changeInfo: chrome.tabs.TabChangeInfo,

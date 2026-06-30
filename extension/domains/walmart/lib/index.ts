@@ -10,3 +10,9 @@ export {
   disambiguateOpenTabLabels,
   labelWalmartTab,
 } from "@ext/domains/walmart/lib/tab-label.ts";
+
+export {
+  WALMART_AUTO_REFRESH_DEFAULT_INTERVAL_SEC,
+  normalizeWalmartRefreshIntervalSec,
+  shouldWalmartHardRefresh,
+} from "@ext/domains/walmart/lib/auto-refresh.ts";

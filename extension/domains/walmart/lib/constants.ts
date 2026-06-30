@@ -1,4 +1,5 @@
 export const WALMART_SESSION_STORAGE_KEY = "cookiescripts:walmartRecordingSessionId";
+export const WALMART_AUTO_REFRESH_STORAGE_KEY = "cookiescripts:walmartAutoRefresh";
 export const WALMART_DISCLAIMER_KEY = "cookiescripts:walmartDisclaimerAccepted";
 
 export const WALMART_DB_NAME = "cookiescripts-walmart-recordings";

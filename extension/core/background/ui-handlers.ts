@@ -27,6 +27,11 @@ import {
   handleWalmartUiMessage,
   stopAllWalmartRecordingsForDisable,
 } from "@ext/domains/walmart/background/handlers/index.ts";
+import {
+  handleSetWalmartAutoRefreshEnabled,
+  handleSetWalmartRefreshInterval,
+  stopAllWalmartAutoRefreshForDisable,
+} from "@ext/domains/walmart/background/handlers/auto-refresh.ts";
 import type { BackgroundResponse, UiToBackground } from "@ext/core/types/index.ts";
 
 export async function handleUiMessage(
@@ -51,6 +56,7 @@ export async function handleUiMessage(
         await saveSettings(message.settings);
         if (previous.enabled && !message.settings.enabled) {
           await stopAllWalmartRecordingsForDisable();
+          await stopAllWalmartAutoRefreshForDisable();
         }
         return { ok: true };
       } catch (error) {
@@ -162,5 +168,9 @@ export async function handleUiMessage(
     }
     case "WALMART_RECORDING":
       return handleWalmartUiMessage(message);
+    case "SET_WALMART_AUTO_REFRESH_ENABLED":
+      return handleSetWalmartAutoRefreshEnabled(message);
+    case "SET_WALMART_REFRESH_INTERVAL":
+      return handleSetWalmartRefreshInterval(message);
   }
 }
