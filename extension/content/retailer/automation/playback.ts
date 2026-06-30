@@ -1,4 +1,6 @@
 import {
+  dismissCartAddFailureModal,
+  hasCartAddFailureUi,
   isCartConfirmed,
   readCartCountFromDocument,
 } from "@ext/lib/retailer/cart-step.ts";
@@ -10,6 +12,7 @@ import {
   waitForMainAddToCartButton,
 } from "@ext/lib/retailer/main-add-to-cart.ts";
 import { runWaitingDisabledTick } from "@ext/lib/retailer/waiting-disabled.ts";
+import { maybeHardRefreshWhileWaiting } from "@ext/lib/retailer/page-refresh.ts";
 import { readRetailerAutoResume } from "@ext/lib/retailer/auto-resume.ts";
 import { activateElement } from "@ext/lib/retailer/dom.ts";
 import { runPlaybackEngine } from "@ext/lib/retailer/playback-engine.ts";
@@ -72,12 +75,32 @@ async function addToCartUntilConfirmed(
   let lastCartApiProbeMs: number | null = null;
   const pageUrl = location.href;
   const tcin = parseTargetTcinFromUrl(pageUrl);
+  const resolveRefreshIntervalSec = () =>
+    options.getRefreshIntervalSec?.() ?? options.refreshIntervalSec;
 
   const result = await retryUntilConfirmed({
     retryIntervalMs: ADD_TO_CART_RETRY_INTERVAL_MS,
     shouldContinue: () => options.shouldContinue() && !reloading,
     isConfirmed: () => confirmedViaApi || isCartConfirmed(document, baselineCount, minDelta),
     tryAction: async () => {
+      const refresh = await maybeHardRefreshWhileWaiting({
+        refreshIntervalSec: resolveRefreshIntervalSec(),
+        shouldContinue: options.shouldContinue,
+        onStatus,
+        requestHardReload: options.requestHardReload,
+      });
+      if (refresh === "reloading") {
+        reloading = true;
+        return;
+      }
+
+      if (hasCartAddFailureUi(document)) {
+        onStatus("Dismissing add-to-cart error…");
+        dismissCartAddFailureModal(document);
+        await sleep(POST_ACTION_DELAY_MS);
+        return;
+      }
+
       const waitState = resolveMainAddToCartWaitState(resolvedSelectors, pageUrl);
       const shouldPollBackend =
         options.backendAtcEnabled &&
@@ -91,7 +114,7 @@ async function addToCartUntilConfirmed(
           backendAtcEnabled: true,
           onStatus,
           shouldContinue: options.shouldContinue,
-          refreshIntervalSec: options.getRefreshIntervalSec?.() ?? options.refreshIntervalSec,
+          refreshIntervalSec: resolveRefreshIntervalSec(),
           getRefreshIntervalSec: options.getRefreshIntervalSec,
           requestHardReload: options.requestHardReload,
           lastCartApiProbeMs,
@@ -117,7 +140,7 @@ async function addToCartUntilConfirmed(
           backendAtcEnabled: false,
           onStatus,
           shouldContinue: options.shouldContinue,
-          refreshIntervalSec: options.getRefreshIntervalSec?.() ?? options.refreshIntervalSec,
+          refreshIntervalSec: resolveRefreshIntervalSec(),
           getRefreshIntervalSec: options.getRefreshIntervalSec,
           requestHardReload: options.requestHardReload,
           lastCartApiProbeMs,

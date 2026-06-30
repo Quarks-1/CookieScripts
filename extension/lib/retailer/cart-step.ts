@@ -1,3 +1,5 @@
+import { activateElement, queryActionable } from "./dom.ts";
+
 const CART_COUNT_SELECTORS = [
   '[data-test="@web/CartLinkQuantity"]',
   '[data-test="@web/CartLink"]',
@@ -16,6 +18,30 @@ const ADDED_TO_CART_PATTERNS = [
 ];
 
 const CART_ARIA_COUNT = /cart\s+(\d+)\s+items?/i;
+
+const CART_ADD_FAILURE_PATTERNS = [
+  /item not added to (?:your )?cart/i,
+  /not added to your cart/i,
+  /something went wrong.*not added/i,
+] as const;
+
+const CART_ADD_FAILURE_DIALOG_SELECTORS = [
+  '.ReactModal__Content[role="dialog"]',
+  '[role="dialog"]',
+  '[aria-modal="true"]',
+  '[data-test*="modal" i]',
+] as const;
+
+const CART_ADD_FAILURE_CLOSE_SELECTORS = [
+  'button[aria-label="Close"]',
+  'button[aria-label="close"]',
+  'button[class*="styles_ndsButtonClose"]',
+  'button[class*="styles_close"]',
+  'button[data-test*="close" i]',
+  'button[data-test*="modalClose" i]',
+] as const;
+
+const CART_ADD_SUCCESS_ZONE = '[data-test*="addToCartSuccess"]';
 
 function elementCountText(el: Element): string {
   const parts = [el.textContent, el.getAttribute("aria-label")].filter(
@@ -101,4 +127,96 @@ export function isCartConfirmed(
 ): boolean {
   const after = readCartCountFromDocument(doc);
   return cartCountIncreased(baselineCount, after, minDelta) || hasCartAddSuccessUi(doc);
+}
+
+function isCartAddFailureText(text: string): boolean {
+  return CART_ADD_FAILURE_PATTERNS.some((pattern) => pattern.test(text));
+}
+
+function isInsideSuccessZone(element: Element): boolean {
+  return element.matches(CART_ADD_SUCCESS_ZONE) || element.closest(CART_ADD_SUCCESS_ZONE) != null;
+}
+
+function findCartAddFailureDialog(doc: Document): HTMLElement | null {
+  const errorContent = doc.querySelector('[data-test="errorContent"]');
+  if (errorContent instanceof HTMLElement && !isInsideSuccessZone(errorContent)) {
+    const dialog = errorContent.closest('[role="dialog"]');
+    if (dialog instanceof HTMLElement) {
+      return dialog;
+    }
+    return errorContent;
+  }
+
+  for (const selector of CART_ADD_FAILURE_DIALOG_SELECTORS) {
+    let nodes: NodeListOf<Element>;
+    try {
+      nodes = doc.querySelectorAll(selector);
+    } catch {
+      continue;
+    }
+
+    for (const node of nodes) {
+      if (!(node instanceof HTMLElement) || isInsideSuccessZone(node)) {
+        continue;
+      }
+      const text = node.textContent ?? "";
+      if (isCartAddFailureText(text)) {
+        return node;
+      }
+    }
+  }
+
+  return findCartAddFailureDialogViaCloseButton(doc);
+}
+
+/** Target's ATC error overlay may omit role=dialog; locate via the nds close button. */
+function findCartAddFailureDialogViaCloseButton(doc: Document): HTMLElement | null {
+  for (const selector of CART_ADD_FAILURE_CLOSE_SELECTORS) {
+    let buttons: NodeListOf<Element>;
+    try {
+      buttons = doc.querySelectorAll(selector);
+    } catch {
+      continue;
+    }
+
+    for (const button of buttons) {
+      if (!(button instanceof HTMLElement)) {
+        continue;
+      }
+
+      let el: Element | null = button.parentElement;
+      for (let depth = 0; depth < 12 && el != null && el !== doc.body; depth += 1) {
+        if (!(el instanceof HTMLElement) || isInsideSuccessZone(el)) {
+          el = el.parentElement;
+          continue;
+        }
+        const text = el.textContent ?? "";
+        if (isCartAddFailureText(text) && text.length <= 4_000) {
+          return el;
+        }
+        el = el.parentElement;
+      }
+    }
+  }
+
+  return null;
+}
+
+export function hasCartAddFailureUi(doc: Document): boolean {
+  return findCartAddFailureDialog(doc) !== null;
+}
+
+export function dismissCartAddFailureModal(doc: Document): boolean {
+  const dialog = findCartAddFailureDialog(doc);
+  if (!dialog) {
+    return false;
+  }
+
+  const closeButton = queryActionable([...CART_ADD_FAILURE_CLOSE_SELECTORS], dialog);
+  if (!closeButton) {
+    return false;
+  }
+
+  activateElement(closeButton);
+  return true;
 }
