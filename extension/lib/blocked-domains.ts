@@ -11,12 +11,9 @@ const BLOCKED_DOMAINS = new Set([
   "discord-attachments-uploads-prd.storage.googleapis.com",
 ]);
 
-/** Hosts that are never watch-list targets (CDNs, shorteners, creator tools). */
+/** CDNs and generic shorteners that are not retailer-specific redirect wrappers. */
 const BLOCKED_SUGGESTION_SUFFIXES = [
   "scene7.com",
-  "howl.link",
-  "mavely.app.link",
-  "mavely.link",
   "geni.us",
   "amzn.to",
   "a.co",

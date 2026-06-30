@@ -50,7 +50,22 @@ describe("scanPageDomains", () => {
     expect(scanPageDomains(root)).toEqual(["bestbuy.com"]);
   });
 
-  it("filters scene7, shorteners, and maps affiliate links to retailers", () => {
+  it("collects domains from embed accessories outside the message article", () => {
+    const root = buildMessageList(`
+      <div class="messageListItem">
+        <div role="article" class="message">Stock Alert</div>
+        <div id="message-accessories-123">
+          <div class="embed">
+            <a href="https://howl.link/a9ox1en73xl3p">Click here to buy</a>
+          </div>
+        </div>
+      </div>
+    `);
+
+    expect(scanPageDomains(root)).toEqual(["howl.link"]);
+  });
+
+  it("filters scene7 and generic shorteners; surfaces retailer redirect shorteners", () => {
     const root = buildMessageList(`
       <div role="article" class="message">
         <a href="https://target.scene7.com/is/image/Target/product">image</a>
@@ -60,7 +75,7 @@ describe("scanPageDomains", () => {
       </div>
     `);
 
-    expect(scanPageDomains(root)).toEqual(["target.com"]);
+    expect(scanPageDomains(root)).toEqual(["howl.link", "mavely.app.link", "target.com"]);
   });
 });
 

@@ -9,10 +9,15 @@ describe("isBlockedSuggestionDomain", () => {
     expect(isBlockedSuggestionDomain("walmart.com")).toBe(false);
   });
 
-  it("blocks image cdns and affiliate shorteners", () => {
+  it("blocks image cdns and generic shorteners", () => {
     expect(isBlockedSuggestionDomain("target.scene7.com")).toBe(true);
-    expect(isBlockedSuggestionDomain("howl.link")).toBe(true);
-    expect(isBlockedSuggestionDomain("mavely.app.link")).toBe(true);
+    expect(isBlockedSuggestionDomain("bit.ly")).toBe(true);
     expect(isBlockedSuggestionDomain("target.com")).toBe(false);
+  });
+
+  it("allows retailer redirect shorteners", () => {
+    expect(isBlockedSuggestionDomain("howl.link")).toBe(false);
+    expect(isBlockedSuggestionDomain("mavely.app.link")).toBe(false);
+    expect(isBlockedSuggestionDomain("mavely.link")).toBe(false);
   });
 });

@@ -41,16 +41,16 @@ describe("suggestionDomainFromUrl", () => {
     );
   });
 
-  it("identifies hosts that should be filtered from suggestions", () => {
+  it("blocks cdns and allows retailer redirect shorteners in suggestions", () => {
     expect(suggestionDomainFromUrl("https://target.scene7.com/is/image/Target/product")).toBe(
       "target.scene7.com",
     );
     expect(isBlockedSuggestionDomain("target.scene7.com")).toBe(true);
 
     expect(suggestionDomainFromUrl("https://howl.link/abc123")).toBe("howl.link");
-    expect(isBlockedSuggestionDomain("howl.link")).toBe(true);
+    expect(isBlockedSuggestionDomain("howl.link")).toBe(false);
 
     expect(suggestionDomainFromUrl("https://mavely.app.link/e/abc")).toBe("mavely.app.link");
-    expect(isBlockedSuggestionDomain("mavely.app.link")).toBe(true);
+    expect(isBlockedSuggestionDomain("mavely.app.link")).toBe(false);
   });
 });
