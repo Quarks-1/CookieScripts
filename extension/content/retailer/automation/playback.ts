@@ -40,6 +40,7 @@ export type AutomationPlaybackOptions = {
   backendAtcEnabled: boolean;
   cartAlreadyAdded?: boolean;
   getEffectiveQuantity: () => number;
+  onBeforeCheckoutNavigate?: () => void;
 };
 
 function cartMinDelta(steps: AutomationStep[]): number {
@@ -299,6 +300,7 @@ export async function runAutomationPlayback(
     },
     navigate: (url) => {
       onStatus("Going to checkout…");
+      options.onBeforeCheckoutNavigate?.();
       location.assign(url);
     },
   });

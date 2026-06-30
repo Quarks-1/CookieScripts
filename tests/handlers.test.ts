@@ -466,4 +466,20 @@ describe("handleMessage", () => {
     expect(response).toEqual({ ok: true, domains: ["walmart.com"] });
     expect(chrome.tabs.sendMessage).toHaveBeenCalledWith(1, { type: "SCAN_DETECTED_DOMAINS" });
   });
+
+  it("persists retailer auto checkout toggle", async () => {
+    const storage = setupChromeMocks();
+    const sender = mockExtensionPageSender(EXTENSION_ID);
+
+    const response = await handleMessage(
+      { type: "SET_RETAILER_AUTO_CHECKOUT_ENABLED", enabled: true },
+      sender,
+    );
+
+    expect(response).toEqual({ ok: true });
+    expect(storage["cookiescripts:settings"]).toEqual({
+      ...DEFAULT_SETTINGS,
+      retailer_auto_checkout_enabled: true,
+    });
+  });
 });

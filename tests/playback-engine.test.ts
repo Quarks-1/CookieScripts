@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { runPlaybackEngine } from "@ext/lib/retailer/playback-engine.ts";
+import { defaultTargetAutomationSteps, runPlaybackEngine } from "@ext/lib/retailer/playback-engine.ts";
 
 describe("playback-engine", () => {
   it("runs step sequence via callbacks", async () => {
@@ -20,5 +20,10 @@ describe("playback-engine", () => {
 
     expect(result).toEqual({ ok: true });
     expect(navigate).toHaveBeenCalledWith("https://www.target.com/checkout/start");
+  });
+
+  it("always includes checkout navigate in default steps", () => {
+    const steps = defaultTargetAutomationSteps(1);
+    expect(steps.some((step) => step.type === "navigate")).toBe(true);
   });
 });

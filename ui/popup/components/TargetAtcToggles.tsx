@@ -3,11 +3,15 @@ import { EnableSlider } from "@shared/components/EnableSlider.tsx";
 type TargetAtcTogglesProps = {
   frontendEnabled: boolean;
   backendEnabled: boolean;
+  autoCheckoutEnabled: boolean;
   disabled: boolean;
   saving: boolean;
   saveError: string | null;
+  autoCheckoutSaving: boolean;
+  autoCheckoutSaveError: string | null;
   onFrontendChange: (next: boolean) => void;
   onBackendChange: (next: boolean) => void;
+  onAutoCheckoutChange: (next: boolean) => void;
   quantityDraft: string;
   purchaseLimit: number | null;
   effectiveUseMax: boolean;
@@ -25,11 +29,15 @@ type TargetAtcTogglesProps = {
 export function TargetAtcToggles({
   frontendEnabled,
   backendEnabled,
+  autoCheckoutEnabled,
   disabled,
   saving,
   saveError,
+  autoCheckoutSaving,
+  autoCheckoutSaveError,
   onFrontendChange,
   onBackendChange,
+  onAutoCheckoutChange,
   quantityDraft,
   purchaseLimit,
   effectiveUseMax,
@@ -44,6 +52,7 @@ export function TargetAtcToggles({
   onUseMaxChange,
 }: TargetAtcTogglesProps) {
   const controlsDisabled = disabled || saving || quantitySaving;
+  const autoCheckoutDisabled = disabled || autoCheckoutSaving;
   const quantityInputDisabled = controlsDisabled || effectiveUseMax;
   const maxToggleDisabled = controlsDisabled || purchaseLimit == null;
 
@@ -65,6 +74,13 @@ export function TargetAtcToggles({
         checked={backendEnabled}
         disabled={controlsDisabled}
         onChange={onBackendChange}
+      />
+      <EnableSlider
+        id="popup-auto-checkout"
+        label="Auto checkout"
+        checked={autoCheckoutEnabled}
+        disabled={autoCheckoutDisabled}
+        onChange={onAutoCheckoutChange}
       />
       <div className="flex items-end justify-between gap-2">
         <label className="block text-xs text-zinc-500" htmlFor="popup-atc-quantity">
@@ -99,8 +115,12 @@ export function TargetAtcToggles({
       <p className="text-xs text-zinc-500">
         Frontend uses the page button. Backend uses the cart API.
       </p>
-      {saving && <p className="text-xs text-zinc-500">Saving…</p>}
-      {quantitySaving && <p className="text-xs text-zinc-500">Saving quantity…</p>}
+      <p className="text-xs text-zinc-500">
+        Auto checkout requires a signed-in Target account with saved address and payment in this
+        window.
+      </p>
+      {autoCheckoutSaving && <p className="text-xs text-zinc-500">Saving auto checkout…</p>}
+      {saving && <p className="text-xs text-zinc-500">Saving ATC modes…</p>}
       {showInvalidError && purchaseLimit != null && (
         <p role="status" aria-live="polite" className="text-xs text-red-300">
           Quantity cannot exceed max ({purchaseLimit})
@@ -116,9 +136,15 @@ export function TargetAtcToggles({
           {saveError}
         </p>
       )}
+      {quantitySaving && <p className="text-xs text-zinc-500">Saving quantity…</p>}
       {quantitySaveError && (
         <p role="status" aria-live="polite" className="text-xs text-red-300">
           {quantitySaveError}
+        </p>
+      )}
+      {autoCheckoutSaveError && (
+        <p role="status" aria-live="polite" className="text-xs text-red-300">
+          {autoCheckoutSaveError}
         </p>
       )}
     </section>

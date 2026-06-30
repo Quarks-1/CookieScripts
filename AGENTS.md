@@ -161,6 +161,7 @@ Always visible: enable slider, version/update banner.
 | `useUpdateCheck` | GitHub release ETag check |
 | `useRetailerAutoMode` | Discord auto toggle, manual start/stop, refresh interval |
 | `useRetailerAtcMode` | Frontend/backend ATC toggles |
+| `useRetailerAutoCheckout` | Global auto checkout toggle |
 | `useRetailerAtcQuantity` | Quantity + max override |
 | `useWalmartRecording` | Start/stop/mark/export; disclaimer + marked labels |
 
@@ -182,6 +183,7 @@ UI messages that need the user's focused window pass optional `window_id` (`GET_
 | `retailer_frontend_atc_enabled` / `retailer_backend_atc_enabled` | Global ATC mode toggles from storage |
 | `retailer_manual_*` | Live automation status from `retailer-runtime-state.ts` for the active Target tab |
 | `retailer_atc_quantity` / `retailer_use_max_quantity` | Global quantity settings from storage |
+| `retailer_auto_checkout_enabled` | Global auto checkout toggle (signed-in checkout through order confirmation) |
 | `retailer_purchase_limit` | Live `purchase_limit` from active Target tab `__NEXT_DATA__` |
 | `retailer_quantity_invalid` / `retailer_auto_start_blocked` | Quantity exceeds max unless max override is effectively on |
 | `walmart_tab_detected` | Active tab URL is Walmart |
@@ -258,7 +260,7 @@ Other limits in constants: `MAX_URLS_PER_MESSAGE` (20), `RECENT_URLS_DEBOUNCE_MS
 
 **Per-channel** on `ChannelTarget`: `allowed_domains`, `retailer_auto_atc_enabled`, `retailer_refresh_interval_sec`.
 
-**Global** on `ExtensionSettings`: `retailer_refresh_interval_sec` (manual-mode default), `retailer_frontend_atc_enabled` (default on), `retailer_backend_atc_enabled` (default off), `retailer_atc_quantity` (default 1, omitted when 1), `retailer_use_max_quantity` (default off).
+**Global** on `ExtensionSettings`: `retailer_refresh_interval_sec` (manual-mode default), `retailer_frontend_atc_enabled` (default on), `retailer_backend_atc_enabled` (default off), `retailer_atc_quantity` (default 1, omitted when 1), `retailer_use_max_quantity` (default off), `retailer_auto_checkout_enabled` (default off).
 
 **Target tab `sessionStorage`** (not `chrome.storage`): `cookiescripts:retailerAutoResume`, `cookiescripts:retailerAutoUserStopped` — survive hard reloads during automation (`auto-resume.ts`).
 
@@ -276,7 +278,7 @@ Defined in `extension/types/index.ts`. **Content script never opens tabs** — d
 
 **Background → content:** `WATCH_CONFIG`, `PING`, `SCAN_DETECTED_DOMAINS`, `RETAILER_PING`, `RETAILER_START_AUTO`, `RETAILER_STOP_AUTO`, `RETAILER_START_MANUAL_AUTO`, `RETAILER_GET_PURCHASE_LIMIT`, `WALMART_RECORDING_START`, `WALMART_RECORDING_STOP`, `WALMART_RECORDING_MARK`
 
-**Side panel ↔ background:** `GET_STATUS`, `GET_SETTINGS`, `SAVE_SETTINGS`, `GET_HISTORY`, `CLEAR_HISTORY`, `GET_DETECTED_DOMAINS`, `SET_RETAILER_AUTO_ATC_ENABLED`, `SET_RETAILER_REFRESH_INTERVAL`, `SET_RETAILER_ATC_MODES`, `SET_RETAILER_ATC_QUANTITY`, `RETAILER_START_MANUAL_AUTO`, `RETAILER_STOP_MANUAL_AUTO`, `WALMART_RECORDING` (`action`: start | stop | mark | clear | export)
+**Side panel ↔ background:** `GET_STATUS`, `GET_SETTINGS`, `SAVE_SETTINGS`, `GET_HISTORY`, `CLEAR_HISTORY`, `GET_DETECTED_DOMAINS`, `SET_RETAILER_AUTO_ATC_ENABLED`, `SET_RETAILER_REFRESH_INTERVAL`, `SET_RETAILER_ATC_MODES`, `SET_RETAILER_ATC_QUANTITY`, `SET_RETAILER_AUTO_CHECKOUT_ENABLED`, `RETAILER_START_MANUAL_AUTO`, `RETAILER_STOP_MANUAL_AUTO`, `WALMART_RECORDING` (`action`: start | stop | mark | clear | export)
 
 ### Adding or changing a message
 

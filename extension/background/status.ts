@@ -2,6 +2,7 @@ import { getChannelDomains } from "@ext/lib/channel-targets.ts";
 import {
   getRetailerAtcQuantity,
   getRetailerAutoAtcEnabled,
+  getRetailerAutoCheckoutEnabled,
   getRetailerBackendAtcEnabled,
   getRetailerFrontendAtcEnabled,
   getRetailerRefreshIntervalSec,
@@ -9,6 +10,7 @@ import {
   setRetailerAtcModes,
   setRetailerAtcQuantity,
   setRetailerAutoAtcEnabled,
+  setRetailerAutoCheckoutEnabled,
   setRetailerRefreshInterval,
 } from "@ext/lib/retailer/channel-config.ts";
 import { buildQuantityStatusFields } from "@ext/lib/retailer/quantity-limit.ts";
@@ -222,6 +224,7 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     retailer_purchase_limit: retailerPurchaseLimit,
     retailer_quantity_invalid: quantityStatus.retailer_quantity_invalid,
     retailer_auto_start_blocked: quantityStatus.retailer_auto_start_blocked,
+    retailer_auto_checkout_enabled: getRetailerAutoCheckoutEnabled(settings),
   };
 }
 
@@ -264,6 +267,15 @@ export async function setRetailerAtcQuantityForSettings(
 ): Promise<ExtensionSettings> {
   const settings = await getSettings();
   const next = setRetailerAtcQuantity(settings, { quantity, useMaxQuantity });
+  await saveSettings(next);
+  return next;
+}
+
+export async function setRetailerAutoCheckoutEnabledForSettings(
+  enabled: boolean,
+): Promise<ExtensionSettings> {
+  const settings = await getSettings();
+  const next = setRetailerAutoCheckoutEnabled(settings, enabled);
   await saveSettings(next);
   return next;
 }

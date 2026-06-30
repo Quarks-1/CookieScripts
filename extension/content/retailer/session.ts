@@ -1,4 +1,8 @@
 import { runAutomationPlayback } from "@ext/content/retailer/automation/playback.ts";
+import {
+  runCheckoutAutoMode as runCheckoutAutoModeLoop,
+  type RetailerAutoConfig,
+} from "@ext/content/retailer/automation/checkout-auto.ts";
 import { hookSpaNavigation } from "@ext/content/navigation.ts";
 import { probeAddToCartViaApi } from "@ext/lib/retailer/cart-api.ts";
 import {
@@ -14,8 +18,11 @@ import {
   markRetailerAutoUserStopped,
   readRetailerAutoResume,
   shouldResumeRetailerAuto,
+  shouldResumeRetailerCheckout,
   startRetailerAutoResume,
+  transitionRetailerAutoResumeToCheckout,
 } from "@ext/lib/retailer/auto-resume.ts";
+import { isCheckoutAutomationUrl, isOrderConfirmationUrl } from "@ext/lib/retailer/checkout/checkout-url.ts";
 import { isRetailerProductUrl } from "@ext/lib/retailer/host.ts";
 import { ensurePageCartProbeBridge } from "@ext/lib/retailer/page-cart-probe-bridge.ts";
 import { defaultTargetAutomationSteps } from "@ext/lib/retailer/playback-engine.ts";
@@ -60,7 +67,7 @@ const session: Session = {
 
 let syncChain: Promise<void> = Promise.resolve();
 let sessionEnded = false;
-let autoModeScheduled = false;
+let automationScheduled = false;
 let autoConfigPrefetched = false;
 let stopAutoRequested = false;
 let cachedRefreshIntervalSec = 0;
@@ -68,6 +75,7 @@ let cachedFrontendAtcEnabled = true;
 let cachedBackendAtcEnabled = false;
 let cachedAtcQuantity = 1;
 let cachedUseMaxQuantity = false;
+let cachedAutoCheckoutEnabled = false;
 let trackedPurchaseLimitHref = location.href;
 let unhookRetailerNavigation: (() => void) | null = null;
 let purchaseLimitWatchTeardown: (() => void) | null = null;
@@ -75,10 +83,11 @@ let unhookPurchaseLimitPageShow: (() => void) | null = null;
 
 const PURCHASE_LIMIT_SNAPSHOT_DELAYS_MS = [500, 2_000, 4_000, 8_000] as const;
 const PURCHASE_LIMIT_WATCH_DEBOUNCE_MS = 150;
+let checkoutAbandonHandled = false;
 
 function requestStopAutoMode(): void {
   stopAutoRequested = true;
-  autoModeScheduled = false;
+  automationScheduled = false;
   markRetailerAutoUserStopped();
   syncManualAutoStopToBackground();
   session.syncGeneration += 1;
@@ -109,6 +118,19 @@ function isRetailerAutoDisabledInSettings(settings: ExtensionSettings): boolean 
   }
   const target = settings.channel_targets.find((row) => row.channel_id === session.channelId);
   return target?.retailer_auto_atc_enabled !== true;
+}
+
+function isCheckoutDisabledInSettings(settings: ExtensionSettings): boolean {
+  return settings.retailer_auto_checkout_enabled !== true;
+}
+
+function applyCachedAutoConfig(config: RetailerAutoConfig): void {
+  cachedRefreshIntervalSec = config.refreshIntervalSec;
+  cachedFrontendAtcEnabled = config.frontendAtcEnabled;
+  cachedBackendAtcEnabled = config.backendAtcEnabled;
+  cachedAtcQuantity = config.atcQuantity;
+  cachedUseMaxQuantity = config.useMaxQuantity;
+  cachedAutoCheckoutEnabled = config.autoCheckoutEnabled;
 }
 
 function publishUiState(status: string, running?: boolean): void {
@@ -170,16 +192,19 @@ function watchSettings(): void {
     const settingsChange = changes[STORAGE_KEYS.settings];
     if (settingsChange?.newValue && typeof settingsChange.newValue === "object") {
       const settings = settingsChange.newValue as ExtensionSettings;
-      if (session.running && isRetailerAutoDisabledInSettings(settings)) {
-        requestStopAutoMode();
+      if (session.running) {
+        if (isRetailerAutoDisabledInSettings(settings)) {
+          requestStopAutoMode();
+        } else if (
+          readRetailerAutoResume()?.phase === "checkout" &&
+          isCheckoutDisabledInSettings(settings)
+        ) {
+          requestStopAutoMode();
+        }
       }
       if (session.channelId) {
         void loadAutoConfig(session.channelId).then((config) => {
-          cachedRefreshIntervalSec = config.refreshIntervalSec;
-          cachedFrontendAtcEnabled = config.frontendAtcEnabled;
-          cachedBackendAtcEnabled = config.backendAtcEnabled;
-          cachedAtcQuantity = config.atcQuantity;
-          cachedUseMaxQuantity = config.useMaxQuantity;
+          applyCachedAutoConfig(config);
           syncCartProbeBridge();
         });
       }
@@ -312,6 +337,31 @@ function refreshPurchaseLimitForPage(force = false): void {
 
 function handleRetailerNavigation(): void {
   refreshPurchaseLimitForPage(false);
+  maybeFailCheckoutAbandon();
+}
+
+async function handleCheckoutAbandoned(): Promise<void> {
+  publishUiState("Left checkout", false);
+  clearRetailerAutoResume();
+  await reportAutoStatus("failed", "Left checkout");
+  session.running = false;
+}
+
+function maybeFailCheckoutAbandon(): void {
+  const resume = readRetailerAutoResume();
+  if (!resume || resume.phase !== "checkout" || !resume.auto_checkout_enabled) {
+    checkoutAbandonHandled = false;
+    return;
+  }
+  if (isCheckoutAutomationUrl(location.href)) {
+    checkoutAbandonHandled = false;
+    return;
+  }
+  if (checkoutAbandonHandled) {
+    return;
+  }
+  checkoutAbandonHandled = true;
+  void handleCheckoutAbandoned();
 }
 
 function hookPurchaseLimitPageShow(): void {
@@ -332,7 +382,7 @@ async function reportAutoStatus(
   status: "success" | "failed",
   error?: string,
 ): Promise<void> {
-  if (!session.channelId || !session.url) {
+  if (!session.channelId) {
     return;
   }
   try {
@@ -340,7 +390,7 @@ async function reportAutoStatus(
       type: "RETAILER_AUTO_STATUS",
       channel_id: session.channelId,
       status,
-      url: session.url,
+      url: location.href,
       error,
     });
   } catch (err) {
@@ -350,13 +400,13 @@ async function reportAutoStatus(
   }
 }
 
-async function loadAutoConfig(channelId: string): Promise<{
-  refreshIntervalSec: number;
-  frontendAtcEnabled: boolean;
-  backendAtcEnabled: boolean;
-  atcQuantity: number;
-  useMaxQuantity: boolean;
-}> {
+async function completeCheckoutSuccess(): Promise<void> {
+  publishUiState("Success", false);
+  clearRetailerAutoResume();
+  await reportAutoStatus("success");
+}
+
+async function loadAutoConfig(channelId: string): Promise<RetailerAutoConfig> {
   const response = (await sendToBackground({
     type: "RETAILER_GET_AUTO_CONFIG",
     channel_id: channelId,
@@ -367,6 +417,7 @@ async function loadAutoConfig(channelId: string): Promise<{
     backend_atc_enabled?: boolean;
     atc_quantity?: number;
     use_max_quantity?: boolean;
+    auto_checkout_enabled?: boolean;
   };
   return {
     refreshIntervalSec:
@@ -381,6 +432,7 @@ async function loadAutoConfig(channelId: string): Promise<{
         ? Math.max(1, Math.floor(response.atc_quantity))
         : 1,
     useMaxQuantity: response?.ok === true && response.use_max_quantity === true,
+    autoCheckoutEnabled: response?.ok === true && response.auto_checkout_enabled === true,
   };
 }
 
@@ -399,6 +451,7 @@ function applyStartAutoConfig(message: StartAutoMessage): boolean {
       ? Math.max(1, Math.floor(message.atc_quantity))
       : 1;
   cachedUseMaxQuantity = message.use_max_quantity === true;
+  cachedAutoCheckoutEnabled = message.auto_checkout_enabled === true;
   return true;
 }
 
@@ -459,11 +512,16 @@ function autoModePlaybackOptions(
     backendAtcEnabled: cachedBackendAtcEnabled,
     cartAlreadyAdded,
     getEffectiveQuantity,
+    onBeforeCheckoutNavigate: () => {
+      if (cachedAutoCheckoutEnabled && session.channelId) {
+        transitionRetailerAutoResumeToCheckout(session.channelId, location.href);
+      }
+    },
   };
 }
 
 async function runAutoMode(): Promise<void> {
-  autoModeScheduled = false;
+  automationScheduled = false;
   if (session.running || stopAutoRequested || isRetailerAutoUserStopped()) {
     return;
   }
@@ -482,6 +540,7 @@ async function runAutoMode(): Promise<void> {
   }
 
   let skipReadyInFinally = false;
+  let skipRunningResetInFinally = false;
 
   try {
     const resuming = shouldResumeRetailerAuto(location.href) !== null;
@@ -498,14 +557,11 @@ async function runAutoMode(): Promise<void> {
           backendAtcEnabled: cachedBackendAtcEnabled,
           atcQuantity: cachedAtcQuantity,
           useMaxQuantity: cachedUseMaxQuantity,
+          autoCheckoutEnabled: cachedAutoCheckoutEnabled,
         }
       : await loadAutoConfig(session.channelId);
     autoConfigPrefetched = false;
-    cachedRefreshIntervalSec = config.refreshIntervalSec;
-    cachedFrontendAtcEnabled = config.frontendAtcEnabled;
-    cachedBackendAtcEnabled = config.backendAtcEnabled;
-    cachedAtcQuantity = config.atcQuantity;
-    cachedUseMaxQuantity = config.useMaxQuantity;
+    applyCachedAutoConfig(config);
     await warmCartProbeBridge();
 
     if (!cachedFrontendAtcEnabled && !cachedBackendAtcEnabled) {
@@ -597,6 +653,12 @@ async function runAutoMode(): Promise<void> {
       return;
     }
 
+    if (result.ok && cachedAutoCheckoutEnabled) {
+      skipRunningResetInFinally = true;
+      skipReadyInFinally = true;
+      return;
+    }
+
     clearRetailerAutoResume();
 
     if (result.ok) {
@@ -623,7 +685,9 @@ async function runAutoMode(): Promise<void> {
     publishUiState(err instanceof Error ? err.message : "Auto mode failed", false);
     skipReadyInFinally = true;
   } finally {
-    session.running = false;
+    if (!skipRunningResetInFinally) {
+      session.running = false;
+    }
     if (!sessionEnded && !readRetailerAutoResume() && !skipReadyInFinally) {
       publishUiState(
         isRetailerProductUrl(location.href)
@@ -635,24 +699,127 @@ async function runAutoMode(): Promise<void> {
   }
 }
 
-function scheduleAutoModeRun(): void {
-  autoModeScheduled = true;
+async function runCheckoutAutoMode(): Promise<void> {
+  automationScheduled = false;
+  if (session.running || stopAutoRequested || isRetailerAutoUserStopped()) {
+    return;
+  }
+
+  const resume = shouldResumeRetailerCheckout(location.href);
+  if (!resume) {
+    return;
+  }
+
+  session.channelId = resume.channel_id;
+  session.url = location.href;
+  session.running = true;
+  publishUiState("Completing checkout…", true);
+
+  let skipReadyInFinally = false;
+  let skipRunningResetInFinally = false;
+
+  const checkoutCallbacks = {
+    shouldContinue: shouldContinueAutoMode,
+    isStopRequested: () => stopAutoRequested,
+    getAutoCheckoutEnabled: () => cachedAutoCheckoutEnabled,
+    getRefreshIntervalSec: () => cachedRefreshIntervalSec,
+    publishUiState,
+    requestHardReload,
+    onSuccess: completeCheckoutSuccess,
+    onFailed: async (error: string) => {
+      publishUiState(`Error: ${error}`, false);
+      clearRetailerAutoResume();
+      await reportAutoStatus("failed", error);
+      skipReadyInFinally = true;
+    },
+    onStopped: async () => {
+      publishUiState("Stopped", false);
+      clearRetailerAutoResume();
+      await reportAutoStatus("failed", "Stopped");
+      skipReadyInFinally = true;
+    },
+  };
+
+  try {
+    const config = await loadAutoConfig(resume.channel_id);
+    applyCachedAutoConfig(config);
+
+    if (!cachedAutoCheckoutEnabled) {
+      await checkoutCallbacks.onStopped();
+      return;
+    }
+
+    const outcome = await runCheckoutAutoModeLoop(checkoutCallbacks);
+
+    switch (outcome) {
+      case "success":
+        skipRunningResetInFinally = true;
+        skipReadyInFinally = true;
+        break;
+      case "reloading":
+        skipRunningResetInFinally = true;
+        break;
+      case "stopped":
+      case "checkout_disabled":
+      case "auth_required":
+        skipReadyInFinally = true;
+        break;
+      case "failed":
+      case "abandoned":
+        if (!skipReadyInFinally) {
+          await checkoutCallbacks.onFailed(
+            outcome === "abandoned" ? "Left checkout" : "Checkout automation failed",
+          );
+        }
+        skipReadyInFinally = true;
+        break;
+    }
+  } catch (err) {
+    if (isExtensionContextInvalidatedError(err)) {
+      endSession();
+      return;
+    }
+    const message = err instanceof Error ? err.message : "Checkout automation failed";
+    publishUiState(message, false);
+    clearRetailerAutoResume();
+    await reportAutoStatus("failed", message);
+    skipReadyInFinally = true;
+  } finally {
+    if (!skipRunningResetInFinally) {
+      session.running = false;
+    }
+    if (!sessionEnded && !readRetailerAutoResume() && !skipReadyInFinally) {
+      publishUiState("Ready — open a product page and press Start", false);
+    }
+  }
+}
+
+function scheduleAutomationRun(runner: () => Promise<void>): void {
+  automationScheduled = true;
   const generation = ++session.syncGeneration;
   syncChain = syncChain
     .then(async () => {
       if (generation !== session.syncGeneration) {
         return;
       }
-      await runAutoMode();
+      await runner();
     })
     .catch((err) => {
       if (generation === session.syncGeneration) {
-        autoModeScheduled = false;
+        automationScheduled = false;
       }
       if (isExtensionContextInvalidatedError(err)) {
         endSession();
       }
     });
+}
+
+function scheduleCheckoutAutoModeRun(): void {
+  scheduleAutomationRun(runCheckoutAutoMode);
+}
+
+function scheduleAutoModeRun(): void {
+  scheduleAutomationRun(runAutoMode);
 }
 
 function armManualSession(): void {
@@ -677,16 +844,32 @@ function handleStartManualAuto(): void {
   scheduleAutoModeRun();
 }
 
-function tryResumeAutoMode(): void {
+function tryResumeAutomation(): void {
   if (isRetailerAutoUserStopped()) {
     return;
   }
-  const resume = shouldResumeRetailerAuto(location.href);
-  if (!resume || !isRetailerProductUrl(location.href)) {
+
+  const checkoutResume = shouldResumeRetailerCheckout(location.href);
+  if (checkoutResume) {
+    session.channelId = checkoutResume.channel_id;
+    session.url = location.href;
+
+    if (isOrderConfirmationUrl(location.href)) {
+      void completeCheckoutSuccess();
+      return;
+    }
+
+    publishUiState("Resuming checkout…", true);
+    scheduleCheckoutAutoModeRun();
     return;
   }
 
-  session.channelId = resume.channel_id;
+  const pdpResume = shouldResumeRetailerAuto(location.href);
+  if (!pdpResume || !isRetailerProductUrl(location.href)) {
+    return;
+  }
+
+  session.channelId = pdpResume.channel_id;
   session.url = location.href;
   publishUiState("Resuming auto mode…", true);
   scheduleAutoModeRun();
@@ -699,12 +882,16 @@ export function startRetailerSession(): void {
 
   if (isRetailerProductUrl(location.href)) {
     void loadAutoConfig("manual").then((config) => {
-      cachedFrontendAtcEnabled = config.frontendAtcEnabled;
-      cachedBackendAtcEnabled = config.backendAtcEnabled;
-      cachedAtcQuantity = config.atcQuantity;
-      cachedUseMaxQuantity = config.useMaxQuantity;
+      applyCachedAutoConfig(config);
       syncCartProbeBridge();
     });
+  } else {
+    const checkoutResume = shouldResumeRetailerCheckout(location.href);
+    if (checkoutResume) {
+      void loadAutoConfig(checkoutResume.channel_id).then((config) => {
+        applyCachedAutoConfig(config);
+      });
+    }
   }
 
   watchSettings();
@@ -766,15 +953,18 @@ async function initRetailerSession(): Promise<void> {
     return;
   }
 
+  if (shouldResumeRetailerCheckout(location.href) || shouldResumeRetailerAuto(location.href)) {
+    tryResumeAutomation();
+    return;
+  }
+
   if (tabState.running) {
     return;
   }
 
-  if (shouldResumeRetailerAuto(location.href)) {
-    tryResumeAutoMode();
-  } else if (isRetailerAutoUserStopped()) {
+  if (isRetailerAutoUserStopped()) {
     publishUiState("Stopped", false);
-  } else if (!autoModeScheduled && !session.running) {
+  } else if (!automationScheduled && !session.running) {
     publishUiState(
       isRetailerProductUrl(location.href)
         ? "Ready — press Start Auto Mode"

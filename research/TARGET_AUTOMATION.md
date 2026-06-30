@@ -191,14 +191,15 @@ Headless Puppeteer without stealth triggered captcha telemetry on Pokémon PDP b
 
 | Observation | Detail |
 |-------------|--------|
-| URL | `https://www.target.com/checkout/start` |
+| URL | `https://www.target.com/checkout/start` (also `/checkout` after hydration) |
+| Success URL | `https://www.target.com/order-confirmation` (pathname prefix) |
 | Guest cart | Works without login; `guest_type: "GUEST"` in cart API |
 | Checkout UI | Renders “Checkout” (`data-test="checkout-title"`), loading skeleton, auth flyout (`@web/auth-components/AuthSignInFlyout`) |
-| Auth | Prompts “Sign in or create account” / email-or-phone for guest checkout continuation |
-| CookieScripts flow | `location.assign('/checkout/start')` after cart confirmation is valid |
-| Payment | Apple Pay button present (`apple-pay-checkout-latest`); full completion needs address/payment steps |
+| Signed-in steps | `save_and_continue_button_step_SHIPPING`, optional gift/payment save buttons, `placeOrderButton` |
+| CookieScripts flow | After ATC: `location.assign('/checkout/start')`; with `retailer_auto_checkout_enabled`, spam steps through place order |
+| Payment | Apple Pay button present (`apple-pay-checkout-latest`); auto checkout v1 requires saved card on signed-in account |
 
-Guest checkout is possible but **not fully headless** without user interaction for identity/payment.
+Signed-in auto checkout (v0.1+) uses DOM step spam + hard refresh on stall. Guest checkout remains out of scope.
 
 ---
 

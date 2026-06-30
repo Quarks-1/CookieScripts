@@ -34,6 +34,7 @@ function status(overrides: Partial<ExtensionStatus>): ExtensionStatus {
     retailer_purchase_limit: null,
     retailer_quantity_invalid: false,
     retailer_auto_start_blocked: false,
+    retailer_auto_checkout_enabled: false,
     ...overrides,
   };
 }

@@ -11,7 +11,9 @@ import {
   productPathFromUrl,
   readRetailerAutoResume,
   shouldResumeRetailerAuto,
+  shouldResumeRetailerCheckout,
   startRetailerAutoResume,
+  transitionRetailerAutoResumeToCheckout,
 } from "@ext/lib/retailer/auto-resume.ts";
 
 const PAGE_URL = "https://www.target.com/p/restockr/-/A-1011209279";
@@ -48,5 +50,29 @@ describe("auto-resume", () => {
     clearRetailerAutoUserStopped();
     startRetailerAutoResume("222", PAGE_URL);
     expect(shouldResumeRetailerAuto(PAGE_URL)?.channel_id).toBe("222");
+  });
+
+  it("transitions to checkout phase", () => {
+    startRetailerAutoResume("222", PAGE_URL);
+    transitionRetailerAutoResumeToCheckout("222", PAGE_URL);
+    const resume = readRetailerAutoResume();
+    expect(resume?.phase).toBe("checkout");
+    expect(resume?.auto_checkout_enabled).toBe(true);
+    expect(shouldResumeRetailerCheckout("https://www.target.com/checkout/start")).not.toBeNull();
+    expect(shouldResumeRetailerAuto(PAGE_URL)).toBeNull();
+  });
+
+  it("parses legacy resume without phase as pdp", () => {
+    sessionStorage.setItem(
+      "cookiescripts:retailerAutoResume",
+      JSON.stringify({
+        channel_id: "222",
+        product_path: productPathFromUrl(PAGE_URL),
+        last_refresh_at: Date.now(),
+      }),
+    );
+    const resume = readRetailerAutoResume();
+    expect(resume?.phase).toBe("pdp");
+    expect(resume?.auto_checkout_enabled).toBe(false);
   });
 });

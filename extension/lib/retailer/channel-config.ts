@@ -173,3 +173,20 @@ export function setRetailerAtcQuantity(
 
   return next;
 }
+
+export function getRetailerAutoCheckoutEnabled(settings: ExtensionSettings): boolean {
+  return settings.retailer_auto_checkout_enabled === true;
+}
+
+export function setRetailerAutoCheckoutEnabled(
+  settings: ExtensionSettings,
+  enabled: boolean,
+): ExtensionSettings {
+  const next = { ...settings };
+  if (enabled) {
+    next.retailer_auto_checkout_enabled = true;
+  } else {
+    delete next.retailer_auto_checkout_enabled;
+  }
+  return next;
+}

@@ -9,6 +9,7 @@ import {
 import {
   getRetailerAtcQuantity,
   getRetailerAutoAtcEnabled,
+  getRetailerAutoCheckoutEnabled,
   getRetailerBackendAtcEnabled,
   getRetailerFrontendAtcEnabled,
   getRetailerRefreshIntervalSec,
@@ -69,6 +70,7 @@ async function sendRetailerStartAuto(
       backend_atc_enabled: getRetailerBackendAtcEnabled(settings),
       atc_quantity: getRetailerAtcQuantity(settings),
       use_max_quantity: getRetailerUseMaxQuantity(settings),
+      auto_checkout_enabled: getRetailerAutoCheckoutEnabled(settings),
     });
     setRetailerTabUiState(tabId, { status: "Running auto mode…", running: true });
     return true;

@@ -19,6 +19,7 @@ import { useChannelDomainsEditor } from "./hooks/useChannelDomainsEditor.ts";
 import { useDetectedLinks } from "./hooks/useDetectedLinks.ts";
 import { useLinkHistory } from "./hooks/useLinkHistory.ts";
 import { usePopupStatus } from "./hooks/usePopupStatus.ts";
+import { useRetailerAutoCheckout } from "./hooks/useRetailerAutoCheckout.ts";
 import { useRetailerAtcMode } from "./hooks/useRetailerAtcMode.ts";
 import { useRetailerAtcQuantity } from "./hooks/useRetailerAtcQuantity.ts";
 import { useRetailerAutoMode } from "./hooks/useRetailerAutoMode.ts";
@@ -47,6 +48,7 @@ export default function App() {
     retailerSurface,
   );
   const retailerAtc = useRetailerAtcMode(status?.retailer_tab_detected === true);
+  const retailerAutoCheckout = useRetailerAutoCheckout(status?.retailer_tab_detected === true);
   const retailerAtcQuantity = useRetailerAtcQuantity(
     status?.retailer_tab_detected === true,
     status,
@@ -176,11 +178,15 @@ export default function App() {
         <TargetAtcToggles
           frontendEnabled={retailerAtc.frontendEnabled}
           backendEnabled={retailerAtc.backendEnabled}
+          autoCheckoutEnabled={retailerAutoCheckout.enabled}
           disabled={!status.enabled || enabling}
           saving={retailerAtc.saving}
           saveError={retailerAtc.saveError}
+          autoCheckoutSaving={retailerAutoCheckout.saving}
+          autoCheckoutSaveError={retailerAutoCheckout.saveError}
           onFrontendChange={(next) => void retailerAtc.handleFrontendChange(next)}
           onBackendChange={(next) => void retailerAtc.handleBackendChange(next)}
+          onAutoCheckoutChange={(next) => void retailerAutoCheckout.onChange(next)}
           quantityDraft={retailerAtcQuantity.draftQuantity}
           purchaseLimit={retailerAtcQuantity.purchaseLimit}
           effectiveUseMax={retailerAtcQuantity.effectiveUseMax}

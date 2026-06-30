@@ -36,6 +36,8 @@ export interface ExtensionSettings {
   retailer_atc_quantity?: number;
   /** When true, use page purchase_limit instead of retailer_atc_quantity. */
   retailer_use_max_quantity?: boolean;
+  /** When true, continue through signed-in checkout to order confirmation. */
+  retailer_auto_checkout_enabled?: boolean;
 }
 
 export type HistoryItemKind =
@@ -92,6 +94,7 @@ export interface ExtensionStatus {
   retailer_purchase_limit: number | null;
   retailer_quantity_invalid: boolean;
   retailer_auto_start_blocked: boolean;
+  retailer_auto_checkout_enabled: boolean;
 }
 
 export type ContentToBackground =
@@ -152,6 +155,7 @@ export type BackgroundToContent =
       backend_atc_enabled?: boolean;
       atc_quantity?: number;
       use_max_quantity?: boolean;
+      auto_checkout_enabled?: boolean;
     }
   | { type: "RETAILER_STOP_AUTO" }
   | { type: "RETAILER_START_MANUAL_AUTO" }
@@ -180,6 +184,7 @@ export type UiToBackground =
       quantity: number;
       use_max_quantity: boolean;
     }
+  | { type: "SET_RETAILER_AUTO_CHECKOUT_ENABLED"; enabled: boolean }
   | { type: "RETAILER_START_MANUAL_AUTO"; window_id?: number }
   | { type: "RETAILER_STOP_MANUAL_AUTO"; window_id?: number }
   | {
@@ -214,6 +219,7 @@ export type BackgroundResponse =
       backend_atc_enabled: boolean;
       atc_quantity: number;
       use_max_quantity: boolean;
+      auto_checkout_enabled: boolean;
     }
   | { ok: true; purchase_limit: number | null }
   | { ok: true; manual_auto_stopped: boolean; ui_status: string; ui_running: boolean }
