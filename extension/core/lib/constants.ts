@@ -18,4 +18,5 @@ export const STORAGE_KEYS = {
   walmartLastExport: "cookiescripts:walmartLastExport",
   walmartMarkedLabels: "cookiescripts:walmartMarkedLabels",
   walmartActiveSession: "cookiescripts:walmartActiveSession",
+  statusRevision: "cookiescripts:statusRevision",
 } as const;

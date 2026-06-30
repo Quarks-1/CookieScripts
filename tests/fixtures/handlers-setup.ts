@@ -10,6 +10,7 @@ export function setupChromeMocks() {
     "cookiescripts:history": [],
     "cookiescripts:recentUrls": [],
   };
+  const sessionStorage: Record<string, unknown> = {};
 
   vi.stubGlobal("chrome", {
     runtime: {
@@ -29,6 +30,21 @@ export function setupChromeMocks() {
         }),
         set: vi.fn(async (items: Record<string, unknown>) => {
           Object.assign(storage, items);
+        }),
+      },
+      session: {
+        get: vi.fn(async (keys: string | string[]) => {
+          const keyList = Array.isArray(keys) ? keys : [keys];
+          const result: Record<string, unknown> = {};
+          for (const key of keyList) {
+            if (sessionStorage[key] !== undefined) {
+              result[key] = sessionStorage[key];
+            }
+          }
+          return result;
+        }),
+        set: vi.fn(async (items: Record<string, unknown>) => {
+          Object.assign(sessionStorage, items);
         }),
       },
     },

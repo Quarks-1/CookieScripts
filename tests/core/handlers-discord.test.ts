@@ -7,6 +7,7 @@ import {
   recentUrlKeys,
 } from "@ext/core/background/runtime-state.ts";
 import { DEFAULT_SETTINGS } from "@ext/core/types/index.ts";
+import { STORAGE_KEYS } from "@ext/core/lib/constants.ts";
 import { EXTENSION_ID, setupChromeMocks } from "../fixtures/handlers-setup.ts";
 import { buildChannelTarget, mockContentSender, mockExtensionPageSender } from "../fixtures/fixtures.ts";
 
@@ -149,6 +150,60 @@ describe("handleMessage — discord", () => {
       allowed_domains: [],
     });
     expect(activeChannels.get(1)).toBe("222");
+  });
+
+  it("notifies status revision on CHANNEL_ACTIVE", async () => {
+    vi.mocked(chrome.storage.local.get).mockImplementation(async (keys) => {
+      const keyList = Array.isArray(keys) ? keys : [keys];
+      const result: Record<string, unknown> = {};
+      for (const key of keyList) {
+        if (key === "cookiescripts:settings") {
+          result[key] = DEFAULT_SETTINGS;
+        }
+      }
+      return result;
+    });
+
+    const sender = mockContentSender({
+      extensionId: EXTENSION_ID,
+      tabUrl: "https://discord.com/channels/111/222",
+    });
+
+    await handleMessage({ type: "CHANNEL_ACTIVE", channel_id: "222" }, sender);
+
+    expect(chrome.storage.session.set).toHaveBeenCalledWith(
+      expect.objectContaining({ [STORAGE_KEYS.statusRevision]: expect.any(Number) }),
+    );
+  });
+
+  it("notifies status revision on CHANNEL_INACTIVE", async () => {
+    activeChannels.set(1, "222");
+
+    const sender = mockContentSender({
+      extensionId: EXTENSION_ID,
+      tabUrl: "https://discord.com/channels/111/222",
+    });
+
+    await handleMessage({ type: "CHANNEL_INACTIVE" }, sender);
+
+    expect(chrome.storage.session.set).toHaveBeenCalledWith(
+      expect.objectContaining({ [STORAGE_KEYS.statusRevision]: expect.any(Number) }),
+    );
+    expect(activeChannels.has(1)).toBe(false);
+  });
+
+  it("does not notify status revision for invalid CHANNEL_ACTIVE", async () => {
+    const sender = mockContentSender({
+      extensionId: EXTENSION_ID,
+      tabUrl: "https://discord.com/channels/111/222",
+    });
+
+    await handleMessage(
+      { type: "CHANNEL_ACTIVE", channel_id: "9999999999999999999" },
+      sender,
+    );
+
+    expect(chrome.storage.session.set).not.toHaveBeenCalled();
   });
 
   it("returns WATCH_CONFIG from derived channel on CHANNEL_ACTIVE", async () => {

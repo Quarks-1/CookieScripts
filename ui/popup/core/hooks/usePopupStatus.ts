@@ -51,7 +51,9 @@ export function usePopupStatus() {
       }
       if (
         area === "session" &&
-        (changes[STORAGE_KEYS.walmartMetrics] || changes[STORAGE_KEYS.walmartLastExport])
+        (changes[STORAGE_KEYS.walmartMetrics] ||
+          changes[STORAGE_KEYS.walmartLastExport] ||
+          changes[STORAGE_KEYS.statusRevision])
       ) {
         void refresh();
       }

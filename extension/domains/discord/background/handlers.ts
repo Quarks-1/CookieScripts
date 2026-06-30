@@ -16,6 +16,7 @@ import {
   scheduleRecentUrlsPersist,
   activeChannels,
 } from "@ext/core/background/runtime-state.ts";
+import { notifyStatusChanged } from "@ext/core/background/status-notify.ts";
 import type {
   BackgroundResponse,
   ContentToBackground,
@@ -45,11 +46,13 @@ export async function handleDiscordMessage(
         return undefined;
       }
       activeChannels.set(tabId, channelId);
+      await notifyStatusChanged();
       const settings = await getSettings();
       return watchConfigResponse(channelId, settings);
     }
     case "CHANNEL_INACTIVE": {
       activeChannels.delete(tabId);
+      await notifyStatusChanged();
       return undefined;
     }
     case "CANDIDATE_LINKS": {
