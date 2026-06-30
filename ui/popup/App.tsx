@@ -10,6 +10,7 @@ import { WatchStatusBadge } from "@shared/components/WatchStatusBadge.tsx";
 import { ChannelDomainsSection } from "./components/ChannelDomainsSection.tsx";
 import { DetectedLinksSection } from "./components/DetectedLinksSection.tsx";
 import { RetailerAutoModeSection } from "./components/RetailerAutoModeSection.tsx";
+import { WalmartResearchSection } from "./components/WalmartResearchSection.tsx";
 import { TargetAtcToggles } from "./components/TargetAtcToggles.tsx";
 import { VersionStatus } from "./components/VersionStatus.tsx";
 import { useChannelDomainsEditor } from "./hooks/useChannelDomainsEditor.ts";
@@ -18,6 +19,7 @@ import { useLinkHistory } from "./hooks/useLinkHistory.ts";
 import { usePopupStatus } from "./hooks/usePopupStatus.ts";
 import { useRetailerAtcMode } from "./hooks/useRetailerAtcMode.ts";
 import { useRetailerAutoMode } from "./hooks/useRetailerAutoMode.ts";
+import { useWalmartRecording } from "./hooks/useWalmartRecording.ts";
 import { useUpdateCheck } from "./hooks/useUpdateCheck.ts";
 import { isSectionVisible } from "./sidepanel-layout.ts";
 
@@ -43,6 +45,11 @@ export default function App() {
     retailerSurface,
   );
   const retailerAtc = useRetailerAtcMode(status?.retailer_tab_detected === true);
+  const walmartRecording = useWalmartRecording(
+    status?.enabled ?? false,
+    status?.walmart_recording_active ?? false,
+    status?.any_walmart_tab_open ?? false,
+  );
   const [enabling, setEnabling] = useState(false);
   const [enableError, setEnableError] = useState<string | null>(null);
 
@@ -160,6 +167,33 @@ export default function App() {
               }
               onStartManual={() => void retailerAuto.handleStartManual()}
               onStopManual={() => void retailerAuto.handleStopManual()}
+            />
+          )}
+
+          {isSectionVisible("walmartResearch", status) && (
+            <WalmartResearchSection
+              openTabs={status.walmart_open_tabs}
+              recordingActive={walmartRecording.metrics.recordingActive}
+              recordingTabCount={status?.walmart_recording_tab_count ?? 0}
+              eventCount={walmartRecording.metrics.eventCount}
+              bytes={walmartRecording.metrics.bytes}
+              startedAt={walmartRecording.metrics.startedAt}
+              lastExport={walmartRecording.lastExport}
+              disclaimerAccepted={walmartRecording.disclaimerAccepted}
+              disabled={walmartRecording.disabled || enabling}
+              acting={walmartRecording.acting}
+              exporting={walmartRecording.exporting}
+              actionError={walmartRecording.actionError}
+              markedLabels={walmartRecording.markedLabels}
+              markingLabel={walmartRecording.markingLabel}
+              onAcceptDisclaimer={walmartRecording.acceptDisclaimer}
+              onStart={() => void walmartRecording.runAction("start")}
+              onStop={() => void walmartRecording.runAction("stop")}
+              onMark={(label) => void walmartRecording.markStage(label)}
+              onReExport={() => void walmartRecording.runAction("export")}
+              onClear={() => void walmartRecording.runAction("clear")}
+              onShowInFolder={() => void walmartRecording.showInFolder()}
+              onCopyPath={() => void walmartRecording.copyPath()}
             />
           )}
 

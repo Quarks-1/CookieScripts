@@ -2,8 +2,10 @@ import { useCallback, useEffect, useState } from "react";
 
 import { STORAGE_KEYS } from "@ext/lib/constants.ts";
 import { resolveActiveTabKind } from "@ext/lib/active-tab.ts";
+import { patchWalmartOpenTabActive } from "@ext/lib/walmart/open-tab-active.ts";
 import { getExtensionStatus } from "@ext/lib/messages.ts";
 import type { ExtensionStatus } from "@ext/types/index.ts";
+import { enrichWalmartOpenTabHighlights } from "./walmart-open-tab-highlights.ts";
 
 export function usePopupStatus() {
   const [status, setStatus] = useState<ExtensionStatus | null>(null);
@@ -12,7 +14,7 @@ export function usePopupStatus() {
 
   const refresh = useCallback(async () => {
     try {
-      const next = await getExtensionStatus();
+      const next = await enrichWalmartOpenTabHighlights(await getExtensionStatus());
       setStatus(next);
       setError(null);
     } catch (err) {
@@ -41,15 +43,34 @@ export function usePopupStatus() {
       changes: Record<string, chrome.storage.StorageChange>,
       area: string,
     ) {
-      if (area !== "local") {
+      if (area === "local") {
+        if (changes[STORAGE_KEYS.settings] || changes[STORAGE_KEYS.history]) {
+          void refresh();
+        }
         return;
       }
-      if (changes[STORAGE_KEYS.settings] || changes[STORAGE_KEYS.history]) {
+      if (
+        area === "session" &&
+        (changes[STORAGE_KEYS.walmartMetrics] || changes[STORAGE_KEYS.walmartLastExport])
+      ) {
         void refresh();
       }
     }
 
-    function onTabActivated() {
+    function onTabActivated(activeInfo: chrome.tabs.TabActiveInfo) {
+      setStatus((prev) => {
+        if (!prev || prev.walmart_open_tabs.length === 0) {
+          return prev;
+        }
+        return {
+          ...prev,
+          walmart_open_tabs: patchWalmartOpenTabActive(prev.walmart_open_tabs, activeInfo.tabId),
+        };
+      });
+      void refresh();
+    }
+
+    function onWindowFocusChanged() {
       void refresh();
     }
 
@@ -58,7 +79,9 @@ export function usePopupStatus() {
         return false;
       }
       return (
-        url.startsWith("https://discord.com/channels/") || resolveActiveTabKind(url) === "retailer"
+        url.startsWith("https://discord.com/channels/") ||
+        resolveActiveTabKind(url) === "retailer" ||
+        resolveActiveTabKind(url) === "walmart"
       );
     }
 
@@ -69,10 +92,15 @@ export function usePopupStatus() {
     ) {
       if (
         isRelevantTabUrl(changeInfo.url) ||
+        (changeInfo.title && isRelevantTabUrl(tab.url)) ||
         (changeInfo.status === "complete" && isRelevantTabUrl(tab.url))
       ) {
         void refresh();
       }
+    }
+
+    function onTabRemoved() {
+      void refresh();
     }
 
     document.addEventListener("visibilitychange", onVisible);
@@ -80,6 +108,8 @@ export function usePopupStatus() {
     chrome.storage.onChanged.addListener(onStorageChanged);
     chrome.tabs.onActivated.addListener(onTabActivated);
     chrome.tabs.onUpdated.addListener(onTabUpdated);
+    chrome.tabs.onRemoved.addListener(onTabRemoved);
+    chrome.windows.onFocusChanged.addListener(onWindowFocusChanged);
 
     return () => {
       document.removeEventListener("visibilitychange", onVisible);
@@ -87,6 +117,8 @@ export function usePopupStatus() {
       chrome.storage.onChanged.removeListener(onStorageChanged);
       chrome.tabs.onActivated.removeListener(onTabActivated);
       chrome.tabs.onUpdated.removeListener(onTabUpdated);
+      chrome.tabs.onRemoved.removeListener(onTabRemoved);
+      chrome.windows.onFocusChanged.removeListener(onWindowFocusChanged);
     };
   }, [refresh]);
 

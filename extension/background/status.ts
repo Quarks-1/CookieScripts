@@ -13,8 +13,59 @@ import { allowlistIncludesRetailerHost } from "@ext/lib/retailer/host.ts";
 import { getSettings, saveSettings } from "@ext/lib/storage.ts";
 import { activeChannels } from "@ext/background/runtime-state.ts";
 import { getRetailerTabUiState } from "@ext/background/retailer-runtime-state.ts";
+import {
+  isAnyWalmartRecording,
+  isWalmartTabRecording,
+  readLastExport,
+  readMetrics,
+  recordingTabCount,
+} from "@ext/background/walmart-runtime-state.ts";
+import { listAllWalmartTabs } from "@ext/background/walmart-tabs.ts";
 import { parseChannelId } from "@ext/lib/channels.ts";
+import { isWalmartOpenTabActive } from "@ext/lib/walmart/open-tab-active.ts";
+import { disambiguateOpenTabLabels, labelWalmartTab } from "@ext/lib/walmart/tab-label.ts";
 import type { ExtensionSettings, ExtensionStatus } from "@ext/types/index.ts";
+import type { WalmartOpenTabSummary } from "@ext/types/walmart.ts";
+
+async function buildWalmartOpenTabs(
+  tabs: chrome.tabs.Tab[],
+  focusedActiveTabId?: number,
+): Promise<WalmartOpenTabSummary[]> {
+  const summaries: WalmartOpenTabSummary[] = [];
+
+  for (const tab of tabs) {
+    if (tab.id == null || tab.windowId == null) {
+      continue;
+    }
+    const url = tab.url ?? "";
+    const title = tab.title ?? "";
+    const { label, pageKind } = labelWalmartTab(url, title);
+    summaries.push({
+      tabId: tab.id,
+      windowId: tab.windowId,
+      url,
+      title,
+      label,
+      pageKind,
+      isActive: isWalmartOpenTabActive(tab.id, focusedActiveTabId),
+      isRecording: isWalmartTabRecording(tab.id),
+    });
+  }
+
+  summaries.sort((a, b) => {
+    if (a.windowId !== b.windowId) {
+      return a.windowId - b.windowId;
+    }
+    return a.tabId - b.tabId;
+  });
+
+  const disambiguatedLabels = disambiguateOpenTabLabels(summaries);
+  for (let i = 0; i < summaries.length; i += 1) {
+    summaries[i]!.label = disambiguatedLabels[i]!;
+  }
+
+  return summaries;
+}
 
 export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<ExtensionStatus> {
   const settings = await getSettings();
@@ -45,6 +96,13 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
   const activeTabKind = resolveActiveTabKind(activeTab?.url);
 
   const retailerTabDetected = activeTabKind === "retailer";
+  const walmartTabDetected = activeTabKind === "walmart";
+  const walmartMetrics = await readMetrics();
+  const lastExport = await readLastExport();
+  const walmartTabs = await listAllWalmartTabs();
+  const walmartOpenTabs = await buildWalmartOpenTabs(walmartTabs, activeTab?.id);
+  const recordingActive =
+    walmartMetrics.recordingActive || isAnyWalmartRecording();
 
   const allowedDomains =
     activeChannelId !== null ? getChannelDomains(settings, activeChannelId) : [];
@@ -66,6 +124,16 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     active_tab_kind: activeTabKind,
     discord_tab_detected: discordTabDetected,
     retailer_tab_detected: retailerTabDetected,
+    walmart_tab_detected: walmartTabDetected,
+    walmart_recording_active: recordingActive,
+    walmart_recording_tab_count: recordingActive ? recordingTabCount() : 0,
+    any_walmart_tab_open: walmartTabs.length > 0,
+    walmart_recording_event_count: walmartMetrics.eventCount,
+    walmart_recording_bytes: walmartMetrics.bytes,
+    walmart_recording_drop_date: walmartMetrics.dropDate,
+    walmart_last_export_path: lastExport?.filename ?? null,
+    walmart_last_export_download_id: lastExport?.downloadId ?? null,
+    walmart_open_tabs: walmartOpenTabs,
     active_channel_id: activeChannelId,
     is_active: isActive,
     has_allowed_domains: allowedDomains.length > 0,

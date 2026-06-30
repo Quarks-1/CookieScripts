@@ -5,6 +5,7 @@ export type SidepanelSection =
   | "channelDomains"
   | "detectedLinks"
   | "retailerAuto"
+  | "walmartResearch"
   | "linkHistory"
   | "globalHint";
 
@@ -13,6 +14,7 @@ const VISIBILITY: Record<SidepanelSection, ActiveTabKind | "always"> = {
   channelDomains: "discord_channel",
   detectedLinks: "discord_channel",
   retailerAuto: "retailer",
+  walmartResearch: "walmart",
   globalHint: "other",
   linkHistory: "discord_channel",
 };
@@ -21,6 +23,17 @@ export function isSectionVisible(
   section: SidepanelSection,
   status: ExtensionStatus,
 ): boolean {
+  if (section === "walmartResearch") {
+    if (!status.enabled) {
+      return false;
+    }
+    return (
+      status.active_tab_kind === "walmart" ||
+      status.walmart_recording_active ||
+      status.any_walmart_tab_open
+    );
+  }
+
   const rule = VISIBILITY[section];
   if (rule === "always") {
     return true;

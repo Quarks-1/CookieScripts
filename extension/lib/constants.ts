@@ -14,4 +14,8 @@ export const STORAGE_KEYS = {
   recentUrls: "cookiescripts:recentUrls",
   updateCheck: "cookiescripts:updateCheck",
   ignoredDomains: "cookiescripts:ignoredDomains",
+  walmartMetrics: "cookiescripts:walmartMetrics",
+  walmartLastExport: "cookiescripts:walmartLastExport",
+  walmartMarkedLabels: "cookiescripts:walmartMarkedLabels",
+  walmartActiveSession: "cookiescripts:walmartActiveSession",
 } as const;

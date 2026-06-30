@@ -7,14 +7,17 @@
     "storage",
     "tabs",
     "windows",
-    "sidePanel"
+    "sidePanel",
+    "downloads"
   ],
   "host_permissions": [
     "https://discord.com/*",
     "https://api.github.com/*",
     "https://www.target.com/*",
     "https://target.com/*",
-    "https://carts.target.com/*"
+    "https://carts.target.com/*",
+    "https://www.walmart.com/*",
+    "https://walmart.com/*"
   ],
   "content_scripts": [
     {
@@ -33,6 +36,16 @@
       ],
       "js": [
         "extension/content/retailer.ts"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://www.walmart.com/*",
+        "https://walmart.com/*"
+      ],
+      "js": [
+        "extension/content/walmart.ts"
       ],
       "run_at": "document_idle"
     }
@@ -59,11 +72,14 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "injected/cart-probe.js"
+        "injected/cart-probe.js",
+        "injected/walmart-research-probe.js"
       ],
       "matches": [
         "https://www.target.com/*",
-        "https://target.com/*"
+        "https://target.com/*",
+        "https://www.walmart.com/*",
+        "https://walmart.com/*"
       ]
     }
   ]

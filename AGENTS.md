@@ -13,6 +13,7 @@ Chrome MV3 extension that auto-opens allowlisted product links from Discord web 
 - When enabled, every open Discord channel tab reports `CHANNEL_ACTIVE` in parallel. Empty allowlist = observe but do not open links.
 - Non-Target matched links open via `chrome.tabs.create({ active: false })`. Target product links with per-channel `retailer_auto_enabled` open in a **new Chrome window** (`chrome.windows.create`) for automation.
 - Distribution: manual zip from [GitHub Releases](https://github.com/Quarks-1/CookieScripts/releases) + side panel update nudge (not Chrome Web Store).
+- **Walmart Research Recorder** — manual drop-day capture on `walmart.com` tabs (clicks, navigation, DOM, page-origin network). **One global session** across all Walmart tabs/windows; exports dated ZIP to Downloads; no auto-checkout and no Discord link opening.
 
 ### BUILD.md vs reality
 
@@ -33,9 +34,10 @@ Chrome MV3 extension that auto-opens allowlisted product links from Discord web 
 | `ui/sidepanel/` | Production side panel entry (`index.html`, `main.tsx` → `ui/popup/App.tsx`) |
 | `ui/popup/` | Shared React app (hooks, components, layout) — name is legacy |
 | `ui/shared/` | Reusable UI primitives (`DomainPills`, `LinkHistory`, …) |
-| `public/injected/` | Web-accessible page-context scripts (cart probe) |
+| `public/injected/` | Web-accessible page-context scripts (cart probe, Walmart research probe) |
 | `tests/` | Vitest unit tests (`*.test.ts`) |
 | `research/`, `scripts/target-*.mjs` | Target PDP/cart research — not shipped |
+| `research/WALMART_RECORDING.md` | Walmart drop-day recorder usage and export layout |
 | `manifest.json` | CRXJS source manifest (`.ts` entrypoints, not `dist/`) |
 | `vite.config.ts` | Extension build (CRXJS + Vite) |
 
@@ -47,8 +49,10 @@ Chrome MV3 extension that auto-opens allowlisted product links from Discord web 
 | `tabs` | Open passive product tabs and release download links |
 | `windows` | Open Target Auto Mode in a focused window |
 | `sidePanel` | Toolbar icon opens the side panel |
+| `downloads` | Walmart research session ZIP export |
 | `discord.com` | Discord content script |
 | `target.com` / `www.target.com` | Retailer content script + cart probe injection |
+| `walmart.com` / `www.walmart.com` | Walmart content script + research probe (recording only) |
 | `carts.target.com` | Backend ATC cart API (page-context probe) |
 | `api.github.com` | Anonymous release version check |
 
@@ -64,22 +68,29 @@ flowchart LR
   subgraph targetTab [target.com tab]
     RCS[content/retailer.ts → retailer/session.ts]
   end
+  subgraph walmartTab [walmart.com tab]
+    WCS[content/walmart.ts → walmart/session.ts]
+  end
   subgraph ext [Extension]
     SW[background/service-worker.ts]
     Store[(chrome.storage.local)]
+    IDB[(IndexedDB walmart)]
     UI[ui/sidepanel React app]
   end
   DCS -->|CHANNEL_ACTIVE / CANDIDATE_LINKS| SW
   RCS -->|RETAILER_* status + config| SW
+  WCS -->|WALMART_RECORDING_* append| SW
   SW -->|passive tab| Tab[chrome.tabs.create]
   SW -->|Target auto| Win[chrome.windows.create]
   SW -->|RETAILER_START_AUTO| RCS
+  SW -->|WALMART_RECORDING_START/STOP| WCS
   SW <--> Store
-  UI <-->|GET_STATUS SAVE_SETTINGS| SW
+  SW <--> IDB
+  UI <-->|GET_STATUS WALMART_RECORDING| SW
   DCS <-->|WATCH_CONFIG| SW
 ```
 
-**Message routing:** `handlers.ts` dispatches to `discord-handlers.ts`, `retailer-handlers.ts`, or `ui-handlers.ts`. Each path validates `sender` via `sender-auth.ts` (Discord tab, Target tab, or extension page only). Shared send/receive helpers live in `extension/lib/messages.ts`.
+**Message routing:** `handlers.ts` dispatches to `discord-handlers.ts`, `retailer-handlers.ts`, `walmart-handlers.ts`, or `ui-handlers.ts`. Each path validates `sender` via `sender-auth.ts` (Discord tab, Target tab, Walmart tab, or extension page only). Shared send/receive helpers live in `extension/lib/messages.ts`.
 
 ## Side panel UI
 
@@ -89,6 +100,8 @@ Single React app (`ui/popup/App.tsx`) loaded from `ui/sidepanel/index.html`. Sec
 |---|---|
 | `discord_channel` | Watch status, channel domains, detected links, link history |
 | `retailer` | Target Auto Mode controls (when extension enabled) |
+| `walmart` | Walmart Research recorder (when extension enabled) |
+| `discord_channel` + recording | Walmart Research visible while multi-tab recording is active |
 | `other` | Global hint ("open a Discord channel tab…") |
 
 Always visible: enable slider, version/update banner.
@@ -97,7 +110,7 @@ Always visible: enable slider, version/update banner.
 
 ### `buildStatus` (`extension/background/status.ts`)
 
-`active_tab_kind` comes from `extension/lib/active-tab.ts` (`discord_channel` | `retailer` | `other`).
+`active_tab_kind` comes from `extension/lib/active-tab.ts` (`discord_channel` | `retailer` | `walmart` | `other`).
 
 | Field | Meaning |
 |---|---|
@@ -109,6 +122,11 @@ Always visible: enable slider, version/update banner.
 | `retailer_auto_enabled` | Per-channel flag **and** `target.com` in that channel's allowlist (`allowlistIncludesRetailerHost`) |
 | `retailer_refresh_interval_sec` | Per-channel on Discord; global `manual` default on Target-only sessions |
 | `retailer_manual_*` | Live automation status from `retailer-runtime-state.ts` for the active Target tab |
+| `walmart_tab_detected` | Active tab URL is Walmart |
+| `walmart_recording_*` | Live recorder metrics from `walmart-runtime-state.ts` + IDB session meta |
+| `walmart_recording_tab_count` | Bound Walmart tabs in the active recording session |
+| `any_walmart_tab_open` | Any `walmart.com` tab open in any window |
+| `walmart_last_export_*` | Last ZIP export path/download id (`chrome.storage.session`) |
 
 Domain edits debounce 400ms (`useChannelDomainsEditor`) and persist via `saveChannelDomains` to `active_channel_id` from a fresh `GET_STATUS`. `channel_targets[]` rows are created lazily on first save.
 
@@ -130,6 +148,11 @@ Domain edits debounce 400ms (`useChannelDomainsEditor`) and persist via `saveCha
 | Retailer hard refresh | `extension/lib/retailer/page-refresh.ts`, `auto-resume.ts` | Interval reload; `sessionStorage` resume across reloads |
 | Retailer ATC | `extension/lib/retailer/main-add-to-cart.ts`, `cart-api.ts` | Frontend click vs backend cart API |
 | Cart probe bridge | `extension/lib/retailer/page-cart-probe-bridge.ts` | Injects `public/injected/cart-probe.js` |
+| Walmart content | `extension/content/walmart.ts` → `walmart/session.ts` | Recording lifecycle; reattach on reload |
+| Walmart recorder | `extension/content/walmart/recorder/*` | Clicks, nav, DOM, batching to background |
+| Walmart probe | `extension/lib/walmart/page-probe-bridge.ts` | Injects `walmart-research-probe.js` while recording |
+| Walmart IDB / export | `extension/lib/walmart/idb/*`, `export-bundle.ts` | Extension-origin persistence + ZIP (`fflate`) |
+| Walmart handlers | `extension/background/walmart-handlers.ts`, `walmart-tabs.ts`, `walmart-export.ts` | Multi-tab start/stop/append/export; tab-close auto-export on last tab |
 | Service worker bootstrap | `extension/background/service-worker.ts` | No top-level await; gates on `initPromise` |
 | Background router | `extension/background/handlers.ts` | Routes runtime messages to handler modules |
 | Sender validation | `extension/background/sender-auth.ts` | Reject cross-origin message senders |
@@ -158,6 +181,11 @@ Domain edits debounce 400ms (`useChannelDomainsEditor`) and persist via `saveCha
 | `cookiescripts:recentUrls` | Normalized dedup keys, cap `RECENT_URL_LIMIT` (500) |
 | `cookiescripts:updateCheck` | GitHub release ETag cache |
 | `cookiescripts:ignoredDomains` | Per-channel dismissed detected-link suggestions |
+| `cookiescripts:walmartMetrics` | Live recording counters (`chrome.storage.session`) |
+| `cookiescripts:walmartLastExport` | Last ZIP export metadata (`chrome.storage.session`) |
+| `cookiescripts:walmartActiveSession` | Active multi-tab recording session id (`chrome.storage.session`) |
+
+**Walmart IndexedDB** (`cookiescripts-walmart-recordings`): sessions, events, pages, endpoints — content never writes directly; batches via `WALMART_RECORDING_APPEND`.
 
 **Link history kinds** (`HistoryItemKind` in `extension/types/index.ts`): `opened`, `duplicate`, `retailer_window_opened`, `retailer_auto_queued`, `retailer_auto_success`, `retailer_auto_failed`.
 
@@ -169,6 +197,8 @@ Other limits in constants: `MAX_URLS_PER_MESSAGE` (20), `RECENT_URLS_DEBOUNCE_MS
 
 **Target tab `sessionStorage`** (not `chrome.storage`): `cookiescripts:retailerAutoResume`, `cookiescripts:retailerAutoUserStopped` — survive hard reloads during automation (`auto-resume.ts`).
 
+**Walmart tab `sessionStorage`:** `cookiescripts:walmartRecordingSessionId` — resume recording after reload (`walmart/session.ts`).
+
 ## Runtime messages
 
 Defined in `extension/types/index.ts`. **Content script never opens tabs** — delegate to the service worker.
@@ -177,9 +207,11 @@ Defined in `extension/types/index.ts`. **Content script never opens tabs** — d
 
 **Retailer content → background:** `RETAILER_PING`, `RETAILER_AUTO_STATUS`, `RETAILER_GET_AUTO_CONFIG`, `RETAILER_SET_REFRESH_INTERVAL`, `RETAILER_HARD_RELOAD`, `RETAILER_UI_STATE`, `RETAILER_GET_TAB_AUTO_STATE`, `RETAILER_SYNC_MANUAL_STOP`, `RETAILER_SYNC_MANUAL_START`
 
-**Background → content:** `WATCH_CONFIG`, `PING`, `SCAN_DETECTED_DOMAINS`, `RETAILER_PING`, `RETAILER_START_AUTO`, `RETAILER_STOP_AUTO`, `RETAILER_START_MANUAL_AUTO`
+**Walmart content → background:** `WALMART_RECORDING_APPEND`, `WALMART_RECORDING_REATTACH`
 
-**Side panel ↔ background:** `GET_STATUS`, `GET_SETTINGS`, `SAVE_SETTINGS`, `GET_HISTORY`, `CLEAR_HISTORY`, `GET_DETECTED_DOMAINS`, `SET_RETAILER_AUTO_ENABLED`, `SET_RETAILER_REFRESH_INTERVAL`, `SET_RETAILER_ATC_MODES`, `RETAILER_START_MANUAL_AUTO`, `RETAILER_STOP_MANUAL_AUTO`
+**Background → content:** `WATCH_CONFIG`, `PING`, `SCAN_DETECTED_DOMAINS`, `RETAILER_PING`, `RETAILER_START_AUTO`, `RETAILER_STOP_AUTO`, `RETAILER_START_MANUAL_AUTO`, `WALMART_RECORDING_START`, `WALMART_RECORDING_STOP`, `WALMART_RECORDING_MARK`
+
+**Side panel ↔ background:** `GET_STATUS`, `GET_SETTINGS`, `SAVE_SETTINGS`, `GET_HISTORY`, `CLEAR_HISTORY`, `GET_DETECTED_DOMAINS`, `SET_RETAILER_AUTO_ENABLED`, `SET_RETAILER_REFRESH_INTERVAL`, `SET_RETAILER_ATC_MODES`, `RETAILER_START_MANUAL_AUTO`, `RETAILER_STOP_MANUAL_AUTO`, `WALMART_RECORDING` (`action`: start | stop | mark | clear | export)
 
 ## Link opening
 
@@ -215,6 +247,19 @@ At least one ATC method must remain enabled. Config is fetched by retailer conte
 
 After manifest or service-worker changes, reload the extension and refresh Discord **and** Target tabs.
 
+## Walmart Research Recorder
+
+Manual drop-day capture across **all** `walmart.com` tabs in every Chrome window. See [`research/WALMART_RECORDING.md`](research/WALMART_RECORDING.md).
+
+- **Side panel** `WalmartResearchSection` when `active_tab_kind === "walmart"`, `walmart_recording_active`, or `any_walmart_tab_open` (extension enabled).
+- **Start** creates one global IDB session (zero Walmart tabs OK — Discord-first); `tabs.onUpdated` auto-attaches new Walmart tabs via `walmart-tabs.ts`.
+- **Primary tab** emits `session_start`; other tabs emit `tab_join`. Tab events carry `tabId`.
+- Content batches events via `WALMART_RECORDING_APPEND` (512 KB max per message); background writes extension-origin IndexedDB.
+- **Stop** broadcasts STOP to all bound tabs → one merged ZIP. Stop with zero tabs ever attached deletes session (no export).
+- **Tab close** — last bound tab auto-exports; earlier closes append `tab_leave` only.
+- **Persisted** `cookiescripts:walmartActiveSession` survives service worker restart; tabs reattach via `WALMART_RECORDING_REATTACH`.
+- **No** Discord link opening, **no** Walmart auto-checkout. Target Auto Mode unchanged.
+
 ## Critical invariants / footguns
 
 1. **Bootstrap on page load** — Seed existing message IDs into `seenMessageIds` on attach; hold link processing for `MESSAGE_BOOTSTRAP_QUIET_MS` (500ms) while Discord batches initial DOM. Without this, every historical link opens on load.
@@ -236,6 +281,9 @@ After manifest or service-worker changes, reload the extension and refresh Disco
 17. **Own messages** — Never process links from the user's own Discord messages.
 18. **Retailer auto UI vs status** — `retailer_auto_enabled` in `GET_STATUS` is false unless Target is allowlisted; removing `target.com` from domains clears the stored flag (`channel-targets.ts`).
 19. **Lazy channel rows** — Editing domains for a channel creates its `channel_targets` entry on first save; there is no pre-registration UI.
+20. **Walmart IDB** — Content never writes IndexedDB; only background via `WALMART_RECORDING_APPEND`.
+21. **Walmart probe** — Inject probe only while recording; network hooks run in page context.
+22. **Walmart export mutex** — `tryAcquireExport` prevents duplicate ZIP builds; tab-close and stop share the same pipeline.
 
 ## Working on this codebase
 

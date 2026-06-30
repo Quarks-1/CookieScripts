@@ -9,6 +9,16 @@ function status(overrides: Partial<ExtensionStatus>): ExtensionStatus {
     active_tab_kind: "other",
     discord_tab_detected: false,
     retailer_tab_detected: false,
+    walmart_tab_detected: false,
+    walmart_recording_active: false,
+    walmart_recording_tab_count: 0,
+    any_walmart_tab_open: false,
+    walmart_recording_event_count: 0,
+    walmart_recording_bytes: 0,
+    walmart_recording_drop_date: null,
+    walmart_last_export_path: null,
+    walmart_last_export_download_id: null,
+    walmart_open_tabs: [],
     active_channel_id: null,
     is_active: false,
     has_allowed_domains: false,
@@ -63,5 +73,28 @@ describe("isSectionVisible", () => {
     expect(isSectionVisible("linkHistory", discord)).toBe(true);
     expect(isSectionVisible("linkHistory", retailer)).toBe(false);
     expect(isSectionVisible("linkHistory", other)).toBe(false);
+  });
+
+  it("shows walmart research on walmart surface, when recording, or when any walmart tab is open", () => {
+    const walmart = status({ active_tab_kind: "walmart", walmart_tab_detected: true });
+    const paused = status({
+      active_tab_kind: "walmart",
+      walmart_tab_detected: true,
+      enabled: false,
+    });
+    const discordRecording = status({
+      active_tab_kind: "discord_channel",
+      walmart_recording_active: true,
+    });
+    const discordWithWalmartTab = status({
+      active_tab_kind: "discord_channel",
+      any_walmart_tab_open: true,
+    });
+
+    expect(isSectionVisible("walmartResearch", walmart)).toBe(true);
+    expect(isSectionVisible("walmartResearch", paused)).toBe(false);
+    expect(isSectionVisible("walmartResearch", status({ active_tab_kind: "other" }))).toBe(false);
+    expect(isSectionVisible("walmartResearch", discordRecording)).toBe(true);
+    expect(isSectionVisible("walmartResearch", discordWithWalmartTab)).toBe(true);
   });
 });

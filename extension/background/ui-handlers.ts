@@ -14,6 +14,10 @@ import {
   saveSettings,
 } from "@ext/lib/storage.ts";
 import { clearRecentUrlKeys } from "@ext/background/runtime-state.ts";
+import {
+  handleWalmartUiMessage,
+  stopAllWalmartRecordingsForDisable,
+} from "@ext/background/walmart-handlers.ts";
 import type { BackgroundResponse, UiToBackground } from "@ext/types/index.ts";
 
 export async function handleUiMessage(
@@ -24,7 +28,11 @@ export async function handleUiMessage(
 
   switch (message.type) {
     case "GET_STATUS": {
-      const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      const focusedWindow = await chrome.windows.getLastFocused();
+      const [activeTab] =
+        focusedWindow.id != null
+          ? await chrome.tabs.query({ active: true, windowId: focusedWindow.id })
+          : [];
       const status = await buildStatus(activeTab);
       return { ok: true, status };
     }
@@ -34,7 +42,11 @@ export async function handleUiMessage(
     }
     case "SAVE_SETTINGS": {
       try {
+        const previous = await getSettings();
         await saveSettings(message.settings);
+        if (previous.enabled && !message.settings.enabled) {
+          await stopAllWalmartRecordingsForDisable();
+        }
         return { ok: true };
       } catch (error) {
         return { ok: false, error: error instanceof Error ? error.message : "Save failed" };
@@ -122,5 +134,7 @@ export async function handleUiMessage(
       await stopRetailerTabAuto(tab.id);
       return { ok: true };
     }
+    case "WALMART_RECORDING":
+      return handleWalmartUiMessage(message);
   }
 }
