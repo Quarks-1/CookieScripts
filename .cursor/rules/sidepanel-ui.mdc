@@ -15,4 +15,4 @@ globs:
 - UI messages needing focused window pass optional `window_id`; hooks use `getSidePanelWindowId()`.
 - Target ATC toggles appear on any Target tab (exception to surface gating).
 
-See root [AGENTS.md](../../AGENTS.md) side panel section.
+See `ui/popup/core/AGENTS.md`.

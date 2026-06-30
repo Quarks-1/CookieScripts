@@ -7,23 +7,54 @@ Chrome MV3 extension: auto-opens allowlisted product links from Discord web chan
 ## Start here
 
 1. Types: `@ext/core/types/index.ts` for extension + UI-core; domain UI may deep-import own lib only
-2. Domain code: `extension/domains/{discord,target,walmart}/`
-3. Shared core: `extension/core/{background,lib,types}/`
-4. Side panel UI: `ui/popup/core/` + `ui/popup/domains/{discord,target,walmart}/`
+2. Core service worker: [extension/core/AGENTS.md](extension/core/AGENTS.md)
+3. Domain code: `extension/domains/{discord,target,walmart}/` — [per-domain AGENTS.md](extension/domains/discord/AGENTS.md)
+4. Side panel UI: [ui/popup/core/AGENTS.md](ui/popup/core/AGENTS.md) + `ui/popup/domains/{discord,target,walmart}/`
 
 **Naming:** folders/docs use **target**; storage/messages keep **retailer** (`RETAILER_*`, `retailer_*`).
+
+## Documentation layers
+
+```mermaid
+flowchart TB
+  root[AGENTS.md root]
+  core[extension/core/AGENTS.md]
+  ui[ui/popup/core/AGENTS.md]
+  domain[extension/domains/*/AGENTS.md]
+  rules[.cursor/rules/*.mdc]
+  deep[domain docs e.g. TARGET_AUTOMATION.md]
+
+  root --> core
+  root --> ui
+  root --> domain
+  rules -->|"invariants when editing"| domain
+  rules --> core
+  rules --> ui
+  domain --> deep
+```
+
+| Layer | Purpose | Update when |
+|---|---|---|
+| Root `AGENTS.md` | Global routing, invariants, import rules | Architecture or task-routing changes |
+| `extension/core/AGENTS.md` | Service worker, link pipeline, types, storage | New core module or message routing change |
+| `ui/popup/core/AGENTS.md` | Side panel shell, section visibility, status contract | New global UI section or status field |
+| Domain `AGENTS.md` | File map, messages, domain invariants | Folder restructure, new handler module |
+| `.cursor/rules/*.mdc` | Non-negotiable gotchas (auto-injected); ~20 lines | Invariant changes only |
+| `docs/*.md` | Behavioral spec / research | Selector or flow research updates |
+
+**Never in AGENTS.md:** sprint status, TODOs, duplicated selector tables, payload field docs (use `messages.ts`).
 
 ## Task routing
 
 | If you are changing… | Read first | Then edit |
 |---|---|---|
-| Discord link detection / allowlists | `extension/core/lib/process-links.ts`, `extension/domains/discord/content/session.ts` | `extension/domains/discord/background/handlers.ts` |
-| Side panel UI / settings | `ui/popup/core/sidepanel-layout.ts`, `App.tsx` | `ui/popup/domains/*/hooks/*`, `extension/core/background/ui-handlers.ts` |
-| Target automation / ATC | `extension/domains/target/docs/TARGET_AUTOMATION.md` | `extension/domains/target/content/session/*`, `extension/domains/target/lib/*` |
-| Walmart recording | `extension/domains/walmart/docs/WALMART_RECORDING.md` | `extension/domains/walmart/background/handlers/*`, `extension/domains/walmart/content/*` |
-| New runtime message | `extension/core/types/messages.ts` | `extension/core/background/handlers.ts`, `sender-auth.ts`, domain handlers, tests |
-
-Per-domain detail: `extension/domains/*/AGENTS.md`.
+| Service worker / link pipeline / storage | [extension/core/AGENTS.md](extension/core/AGENTS.md) | `extension/core/background/*`, `extension/core/lib/*` |
+| Side panel shell / section visibility | [ui/popup/core/AGENTS.md](ui/popup/core/AGENTS.md) | `ui/popup/core/*`, `extension/core/background/ui-handlers.ts` |
+| Discord link detection / allowlists | [extension/domains/discord/AGENTS.md](extension/domains/discord/AGENTS.md) | `extension/domains/discord/background/handlers.ts` |
+| Side panel domain settings | Extension domain `AGENTS.md` § UI + `ui/popup/core/AGENTS.md` | `ui/popup/domains/*/hooks/*` |
+| Target automation / ATC | [extension/domains/target/AGENTS.md](extension/domains/target/AGENTS.md) | `extension/domains/target/content/session/*`, `lib/*` |
+| Walmart recording | [extension/domains/walmart/AGENTS.md](extension/domains/walmart/AGENTS.md) | `extension/domains/walmart/background/handlers/*`, `content/*` |
+| New runtime message | [extension/core/AGENTS.md](extension/core/AGENTS.md) | `extension/core/types/messages.ts`, `extension/core/background/handlers.ts`, domain handlers, tests |
 
 ## Repository layout
 

@@ -11,9 +11,11 @@ globs:
 When adding or changing a message:
 
 1. Extend unions in `extension/core/types/messages.ts` (or domain type files re-exported from `index.ts`).
-2. Route in `extension/core/background/handlers.ts` with type guards.
-3. Update `extension/core/background/sender-auth.ts` for content-originated messages.
-4. Add handler in matching domain `background/handlers.ts`.
+2. Add type guard in `extension/core/background/handlers.ts` (`is*ContentMessage` / `isUiMessage`).
+3. Add handler in matching domain `background/handlers.ts`.
+4. Update `extension/core/background/sender-auth.ts` only when adding a new content-script origin domain.
 5. Add/adjust tests in `tests/core/handlers-*.test.ts` or domain tests.
 
 Background → content messages use `chrome.tabs.sendMessage` and bypass `handleMessage`.
+
+See `extension/core/AGENTS.md`.
