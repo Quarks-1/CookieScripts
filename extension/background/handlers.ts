@@ -2,9 +2,13 @@ import { handleDiscordMessage } from "@ext/background/discord-handlers.ts";
 import { handleRetailerMessage } from "@ext/background/retailer-handlers.ts";
 import { handleUiMessage } from "@ext/background/ui-handlers.ts";
 import {
+  handleWalmartContentMessage,
+} from "@ext/background/walmart-handlers.ts";
+import {
   isDiscordContentSender,
   isExtensionPageSender,
   isRetailerContentSender,
+  isWalmartContentSender,
 } from "@ext/background/sender-auth.ts";
 import type {
   BackgroundResponse,
@@ -12,6 +16,7 @@ import type {
   RetailerToBackground,
   RuntimeMessage,
   UiToBackground,
+  WalmartToBackground,
 } from "@ext/types/index.ts";
 
 function isDiscordContentMessage(
@@ -40,6 +45,14 @@ function isRetailerContentMessage(message: RuntimeMessage): message is RetailerT
   );
 }
 
+function isWalmartContentMessage(message: RuntimeMessage): message is WalmartToBackground {
+  return (
+    message.type === "WALMART_RECORDING_APPEND" ||
+    message.type === "WALMART_RECORDING_REATTACH" ||
+    message.type === "WALMART_PING"
+  );
+}
+
 function isUiMessage(message: RuntimeMessage): message is UiToBackground {
   return (
     message.type === "GET_STATUS" ||
@@ -52,7 +65,8 @@ function isUiMessage(message: RuntimeMessage): message is UiToBackground {
     message.type === "SET_RETAILER_REFRESH_INTERVAL" ||
     message.type === "SET_RETAILER_ATC_MODES" ||
     message.type === "RETAILER_START_MANUAL_AUTO" ||
-    message.type === "RETAILER_STOP_MANUAL_AUTO"
+    message.type === "RETAILER_STOP_MANUAL_AUTO" ||
+    message.type === "WALMART_RECORDING"
   );
 }
 
@@ -75,6 +89,13 @@ export async function handleMessage(
       return await handleRetailerMessage(message, sender);
     }
 
+    if (isWalmartContentMessage(message)) {
+      if (!isWalmartContentSender(sender)) {
+        return { ok: false, error: "Unauthorized sender" };
+      }
+      return await handleWalmartContentMessage(message, sender);
+    }
+
     if (isUiMessage(message)) {
       if (!isExtensionPageSender(sender)) {
         return { ok: false, error: "Unauthorized sender" };
@@ -88,7 +109,10 @@ export async function handleMessage(
 
     if (
       message.type === "RETAILER_START_AUTO" ||
-      message.type === "SCAN_DETECTED_DOMAINS"
+      message.type === "SCAN_DETECTED_DOMAINS" ||
+      message.type === "WALMART_RECORDING_START" ||
+      message.type === "WALMART_RECORDING_STOP" ||
+      message.type === "WALMART_RECORDING_MARK"
     ) {
       return undefined;
     }

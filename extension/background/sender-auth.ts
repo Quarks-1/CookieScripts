@@ -18,6 +18,18 @@ export function isRetailerContentSender(sender: chrome.runtime.MessageSender): b
   }
 }
 
+export function isWalmartContentSender(sender: chrome.runtime.MessageSender): boolean {
+  if (sender.id !== chrome.runtime.id || sender.tab?.id == null || !sender.tab.url) {
+    return false;
+  }
+  try {
+    const host = new URL(sender.tab.url).hostname.toLowerCase();
+    return host === "walmart.com" || host === "www.walmart.com" || host.endsWith(".walmart.com");
+  } catch {
+    return false;
+  }
+}
+
 export function isExtensionPageSender(sender: chrome.runtime.MessageSender): boolean {
   return (
     sender.id === chrome.runtime.id &&
