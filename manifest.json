@@ -35,9 +35,19 @@
         "https://target.com/*"
       ],
       "js": [
+        "extension/content/retailer-early.ts"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://www.target.com/*",
+        "https://target.com/*"
+      ],
+      "js": [
         "extension/content/retailer.ts"
       ],
-      "run_at": "document_idle"
+      "run_at": "document_end"
     },
     {
       "matches": [

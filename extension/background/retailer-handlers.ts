@@ -1,6 +1,7 @@
 import {
   clearRetailerManualAutoStopped,
   getRetailerTabChannel,
+  getRetailerTabUiState,
   isRetailerManualAutoStopped,
   markRetailerManualAutoStopped,
   releaseRetailerJob,
@@ -21,8 +22,15 @@ export async function handleRetailerMessage(
   switch (message.type) {
     case "RETAILER_PING":
       return { ok: true };
-    case "RETAILER_GET_TAB_AUTO_STATE":
-      return { ok: true, manual_auto_stopped: isRetailerManualAutoStopped(tabId) };
+    case "RETAILER_GET_TAB_AUTO_STATE": {
+      const ui = getRetailerTabUiState(tabId);
+      return {
+        ok: true,
+        manual_auto_stopped: isRetailerManualAutoStopped(tabId),
+        ui_status: ui.status,
+        ui_running: ui.running,
+      };
+    }
     case "RETAILER_SYNC_MANUAL_STOP":
       markRetailerManualAutoStopped(tabId);
       return { ok: true };

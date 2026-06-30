@@ -3,10 +3,17 @@ import {
   onRetailerTabRemoved,
   registerRetailerWindow,
   releaseRetailerJob,
+  setRetailerTabUiState,
   tryAcquireRetailerJob,
 } from "@ext/background/retailer-runtime-state.ts";
-import { waitForRetailerTabReady } from "@ext/background/retailer-tab-ready.ts";
-import { getRetailerAutoEnabled } from "@ext/lib/retailer/channel-config.ts";
+import {
+  getRetailerAtcQuantity,
+  getRetailerAutoAtcEnabled,
+  getRetailerBackendAtcEnabled,
+  getRetailerFrontendAtcEnabled,
+  getRetailerRefreshIntervalSec,
+  getRetailerUseMaxQuantity,
+} from "@ext/lib/retailer/channel-config.ts";
 import { isRetailerProductUrl } from "@ext/lib/retailer/host.ts";
 import { sleep } from "@ext/lib/sleep.ts";
 import { prependHistory } from "@ext/lib/storage.ts";
@@ -15,9 +22,8 @@ import type { ExtensionSettings } from "@ext/types/index.ts";
 export { waitForRetailerTabReady } from "@ext/background/retailer-tab-ready.ts";
 
 const TAB_READY_MAX_MS = 10_000;
-const START_AUTO_DELAY_MS = 2_000;
-const START_AUTO_SEND_RETRIES = 3;
-const START_AUTO_SEND_RETRY_MS = 500;
+const START_AUTO_SEND_RETRIES = 40;
+const START_AUTO_SEND_RETRY_MS = 50;
 
 export async function openPassiveProductTab(url: string): Promise<void> {
   await chrome.tabs.create({ url, active: false });
@@ -50,6 +56,7 @@ async function sendRetailerStartAuto(
   tabId: number,
   channelId: string,
   url: string,
+  settings: ExtensionSettings,
 ): Promise<boolean> {
   try {
     await chrome.tabs.sendMessage(tabId, {
@@ -57,7 +64,13 @@ async function sendRetailerStartAuto(
       channel_id: channelId,
       url,
       source: "discord",
+      refresh_interval_sec: getRetailerRefreshIntervalSec(settings, channelId),
+      frontend_atc_enabled: getRetailerFrontendAtcEnabled(settings),
+      backend_atc_enabled: getRetailerBackendAtcEnabled(settings),
+      atc_quantity: getRetailerAtcQuantity(settings),
+      use_max_quantity: getRetailerUseMaxQuantity(settings),
     });
+    setRetailerTabUiState(tabId, { status: "Running auto mode…", running: true });
     return true;
   } catch {
     return false;
@@ -68,9 +81,10 @@ async function sendRetailerStartAutoWithRetries(
   tabId: number,
   channelId: string,
   url: string,
+  settings: ExtensionSettings,
 ): Promise<boolean> {
   for (let attempt = 0; attempt < START_AUTO_SEND_RETRIES; attempt++) {
-    if (await sendRetailerStartAuto(tabId, channelId, url)) {
+    if (await sendRetailerStartAuto(tabId, channelId, url, settings)) {
       return true;
     }
     if (attempt < START_AUTO_SEND_RETRIES - 1) {
@@ -105,7 +119,7 @@ export async function openRetailerProductWindow(
   settings: ExtensionSettings,
   options: { startAuto: boolean },
 ): Promise<OpenRetailerWindowResult> {
-  if (!isRetailerProductUrl(url) || !getRetailerAutoEnabled(settings, channelId)) {
+  if (!isRetailerProductUrl(url) || !getRetailerAutoAtcEnabled(settings, channelId)) {
     return { opened: false, tabId: null, queued: false };
   }
 
@@ -127,16 +141,9 @@ export async function openRetailerProductWindow(
     registerRetailerWindow(windowId, tabId);
   }
 
-  await waitForTabComplete(tabId);
-  let ready = await waitForRetailerTabReady(tabId);
-
   if (options.startAuto) {
-    if (!ready) {
-      await sleep(START_AUTO_DELAY_MS);
-      await waitForRetailerTabReady(tabId);
-    }
-
-    const sent = await sendRetailerStartAutoWithRetries(tabId, channelId, url);
+    setRetailerTabUiState(tabId, { status: "Starting auto mode…", running: true });
+    const sent = await sendRetailerStartAutoWithRetries(tabId, channelId, url, settings);
     if (!sent) {
       await recordRetailerAutoStartFailure(channelId, url);
       onRetailerTabRemoved(tabId);
@@ -158,5 +165,5 @@ export function shouldOpenRetailerWindow(
   channelId: string,
   settings: ExtensionSettings,
 ): boolean {
-  return isRetailerProductUrl(url) && getRetailerAutoEnabled(settings, channelId);
+  return isRetailerProductUrl(url) && getRetailerAutoAtcEnabled(settings, channelId);
 }

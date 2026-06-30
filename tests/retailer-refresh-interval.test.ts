@@ -23,7 +23,7 @@ describe("retailer refresh interval", () => {
         buildChannelTarget({
           channel_id: "111",
           allowed_domains: ["target.com"],
-          retailer_auto_enabled: true,
+          retailer_auto_atc_enabled: true,
         }),
       ],
     };

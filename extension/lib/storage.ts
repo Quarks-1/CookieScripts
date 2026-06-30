@@ -1,10 +1,16 @@
 import { HISTORY_LIMIT, RECENT_URL_LIMIT, STORAGE_KEYS } from "@ext/lib/constants.ts";
+import { migrateRetailerAutoAtcChannelFlags } from "@ext/lib/retailer/channel-config.ts";
 import { validatePersistedTargets } from "@ext/lib/validate.ts";
 import { DEFAULT_SETTINGS, type ExtensionSettings, type HistoryItem } from "@ext/types/index.ts";
 
 export async function getSettings(): Promise<ExtensionSettings> {
   const result = await chrome.storage.local.get(STORAGE_KEYS.settings);
-  return (result[STORAGE_KEYS.settings] as ExtensionSettings | undefined) ?? DEFAULT_SETTINGS;
+  const base = (result[STORAGE_KEYS.settings] as ExtensionSettings | undefined) ?? DEFAULT_SETTINGS;
+  const { settings, changed } = migrateRetailerAutoAtcChannelFlags(base);
+  if (changed) {
+    await saveSettings(settings);
+  }
+  return settings;
 }
 
 export async function saveSettings(settings: ExtensionSettings): Promise<void> {

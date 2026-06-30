@@ -62,7 +62,7 @@ function isUiMessage(message: RuntimeMessage): message is UiToBackground {
     message.type === "GET_HISTORY" ||
     message.type === "CLEAR_HISTORY" ||
     message.type === "GET_DETECTED_DOMAINS" ||
-    message.type === "SET_RETAILER_AUTO_ENABLED" ||
+    message.type === "SET_RETAILER_AUTO_ATC_ENABLED" ||
     message.type === "SET_RETAILER_REFRESH_INTERVAL" ||
     message.type === "SET_RETAILER_ATC_MODES" ||
     message.type === "SET_RETAILER_ATC_QUANTITY" ||

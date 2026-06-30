@@ -1,27 +1,21 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { getSidePanelWindowId, sendToBackground } from "@ext/lib/messages.ts";
-import { allowlistIncludesRetailerHost } from "@ext/lib/retailer/host.ts";
 import type { BackgroundResponse } from "@ext/types/index.ts";
 
 export function useRetailerAutoMode(
   channelId: string | null,
   enabled: boolean,
-  domains: string[],
   retailerTabDetected: boolean,
 ) {
-  const [retailerAutoEnabled, setRetailerAutoEnabled] = useState(false);
   const [refreshIntervalSec, setRefreshIntervalSec] = useState(0);
   const [manualStatus, setManualStatus] = useState("");
   const [manualRunning, setManualRunning] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
   const [savingRefresh, setSavingRefresh] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
   const [acting, setActing] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
 
-  const canShowDiscordAuto = allowlistIncludesRetailerHost(domains);
   const settingsChannelId = channelId ?? "manual";
 
   const refresh = useCallback(async () => {
@@ -31,55 +25,22 @@ export function useRetailerAutoMode(
       setRefreshIntervalSec(response.status.retailer_refresh_interval_sec);
       setManualStatus(response.status.retailer_manual_status);
       setManualRunning(response.status.retailer_manual_running);
-      if (canShowDiscordAuto) {
-        setRetailerAutoEnabled(response.status.retailer_auto_enabled);
-      } else {
-        setRetailerAutoEnabled(false);
-      }
     }
-  }, [canShowDiscordAuto]);
+  }, []);
 
   useEffect(() => {
     void refresh();
-  }, [channelId, domains, enabled, retailerTabDetected, refresh]);
+  }, [channelId, enabled, retailerTabDetected, refresh]);
 
   useEffect(() => {
-    if (!retailerTabDetected || (!manualRunning && !acting)) {
+    if (!retailerTabDetected || !enabled) {
       return;
     }
     const timer = setInterval(() => {
       void refresh();
     }, 500);
     return () => clearInterval(timer);
-  }, [retailerTabDetected, manualRunning, acting, refresh]);
-
-  const handleChange = useCallback(
-    async (next: boolean) => {
-      if (channelId === null || !enabled || !canShowDiscordAuto) {
-        return;
-      }
-      setSaving(true);
-      setSaveError(null);
-      setRetailerAutoEnabled(next);
-      try {
-        const response = await sendToBackground<BackgroundResponse>({
-          type: "SET_RETAILER_AUTO_ENABLED",
-          channel_id: channelId,
-          enabled: next,
-        });
-        if ("ok" in response && response.ok === false) {
-          throw new Error(response.error);
-        }
-        await refresh();
-      } catch (err) {
-        setRetailerAutoEnabled(!next);
-        setSaveError(err instanceof Error ? err.message : "Save failed");
-      } finally {
-        setSaving(false);
-      }
-    },
-    [channelId, enabled, canShowDiscordAuto, refresh],
-  );
+  }, [retailerTabDetected, enabled, refresh]);
 
   const handleRefreshIntervalChange = useCallback(
     async (intervalSec: number) => {
@@ -140,20 +101,14 @@ export function useRetailerAutoMode(
   );
 
   return {
-    canShowDiscordAuto,
-    retailerAutoEnabled,
     refreshIntervalSec,
     manualStatus,
     manualRunning,
-    saving,
-    saveError,
     savingRefresh,
     refreshError,
     acting,
     actionError,
-    disabled: !enabled || channelId === null || !canShowDiscordAuto,
     refreshDisabled: !enabled,
-    handleChange,
     handleRefreshIntervalChange,
     handleStartManual: () => runTabAction("RETAILER_START_MANUAL_AUTO"),
     handleStopManual: () => runTabAction("RETAILER_STOP_MANUAL_AUTO"),

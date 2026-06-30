@@ -10,6 +10,10 @@ export function shouldUseBackendAtc(
     return false;
   }
 
+  if (waitStateKind === "ready" && frontendAtcEnabled) {
+    return false;
+  }
+
   if (effectiveQuantity > 1) {
     return true;
   }

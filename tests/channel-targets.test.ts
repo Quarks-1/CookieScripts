@@ -70,14 +70,14 @@ describe("upsertChannelDomains", () => {
     ]);
   });
 
-  it("preserves retailer_auto_enabled when domains are updated", () => {
+  it("preserves retailer_auto_atc_enabled when domains are updated", () => {
     const settings = {
       ...DEFAULT_SETTINGS,
       channel_targets: [
         buildChannelTarget({
           channel_id: "111",
           allowed_domains: ["target.com"],
-          retailer_auto_enabled: true,
+          retailer_auto_atc_enabled: true,
         }),
       ],
     };
@@ -85,23 +85,23 @@ describe("upsertChannelDomains", () => {
     expect(result.channel_targets[0]).toEqual({
       channel_id: "111",
       allowed_domains: ["target.com", "amazon.com"],
-      retailer_auto_enabled: true,
+      retailer_auto_atc_enabled: true,
     });
   });
 
-  it("clears retailer_auto_enabled when target.com is removed", () => {
+  it("preserves retailer_auto_atc_enabled when target.com is removed", () => {
     const settings = {
       ...DEFAULT_SETTINGS,
       channel_targets: [
         buildChannelTarget({
           channel_id: "111",
           allowed_domains: ["target.com"],
-          retailer_auto_enabled: true,
+          retailer_auto_atc_enabled: true,
         }),
       ],
     };
-    const result = upsertChannelDomains(settings, "111", ["amazon.com"]);
-    expect(result.channel_targets[0]?.retailer_auto_enabled).toBeUndefined();
+    const result = upsertChannelDomains(settings, "111", ["mavely.app.link"]);
+    expect(result.channel_targets[0]?.retailer_auto_atc_enabled).toBe(true);
   });
 });
 

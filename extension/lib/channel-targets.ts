@@ -36,18 +36,17 @@ function buildChannelTargetRow(
   const merged: ChannelTarget = {
     channel_id: channelId,
     allowed_domains: allowedDomains,
-    retailer_auto_enabled: existing?.retailer_auto_enabled,
+    retailer_auto_atc_enabled: existing?.retailer_auto_atc_enabled,
     retailer_refresh_interval_sec: existing?.retailer_refresh_interval_sec,
     ...patch,
   };
 
   if (!allowlistIncludesRetailerHost(allowedDomains)) {
-    merged.retailer_auto_enabled = false;
     delete merged.retailer_refresh_interval_sec;
   }
 
-  if (merged.retailer_auto_enabled !== true) {
-    delete merged.retailer_auto_enabled;
+  if (merged.retailer_auto_atc_enabled !== true) {
+    delete merged.retailer_auto_atc_enabled;
   }
 
   if (

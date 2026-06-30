@@ -7,8 +7,10 @@ import {
 import { defaultTargetAutomationSteps } from "@ext/lib/retailer/playback-engine.ts";
 
 describe("atc-route", () => {
-  it("uses backend ATC when quantity is greater than 1", () => {
-    expect(shouldUseBackendAtc(true, true, 2, "ready")).toBe(true);
+  it("uses backend ATC when quantity is greater than 1 and frontend is unavailable", () => {
+    expect(shouldUseBackendAtc(true, true, 2, "ready")).toBe(false);
+    expect(shouldUseBackendAtc(true, false, 2, "ready")).toBe(true);
+    expect(shouldUseBackendAtc(true, true, 2, "waiting_disabled")).toBe(true);
     expect(shouldUseBackendAtc(true, true, 1, "ready")).toBe(false);
   });
 

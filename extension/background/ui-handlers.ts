@@ -1,8 +1,9 @@
+import { getChannelDomains } from "@ext/lib/channel-targets.ts";
 import {
   buildStatus,
   setRetailerAtcModesForSettings,
   setRetailerAtcQuantityForSettings,
-  setRetailerAutoEnabledForChannel,
+  setRetailerAutoAtcEnabledForChannel,
   setRetailerRefreshIntervalForChannel,
 } from "@ext/background/status.ts";
 import { getActiveRetailerTabInWindow } from "@ext/background/retailer-tab-message.ts";
@@ -55,9 +56,14 @@ export async function handleUiMessage(
         return { ok: false, error: error instanceof Error ? error.message : "Save failed" };
       }
     }
-    case "SET_RETAILER_AUTO_ENABLED": {
+    case "SET_RETAILER_AUTO_ATC_ENABLED": {
       try {
-        await setRetailerAutoEnabledForChannel(message.channel_id, message.enabled);
+        const settings = await getSettings();
+        const domains = getChannelDomains(settings, message.channel_id);
+        if (domains.length === 0) {
+          return { ok: false, error: "Add at least one allowed domain first" };
+        }
+        await setRetailerAutoAtcEnabledForChannel(message.channel_id, message.enabled);
         if (!message.enabled) {
           await broadcastRetailerStopAuto(message.channel_id);
         }

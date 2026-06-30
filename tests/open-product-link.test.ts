@@ -6,9 +6,9 @@ import {
   openPassiveProductTab,
   waitForRetailerTabReady,
 } from "@ext/background/open-product-link.ts";
-import * as retailerTabReady from "@ext/background/retailer-tab-ready.ts";
 import {
   clearRetailerRuntimeState,
+  getRetailerTabUiState,
   tryAcquireRetailerJob,
   releaseRetailerJob,
 } from "@ext/background/retailer-runtime-state.ts";
@@ -26,7 +26,7 @@ function buildRetailerSettings() {
       buildChannelTarget({
         channel_id: CHANNEL_ID,
         allowed_domains: ["target.com"],
-        retailer_auto_enabled: true,
+          retailer_auto_atc_enabled: true,
       }),
     ],
   };
@@ -120,6 +120,10 @@ describe("open-product-link", () => {
 
     expect(result).toEqual({ opened: true, tabId: 99, queued: false });
     expect(chrome.windows.create).toHaveBeenCalledWith({ url: PRODUCT_URL, focused: true });
+    expect(getRetailerTabUiState(99)).toEqual({
+      status: "Running auto mode…",
+      running: true,
+    });
     expect(chrome.tabs.sendMessage).toHaveBeenCalledWith(
       99,
       expect.objectContaining({ type: "RETAILER_START_AUTO", channel_id: CHANNEL_ID }),
@@ -128,37 +132,26 @@ describe("open-product-link", () => {
     releaseRetailerJob(CHANNEL_ID);
   });
 
-  it("retries start auto after delayed ping when initial ping fails", async () => {
-    vi.useFakeTimers();
-    const readySpy = vi
-      .spyOn(retailerTabReady, "waitForRetailerTabReady")
-      .mockResolvedValueOnce(false)
-      .mockResolvedValueOnce(true);
+  it("retries start auto when the content script is not ready yet", async () => {
+    startAutoResponses = ["throw", "throw", "ok"];
 
-    const promise = openRetailerProductWindow(
+    const result = await openRetailerProductWindow(
       PRODUCT_URL,
       CHANNEL_ID,
       buildRetailerSettings(),
       { startAuto: true },
     );
 
-    await vi.advanceTimersByTimeAsync(2_500);
-    const result = await promise;
-
     expect(result.opened).toBe(true);
-    expect(readySpy).toHaveBeenCalledTimes(2);
     expect(chrome.tabs.sendMessage).toHaveBeenCalledWith(
       99,
       expect.objectContaining({ type: "RETAILER_START_AUTO" }),
     );
     expect(storage["cookiescripts:history"]).toEqual([]);
-    readySpy.mockRestore();
-    vi.useRealTimers();
   });
 
   it("records failure history and releases job when auto start cannot be delivered", async () => {
-    vi.spyOn(retailerTabReady, "waitForRetailerTabReady").mockResolvedValue(false);
-    startAutoResponses = ["throw", "throw", "throw"];
+    startAutoResponses = Array.from({ length: 40 }, () => "throw" as const);
 
     const result = await openRetailerProductWindow(
       PRODUCT_URL,

@@ -11,7 +11,7 @@ Chrome MV3 extension that auto-opens allowlisted product links from Discord web 
 - User keeps `https://discord.com/channels/*` open; a content script observes the message list DOM.
 - **Side panel only** — no options page. Toolbar icon opens the side panel (`sidePanel` permission). Global enable slider; per-channel `allowed_domains` edited for the **active tab's channel** only.
 - When enabled, every open Discord channel tab reports `CHANNEL_ACTIVE` in parallel. Empty allowlist = observe but do not open links.
-- Non-Target matched links open via `chrome.tabs.create({ active: false })`. Target product links with per-channel `retailer_auto_enabled` open in a **new Chrome window** (`chrome.windows.create`) for automation.
+- Non-Target matched links open via `chrome.tabs.create({ active: false })`. Target product links with per-channel `retailer_auto_atc_enabled` open in a **new Chrome window** (`chrome.windows.create`) for automation.
 - Distribution: manual zip from [GitHub Releases](https://github.com/Quarks-1/CookieScripts/releases) + side panel update nudge (not Chrome Web Store).
 - **Walmart Research Recorder** — manual drop-day capture on `walmart.com` tabs (clicks, navigation, DOM, page-origin network). **One global session** across all Walmart tabs/windows; exports dated ZIP to Downloads; no auto-checkout and no Discord link opening.
 
@@ -106,6 +106,8 @@ Single React app (`ui/popup/App.tsx`) loaded from `ui/sidepanel/index.html`. Sec
 
 Always visible: enable slider, version/update banner.
 
+**Enable Auto ATC** (`EnableSlider` in `App.tsx`) appears below the global enable slider when `active_tab_kind === "discord_channel"`. Per-channel `retailer_auto_atc_enabled`; disabled until `has_allowed_domains`. Not shown on Target/Walmart/other surfaces.
+
 **Target ATC toggles** (`TargetAtcToggles`) appear when `retailer_tab_detected` (active tab is `target.com`). They are global settings — not per-channel — and sit outside `sidepanel-layout.ts` gating. Defaults: Frontend ATC on, Backend ATC off; at least one must stay enabled.
 
 ### `buildStatus` (`extension/background/status.ts`)
@@ -119,7 +121,7 @@ Always visible: enable slider, version/update banner.
 | `discord_tab_detected` | Active tab is Discord **or** any watched Discord tab is connected |
 | `retailer_tab_detected` | Active tab URL is Target |
 | `allowed_domains` / `has_allowed_domains` | From settings for `active_channel_id` (empty when null) |
-| `retailer_auto_enabled` | Per-channel flag **and** `target.com` in that channel's allowlist (`allowlistIncludesRetailerHost`) |
+| `retailer_auto_atc_enabled` | Per-channel flag for the active `active_channel_id` (from `channel_targets[]`) |
 | `retailer_refresh_interval_sec` | Per-channel on Discord; global `manual` default on Target-only sessions |
 | `retailer_manual_*` | Live automation status from `retailer-runtime-state.ts` for the active Target tab |
 | `retailer_atc_quantity` / `retailer_use_max_quantity` | Global quantity settings from storage |
@@ -195,7 +197,7 @@ Domain edits debounce 400ms (`useChannelDomainsEditor`) and persist via `saveCha
 
 Other limits in constants: `MAX_URLS_PER_MESSAGE` (20), `RECENT_URLS_DEBOUNCE_MS` (1000).
 
-**Per-channel** on `ChannelTarget`: `allowed_domains`, `retailer_auto_enabled`, `retailer_refresh_interval_sec`.
+**Per-channel** on `ChannelTarget`: `allowed_domains`, `retailer_auto_atc_enabled`, `retailer_refresh_interval_sec`.
 
 **Global** on `ExtensionSettings`: `retailer_refresh_interval_sec` (manual-mode default), `retailer_frontend_atc_enabled` (default on), `retailer_backend_atc_enabled` (default off), `retailer_atc_quantity` (default 1, omitted when 1), `retailer_use_max_quantity` (default off).
 
@@ -215,7 +217,7 @@ Defined in `extension/types/index.ts`. **Content script never opens tabs** — d
 
 **Background → content:** `WATCH_CONFIG`, `PING`, `SCAN_DETECTED_DOMAINS`, `RETAILER_PING`, `RETAILER_START_AUTO`, `RETAILER_STOP_AUTO`, `RETAILER_START_MANUAL_AUTO`, `RETAILER_GET_PURCHASE_LIMIT`, `WALMART_RECORDING_START`, `WALMART_RECORDING_STOP`, `WALMART_RECORDING_MARK`
 
-**Side panel ↔ background:** `GET_STATUS`, `GET_SETTINGS`, `SAVE_SETTINGS`, `GET_HISTORY`, `CLEAR_HISTORY`, `GET_DETECTED_DOMAINS`, `SET_RETAILER_AUTO_ENABLED`, `SET_RETAILER_REFRESH_INTERVAL`, `SET_RETAILER_ATC_MODES`, `SET_RETAILER_ATC_QUANTITY`, `RETAILER_START_MANUAL_AUTO`, `RETAILER_STOP_MANUAL_AUTO`, `WALMART_RECORDING` (`action`: start | stop | mark | clear | export)
+**Side panel ↔ background:** `GET_STATUS`, `GET_SETTINGS`, `SAVE_SETTINGS`, `GET_HISTORY`, `CLEAR_HISTORY`, `GET_DETECTED_DOMAINS`, `SET_RETAILER_AUTO_ATC_ENABLED`, `SET_RETAILER_REFRESH_INTERVAL`, `SET_RETAILER_ATC_MODES`, `SET_RETAILER_ATC_QUANTITY`, `RETAILER_START_MANUAL_AUTO`, `RETAILER_STOP_MANUAL_AUTO`, `WALMART_RECORDING` (`action`: start | stop | mark | clear | export)
 
 ## Link opening
 
@@ -223,16 +225,16 @@ Defined in `extension/types/index.ts`. **Content script never opens tabs** — d
 2. Content sends `CANDIDATE_LINKS` with URLs from visible text and `a[href]` (affiliate unwrap in `affiliate-unwrap.ts`).
 3. `decideLinkActions` in `process-links.ts` filters by allowlist, dedupes via `recentUrlKeys`, caps at `MAX_URLS_PER_MESSAGE`. No-op when `!enabled` or empty allowlist.
 4. For each URL to open:
-   - **Target product + `retailer_auto_enabled`:** `openRetailerProductWindow` → new window, wait for tab ready (`retailer-tab-ready.ts`), send `RETAILER_START_AUTO` with retries. One retailer job at a time (`tryAcquireRetailerJob`); excess links are queued.
+   - **Target product + `retailer_auto_atc_enabled`:** `openRetailerProductWindow` → new window, wait for tab ready (`retailer-tab-ready.ts`), send `RETAILER_START_AUTO` with retries. One retailer job at a time (`tryAcquireRetailerJob`); excess links are queued.
    - **Everything else:** `openPassiveProductTab` → `chrome.tabs.create({ active: false })`.
 
 Target detection uses `isRetailerProductUrl` (pathname contains `/p/`).
 
 ## Target Auto Mode (retailer)
 
-Per-channel `retailer_auto_enabled` on `ChannelTarget`. When enabled, Target product links from Discord open in a focused new window; content script runs add-to-cart automation and navigates to `/checkout/start`.
+Per-channel `retailer_auto_atc_enabled` on `ChannelTarget`. When enabled for a channel, that channel's Target product links from Discord open in a focused new window; content script runs add-to-cart automation and navigates to `/checkout/start`.
 
-**Discord auto toggle** ("Auto-open from Discord") lives in `RetailerAutoModeSection` on the **retailer** surface. It requires `active_channel_id`, `target.com` in that channel's allowlist, and extension enabled. Because `buildStatus` only derives `active_channel_id` from the **active** Discord tab, the toggle is not available when the side panel is opened from a Target-only session — test with a Discord channel tab active or use a Discord tab alongside Target.
+**Enable Auto ATC toggle** lives in `App.tsx` on the **Discord channel** surface only (below Enable extension). Requires at least one allowed domain for the active channel. Affiliate-only allowlists (e.g. `mavely.app.link`) work — `target.com` is not required. `GET_STATUS.retailer_auto_atc_enabled` reflects the active channel's stored flag.
 
 **Add-to-cart methods** (global toggles in side panel on Target tabs):
 
@@ -285,7 +287,7 @@ Manual drop-day capture across **all** `walmart.com` tabs in every Chrome window
 15. **Multi-tab** — `activeChannels` maps tab IDs to channel IDs; multiple Discord tabs can be watched simultaneously.
 16. **Backend ATC** — Cart API calls must run in page context (injected probe), not from the content script directly. `carts.target.com` is a separate host permission from `target.com`.
 17. **Own messages** — Never process links from the user's own Discord messages.
-18. **Retailer auto UI vs status** — `retailer_auto_enabled` in `GET_STATUS` is false unless Target is allowlisted; removing `target.com` from domains clears the stored flag (`channel-targets.ts`).
+18. **Retailer auto ATC UI** — `retailer_auto_atc_enabled` toggle is Discord-surface only; requires `has_allowed_domains`. Per-channel refresh interval on Target tabs still requires `target.com` in allowlist (`setRetailerRefreshInterval`).
 19. **Lazy channel rows** — Editing domains for a channel creates its `channel_targets` entry on first save; there is no pre-registration UI.
 20. **Walmart IDB** — Content never writes IndexedDB; only background via `WALMART_RECORDING_APPEND`.
 21. **Walmart probe** — Inject probe only while recording; network hooks run in page context.

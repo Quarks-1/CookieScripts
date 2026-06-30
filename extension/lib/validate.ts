@@ -23,10 +23,10 @@ export function validateChannelTarget(target: ChannelTarget): string | null {
     return "Each channel needs at least one allowed domain";
   }
   if (
-    target.retailer_auto_enabled !== undefined &&
-    typeof target.retailer_auto_enabled !== "boolean"
+    target.retailer_auto_atc_enabled !== undefined &&
+    typeof target.retailer_auto_atc_enabled !== "boolean"
   ) {
-    return "retailer_auto_enabled must be a boolean";
+    return "retailer_auto_atc_enabled must be a boolean";
   }
   if (target.retailer_refresh_interval_sec !== undefined) {
     if (

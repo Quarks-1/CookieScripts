@@ -1,20 +1,19 @@
 import { getChannelDomains } from "@ext/lib/channel-targets.ts";
 import {
   getRetailerAtcQuantity,
-  getRetailerAutoEnabled,
+  getRetailerAutoAtcEnabled,
   getRetailerBackendAtcEnabled,
   getRetailerFrontendAtcEnabled,
   getRetailerRefreshIntervalSec,
   getRetailerUseMaxQuantity,
   setRetailerAtcModes,
   setRetailerAtcQuantity,
-  setRetailerAutoEnabled,
+  setRetailerAutoAtcEnabled,
   setRetailerRefreshInterval,
 } from "@ext/lib/retailer/channel-config.ts";
 import { buildQuantityStatusFields } from "@ext/lib/retailer/quantity-limit.ts";
 import { sleep } from "@ext/lib/sleep.ts";
 import { resolveActiveTabKind } from "@ext/lib/active-tab.ts";
-import { allowlistIncludesRetailerHost } from "@ext/lib/retailer/host.ts";
 import { getSettings, saveSettings } from "@ext/lib/storage.ts";
 import { activeChannels } from "@ext/background/runtime-state.ts";
 import {
@@ -121,7 +120,9 @@ async function resolveRetailerPurchaseLimit(
   }
   const normalizedUrl = normalizeRetailerTabUrl(tabUrl);
   const cached = getRetailerTabPurchaseLimit(tabId, normalizedUrl);
-  if (cached !== undefined) {
+  // Re-query when the cache is missing or still null — early snapshots often run before
+  // Target finishes hydrating __NEXT_DATA__ or the qty UI after navigation/refresh.
+  if (cached !== undefined && cached !== null) {
     return cached;
   }
   return readRetailerPurchaseLimit(tabId, tabUrl);
@@ -167,8 +168,8 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
   const allowedDomains =
     activeChannelId !== null ? getChannelDomains(settings, activeChannelId) : [];
   const isActive = settings.enabled && activeChannelId !== null;
-  const retailerAutoEnabled =
-    activeChannelId !== null ? getRetailerAutoEnabled(settings, activeChannelId) : false;
+  const retailerAutoAtcEnabled =
+    activeChannelId !== null ? getRetailerAutoAtcEnabled(settings, activeChannelId) : false;
   const retailerRefreshIntervalSec =
     activeChannelId !== null
       ? getRetailerRefreshIntervalSec(settings, activeChannelId)
@@ -210,7 +211,7 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     is_active: isActive,
     has_allowed_domains: allowedDomains.length > 0,
     allowed_domains: allowedDomains,
-    retailer_auto_enabled: retailerAutoEnabled && allowlistIncludesRetailerHost(allowedDomains),
+    retailer_auto_atc_enabled: retailerAutoAtcEnabled,
     retailer_refresh_interval_sec: retailerRefreshIntervalSec,
     retailer_frontend_atc_enabled: getRetailerFrontendAtcEnabled(settings),
     retailer_backend_atc_enabled: getRetailerBackendAtcEnabled(settings),
@@ -224,12 +225,12 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
   };
 }
 
-export async function setRetailerAutoEnabledForChannel(
+export async function setRetailerAutoAtcEnabledForChannel(
   channelId: string,
   enabled: boolean,
 ): Promise<ExtensionSettings> {
   const settings = await getSettings();
-  const next = setRetailerAutoEnabled(settings, channelId, enabled);
+  const next = setRetailerAutoAtcEnabled(settings, channelId, enabled);
   await saveSettings(next);
   return next;
 }

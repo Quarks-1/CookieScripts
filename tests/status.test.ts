@@ -57,6 +57,24 @@ describe("buildStatus", () => {
     expect(sendMessage).not.toHaveBeenCalled();
   });
 
+  it("re-queries purchase limit when cache is null", async () => {
+    const sendMessage = vi.mocked(chrome.tabs.sendMessage);
+    sendMessage.mockResolvedValue({ ok: true, purchase_limit: 20 });
+    setRetailerTabPurchaseLimit(
+      5,
+      "https://www.target.com/p/foo/-/A-123",
+      null,
+    );
+
+    const status = await buildStatus({
+      id: 5,
+      url: "https://www.target.com/p/foo/-/A-123",
+    } as chrome.tabs.Tab);
+
+    expect(status.retailer_purchase_limit).toBe(20);
+    expect(sendMessage).toHaveBeenCalledWith(5, { type: "RETAILER_GET_PURCHASE_LIMIT" });
+  });
+
   it("sets retailer_tab_detected when active tab is on target.com", async () => {
     activeChannels.clear();
     const status = await buildStatus({

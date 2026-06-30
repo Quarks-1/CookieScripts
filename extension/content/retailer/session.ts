@@ -1,6 +1,11 @@
 import { runAutomationPlayback } from "@ext/content/retailer/automation/playback.ts";
 import { hookSpaNavigation } from "@ext/content/navigation.ts";
-import { waitForMainAddToCartButton } from "@ext/lib/retailer/main-add-to-cart.ts";
+import { probeAddToCartViaApi } from "@ext/lib/retailer/cart-api.ts";
+import {
+  parseTargetTcinFromUrl,
+  waitForMainAddToCartButton,
+  type WaitForAtcResult,
+} from "@ext/lib/retailer/main-add-to-cart.ts";
 import {
   clearRetailerAutoUserStopped,
   clearRetailerAutoResume,
@@ -14,6 +19,7 @@ import {
 import { isRetailerProductUrl } from "@ext/lib/retailer/host.ts";
 import { ensurePageCartProbeBridge } from "@ext/lib/retailer/page-cart-probe-bridge.ts";
 import { defaultTargetAutomationSteps } from "@ext/lib/retailer/playback-engine.ts";
+import { takePendingStartAuto } from "@ext/lib/retailer/pending-start-auto.ts";
 import {
   clearPageQuantityApplied,
   isEffectiveUseMax,
@@ -24,7 +30,6 @@ import {
   resolveEffectiveQuantity,
 } from "@ext/lib/retailer/quantity-limit.ts";
 import { DEFAULT_ADD_TO_CART_SELECTORS } from "@ext/lib/retailer/selectors.ts";
-import { sleep } from "@ext/lib/sleep.ts";
 import { STORAGE_KEYS } from "@ext/lib/constants.ts";
 import type { ExtensionSettings } from "@ext/types/index.ts";
 import {
@@ -33,7 +38,11 @@ import {
 } from "@ext/lib/messages.ts";
 import type { BackgroundToContent, RetailerToBackground } from "@ext/types/index.ts";
 
-const BOOTSTRAP_QUIET_MS = 500;
+declare global {
+  interface Window {
+    __cookiescriptsRetailerSessionReady?: boolean;
+  }
+}
 
 type Session = {
   channelId: string | null;
@@ -51,8 +60,8 @@ const session: Session = {
 
 let syncChain: Promise<void> = Promise.resolve();
 let sessionEnded = false;
-let bootstrapTimer: ReturnType<typeof setTimeout> | null = null;
-let bootstrapActive = false;
+let autoModeScheduled = false;
+let autoConfigPrefetched = false;
 let stopAutoRequested = false;
 let cachedRefreshIntervalSec = 0;
 let cachedFrontendAtcEnabled = true;
@@ -61,9 +70,15 @@ let cachedAtcQuantity = 1;
 let cachedUseMaxQuantity = false;
 let trackedPurchaseLimitHref = location.href;
 let unhookRetailerNavigation: (() => void) | null = null;
+let purchaseLimitWatchTeardown: (() => void) | null = null;
+let unhookPurchaseLimitPageShow: (() => void) | null = null;
+
+const PURCHASE_LIMIT_SNAPSHOT_DELAYS_MS = [500, 2_000, 4_000, 8_000] as const;
+const PURCHASE_LIMIT_WATCH_DEBOUNCE_MS = 150;
 
 function requestStopAutoMode(): void {
   stopAutoRequested = true;
+  autoModeScheduled = false;
   markRetailerAutoUserStopped();
   syncManualAutoStopToBackground();
   session.syncGeneration += 1;
@@ -93,7 +108,7 @@ function isRetailerAutoDisabledInSettings(settings: ExtensionSettings): boolean 
     return false;
   }
   const target = settings.channel_targets.find((row) => row.channel_id === session.channelId);
-  return target?.retailer_auto_enabled !== true;
+  return target?.retailer_auto_atc_enabled !== true;
 }
 
 function publishUiState(status: string, running?: boolean): void {
@@ -124,17 +139,26 @@ function syncManualAutoStartToBackground(): void {
   });
 }
 
-async function isManualAutoStoppedInBackground(): Promise<boolean> {
+async function getTabAutoStateFromBackground(): Promise<{
+  manualAutoStopped: boolean;
+  running: boolean;
+}> {
   try {
     const response = (await sendToBackground({
       type: "RETAILER_GET_TAB_AUTO_STATE",
-    })) as { ok?: boolean; manual_auto_stopped?: boolean };
-    return response?.ok === true && response.manual_auto_stopped === true;
+    })) as { ok?: boolean; manual_auto_stopped?: boolean; ui_running?: boolean };
+    if (response?.ok !== true) {
+      return { manualAutoStopped: false, running: false };
+    }
+    return {
+      manualAutoStopped: response.manual_auto_stopped === true,
+      running: response.ui_running === true,
+    };
   } catch (err) {
     if (isExtensionContextInvalidatedError(err)) {
       endSession();
     }
-    return false;
+    return { manualAutoStopped: false, running: false };
   }
 }
 
@@ -170,6 +194,8 @@ function endSession(): void {
   sessionEnded = true;
   unhookRetailerNavigation?.();
   unhookRetailerNavigation = null;
+  unhookPurchaseLimitPageShow?.();
+  teardownPurchaseLimitWatch();
   session.channelId = null;
   session.url = null;
   session.running = false;
@@ -179,12 +205,16 @@ function sendToBackground(message: RetailerToBackground): Promise<unknown> {
   return chrome.runtime.sendMessage(message);
 }
 
-function publishPurchaseLimitSnapshot(): void {
+function publishPurchaseLimitSnapshot(allowNull = false): void {
   if (!isRetailerProductUrl(location.href)) {
     return;
   }
 
   const purchaseLimit = readPurchaseLimitForStatus(document);
+  if (purchaseLimit == null && !allowNull) {
+    return;
+  }
+
   void sendToBackground({
     type: "RETAILER_PURCHASE_LIMIT_SNAPSHOT",
     purchase_limit: purchaseLimit,
@@ -208,29 +238,94 @@ function resetPurchaseLimitSnapshot(): void {
 
 function schedulePurchaseLimitSnapshots(): void {
   publishPurchaseLimitSnapshot();
-  for (const delayMs of [500, 2_000, 4_000]) {
+  for (const delayMs of PURCHASE_LIMIT_SNAPSHOT_DELAYS_MS) {
     globalThis.setTimeout(() => publishPurchaseLimitSnapshot(), delayMs);
   }
+  globalThis.setTimeout(() => publishPurchaseLimitSnapshot(true), 12_000);
 }
 
-function handleRetailerNavigation(): void {
+function teardownPurchaseLimitWatch(): void {
+  purchaseLimitWatchTeardown?.();
+  purchaseLimitWatchTeardown = null;
+}
+
+function armPurchaseLimitWatch(): void {
+  teardownPurchaseLimitWatch();
+
+  let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+  const scheduleSnapshot = () => {
+    if (debounceTimer !== null) {
+      clearTimeout(debounceTimer);
+    }
+    debounceTimer = globalThis.setTimeout(() => {
+      debounceTimer = null;
+      publishPurchaseLimitSnapshot();
+    }, PURCHASE_LIMIT_WATCH_DEBOUNCE_MS);
+  };
+
+  const observers: MutationObserver[] = [];
+  const observe = (target: Node, options: MutationObserverInit) => {
+    const observer = new MutationObserver(() => scheduleSnapshot());
+    observer.observe(target, options);
+    observers.push(observer);
+  };
+
+  const nextData = document.getElementById("__NEXT_DATA__");
+  if (nextData) {
+    observe(nextData, { childList: true, characterData: true, subtree: true });
+  } else if (document.head) {
+    observe(document.head, { childList: true, subtree: false });
+  }
+
+  purchaseLimitWatchTeardown = () => {
+    if (debounceTimer !== null) {
+      clearTimeout(debounceTimer);
+    }
+    for (const observer of observers) {
+      observer.disconnect();
+    }
+    purchaseLimitWatchTeardown = null;
+  };
+}
+
+function refreshPurchaseLimitForPage(force = false): void {
   if (sessionEnded || !isExtensionContextValid()) {
     endSession();
     return;
   }
 
   const href = location.href;
-  if (href === trackedPurchaseLimitHref) {
+  if (!force && href === trackedPurchaseLimitHref) {
     return;
   }
   trackedPurchaseLimitHref = href;
 
   clearPageQuantityApplied();
+  teardownPurchaseLimitWatch();
   resetPurchaseLimitSnapshot();
 
   if (isRetailerProductUrl(href)) {
     schedulePurchaseLimitSnapshots();
+    armPurchaseLimitWatch();
   }
+}
+
+function handleRetailerNavigation(): void {
+  refreshPurchaseLimitForPage(false);
+}
+
+function hookPurchaseLimitPageShow(): void {
+  const onPageShow = (event: PageTransitionEvent) => {
+    if (!event.persisted || !isRetailerProductUrl(location.href)) {
+      return;
+    }
+    refreshPurchaseLimitForPage(true);
+  };
+  window.addEventListener("pageshow", onPageShow);
+  unhookPurchaseLimitPageShow = () => {
+    window.removeEventListener("pageshow", onPageShow);
+    unhookPurchaseLimitPageShow = null;
+  };
 }
 
 async function reportAutoStatus(
@@ -253,17 +348,6 @@ async function reportAutoStatus(
       endSession();
     }
   }
-}
-
-function beginBootstrapQuiet(): void {
-  bootstrapActive = true;
-  if (bootstrapTimer !== null) {
-    clearTimeout(bootstrapTimer);
-  }
-  bootstrapTimer = setTimeout(() => {
-    bootstrapTimer = null;
-    bootstrapActive = false;
-  }, BOOTSTRAP_QUIET_MS);
 }
 
 async function loadAutoConfig(channelId: string): Promise<{
@@ -300,6 +384,24 @@ async function loadAutoConfig(channelId: string): Promise<{
   };
 }
 
+type StartAutoMessage = Extract<BackgroundToContent, { type: "RETAILER_START_AUTO" }>;
+
+function applyStartAutoConfig(message: StartAutoMessage): boolean {
+  if (typeof message.refresh_interval_sec !== "number") {
+    return false;
+  }
+
+  cachedRefreshIntervalSec = message.refresh_interval_sec;
+  cachedFrontendAtcEnabled = message.frontend_atc_enabled !== false;
+  cachedBackendAtcEnabled = message.backend_atc_enabled === true;
+  cachedAtcQuantity =
+    typeof message.atc_quantity === "number"
+      ? Math.max(1, Math.floor(message.atc_quantity))
+      : 1;
+  cachedUseMaxQuantity = message.use_max_quantity === true;
+  return true;
+}
+
 function getEffectiveQuantityFromPage(purchaseLimit: number | null): number {
   const effectiveUseMax = isEffectiveUseMax(cachedUseMaxQuantity, purchaseLimit);
   return resolveEffectiveQuantity({
@@ -333,6 +435,12 @@ function syncCartProbeBridge(): void {
   }
 }
 
+async function warmCartProbeBridge(): Promise<void> {
+  if (cachedBackendAtcEnabled && isRetailerProductUrl(location.href)) {
+    await ensurePageCartProbeBridge(document);
+  }
+}
+
 async function requestHardReload(): Promise<void> {
   await sendToBackground({ type: "RETAILER_HARD_RELOAD" });
 }
@@ -355,7 +463,8 @@ function autoModePlaybackOptions(
 }
 
 async function runAutoMode(): Promise<void> {
-  if (session.running || bootstrapActive || stopAutoRequested || isRetailerAutoUserStopped()) {
+  autoModeScheduled = false;
+  if (session.running || stopAutoRequested || isRetailerAutoUserStopped()) {
     return;
   }
   if (!isRetailerProductUrl(location.href)) {
@@ -382,13 +491,22 @@ async function runAutoMode(): Promise<void> {
       startRetailerAutoResume(session.channelId, location.href);
     }
 
-    const config = await loadAutoConfig(session.channelId);
+    const config = autoConfigPrefetched
+      ? {
+          refreshIntervalSec: cachedRefreshIntervalSec,
+          frontendAtcEnabled: cachedFrontendAtcEnabled,
+          backendAtcEnabled: cachedBackendAtcEnabled,
+          atcQuantity: cachedAtcQuantity,
+          useMaxQuantity: cachedUseMaxQuantity,
+        }
+      : await loadAutoConfig(session.channelId);
+    autoConfigPrefetched = false;
     cachedRefreshIntervalSec = config.refreshIntervalSec;
     cachedFrontendAtcEnabled = config.frontendAtcEnabled;
     cachedBackendAtcEnabled = config.backendAtcEnabled;
     cachedAtcQuantity = config.atcQuantity;
     cachedUseMaxQuantity = config.useMaxQuantity;
-    syncCartProbeBridge();
+    await warmCartProbeBridge();
 
     if (!cachedFrontendAtcEnabled && !cachedBackendAtcEnabled) {
       publishUiState("Error: Enable Frontend ATC or Backend ATC", false);
@@ -410,20 +528,37 @@ async function runAutoMode(): Promise<void> {
 
     const readySelectors = DEFAULT_ADD_TO_CART_SELECTORS;
 
-    publishUiState("Waiting for product page…", true);
-    const waitResult = await waitForMainAddToCartButton({
-      selectors: readySelectors,
-      timeoutMs: null,
-      shouldContinue: shouldContinueAutoMode,
-      pageUrl: location.href,
-      onStatus: (text) => publishUiState(text, true),
-      refreshIntervalSec: cachedRefreshIntervalSec,
-      getRefreshIntervalSec,
-      requestHardReload,
-      frontendAtcEnabled: cachedFrontendAtcEnabled,
-      backendAtcEnabled: cachedBackendAtcEnabled,
-      getEffectiveQuantity,
-    });
+    let cartAlreadyAdded = false;
+    if (cachedBackendAtcEnabled) {
+      const tcin = parseTargetTcinFromUrl(location.href);
+      if (tcin) {
+        publishUiState("Adding to cart…", true);
+        const probe = await probeAddToCartViaApi(
+          tcin,
+          {},
+          getEffectiveQuantityFromPage(earlyPurchaseLimit),
+        );
+        cartAlreadyAdded = probe.kind === "added";
+      }
+    }
+
+    let waitResult: WaitForAtcResult | null = cartAlreadyAdded ? { kind: "api_added" } : null;
+    if (!waitResult) {
+      publishUiState("Waiting for product page…", true);
+      waitResult = await waitForMainAddToCartButton({
+        selectors: readySelectors,
+        timeoutMs: null,
+        shouldContinue: shouldContinueAutoMode,
+        pageUrl: location.href,
+        onStatus: (text) => publishUiState(text, true),
+        refreshIntervalSec: cachedRefreshIntervalSec,
+        getRefreshIntervalSec,
+        requestHardReload,
+        frontendAtcEnabled: cachedFrontendAtcEnabled,
+        backendAtcEnabled: cachedBackendAtcEnabled,
+        getEffectiveQuantity,
+      });
+    }
     if (!waitResult) {
       if (stopAutoRequested) {
         publishUiState("Stopped", false);
@@ -441,7 +576,7 @@ async function runAutoMode(): Promise<void> {
       return;
     }
 
-    const cartAlreadyAdded = waitResult.kind === "api_added";
+    const cartAlreadyAddedFromWait = waitResult.kind === "api_added";
 
     const purchaseLimit = readPurchaseLimitForAutomation(document);
     if (failQuantityGate(purchaseLimit)) {
@@ -455,7 +590,7 @@ async function runAutoMode(): Promise<void> {
     const result = await runAutomationPlayback(
       steps,
       (text) => publishUiState(text, true),
-      autoModePlaybackOptions(getRefreshIntervalSec, getEffectiveQuantity, cartAlreadyAdded),
+      autoModePlaybackOptions(getRefreshIntervalSec, getEffectiveQuantity, cartAlreadyAddedFromWait),
     );
 
     if (!result.ok && result.error === "Reloading") {
@@ -501,20 +636,19 @@ async function runAutoMode(): Promise<void> {
 }
 
 function scheduleAutoModeRun(): void {
-  beginBootstrapQuiet();
+  autoModeScheduled = true;
   const generation = ++session.syncGeneration;
   syncChain = syncChain
     .then(async () => {
       if (generation !== session.syncGeneration) {
         return;
       }
-      await sleep(BOOTSTRAP_QUIET_MS);
-      if (generation !== session.syncGeneration) {
-        return;
-      }
       await runAutoMode();
     })
     .catch((err) => {
+      if (generation === session.syncGeneration) {
+        autoModeScheduled = false;
+      }
       if (isExtensionContextInvalidatedError(err)) {
         endSession();
       }
@@ -526,10 +660,13 @@ function armManualSession(): void {
   session.url = location.href;
 }
 
-function handleStartAuto(message: Extract<BackgroundToContent, { type: "RETAILER_START_AUTO" }>) {
+function handleStartAuto(message: StartAutoMessage) {
   allowAutoModeStart();
   session.channelId = message.channel_id;
   session.url = message.url;
+  autoConfigPrefetched = applyStartAutoConfig(message);
+  void warmCartProbeBridge();
+  publishUiState("Running auto mode…", true);
   scheduleAutoModeRun();
 }
 
@@ -573,9 +710,11 @@ export function startRetailerSession(): void {
   watchSettings();
 
   unhookRetailerNavigation = hookSpaNavigation(handleRetailerNavigation);
+  hookPurchaseLimitPageShow();
 
   if (isRetailerProductUrl(location.href)) {
     schedulePurchaseLimitSnapshots();
+    armPurchaseLimitWatch();
   }
 
   chrome.runtime.onMessage.addListener((message: BackgroundToContent) => {
@@ -609,15 +748,25 @@ export function startRetailerSession(): void {
     }
   });
 
+  window.__cookiescriptsRetailerSessionReady = true;
+
+  const pendingStartAuto = takePendingStartAuto();
+  if (pendingStartAuto) {
+    handleStartAuto(pendingStartAuto);
+  }
+
   void initRetailerSession();
 }
 
 async function initRetailerSession(): Promise<void> {
-  armManualSession();
-
-  if (await isManualAutoStoppedInBackground()) {
+  const tabState = await getTabAutoStateFromBackground();
+  if (tabState.manualAutoStopped) {
     markRetailerAutoUserStopped();
     publishUiState("Stopped", false);
+    return;
+  }
+
+  if (tabState.running) {
     return;
   }
 
@@ -625,7 +774,7 @@ async function initRetailerSession(): Promise<void> {
     tryResumeAutoMode();
   } else if (isRetailerAutoUserStopped()) {
     publishUiState("Stopped", false);
-  } else {
+  } else if (!autoModeScheduled && !session.running) {
     publishUiState(
       isRetailerProductUrl(location.href)
         ? "Ready — press Start Auto Mode"

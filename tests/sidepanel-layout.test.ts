@@ -23,7 +23,7 @@ function status(overrides: Partial<ExtensionStatus>): ExtensionStatus {
     is_active: false,
     has_allowed_domains: false,
     allowed_domains: [],
-    retailer_auto_enabled: false,
+    retailer_auto_atc_enabled: false,
     retailer_refresh_interval_sec: 0,
     retailer_frontend_atc_enabled: true,
     retailer_backend_atc_enabled: false,

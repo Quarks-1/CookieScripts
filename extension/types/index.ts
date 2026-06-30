@@ -18,7 +18,7 @@ import type { WalmartOpenTabSummary } from "./walmart.ts";
 export interface ChannelTarget {
   channel_id: string;
   allowed_domains: string[];
-  retailer_auto_enabled?: boolean;
+  retailer_auto_atc_enabled?: boolean;
   /** Hard-refresh interval while main add-to-cart is disabled; 0 = off. */
   retailer_refresh_interval_sec?: number;
 }
@@ -80,7 +80,7 @@ export interface ExtensionStatus {
   is_active: boolean;
   has_allowed_domains: boolean;
   allowed_domains: string[];
-  retailer_auto_enabled: boolean;
+  retailer_auto_atc_enabled: boolean;
   retailer_refresh_interval_sec: number;
   retailer_frontend_atc_enabled: boolean;
   retailer_backend_atc_enabled: boolean;
@@ -147,6 +147,11 @@ export type BackgroundToContent =
       channel_id: string;
       url: string;
       source: "discord" | "manual";
+      refresh_interval_sec?: number;
+      frontend_atc_enabled?: boolean;
+      backend_atc_enabled?: boolean;
+      atc_quantity?: number;
+      use_max_quantity?: boolean;
     }
   | { type: "RETAILER_STOP_AUTO" }
   | { type: "RETAILER_START_MANUAL_AUTO" }
@@ -167,7 +172,7 @@ export type UiToBackground =
   | { type: "GET_HISTORY" }
   | { type: "CLEAR_HISTORY" }
   | { type: "GET_DETECTED_DOMAINS"; window_id?: number }
-  | { type: "SET_RETAILER_AUTO_ENABLED"; channel_id: string; enabled: boolean }
+  | { type: "SET_RETAILER_AUTO_ATC_ENABLED"; channel_id: string; enabled: boolean }
   | { type: "SET_RETAILER_REFRESH_INTERVAL"; channel_id: string; interval_sec: number }
   | { type: "SET_RETAILER_ATC_MODES"; frontend_enabled: boolean; backend_enabled: boolean }
   | {
@@ -211,7 +216,7 @@ export type BackgroundResponse =
       use_max_quantity: boolean;
     }
   | { ok: true; purchase_limit: number | null }
-  | { ok: true; manual_auto_stopped: boolean }
+  | { ok: true; manual_auto_stopped: boolean; ui_status: string; ui_running: boolean }
   | { ok: true; export: { downloadId: number; filename: string } }
   | { ok: true; ack: true; dropped?: boolean }
   | { ok: true; tabId: number }

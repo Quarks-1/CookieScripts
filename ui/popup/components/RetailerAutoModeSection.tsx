@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 
-import { EnableSlider } from "@shared/components/EnableSlider.tsx";
-
 function parseRefreshIntervalDraft(raw: string): number {
   if (raw.trim() === "") {
     return 0;
@@ -14,44 +12,32 @@ function parseRefreshIntervalDraft(raw: string): number {
 }
 
 interface RetailerAutoModeSectionProps {
-  retailerAutoEnabled: boolean;
   refreshIntervalSec: number;
   manualStatus: string;
   manualRunning: boolean;
-  showDiscordAutoToggle: boolean;
-  disabled: boolean;
   refreshDisabled: boolean;
-  saving: boolean;
-  saveError: string | null;
   savingRefresh: boolean;
   refreshError: string | null;
   acting: boolean;
   actionError: string | null;
   autoStartBlocked: boolean;
   purchaseLimit: number | null;
-  onChange: (enabled: boolean) => void;
   onRefreshIntervalChange: (intervalSec: number) => void;
   onStartManual: () => void;
   onStopManual: () => void;
 }
 
 export function RetailerAutoModeSection({
-  retailerAutoEnabled,
   refreshIntervalSec,
   manualStatus,
   manualRunning,
-  showDiscordAutoToggle,
-  disabled,
   refreshDisabled,
-  saving,
-  saveError,
   savingRefresh,
   refreshError,
   acting,
   actionError,
   autoStartBlocked,
   purchaseLimit,
-  onChange,
   onRefreshIntervalChange,
   onStartManual,
   onStopManual,
@@ -81,28 +67,8 @@ export function RetailerAutoModeSection({
         Target Auto Mode
       </h2>
       <div className="mt-2">
-        {showDiscordAutoToggle && (
-          <>
-            <EnableSlider
-              id="popup-retailer-auto-enabled"
-              label="Auto-open from Discord"
-              checked={retailerAutoEnabled}
-              disabled={disabled || saving || autoStartBlocked}
-              onChange={onChange}
-            />
-            <p className="mt-2 text-xs text-zinc-500">
-              Opens Target links in a new window, adds to cart, then goes to checkout start.
-            </p>
-            {autoStartBlocked && purchaseLimit != null && (
-              <p role="status" aria-live="polite" className="mt-1 text-xs text-red-300">
-                Quantity cannot exceed max ({purchaseLimit})
-              </p>
-            )}
-          </>
-        )}
-
         {manualStatus && (
-          <p className="mt-2 text-xs text-zinc-400" role="status" aria-live="polite">
+          <p className="text-xs text-zinc-400" role="status" aria-live="polite">
             {manualStatus}
           </p>
         )}
@@ -125,6 +91,12 @@ export function RetailerAutoModeSection({
             {acting && manualRunning ? "Stopping…" : "Stop Auto Mode"}
           </button>
         </div>
+
+        {autoStartBlocked && purchaseLimit != null && (
+          <p role="status" aria-live="polite" className="mt-2 text-xs text-red-300">
+            Quantity cannot exceed max ({purchaseLimit})
+          </p>
+        )}
 
         <label className="mt-3 block text-xs text-zinc-500" htmlFor="popup-retailer-refresh-interval">
           Hard refresh interval (seconds, 0 = off)
@@ -154,13 +126,7 @@ export function RetailerAutoModeSection({
           it becomes available.
         </p>
 
-        {saving && <p className="mt-1 text-xs text-zinc-500">Saving…</p>}
         {savingRefresh && <p className="mt-1 text-xs text-zinc-500">Saving refresh interval…</p>}
-        {saveError && (
-          <p role="status" aria-live="polite" className="mt-1 text-xs text-red-300">
-            {saveError}
-          </p>
-        )}
         {refreshError && (
           <p role="status" aria-live="polite" className="mt-1 text-xs text-red-300">
             {refreshError}
