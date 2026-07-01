@@ -1,21 +1,30 @@
 # Core extension
 
-Chrome MV3 service worker hub — message router, link opening pipeline, shared storage/status, sender auth.
+Chrome MV3 service worker hub — message router, link opening pipeline, shared storage/status, sender auth, side panel configuration.
 
 ## Key files
 
 | Area | Path |
 |---|---|
-| Entry | `background/service-worker.ts` |
+| Entry | `background/service-worker.ts` — gates handlers on `initPromise` (no top-level await in MV3) |
 | Message router | `background/handlers.ts` → domain handlers |
 | Sender auth | `background/sender-auth.ts` |
 | UI messages | `background/ui-handlers.ts` |
 | Status contract | `background/status.ts`, `types/status.ts` |
+| Status push | `background/status-notify.ts` |
+| Side panel | `background/side-panel.ts` (`configureSidePanel`) |
+| Active tab | `background/window-active-tab.ts`, `lib/active-tab.ts` |
 | Open tabs | `background/open-product-link.ts` |
 | Runtime dedup/state | `background/runtime-state.ts` |
-| Link pipeline | `lib/process-links.ts`, `lib/links.ts`, `lib/validate.ts` |
+| Link pipeline | `lib/process-links.ts`, `lib/links.ts`, `lib/validate.ts`, `lib/affiliate-unwrap.ts` |
 | Channel allowlists | `lib/channel-targets.ts`, `lib/storage.ts` |
+| UI bridge | `lib/messages.ts` (`sendToBackground` for side panel) |
+| Update check | `lib/check-for-update.ts`, `lib/version.ts` |
 | Types | `types/messages.ts`, `types/core.ts`, `types/index.ts` |
+
+### Shared lib (other)
+
+`lib/blocked-domains.ts`, `lib/ignored-domains.ts`, `lib/suggestion-domains.ts`, `lib/domains.ts`, `lib/channels.ts`, `lib/spa-navigation.ts`, `lib/constants.ts`, `lib/sleep.ts`, `lib/watch.ts`, `lib/recording/element-descriptor.ts`
 
 ## Data flow
 
@@ -36,7 +45,7 @@ When adding or changing a message:
 
 1. Extend unions in `types/messages.ts` (or domain types re-exported from `index.ts`).
 2. Add type guard in `background/handlers.ts` (`is*ContentMessage` / `isUiMessage`).
-3. Add handler in matching domain `background/handlers.ts`.
+3. Add handler in matching domain `background/handlers.ts` (or `ui-handlers.ts` for `UiToBackground`).
 4. Update `background/sender-auth.ts` only when adding a new content-script origin domain.
 5. Add/adjust tests in `tests/core/handlers-*.test.ts` or domain tests.
 
@@ -52,4 +61,10 @@ Global invariants and import rules: [AGENTS.md](../../AGENTS.md).
 
 ## Tests
 
-`tests/core/*` — handler splits: `handlers-discord.test.ts`, `handlers-target.test.ts`, `handlers-walmart.test.ts`, `handlers-ui.test.ts`; sender auth: `handlers-retailer-auth.test.ts`.
+`tests/core/*` — highlights:
+
+| Area | Files |
+|---|---|
+| Handler routing | `handlers-discord.test.ts`, `handlers-target.test.ts`, `handlers-walmart.test.ts`, `handlers-ui.test.ts`, `handlers-retailer-auth.test.ts` |
+| Link pipeline | covered in `tests/discord/process-links.test.ts`, `validate.test.ts`, `open-product-link.test.ts` |
+| Status / UI | `status.test.ts`, `ui-handlers-status.test.ts`, `sidepanel-layout.test.ts` |

@@ -8,7 +8,7 @@ Target.com product-page automation: add-to-cart, optional auto-checkout, hard re
 
 | Area | Path |
 |---|---|
-| Content entry | `content/entry.ts`, `content/entry-early.ts` |
+| Content entry | `content/entry.ts` (`document_end`), `content/entry-early.ts` (`document_start`) |
 | Session (split) | `content/session/index.ts` + siblings (see below) |
 | Playback | `content/automation/playback.ts`, `checkout-auto.ts` |
 | Pure logic | `lib/*` — barrel `@ext/domains/target/lib/index.ts` from core |
@@ -47,9 +47,19 @@ Source of truth: [extension/core/types/messages.ts](../../core/types/messages.ts
 - `BackgroundToContent`: `RETAILER_START_AUTO`, `RETAILER_STOP_AUTO`, `RETAILER_START_MANUAL_AUTO`, `RETAILER_GET_PURCHASE_LIMIT`, `RETAILER_PING`
 - `UiToBackground`: `SET_RETAILER_AUTO_ATC_ENABLED`, `SET_RETAILER_REFRESH_INTERVAL`, `SET_RETAILER_ATC_MODES`, `SET_RETAILER_ATC_QUANTITY`, `SET_RETAILER_AUTO_CHECKOUT_ENABLED`, `RETAILER_START_MANUAL_AUTO`, `RETAILER_STOP_MANUAL_AUTO`
 
-## Lib map
+## Lib map (by concern)
 
-`cart-api.ts`, `playback-engine.ts`, `auto-resume.ts`, `pending-start-auto.ts`, `page-refresh.ts`, `restock-wait.ts`, `lib/checkout/*`
+| Concern | Modules |
+|---|---|
+| Host / config | `host.ts`, `channel-config.ts` (barrel exports) |
+| ATC / cart | `cart-api.ts`, `cart-step.ts`, `cart-retry.ts`, `main-add-to-cart.ts`, `atc-route.ts`, `page-cart-probe-bridge.ts` |
+| Playback | `playback-engine.ts`, `pending-start-auto.ts`, `restock-wait.ts`, `waiting-disabled.ts` |
+| Refresh / resume | `page-refresh.ts`, `auto-resume.ts` |
+| Quantity | `quantity-limit.ts` (barrel export) |
+| Checkout | `lib/checkout/*` (`steps.ts`, `place-order.ts`, `checkout-state.ts`, `checkout-url.ts`, `waiting-checkout.ts`) |
+| DOM helpers | `dom.ts`, `selectors.ts` |
+
+Core/UI-core import settings helpers via `@ext/domains/target/lib/index.ts` only (see `eslint.config.js`).
 
 ## Invariants
 

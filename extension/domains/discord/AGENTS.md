@@ -11,7 +11,7 @@ Watches Discord channel tabs for product links and sends candidates to the backg
 | Domain detection | `content/detected-domains.ts`, `content/page-domains.ts` |
 | DOM selectors | `content/selectors.ts` — **only** edit selectors here; bump `SELECTOR_VERSION` |
 | Background handler | `background/handlers.ts` |
-| Link pipeline (core) | `@ext/core/lib/process-links.ts`, `links.ts`, `validate.ts` |
+| Link pipeline (core) | `@ext/core/lib/process-links.ts`, `links.ts`, `validate.ts`, `affiliate-unwrap.ts` |
 
 ## Data flow
 
@@ -35,13 +35,16 @@ Source of truth: [extension/core/types/messages.ts](../../core/types/messages.ts
 - Bootstrap quiet period (`MESSAGE_BOOTSTRAP_QUIET_MS`) prevents historical links on load.
 - Empty allowlist = observe only; `process-links` no-ops on `[]`.
 - Selectors only in `selectors.ts`; bump `SELECTOR_VERSION` after manual verification.
-- Thread URLs share parent channel allowlist; own messages are skipped.
+- Thread URLs share parent channel allowlist (`parseChannelId` uses parent segment).
+- Own messages are skipped (`isOwnMessage` in extract/session).
+- Prefer visible message `textContent` URLs over Discord redirect `href`s.
+- Side panel domain editor is Discord-surface only; allowlist edits debounce 400ms.
 
 Global invariants and import rules: [AGENTS.md](../../../AGENTS.md).
 
 ## Tests
 
-`tests/discord/*`
+`tests/discord/*` — extract, observers, process-links, affiliate-unwrap, page-domains
 
 ## UI
 

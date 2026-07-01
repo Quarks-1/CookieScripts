@@ -1,6 +1,10 @@
 # CookieScripts — Agent Guide
 
-Chrome MV3 extension: auto-opens allowlisted product links from Discord web channels. No Discord user token.
+Chrome MV3 extension with three capabilities:
+
+1. **Discord watch** — scans channel tabs for product links; opens allowlisted domains in background tabs (no Discord user token).
+2. **Target automation** — optional add-to-cart, hard refresh, restock wait, and auto-checkout on `target.com`.
+3. **Walmart research** — manual drop-day recorder with IndexedDB persistence and ZIP export (no auto-checkout).
 
 **Docs:** [README.md](./README.md) (install/update) · [AGENTS.md](./AGENTS.md) (this file) · [docs/archive/BUILD.md](./docs/archive/BUILD.md) (archived spec)
 
@@ -12,6 +16,8 @@ Chrome MV3 extension: auto-opens allowlisted product links from Discord web chan
 4. Side panel UI: [ui/popup/core/AGENTS.md](ui/popup/core/AGENTS.md) + `ui/popup/domains/{discord,target,walmart}/`
 
 **Naming:** folders/docs use **target**; storage/messages keep **retailer** (`RETAILER_*`, `retailer_*`).
+
+**UI naming:** Chrome loads the side panel from `ui/sidepanel/` (`manifest.json` → `side_panel.default_path`). The React app lives under `ui/popup/` (historical folder name). `ui/popup/index.html` is a local Vite preview entry only — not shipped in the extension.
 
 ## Documentation layers
 
@@ -50,11 +56,12 @@ flowchart TB
 |---|---|---|
 | Service worker / link pipeline / storage | [extension/core/AGENTS.md](extension/core/AGENTS.md) | `extension/core/background/*`, `extension/core/lib/*` |
 | Side panel shell / section visibility | [ui/popup/core/AGENTS.md](ui/popup/core/AGENTS.md) | `ui/popup/core/*`, `extension/core/background/ui-handlers.ts` |
-| Discord link detection / allowlists | [extension/domains/discord/AGENTS.md](extension/domains/discord/AGENTS.md) | `extension/domains/discord/background/handlers.ts` |
-| Side panel domain settings | Extension domain `AGENTS.md` § UI + `ui/popup/core/AGENTS.md` | `ui/popup/domains/*/hooks/*` |
+| Discord link detection / allowlists | [extension/domains/discord/AGENTS.md](extension/domains/discord/AGENTS.md) | `extension/domains/discord/background/handlers.ts`, `content/*` |
+| Side panel domain settings | Extension domain `AGENTS.md` § UI + `ui/popup/core/AGENTS.md` | `ui/popup/domains/*/hooks/*`, `components/*` |
 | Target automation / ATC | [extension/domains/target/AGENTS.md](extension/domains/target/AGENTS.md) | `extension/domains/target/content/session/*`, `lib/*` |
-| Walmart recording | [extension/domains/walmart/AGENTS.md](extension/domains/walmart/AGENTS.md) | `extension/domains/walmart/background/handlers/*`, `content/*` |
+| Walmart recording / auto-refresh | [extension/domains/walmart/AGENTS.md](extension/domains/walmart/AGENTS.md) | `extension/domains/walmart/background/handlers/*`, `content/*` |
 | New runtime message | [extension/core/AGENTS.md](extension/core/AGENTS.md) | `extension/core/types/messages.ts`, `extension/core/background/handlers.ts`, domain handlers, tests |
+| Manifest / permissions | This file § Critical invariants | `manifest.json` (no new sensitive permissions) |
 
 ## Repository layout
 
@@ -64,11 +71,21 @@ flowchart TB
 | `extension/domains/discord/` | Discord content + handlers |
 | `extension/domains/target/` | Target automation (content, lib, background, docs, scripts) |
 | `extension/domains/walmart/` | Walmart research recorder (content, lib, IDB, background) |
-| `ui/sidepanel/` | Production entry → `ui/popup/core/App.tsx` |
+| `ui/sidepanel/` | Production Chrome entry → `ui/popup/core/App.tsx` |
 | `ui/popup/core/` | App shell, layout, global hooks |
 | `ui/popup/domains/*/` | Domain-specific side panel components/hooks |
+| `ui/shared/` | Cross-domain React components + Tailwind entry (`@shared`) |
 | `tests/{core,discord,target,walmart,fixtures}/` | Vitest (mirrors domain layout) |
 | `public/injected/` | Page-context probes (cart, Walmart research) |
+| `manifest.json` | MV3 manifest (content scripts, permissions, side panel path) |
+| `vite.config.ts` | CRXJS + React build; path aliases `@ext`, `@shared` |
+
+## Path aliases
+
+| Alias | Resolves to | Used by |
+|---|---|---|
+| `@ext/*` | `extension/*` | Extension + UI imports |
+| `@shared/*` | `ui/shared/*` | Side panel shared components/styles |
 
 ## Import rules
 
@@ -97,21 +114,32 @@ flowchart LR
 
 Content scripts **never** open tabs — the service worker does.
 
+Pure logic belongs in `extension/core/lib/*` or domain `lib/*` (Vitest); keep `chrome.*` in background/content layers.
+
 ## Dev & test
+
+**Requires Node.js 20+** (`package.json` `engines`).
 
 ```bash
 npm install
-npm run dev          # CRXJS HMR
+npm run dev          # CRXJS HMR — load unpacked from dist/ after first build
 npm run build        # tsc -b && vite build → dist/
-npm test             # all tests
+npm run package      # build + zip cookiescripts-{version}.zip
+npm test             # all Vitest suites
+npm run test:watch   # Vitest watch mode
 npm run test:core    # tests/core
 npm run test:discord # tests/discord
 npm run test:target  # tests/target
 npm run test:walmart # tests/walmart
-npm run lint         # import boundary rules
+npm run lint         # import boundary rules + TypeScript ESLint
 ```
 
-After service-worker or manifest changes: reload on `chrome://extensions`, refresh Discord + Target + Walmart tabs.
+**Reload checklist** after service-worker or manifest changes:
+
+1. Reload extension on `chrome://extensions`
+2. Refresh open Discord, Target, and Walmart tabs
+
+**Before committing:** run `npm test` and `npm run lint`.
 
 ## Critical invariants
 
@@ -119,11 +147,14 @@ After service-worker or manifest changes: reload on `chrome://extensions`, refre
 2. **Empty allowlist** — observe only; `process-links` no-ops on `[]`.
 3. **Sender auth** — never bypass `extension/core/background/sender-auth.ts`.
 4. **Retailer job mutex** — one Target automation job at a time (`tryAcquireRetailerJob`).
-5. **Backend ATC** — cart API runs in page context via injected probe, not content script.
+5. **Backend ATC** — cart API runs in page context via `public/injected/cart-probe.js`, not content script.
 6. **No new permissions** — never add `cookies`, `webRequest`, or `<all_urls>`.
 7. **Discord selectors** — patch `extension/domains/discord/content/selectors.ts` only; bump `SELECTOR_VERSION`.
 8. **Domain isolation** — domains must not import each other.
 
 ## CI & release
 
-`.github/workflows/ci.yml` and `release.yml`: `npm ci` → `npm test` → `npm run lint` → `npm run build`.
+- **CI** (`.github/workflows/ci.yml`): on push/PR to `main` — `npm ci` → `npm test` → `npm run lint` → `npm run build`.
+- **Release** (`.github/workflows/release.yml`): on push to `main`, bumps patch version and publishes GitHub release zip — **skipped** when commit message contains `[skip ci]`.
+
+Use `[skip ci]` for documentation-only commits that should not trigger a release.
