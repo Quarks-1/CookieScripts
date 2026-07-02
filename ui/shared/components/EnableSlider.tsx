@@ -16,7 +16,7 @@ export function EnableSlider({
   return (
     <label
       htmlFor={id}
-      className={`flex items-center justify-between gap-3 text-sm ${disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
+      className={`flex w-full items-center justify-between gap-3 text-sm ${disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
     >
       <span className="text-zinc-300">{label}</span>
       <span className="relative inline-flex h-6 w-11 shrink-0">

@@ -10,6 +10,10 @@ import type { BackgroundResponse, WalmartToBackground } from "@ext/core/types/in
 import { tabUrlById } from "@ext/domains/walmart/background/handlers/shared.ts";
 import { handleWalmartAppend } from "@ext/domains/walmart/background/handlers/append.ts";
 import { handleWalmartAutoRefreshContentMessage } from "@ext/domains/walmart/background/handlers/auto-refresh.ts";
+import {
+  handleWalmartQueuePass,
+  handleWalmartQueueTabConsolidateRequest,
+} from "@ext/domains/walmart/background/handlers/queue-handlers.ts";
 
 export async function handleWalmartContentMessage(
   message: WalmartToBackground,
@@ -59,6 +63,10 @@ export async function handleWalmartContentMessage(
     case "WALMART_SYNC_AUTO_REFRESH":
     case "WALMART_HARD_RELOAD":
       return handleWalmartAutoRefreshContentMessage(message, sender);
+    case "WALMART_QUEUE_PASS":
+      return handleWalmartQueuePass(message, sender);
+    case "WALMART_QUEUE_TAB_CONSOLIDATE_REQUEST":
+      return handleWalmartQueueTabConsolidateRequest(message, sender);
     default:
       return { ok: false, error: "Unknown message" };
   }

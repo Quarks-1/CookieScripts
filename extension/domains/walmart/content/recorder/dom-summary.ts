@@ -30,7 +30,20 @@ export function scanDomSummary(root: ParentNode = document): {
 
   const landmarks: string[] = [];
   const bodyText = (document.body?.innerText ?? "").toLowerCase();
-  for (const phrase of ["queue", "waiting", "add to cart", "out of stock", "checkout", "sold out"]) {
+  for (const phrase of [
+    "queue",
+    "waiting",
+    "almost gone",
+    "hang tight",
+    "hold tight",
+    "high traffic",
+    "in line",
+    "ready to buy",
+    "add to cart",
+    "out of stock",
+    "checkout",
+    "sold out",
+  ]) {
     if (bodyText.includes(phrase)) {
       landmarks.push(phrase);
     }

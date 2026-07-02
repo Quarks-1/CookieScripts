@@ -22,6 +22,7 @@ describe("auto-markers", () => {
     );
     expect(detectAutoMarker("https://www.walmart.com/thankyou")?.label).toBe("Post-checkout");
     expect(detectAutoMarker("https://www.walmart.com/queue/waiting")?.label).toBe("Joined queue");
+    expect(detectAutoMarker("https://www.walmart.com/qp?qpdata=abc")?.label).toBe("Joined queue");
   });
 });
 

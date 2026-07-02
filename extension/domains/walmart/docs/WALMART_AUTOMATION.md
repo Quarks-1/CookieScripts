@@ -147,7 +147,33 @@ Missing headers → **412**, **418**, or **429** (Akamai shape detection, not ju
 | `[role="dialog"]` + `OverlayScrim_scrim` | Modals (consent, PX captcha) |
 | `#px-captcha` | PX press-hold widget |
 
-### Queue (drop day — partial)
+### Queue (drop day — July 2026 sessions)
+
+**URL:** `https://www.walmart.com/qp?qpdata=…` (not `/queue/…`). Page kind: `queue`.
+
+**Queue API** (`q-api.www.walmart.com`):
+| Endpoint | Signal |
+|----------|--------|
+| `validateTickets` | Ticket `state: "valid"` → queue pass; `pending` → consolidation trigger |
+| `issueTicket` | HTTP 200 → consolidation trigger |
+
+**DOM copy variants:**
+| Pattern | Meaning |
+|---------|---------|
+| `N item(s) ready to buy` | Homepage queue banner (`[data-testid="queue-banner"]`) — pass signal |
+| `Hold tight` + `high traffic` / `load this page when it's ready` | Throttle page — auto hard-refresh |
+| `We'll load this page when it's ready` | Throttle page |
+| `Highly requested` + `refresh when available` | Throttle page |
+| `almost gone`, `hang tight- we'll notify`, `hold my spot` | Queue-wait — **not** throttle |
+
+**Extension helpers (when enabled):**
+- Sound on queue pass (network valid ticket, banner ready-count increase, `/qp` → `/ip/` nav)
+- Tab consolidation: close extra `/qp` tabs; keep homepage or lowest tabId `/qp`
+- Throttle auto-refresh: global interval (default 10s), per-tab clock; reuses `WALMART_HARD_RELOAD`
+
+**Recording:** auto-marker `Joined queue` on `/qp`; `Past queue` on pass (recording tab only).
+
+### Queue (drop day — partial, pre-session)
 - No live queue DOM captured off-drop.
 - Bot docs: queue is mandatory for console/card drops; expect hold page + position UI.
 - Auto-marker: URL may stay on PDP while overlay/iframe queue runs; watch for GraphQL ops with `queue` in name and non-200 on `updateItems`.

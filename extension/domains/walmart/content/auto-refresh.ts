@@ -1,4 +1,4 @@
-import { WALMART_AUTO_REFRESH_STORAGE_KEY } from "@ext/domains/walmart/lib/constants.ts";
+import { WALMART_AUTO_REFRESH_STORAGE_KEY, WALMART_THROTTLE_ACTIVE_KEY } from "@ext/domains/walmart/lib/constants.ts";
 import {
   WALMART_AUTO_REFRESH_DEFAULT_INTERVAL_SEC,
   shouldWalmartHardRefresh,
@@ -79,6 +79,9 @@ function startTick(): void {
 }
 
 async function runTick(): Promise<void> {
+  if (sessionStorage.getItem(WALMART_THROTTLE_ACTIVE_KEY) === "1") {
+    return;
+  }
   if (
     !shouldWalmartHardRefresh(
       Date.now(),

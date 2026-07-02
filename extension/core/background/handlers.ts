@@ -53,7 +53,9 @@ function isWalmartContentMessage(message: RuntimeMessage): message is WalmartToB
     message.type === "WALMART_PING" ||
     message.type === "WALMART_GET_AUTO_REFRESH_CONFIG" ||
     message.type === "WALMART_SYNC_AUTO_REFRESH" ||
-    message.type === "WALMART_HARD_RELOAD"
+    message.type === "WALMART_HARD_RELOAD" ||
+    message.type === "WALMART_QUEUE_PASS" ||
+    message.type === "WALMART_QUEUE_TAB_CONSOLIDATE_REQUEST"
   );
 }
 

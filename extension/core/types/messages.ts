@@ -58,7 +58,18 @@ export type WalmartToBackground =
       interval_sec: number;
       last_refresh_at?: number;
     }
-  | { type: "WALMART_HARD_RELOAD" };
+  | { type: "WALMART_HARD_RELOAD" }
+  | {
+      type: "WALMART_QUEUE_PASS";
+      itemId: string;
+      queueId: string;
+      productName?: string;
+    }
+  | {
+      type: "WALMART_QUEUE_TAB_CONSOLIDATE_REQUEST";
+      trigger: "tickets_pending" | "issue_ticket" | "hold_spot" | "queue_banner";
+      homepageTabId?: number;
+    };
 
 export type BackgroundToContent =
   | { type: "WATCH_CONFIG"; channel_id: string | null; allowed_domains: string[] }

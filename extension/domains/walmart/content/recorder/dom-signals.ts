@@ -28,6 +28,19 @@ export function scanDomSignals(root: ParentNode = document): string[] {
   if (bodyText.includes("continue as guest")) {
     signals.push("guest_checkout");
   }
+  if (
+    (bodyText.includes("hold tight") && bodyText.includes("high traffic")) ||
+    bodyText.includes("we'll load this page when it's ready") ||
+    (bodyText.includes("highly requested") && bodyText.includes("refresh when available"))
+  ) {
+    signals.push("throttle_page");
+  }
+  if (
+    root.querySelector('[data-testid="queue-banner"]') ||
+    /you're in line/i.test(bodyText)
+  ) {
+    signals.push("queue_banner");
+  }
 
   return signals;
 }

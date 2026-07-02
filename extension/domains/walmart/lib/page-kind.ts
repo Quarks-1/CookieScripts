@@ -21,7 +21,13 @@ export function classifyWalmartPageKind(url: string): WalmartPageKind {
     if (path.includes("/blocked")) {
       return "blocked";
     }
-    if (path.includes("/queue") || path.includes("waitingroom") || path.includes("waiting-room")) {
+    if (
+      path === "/qp" ||
+      path.startsWith("/qp/") ||
+      path.includes("/queue") ||
+      path.includes("waitingroom") ||
+      path.includes("waiting-room")
+    ) {
       return "queue";
     }
     if (path === "/search" || path.startsWith("/search/")) {

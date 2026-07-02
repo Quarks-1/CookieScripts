@@ -55,6 +55,16 @@
         "https://walmart.com/*"
       ],
       "js": [
+        "extension/domains/walmart/content/entry-early.ts"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://www.walmart.com/*",
+        "https://walmart.com/*"
+      ],
+      "js": [
         "extension/domains/walmart/content/entry.ts"
       ],
       "run_at": "document_idle"
@@ -83,7 +93,9 @@
     {
       "resources": [
         "injected/cart-probe.js",
-        "injected/walmart-research-probe.js"
+        "injected/walmart-research-probe.js",
+        "injected/queue-probe.js",
+        "sounds/queue-pass.mp3"
       ],
       "matches": [
         "https://www.target.com/*",

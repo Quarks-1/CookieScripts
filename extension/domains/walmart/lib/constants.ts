@@ -26,3 +26,15 @@ export const TAB_CLOSE_FLUSH_WAIT_MS = 500;
 export const WALMART_PROBE_EVENT = "cookiescripts:walmart-probe";
 export const WALMART_PROBE_BRIDGE_ID = "cookiescripts-walmart-probe-bridge";
 export const WALMART_PROBE_SCRIPT_PATH = "injected/walmart-research-probe.js";
+
+export const QUEUE_PROBE_EVENT = "cookiescripts:walmart-queue-probe";
+export const QUEUE_PROBE_BRIDGE_ID = "cookiescripts-walmart-queue-probe";
+export const QUEUE_PROBE_SCRIPT_PATH = "injected/queue-probe.js";
+export const QUEUE_PASS_SOUND_PATH = "sounds/queue-pass.mp3";
+
+export const WALMART_QUEUE_PASS_SEEN_KEY = "cookiescripts:walmartQueuePassSeen";
+export const WALMART_LAST_READY_COUNT_KEY = "cookiescripts:walmartLastReadyCount";
+export const WALMART_THROTTLE_ACTIVE_KEY = "cookiescripts:walmartThrottleActive";
+export const WALMART_THROTTLE_REFRESH_STORAGE_KEY = "cookiescripts:walmartThrottleRefresh";
+
+export const WALMART_THROTTLE_DEFAULT_INTERVAL_SEC = 10;

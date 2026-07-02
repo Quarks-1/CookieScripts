@@ -21,6 +21,12 @@ export interface ExtensionSettings {
   retailer_use_max_quantity?: boolean;
   /** When true, continue through signed-in checkout to order confirmation. */
   retailer_auto_checkout_enabled?: boolean;
+  /** Default true when undefined — play beep on Walmart queue pass. */
+  walmart_queue_pass_sound_enabled?: boolean;
+  /** Default true when undefined — close duplicate /qp tabs during queue. */
+  walmart_consolidate_queue_tabs_enabled?: boolean;
+  /** Global throttle-page hard-refresh interval; default 10 when omitted. */
+  walmart_throttle_refresh_interval_sec?: number;
 }
 
 export type HistoryItemKind =

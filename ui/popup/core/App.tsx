@@ -24,6 +24,7 @@ import { WalmartResearchSection } from "../domains/walmart/components/WalmartRes
 import { WalmartAutoRefreshSection } from "../domains/walmart/components/WalmartAutoRefreshSection.tsx";
 import { useWalmartRecording } from "../domains/walmart/hooks/useWalmartRecording.ts";
 import { useWalmartAutoRefresh } from "../domains/walmart/hooks/useWalmartAutoRefresh.ts";
+import { useWalmartQueueSettings } from "../domains/walmart/hooks/useWalmartQueueSettings.ts";
 import { VersionStatus } from "./components/VersionStatus.tsx";
 import { usePopupStatus } from "./hooks/usePopupStatus.ts";
 import { useUpdateCheck } from "./hooks/useUpdateCheck.ts";
@@ -61,6 +62,10 @@ export default function App() {
     status?.any_walmart_tab_open ?? false,
   );
   const walmartAutoRefresh = useWalmartAutoRefresh(
+    status?.walmart_tab_detected === true,
+    status?.enabled ?? false,
+  );
+  const walmartQueueSettings = useWalmartQueueSettings(
     status?.walmart_tab_detected === true,
     status?.enabled ?? false,
   );
@@ -152,14 +157,26 @@ export default function App() {
         <WalmartAutoRefreshSection
           enabled={walmartAutoRefresh.autoRefreshEnabled}
           refreshIntervalSec={walmartAutoRefresh.refreshIntervalSec}
+          throttleRefreshIntervalSec={walmartQueueSettings.throttleRefreshIntervalSec}
+          queuePassSoundEnabled={walmartQueueSettings.queuePassSoundEnabled}
+          consolidateQueueTabsEnabled={walmartQueueSettings.consolidateQueueTabsEnabled}
           disabled={!status.enabled || enabling}
           savingRefresh={walmartAutoRefresh.savingRefresh}
           savingEnabled={walmartAutoRefresh.savingEnabled}
+          savingQueueSettings={walmartQueueSettings.saving}
           refreshError={walmartAutoRefresh.refreshError}
           enableError={walmartAutoRefresh.enableError}
+          queueSettingsError={walmartQueueSettings.error}
           onEnabledChange={(next) => void walmartAutoRefresh.handleEnabledChange(next)}
           onRefreshIntervalChange={(intervalSec) =>
             void walmartAutoRefresh.handleRefreshIntervalChange(intervalSec)
+          }
+          onThrottleRefreshIntervalChange={(intervalSec) =>
+            void walmartQueueSettings.handleThrottleIntervalChange(intervalSec)
+          }
+          onQueuePassSoundChange={(next) => void walmartQueueSettings.handleQueuePassSoundChange(next)}
+          onConsolidateQueueTabsChange={(next) =>
+            void walmartQueueSettings.handleConsolidateQueueTabsChange(next)
           }
         />
       )}
