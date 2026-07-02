@@ -46,6 +46,7 @@ Source of truth: [extension/core/types/messages.ts](../../core/types/messages.ts
 - `RetailerToBackground`: `RETAILER_AUTO_STATUS`, `RETAILER_GET_AUTO_CONFIG`, `RETAILER_SET_REFRESH_INTERVAL`, `RETAILER_HARD_RELOAD`, `RETAILER_PING`, `RETAILER_GET_TAB_AUTO_STATE`, `RETAILER_SYNC_MANUAL_STOP`, `RETAILER_SYNC_MANUAL_START`, `RETAILER_UI_STATE`, `RETAILER_PURCHASE_LIMIT_SNAPSHOT`
 - `BackgroundToContent`: `RETAILER_START_AUTO`, `RETAILER_STOP_AUTO`, `RETAILER_START_MANUAL_AUTO`, `RETAILER_GET_PURCHASE_LIMIT`, `RETAILER_PING`
 - `UiToBackground`: `SET_RETAILER_AUTO_ATC_ENABLED`, `SET_RETAILER_REFRESH_INTERVAL`, `SET_RETAILER_ATC_MODES`, `SET_RETAILER_ATC_QUANTITY`, `SET_RETAILER_AUTO_CHECKOUT_ENABLED`, `RETAILER_START_MANUAL_AUTO`, `RETAILER_STOP_MANUAL_AUTO`
+- Content `RETAILER_SET_REFRESH_INTERVAL` and UI `SET_RETAILER_REFRESH_INTERVAL` are distinct messages for the same concern.
 
 ## Lib map (by concern)
 
@@ -65,7 +66,7 @@ Core/UI-core import settings helpers via `@ext/domains/target/lib/index.ts` only
 
 - `retailer_*` naming for persisted keys and messages.
 - One automation job at a time (`tryAcquireRetailerJob`).
-- Backend ATC via `public/injected/cart-probe.js`, not content script.
+- Backend ATC via `public/injected/cart-probe.js` (runtime path `injected/cart-probe.js`), not content script.
 - Hard refresh resume uses Target tab `sessionStorage` (`auto-resume.ts`).
 - Avoid re-monolithing `content/session/`.
 

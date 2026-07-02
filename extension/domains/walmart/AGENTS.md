@@ -13,7 +13,8 @@ Also provides optional hard-refresh auto-refresh on Walmart tabs (separate from 
 | Auto refresh | `content/auto-refresh.ts`, `background/handlers/auto-refresh.ts`, `background/auto-refresh-tab-events.ts` |
 | Recorder | `content/recorder/*` |
 | Background handlers | `background/handlers/{index,shared,recording-lifecycle,tab-events,append,ui-messages,content-messages,auto-refresh}.ts` |
-| IDB / export | `lib/idb/*`, `background/export.ts` |
+| Background support | `background/runtime-state.ts` (`tryAcquireExport`, recording metrics), `background/tabs.ts`, `background/tab-message.ts` |
+| IDB / export | `lib/idb/*`, `background/export.ts` (uses `downloads` permission) |
 | Page probe | `lib/page-probe-bridge.ts` → `public/injected/walmart-research-probe.js` |
 | Types | `types/walmart.ts` (re-exported via `@ext/core/types/index.ts`) |
 | Docs / scripts | `docs/WALMART_RECORDING.md`, `docs/WALMART_AUTOMATION.md`, `scripts/debug-walmart-tab-pills.mjs` |
@@ -57,10 +58,11 @@ Source of truth: [extension/core/types/messages.ts](../../core/types/messages.ts
 
 - Content → background: `WALMART_RECORDING_APPEND`, `WALMART_RECORDING_REATTACH`, `WALMART_PING`, `WALMART_GET_AUTO_REFRESH_CONFIG`, `WALMART_SYNC_AUTO_REFRESH`, `WALMART_HARD_RELOAD`
 - Background → content: `WALMART_RECORDING_START`, `WALMART_RECORDING_STOP`, `WALMART_RECORDING_MARK`, `WALMART_AUTO_REFRESH_CONFIG`
-- UI: `WALMART_RECORDING` (action union), `SET_WALMART_AUTO_REFRESH_ENABLED`, `SET_WALMART_REFRESH_INTERVAL`
+- UI: `WALMART_RECORDING` (action union: `start` \| `stop` \| `mark` \| `clear` \| `export` in `types/walmart.ts`), `SET_WALMART_AUTO_REFRESH_ENABLED`, `SET_WALMART_REFRESH_INTERVAL`
 
 ## Invariants
 
+- One global recording session across all Walmart tabs.
 - Manual research only — no auto-checkout, no Discord link opening.
 - Content never writes IndexedDB — background handlers persist via IDB lib.
 - Inject research probe only while recording (`lib/page-probe-bridge.ts`).

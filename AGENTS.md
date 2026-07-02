@@ -45,8 +45,8 @@ flowchart TB
 | `extension/core/AGENTS.md` | Service worker, link pipeline, types, storage | New core module or message routing change |
 | `ui/popup/core/AGENTS.md` | Side panel shell, section visibility, status contract | New global UI section or status field |
 | Domain `AGENTS.md` | File map, messages, domain invariants | Folder restructure, new handler module |
-| `.cursor/rules/*.mdc` | Non-negotiable gotchas (auto-injected); ~20 lines | Invariant changes only |
-| `docs/*.md` | Behavioral spec / research | Selector or flow research updates |
+| `.cursor/rules/*.mdc` | Non-negotiable gotchas (auto-injected); includes `runtime-messages.mdc` for message changes | Invariant changes only |
+| `extension/domains/{target,walmart}/docs/*.md` | Behavioral spec / research | Selector or flow research updates |
 
 **Never in AGENTS.md:** sprint status, TODOs, duplicated selector tables, payload field docs (use `messages.ts`).
 
@@ -71,12 +71,13 @@ flowchart TB
 | `extension/domains/discord/` | Discord content + handlers |
 | `extension/domains/target/` | Target automation (content, lib, background, docs, scripts) |
 | `extension/domains/walmart/` | Walmart research recorder (content, lib, IDB, background) |
-| `ui/sidepanel/` | Production Chrome entry → `ui/popup/core/App.tsx` |
+| `ui/sidepanel/` | Production Chrome entry: `index.html` → `main.tsx` → `ui/popup/core/App.tsx` |
 | `ui/popup/core/` | App shell, layout, global hooks |
 | `ui/popup/domains/*/` | Domain-specific side panel components/hooks |
 | `ui/shared/` | Cross-domain React components + Tailwind entry (`@shared`) |
-| `tests/{core,discord,target,walmart,fixtures}/` | Vitest (mirrors domain layout) |
-| `public/injected/` | Page-context probes (cart, Walmart research) |
+| `tests/{core,discord,target,walmart,fixtures}/` | Vitest (mirrors domain layout; `fixtures/` = handler setup + Target checkout HTML) |
+| `public/injected/` | Page-context probes (source); built as `injected/*.js` in `dist/` |
+| `icons/` | Extension toolbar / store icons |
 | `manifest.json` | MV3 manifest (content scripts, permissions, side panel path) |
 | `vite.config.ts` | CRXJS + React build; path aliases `@ext`, `@shared` |
 
@@ -93,12 +94,12 @@ flowchart TB
 |---|---|
 | Production types (`extension/**`, `ui/popup/core/**`, `ui/shared/**`) | `@ext/core/types/index.ts` only |
 | Core / UI-core needing domain **lib** | `@ext/domains/{target,walmart}/lib/index.ts` barrel |
-| UI domain hooks/components (`ui/popup/domains/{target,walmart}/**`) | Own-domain lib deep-import OK; types via `@ext/core/types/index.ts` |
+| UI domain hooks/components (`ui/popup/domains/{discord,target,walmart}/**`) | Own-domain lib deep-import OK (Discord has no `lib/`); types via `@ext/core/types/index.ts` |
 | Core needing domain **background** | Deep `@ext/domains/*/background/**` |
 | Domain code | `@ext/core/**` + own `@ext/domains/{self}/**` only |
 | Tests | Deep imports OK |
 
-Enforced by `eslint.config.js` for lib barrels and domain isolation (`npm run lint`).
+**ESLint** (`eslint.config.js`) enforces domain isolation and Target/Walmart lib barrels. The `@ext/core/types/index.ts` rule is convention, not lint-enforced. Core may deep-import `@ext/domains/target/lib/{host,channel-config,quantity-limit}.ts` for chunk-safe imports (see `eslint.config.js`).
 
 ## Architecture (brief)
 
@@ -106,7 +107,7 @@ Enforced by `eslint.config.js` for lib barrels and domain isolation (`npm run li
 flowchart LR
   discord[discord.com] -->|CHANNEL_ACTIVE / CANDIDATE_LINKS| SW[core/background]
   target[target.com] -->|RETAILER_*| SW
-  walmart[walmart.com] -->|WALMART_RECORDING_*| SW
+  walmart[walmart.com] -->|WALMART_RECORDING_* / auto-refresh| SW
   SW --> UI[side panel React]
   SW --> Store[(chrome.storage)]
   SW --> IDB[(Walmart IDB)]
@@ -115,6 +116,19 @@ flowchart LR
 Content scripts **never** open tabs — the service worker does.
 
 Pure logic belongs in `extension/core/lib/*` or domain `lib/*` (Vitest); keep `chrome.*` in background/content layers.
+
+## Manifest & permissions
+
+Current `manifest.json` (do not add `cookies`, `webRequest`, or `<all_urls>`):
+
+| Kind | Values |
+|---|---|
+| `permissions` | `storage`, `tabs`, `windows`, `sidePanel`, `downloads` |
+| `host_permissions` | `discord.com`, `target.com` (+ `www`), `carts.target.com`, `walmart.com` (+ `www`), `api.github.com` |
+| `side_panel.default_path` | `ui/sidepanel/index.html` |
+| `web_accessible_resources` | `injected/cart-probe.js`, `injected/walmart-research-probe.js` (Target + Walmart origins) |
+
+Content scripts: Discord (`document_idle`), Target early (`document_start`) + main (`document_end`), Walmart (`document_idle`).
 
 ## Dev & test
 
@@ -155,6 +169,6 @@ npm run lint         # import boundary rules + TypeScript ESLint
 ## CI & release
 
 - **CI** (`.github/workflows/ci.yml`): on push/PR to `main` — `npm ci` → `npm test` → `npm run lint` → `npm run build`.
-- **Release** (`.github/workflows/release.yml`): on push to `main`, bumps patch version and publishes GitHub release zip — **skipped** when commit message contains `[skip ci]`.
+- **Release** (`.github/workflows/release.yml`): on push to `main`, bumps patch version and publishes GitHub release zip — **skipped** when commit message contains `[skip ci]`. CI still runs on `[skip ci]` pushes.
 
 Use `[skip ci]` for documentation-only commits that should not trigger a release.

@@ -6,7 +6,7 @@ React shell for the Chrome side panel — section visibility, global hooks, stat
 
 | Entry | Path | Role |
 |---|---|---|
-| Production | `ui/sidepanel/main.tsx` → `App.tsx` | Loaded by Chrome `side_panel.default_path` |
+| Production | `ui/sidepanel/index.html` → `main.tsx` → `ui/popup/core/App.tsx` | Loaded by Chrome `side_panel.default_path` |
 | Local preview | `ui/popup/core/main.tsx` via `ui/popup/index.html` | Vite dev only; not in extension package |
 
 Shared styles: `@shared/index.css` (`ui/shared/`).
@@ -19,7 +19,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 | Section gating | `sidepanel-layout.ts` (`isSectionVisible`) |
 | Global hooks | `hooks/usePopupStatus.ts`, `hooks/useUpdateCheck.ts` |
 | Shared components | `components/VersionStatus.tsx`, `ui/shared/components/*` |
-| Background bridge | `@ext/core/lib/messages.ts` (`sendToBackground`, `getExtensionSettings`) |
+| Background bridge | `@ext/core/lib/messages.ts` (`sendToBackground`, `getExtensionSettings`, `getSidePanelWindowId`) |
 | Status source | `extension/core/background/status.ts` (`buildStatus`) |
 | UI message handler | `extension/core/background/ui-handlers.ts` |
 
@@ -40,6 +40,8 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 
 **Exception:** `WalmartAutoRefreshSection` renders when `status.walmart_tab_detected`, directly below Enable extension.
 
+**Exception:** **Enable Auto ATC** slider (`SET_RETAILER_AUTO_ATC_ENABLED`) renders on `active_tab_kind === "discord_channel"` — not gated by `isSectionVisible`; configures per-channel Auto ATC for opened Target links.
+
 ## Domain UI map
 
 | Domain | Path |
@@ -47,6 +49,17 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 | Discord | `ui/popup/domains/discord/components/*`, `hooks/*` |
 | Target | `ui/popup/domains/target/components/*`, `hooks/*` |
 | Walmart | `ui/popup/domains/walmart/components/*`, `hooks/*` |
+
+### Hooks (by domain)
+
+| Domain | Hooks |
+|---|---|
+| Core | `usePopupStatus`, `useUpdateCheck` |
+| Discord | `useChannelDomainsEditor`, `useDetectedLinks`, `useLinkHistory` |
+| Target | `useRetailerAutoMode`, `useRetailerAtcMode`, `useRetailerAtcQuantity`, `useRetailerAutoCheckout` |
+| Walmart | `useWalmartRecording`, `useWalmartAutoRefresh` |
+
+`LinkHistory` component lives in `@shared/components/LinkHistory.tsx` (not under discord domain).
 
 ## Messages
 
