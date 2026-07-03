@@ -4,7 +4,7 @@ Chrome MV3 extension with three capabilities:
 
 1. **Discord watch** — scans channel tabs for product links; opens allowlisted domains in background tabs (no Discord user token).
 2. **Target automation** — optional add-to-cart, hard refresh, restock wait, and auto-checkout on `target.com`.
-3. **Walmart research** — manual drop-day recorder with IndexedDB persistence and ZIP export (no auto-checkout).
+3. **Walmart research** — manual drop-day recorder with IndexedDB persistence and ZIP export; optional hard-refresh auto-refresh and queue helpers (pass alert, tab consolidation, throttle refresh). No auto-checkout.
 
 **Docs:** [README.md](./README.md) (install/update) · [AGENTS.md](./AGENTS.md) (this file) · [docs/archive/BUILD.md](./docs/archive/BUILD.md) (archived spec)
 
@@ -12,8 +12,16 @@ Chrome MV3 extension with three capabilities:
 
 1. Types: `@ext/core/types/index.ts` for extension + UI-core; domain UI may deep-import own lib only
 2. Core service worker: [extension/core/AGENTS.md](extension/core/AGENTS.md)
-3. Domain code: `extension/domains/{discord,target,walmart}/` — [per-domain AGENTS.md](extension/domains/discord/AGENTS.md)
+3. Domain code: [discord](extension/domains/discord/AGENTS.md) · [target](extension/domains/target/AGENTS.md) · [walmart](extension/domains/walmart/AGENTS.md) under `extension/domains/`
 4. Side panel UI: [ui/popup/core/AGENTS.md](ui/popup/core/AGENTS.md) + `ui/popup/domains/{discord,target,walmart}/`
+
+## Agent workflow
+
+1. Match your task to **Task routing** below and open the linked layer-specific `AGENTS.md`.
+2. Put pure logic in `extension/core/lib/*` or domain `lib/*` (Vitest); keep `chrome.*` in background/content layers.
+3. New runtime messages: follow [extension/core/AGENTS.md](extension/core/AGENTS.md) § Messages and `.cursor/rules/runtime-messages.mdc`.
+4. After service-worker or manifest edits: reload extension on `chrome://extensions`, then refresh Discord, Target, and Walmart tabs.
+5. Before committing code: `npm test` and `npm run lint`. Documentation-only commits on `main`: include `[skip ci]` in the commit message to skip the release workflow (CI still runs).
 
 **Naming:** folders/docs use **target**; storage/messages keep **retailer** (`RETAILER_*`, `retailer_*`).
 
@@ -59,7 +67,7 @@ flowchart TB
 | Discord link detection / allowlists | [extension/domains/discord/AGENTS.md](extension/domains/discord/AGENTS.md) | `extension/domains/discord/background/handlers.ts`, `content/*` |
 | Side panel domain settings | Extension domain `AGENTS.md` § UI + `ui/popup/core/AGENTS.md` | `ui/popup/domains/*/hooks/*`, `components/*` |
 | Target automation / ATC | [extension/domains/target/AGENTS.md](extension/domains/target/AGENTS.md) | `extension/domains/target/content/session/*`, `lib/*` |
-| Walmart recording / auto-refresh | [extension/domains/walmart/AGENTS.md](extension/domains/walmart/AGENTS.md) | `extension/domains/walmart/background/handlers/*`, `content/*` |
+| Walmart recording / auto-refresh / queue | [extension/domains/walmart/AGENTS.md](extension/domains/walmart/AGENTS.md) | `extension/domains/walmart/background/handlers/*`, `content/*`, `lib/queue-*` |
 | New runtime message | [extension/core/AGENTS.md](extension/core/AGENTS.md) | `extension/core/types/messages.ts`, `extension/core/background/handlers.ts`, domain handlers, tests |
 | Manifest / permissions | This file § Critical invariants | `manifest.json` (no new sensitive permissions) |
 
@@ -77,6 +85,7 @@ flowchart TB
 | `ui/shared/` | Cross-domain React components + Tailwind entry (`@shared`) |
 | `tests/{core,discord,target,walmart,fixtures}/` | Vitest (mirrors domain layout; `fixtures/` = handler setup + Target checkout HTML) |
 | `public/injected/` | Page-context probes (source); built as `injected/*.js` in `dist/` |
+| `public/sounds/` | Extension assets (e.g. Walmart queue-pass alert) |
 | `icons/` | Extension toolbar / store icons |
 | `manifest.json` | MV3 manifest (content scripts, permissions, side panel path) |
 | `vite.config.ts` | CRXJS + React build; path aliases `@ext`, `@shared` |
@@ -107,7 +116,7 @@ flowchart TB
 flowchart LR
   discord[discord.com] -->|CHANNEL_ACTIVE / CANDIDATE_LINKS| SW[core/background]
   target[target.com] -->|RETAILER_*| SW
-  walmart[walmart.com] -->|WALMART_RECORDING_* / auto-refresh| SW
+  walmart[walmart.com] -->|WALMART_RECORDING_* / queue / auto-refresh| SW
   SW --> UI[side panel React]
   SW --> Store[(chrome.storage)]
   SW --> IDB[(Walmart IDB)]
@@ -126,9 +135,9 @@ Current `manifest.json` (do not add `cookies`, `webRequest`, or `<all_urls>`):
 | `permissions` | `storage`, `tabs`, `windows`, `sidePanel`, `downloads` |
 | `host_permissions` | `discord.com`, `target.com` (+ `www`), `carts.target.com`, `walmart.com` (+ `www`), `api.github.com` |
 | `side_panel.default_path` | `ui/sidepanel/index.html` |
-| `web_accessible_resources` | `injected/cart-probe.js`, `injected/walmart-research-probe.js` (Target + Walmart origins) |
+| `web_accessible_resources` | `injected/cart-probe.js`, `injected/walmart-research-probe.js`, `injected/queue-probe.js`, `sounds/queue-pass.mp3` (Target + Walmart origins) |
 
-Content scripts: Discord (`document_idle`), Target early (`document_start`) + main (`document_end`), Walmart (`document_idle`).
+Content scripts: Discord (`document_idle`); Target early (`document_start`) + main (`document_end`); Walmart early (`document_start`, queue probe) + main (`document_idle`).
 
 ## Dev & test
 

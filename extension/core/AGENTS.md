@@ -29,6 +29,7 @@ Chrome MV3 service worker hub — message router, link opening pipeline, shared 
 - Startup → `configureSidePanel`, `loadWalmartRecordingState`.
 - Tab listeners: Walmart auto-refresh, core dedup flush, Target retailer cleanup, Walmart recording teardown.
 - Window listener: Target retailer window cleanup.
+- `onSuspend` (when supported) → `flushRecentUrls()` before SW teardown.
 
 ### Shared lib (other)
 
@@ -75,4 +76,5 @@ Global invariants and import rules: [AGENTS.md](../../AGENTS.md).
 |---|---|
 | Handler routing | `handlers-discord.test.ts`, `handlers-target.test.ts`, `handlers-walmart.test.ts`, `handlers-ui.test.ts`, `handlers-retailer-auth.test.ts` |
 | Link pipeline | `tests/discord/process-links.test.ts`, `tests/core/validate.test.ts`, `tests/core/open-product-link.test.ts` |
-| Status / UI | `status.test.ts`, `ui-handlers-status.test.ts`, `sidepanel-layout.test.ts`, `messages.test.ts` |
+| Status / UI | `status.test.ts`, `status-notify.test.ts`, `ui-handlers-status.test.ts`, `sidepanel-layout.test.ts`, `messages.test.ts` |
+| Storage / tabs | `channel-targets.test.ts`, `active-tab.test.ts`, `check-for-update.test.ts` |

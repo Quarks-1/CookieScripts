@@ -8,13 +8,13 @@ Target.com product-page automation: add-to-cart, optional auto-checkout, hard re
 
 | Area | Path |
 |---|---|
-| Content entry | `content/entry.ts` (`document_end`), `content/entry-early.ts` (`document_start`) |
+| Content entry | `content/entry.ts` (`document_end`), `content/entry-early.ts` (`document_start` — stashes `RETAILER_START_AUTO` until session ready) |
 | Session (split) | `content/session/index.ts` + siblings (see below) |
 | Playback | `content/automation/playback.ts`, `checkout-auto.ts` |
 | Pure logic | `lib/*` — barrel `@ext/domains/target/lib/index.ts` from core |
 | Background | `background/handlers.ts`, `runtime-state.ts`, `tab-ready.ts`, `tab-message.ts` |
 | Types | `types/retailer.ts` (re-exported via `@ext/core/types/index.ts`) |
-| Research | `docs/TARGET_AUTOMATION.md`, `scripts/target-*.mjs` |
+| Research | `docs/TARGET_AUTOMATION.md`, `scripts/target-*.mjs` (local Playwright/API probes — not shipped) |
 
 ## Session modules (`content/session/`)
 

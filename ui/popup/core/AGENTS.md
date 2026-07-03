@@ -38,7 +38,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 
 **Exception:** `TargetAtcToggles` in `App.tsx` renders when `status.retailer_tab_detected` (focused Target tab), independent of `retailerAuto` section gating.
 
-**Exception:** `WalmartAutoRefreshSection` renders when `status.walmart_tab_detected`, directly below Enable extension.
+**Exception:** `WalmartAutoRefreshSection` renders when `status.walmart_tab_detected`, directly below Enable extension. It bundles hard-refresh auto-refresh **and** queue helpers (throttle refresh interval, pass sound, consolidate queue tabs) via `useWalmartAutoRefresh` + `useWalmartQueueSettings`.
 
 **Exception:** **Enable Auto ATC** slider (`SET_RETAILER_AUTO_ATC_ENABLED`) renders on `active_tab_kind === "discord_channel"` — not gated by `isSectionVisible`; configures per-channel Auto ATC for opened Target links.
 
@@ -57,7 +57,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 | Core | `usePopupStatus`, `useUpdateCheck` |
 | Discord | `useChannelDomainsEditor`, `useDetectedLinks`, `useLinkHistory` |
 | Target | `useRetailerAutoMode`, `useRetailerAtcMode`, `useRetailerAtcQuantity`, `useRetailerAutoCheckout` |
-| Walmart | `useWalmartRecording`, `useWalmartAutoRefresh` |
+| Walmart | `useWalmartRecording`, `useWalmartAutoRefresh`, `useWalmartQueueSettings` |
 
 `LinkHistory` component lives in `@shared/components/LinkHistory.tsx` (not under discord domain).
 
@@ -70,6 +70,8 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 - Walmart: `WALMART_RECORDING` (action union), `SET_WALMART_AUTO_REFRESH_ENABLED`, `SET_WALMART_REFRESH_INTERVAL`
 
 Focused-window actions may pass optional `window_id`; hooks use `getSidePanelWindowId()`.
+
+Walmart queue settings (`walmart_queue_pass_sound_enabled`, `walmart_consolidate_queue_tabs_enabled`, `walmart_throttle_refresh_interval_sec` in `types/core.ts`) persist via `getExtensionSettings` / `saveExtensionSettings` — not separate `UiToBackground` messages.
 
 ## Invariants
 
