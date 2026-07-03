@@ -1,4 +1,5 @@
 import { normalizeDomain } from "@ext/core/lib/domains.ts";
+import { normalizeKeywordList } from "@ext/core/lib/keywords.ts";
 import { allowlistIncludesRetailerHost } from "@ext/domains/target/lib/host.ts";
 import type { ChannelTarget, ExtensionSettings } from "@ext/core/types/index.ts";
 
@@ -11,6 +12,17 @@ export function getChannelTarget(
 
 export function getChannelDomains(settings: ExtensionSettings, channelId: string): string[] {
   return getChannelTarget(settings, channelId)?.allowed_domains ?? [];
+}
+
+export function getChannelKeywords(
+  settings: ExtensionSettings,
+  channelId: string,
+): { positive: string[]; negative: string[] } {
+  const target = getChannelTarget(settings, channelId);
+  return {
+    positive: target?.positive_keywords ?? [],
+    negative: target?.negative_keywords ?? [],
+  };
 }
 
 function normalizeDomainList(domains: string[]): string[] {
@@ -27,6 +39,17 @@ function normalizeDomainList(domains: string[]): string[] {
   return result;
 }
 
+function cleanupKeywordFields(row: ChannelTarget): ChannelTarget {
+  const next = { ...row };
+  if (!next.positive_keywords?.length) {
+    delete next.positive_keywords;
+  }
+  if (!next.negative_keywords?.length) {
+    delete next.negative_keywords;
+  }
+  return next;
+}
+
 function buildChannelTargetRow(
   channelId: string,
   allowedDomains: string[],
@@ -38,6 +61,8 @@ function buildChannelTargetRow(
     allowed_domains: allowedDomains,
     retailer_auto_atc_enabled: existing?.retailer_auto_atc_enabled,
     retailer_refresh_interval_sec: existing?.retailer_refresh_interval_sec,
+    positive_keywords: existing?.positive_keywords,
+    negative_keywords: existing?.negative_keywords,
     ...patch,
   };
 
@@ -56,7 +81,7 @@ function buildChannelTargetRow(
     delete merged.retailer_refresh_interval_sec;
   }
 
-  return merged;
+  return cleanupKeywordFields(merged);
 }
 
 export function mergeChannelTarget(
@@ -83,6 +108,44 @@ export function upsertChannelDomains(
   domains: string[],
 ): ExtensionSettings {
   return mergeChannelTarget(settings, channelId, { allowed_domains: domains });
+}
+
+export function upsertChannelDiscordTarget(
+  settings: ExtensionSettings,
+  channelId: string,
+  patch: {
+    allowed_domains: string[];
+    positive_keywords: string[];
+    negative_keywords: string[];
+  },
+): ExtensionSettings {
+  const allowedDomains = normalizeDomainList(patch.allowed_domains);
+  if (allowedDomains.length === 0) {
+    throw new Error("Add at least one allowed domain first");
+  }
+
+  return mergeChannelTarget(settings, channelId, {
+    allowed_domains: allowedDomains,
+    positive_keywords: normalizeKeywordList(patch.positive_keywords),
+    negative_keywords: normalizeKeywordList(patch.negative_keywords),
+  });
+}
+
+export function upsertChannelKeywords(
+  settings: ExtensionSettings,
+  channelId: string,
+  positive: string[],
+  negative: string[],
+): ExtensionSettings {
+  const domains = getChannelDomains(settings, channelId);
+  if (domains.length === 0) {
+    throw new Error("Add at least one allowed domain first");
+  }
+  return upsertChannelDiscordTarget(settings, channelId, {
+    allowed_domains: domains,
+    positive_keywords: positive,
+    negative_keywords: negative,
+  });
 }
 
 export function addChannelDomain(

@@ -1,6 +1,7 @@
 import {
   extractAuthor,
   extractLinksFromMessage,
+  extractMessageText,
   getMessageId,
   isOwnMessage,
 } from "@ext/domains/discord/content/extract.ts";
@@ -152,6 +153,7 @@ function onMessageAdded(node: Element): void {
     channel_id: channelId,
     urls,
     author: extractAuthor(node),
+    message_text: extractMessageText(node),
   });
 }
 

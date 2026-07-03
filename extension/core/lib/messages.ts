@@ -1,4 +1,4 @@
-import { upsertChannelDomains } from "@ext/core/lib/channel-targets.ts";
+import { upsertChannelDiscordTarget, upsertChannelDomains } from "@ext/core/lib/channel-targets.ts";
 import { sleep } from "@ext/core/lib/sleep.ts";
 import type {
   BackgroundResponse,
@@ -54,6 +54,23 @@ export async function saveChannelDomains(
 ): Promise<void> {
   const settings = await getExtensionSettings();
   const next = upsertChannelDomains(settings, channelId, domains);
+  await saveExtensionSettings(next);
+}
+
+export async function saveChannelDiscordSettings(
+  channelId: string,
+  patch: {
+    domains: string[];
+    positiveKeywords: string[];
+    negativeKeywords: string[];
+  },
+): Promise<void> {
+  const settings = await getExtensionSettings();
+  const next = upsertChannelDiscordTarget(settings, channelId, {
+    allowed_domains: patch.domains,
+    positive_keywords: patch.positiveKeywords,
+    negative_keywords: patch.negativeKeywords,
+  });
   await saveExtensionSettings(next);
 }
 

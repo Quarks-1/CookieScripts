@@ -146,4 +146,60 @@ describe("handleMessage — target", () => {
     ]);
     releaseRetailerJob("222");
   });
+
+  it("does not open target window on negative-only keyword match", async () => {
+    const storage: Record<string, unknown> = {
+      "cookiescripts:settings": {
+        enabled: true,
+        channel_targets: [
+          buildChannelTarget({
+            channel_id: "222",
+            allowed_domains: ["target.com"],
+            retailer_auto_atc_enabled: true,
+            negative_keywords: ["chaos rising"],
+          }),
+        ],
+      },
+      "cookiescripts:history": [],
+      "cookiescripts:recentUrls": [],
+    };
+    vi.mocked(chrome.storage.local.get).mockImplementation(async (keys) => {
+      const keyList = Array.isArray(keys) ? keys : [keys];
+      const result: Record<string, unknown> = {};
+      for (const key of keyList) {
+        if (storage[key] !== undefined) {
+          result[key] = storage[key];
+        }
+      }
+      return result;
+    });
+    vi.mocked(chrome.storage.local.set).mockImplementation(async (items) => {
+      Object.assign(storage, items);
+    });
+
+    const sender = mockContentSender({
+      extensionId: EXTENSION_ID,
+      tabUrl: "https://discord.com/channels/111/222",
+    });
+
+    const response = await handleMessage(
+      {
+        type: "CANDIDATE_LINKS",
+        channel_id: "222",
+        urls: ["https://www.target.com/p/foo/-/A-123"],
+        message_text: "restock chaos rising today",
+      },
+      sender,
+    );
+
+    expect(response).toEqual({ ok: true, opened: [], duplicates: [] });
+    expect(chrome.windows.create).not.toHaveBeenCalled();
+    expect(chrome.tabs.create).not.toHaveBeenCalled();
+    expect(storage["cookiescripts:history"]).toEqual([
+      expect.objectContaining({
+        kind: "keyword_skipped",
+        url: "https://www.target.com/p/foo/-/A-123",
+      }),
+    ]);
+  });
 });

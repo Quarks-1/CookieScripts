@@ -49,4 +49,23 @@ describe("validateChannelTarget", () => {
       /allowed domain/i,
     );
   });
+
+  it("rejects keyword longer than max length", () => {
+    expect(
+      validateChannelTarget(
+        buildChannelTarget({ positive_keywords: ["a".repeat(65)] }),
+      ),
+    ).toMatch(/positive_keywords/i);
+  });
+
+  it("rejects overlapping positive and negative keywords", () => {
+    expect(
+      validateChannelTarget(
+        buildChannelTarget({
+          positive_keywords: ["scam"],
+          negative_keywords: ["scam"],
+        }),
+      ),
+    ).toMatch(/overlap/i);
+  });
 });

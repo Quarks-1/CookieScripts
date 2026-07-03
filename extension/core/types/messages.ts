@@ -12,7 +12,13 @@ import type { ExtensionStatus } from "@ext/core/types/status.ts";
 export type ContentToBackground =
   | { type: "CHANNEL_ACTIVE"; channel_id: string }
   | { type: "CHANNEL_INACTIVE" }
-  | { type: "CANDIDATE_LINKS"; channel_id: string; urls: string[]; author?: string }
+  | {
+      type: "CANDIDATE_LINKS";
+      channel_id: string;
+      urls: string[];
+      author?: string;
+      message_text?: string;
+    }
   | { type: "ADD_ALLOWED_DOMAIN"; channel_id: string; domain: string }
   | { type: "IGNORE_DOMAIN"; channel_id: string; domain: string };
 

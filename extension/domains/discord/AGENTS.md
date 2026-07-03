@@ -11,23 +11,24 @@ Watches Discord channel tabs for product links and sends candidates to the backg
 | Domain detection | `content/detected-domains.ts`, `content/page-domains.ts` |
 | DOM selectors | `content/selectors.ts` — **only** edit selectors here; bump `SELECTOR_VERSION` |
 | Background handler | `background/handlers.ts` — link open (`openPassiveProductTab` / `openRetailerProductWindow` when Auto ATC enabled) |
-| Link pipeline (core) | `@ext/core/lib/process-links.ts`, `links.ts`, `validate.ts`, `affiliate-unwrap.ts` |
+| Link pipeline (core) | `@ext/core/lib/process-links.ts`, `links.ts`, `validate.ts`, `affiliate-unwrap.ts`, `keywords.ts` |
 
 ## Data flow
 
 ```mermaid
 flowchart LR
   attach[channel attach] --> observer[observers]
-  observer --> candidates[CANDIDATE_LINKS]
+  observer --> candidates[CANDIDATE_LINKS + message_text]
   candidates --> processLinks[process-links]
-  processLinks --> openTab[open-product-link]
+  processLinks --> keywordGate[keywords gate in handlers]
+  keywordGate --> openTab[open-product-link]
 ```
 
 ## Messages
 
 Source of truth: [extension/core/types/messages.ts](../../core/types/messages.ts).
 
-- Content → background: `CHANNEL_ACTIVE`, `CHANNEL_INACTIVE`, `CANDIDATE_LINKS`, `ADD_ALLOWED_DOMAIN`, `IGNORE_DOMAIN`
+- Content → background: `CHANNEL_ACTIVE`, `CHANNEL_INACTIVE`, `CANDIDATE_LINKS` (optional `message_text`), `ADD_ALLOWED_DOMAIN`, `IGNORE_DOMAIN`
 - Background → content: `WATCH_CONFIG`, `PING`, `SCAN_DETECTED_DOMAINS` (sent from `extension/core/background/ui-handlers.ts` on `GET_DETECTED_DOMAINS`)
 
 ## Invariants
@@ -38,7 +39,8 @@ Source of truth: [extension/core/types/messages.ts](../../core/types/messages.ts
 - Thread URLs share parent channel allowlist (`parseChannelId` uses parent segment).
 - Own messages are skipped (`isOwnMessage` in extract/session).
 - Prefer visible message `textContent` URLs over Discord redirect `href`s.
-- Side panel domain editor is Discord-surface only; allowlist edits debounce 400ms.
+- Side panel domain + keyword editor is Discord-surface only; settings debounce 400ms via `useChannelDiscordSettings`.
+- Per-channel positive/negative keywords gate auto-open in `background/handlers.ts` (`shouldOpenByKeywords`); skipped links use history kind `keyword_skipped`.
 - When per-channel **Auto ATC** is enabled, Target product links open in a separate window with automation (`shouldOpenRetailerWindow` / `openRetailerProductWindow` in core `open-product-link.ts`); other allowlisted links open as passive background tabs.
 
 Global invariants and import rules: [AGENTS.md](../../../AGENTS.md).
@@ -51,6 +53,6 @@ Core link pipeline tests: `tests/core/validate.test.ts`, `tests/core/open-produc
 
 ## UI
 
-Side panel domains editor, detected links: `ui/popup/domains/discord/`. Link history uses `@shared/components/LinkHistory.tsx`.
+Side panel domains/keywords editor, detected links: `ui/popup/domains/discord/`. Link history uses `@shared/components/LinkHistory.tsx`.
 
 Manifest: content script `run_at: document_idle` on `https://discord.com/channels/*`.

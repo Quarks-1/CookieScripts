@@ -16,7 +16,7 @@ Chrome MV3 service worker hub — message router, link opening pipeline, shared 
 | Active tab | `background/window-active-tab.ts`, `lib/active-tab.ts` |
 | Open tabs | `background/open-product-link.ts` |
 | Runtime dedup/state | `background/runtime-state.ts` |
-| Link pipeline | `lib/process-links.ts`, `lib/links.ts`, `lib/validate.ts`, `lib/affiliate-unwrap.ts` |
+| Link pipeline | `lib/process-links.ts`, `lib/links.ts`, `lib/validate.ts`, `lib/affiliate-unwrap.ts`, `lib/keywords.ts` |
 | Channel allowlists | `lib/channel-targets.ts`, `lib/storage.ts` |
 | UI bridge | `lib/messages.ts` — side panel (`sendToBackground`, `getExtensionStatus`, `getSidePanelWindowId`, …) and Discord content (`sendCandidateLinks`, `sendChannelInactive`, …) |
 | Update check | `lib/check-for-update.ts`, `lib/version.ts` |

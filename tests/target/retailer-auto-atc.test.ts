@@ -65,6 +65,28 @@ describe("setRetailerAutoAtcEnabled", () => {
     const next = setRetailerAutoAtcEnabled(settings, "222", false);
     expect(next.channel_targets[0]?.retailer_auto_atc_enabled).toBeUndefined();
   });
+
+  it("preserves channel keywords when toggling auto atc", () => {
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      channel_targets: [
+        buildChannelTarget({
+          channel_id: "222",
+          allowed_domains: ["target.com"],
+          positive_keywords: ["pokemon"],
+          negative_keywords: ["scam"],
+        }),
+      ],
+    };
+    const next = setRetailerAutoAtcEnabled(settings, "222", true);
+    expect(next.channel_targets[0]).toEqual({
+      channel_id: "222",
+      allowed_domains: ["target.com"],
+      positive_keywords: ["pokemon"],
+      negative_keywords: ["scam"],
+      retailer_auto_atc_enabled: true,
+    });
+  });
 });
 
 describe("migrateRetailerAutoAtcChannelFlags", () => {

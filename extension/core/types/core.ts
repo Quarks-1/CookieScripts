@@ -4,6 +4,10 @@ export interface ChannelTarget {
   retailer_auto_atc_enabled?: boolean;
   /** Hard-refresh interval while main add-to-cart is disabled; 0 = off. */
   retailer_refresh_interval_sec?: number;
+  /** Case-insensitive substring allow overrides for negative matches. */
+  positive_keywords?: string[];
+  /** Case-insensitive substring block when no positive match. */
+  negative_keywords?: string[];
 }
 
 export interface ExtensionSettings {
@@ -32,6 +36,7 @@ export interface ExtensionSettings {
 export type HistoryItemKind =
   | "opened"
   | "duplicate"
+  | "keyword_skipped"
   | "retailer_window_opened"
   | "retailer_auto_queued"
   | "retailer_auto_success"

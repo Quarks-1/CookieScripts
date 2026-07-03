@@ -1,3 +1,4 @@
+import { MAX_MESSAGE_TEXT_LENGTH } from "@ext/core/lib/constants.ts";
 import { extractUrls, isHttpOrHttpsUrl } from "@ext/core/lib/links.ts";
 import { AUTHOR, OWN_MESSAGE } from "@ext/domains/discord/content/selectors.ts";
 
@@ -47,6 +48,13 @@ export function extractAuthor(root: Element): string {
 
 function dedupeUrls(urls: string[]): string[] {
   return [...new Set(urls)];
+}
+
+export function extractMessageText(root: Element): string {
+  const text = root.textContent ?? "";
+  return text.length > MAX_MESSAGE_TEXT_LENGTH
+    ? text.slice(0, MAX_MESSAGE_TEXT_LENGTH)
+    : text;
 }
 
 export function extractLinksFromMessage(root: Element): string[] {

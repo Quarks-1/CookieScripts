@@ -2,12 +2,13 @@ import { useCallback, useEffect, useState } from "react";
 
 import { STORAGE_KEYS } from "@ext/core/lib/constants.ts";
 import { addIgnoredDomain } from "@ext/core/lib/ignored-domains.ts";
-import { getDetectedDomains, saveChannelDomains } from "@ext/core/lib/messages.ts";
+import { getDetectedDomains } from "@ext/core/lib/messages.ts";
 
 export function useDetectedLinks(
   channelId: string | null,
   enabled: boolean,
   allowedDomains: string[],
+  onAcceptDomain: (domain: string) => Promise<void>,
 ) {
   const [domains, setDomains] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -63,7 +64,7 @@ export function useDetectedLinks(
       setActing(true);
       setError(null);
       try {
-        await saveChannelDomains(channelId, [...allowedDomains, domain]);
+        await onAcceptDomain(domain);
         setDomains((current) => current.filter((d) => d !== domain));
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to add domain");
@@ -71,7 +72,7 @@ export function useDetectedLinks(
         setActing(false);
       }
     },
-    [allowedDomains, channelId, enabled],
+    [channelId, enabled, onAcceptDomain],
   );
 
   const handleDismiss = useCallback(

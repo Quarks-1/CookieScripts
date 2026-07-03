@@ -92,6 +92,159 @@ describe("handleMessage — discord", () => {
     });
   });
 
+  it("skips allowlisted links on negative-only keyword match", async () => {
+    const storage: Record<string, unknown> = {
+      "cookiescripts:settings": {
+        enabled: true,
+        channel_targets: [
+          buildChannelTarget({
+            channel_id: "222",
+            allowed_domains: ["walmart.com"],
+            negative_keywords: ["scam"],
+          }),
+        ],
+      },
+      "cookiescripts:history": [],
+      "cookiescripts:recentUrls": [],
+    };
+    vi.mocked(chrome.storage.local.get).mockImplementation(async (keys) => {
+      const keyList = Array.isArray(keys) ? keys : [keys];
+      const result: Record<string, unknown> = {};
+      for (const key of keyList) {
+        if (storage[key] !== undefined) {
+          result[key] = storage[key];
+        }
+      }
+      return result;
+    });
+    vi.mocked(chrome.storage.local.set).mockImplementation(async (items) => {
+      Object.assign(storage, items);
+    });
+
+    const sender = mockContentSender({
+      extensionId: EXTENSION_ID,
+      tabUrl: "https://discord.com/channels/111/222",
+    });
+
+    const response = await handleMessage(
+      {
+        type: "CANDIDATE_LINKS",
+        channel_id: "222",
+        urls: ["https://walmart.com/item"],
+        author: "alice",
+        message_text: "this is a scam link",
+      },
+      sender,
+    );
+
+    expect(response).toEqual({ ok: true, opened: [], duplicates: [] });
+    expect(chrome.tabs.create).not.toHaveBeenCalled();
+    expect(storage["cookiescripts:history"]).toEqual([
+      expect.objectContaining({
+        kind: "keyword_skipped",
+        url: "https://walmart.com/item",
+      }),
+    ]);
+    expect(recentUrlKeys.size).toBe(0);
+  });
+
+  it("opens when positive keyword overrides negative match", async () => {
+    const settings = {
+      enabled: true,
+      channel_targets: [
+        buildChannelTarget({
+          channel_id: "222",
+          allowed_domains: ["walmart.com"],
+          positive_keywords: ["pokemon"],
+          negative_keywords: ["scam"],
+        }),
+      ],
+    };
+    vi.mocked(chrome.storage.local.get).mockImplementation(async (keys) => {
+      const keyList = Array.isArray(keys) ? keys : [keys];
+      const result: Record<string, unknown> = {};
+      for (const key of keyList) {
+        if (key === "cookiescripts:settings") {
+          result[key] = settings;
+        } else if (key === "cookiescripts:history") {
+          result[key] = [];
+        } else if (key === "cookiescripts:recentUrls") {
+          result[key] = [];
+        }
+      }
+      return result;
+    });
+
+    const sender = mockContentSender({
+      extensionId: EXTENSION_ID,
+      tabUrl: "https://discord.com/channels/111/222",
+    });
+
+    const response = await handleMessage(
+      {
+        type: "CANDIDATE_LINKS",
+        channel_id: "222",
+        urls: ["https://walmart.com/item"],
+        message_text: "pokemon scam deal",
+      },
+      sender,
+    );
+
+    expect(response).toMatchObject({
+      ok: true,
+      opened: ["https://walmart.com/item"],
+    });
+    expect(chrome.tabs.create).toHaveBeenCalled();
+  });
+
+  it("opens when neither keyword matches", async () => {
+    const settings = {
+      enabled: true,
+      channel_targets: [
+        buildChannelTarget({
+          channel_id: "222",
+          allowed_domains: ["walmart.com"],
+          negative_keywords: ["scam"],
+        }),
+      ],
+    };
+    vi.mocked(chrome.storage.local.get).mockImplementation(async (keys) => {
+      const keyList = Array.isArray(keys) ? keys : [keys];
+      const result: Record<string, unknown> = {};
+      for (const key of keyList) {
+        if (key === "cookiescripts:settings") {
+          result[key] = settings;
+        } else if (key === "cookiescripts:history") {
+          result[key] = [];
+        } else if (key === "cookiescripts:recentUrls") {
+          result[key] = [];
+        }
+      }
+      return result;
+    });
+
+    const sender = mockContentSender({
+      extensionId: EXTENSION_ID,
+      tabUrl: "https://discord.com/channels/111/222",
+    });
+
+    const response = await handleMessage(
+      {
+        type: "CANDIDATE_LINKS",
+        channel_id: "222",
+        urls: ["https://walmart.com/item"],
+        message_text: "random deal",
+      },
+      sender,
+    );
+
+    expect(response).toMatchObject({
+      ok: true,
+      opened: ["https://walmart.com/item"],
+    });
+    expect(chrome.tabs.create).toHaveBeenCalled();
+  });
+
   it("does not open links when channel has no allowlist", async () => {
     vi.mocked(chrome.storage.local.get).mockImplementation(async (keys) => {
       const keyList = Array.isArray(keys) ? keys : [keys];

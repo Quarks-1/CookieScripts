@@ -1,5 +1,6 @@
 import { resolveContentChannel } from "@ext/core/lib/channels.ts";
-import { addChannelDomain, getChannelDomains } from "@ext/core/lib/channel-targets.ts";
+import { addChannelDomain, getChannelDomains, getChannelKeywords } from "@ext/core/lib/channel-targets.ts";
+import { shouldOpenByKeywords } from "@ext/core/lib/keywords.ts";
 import { decideLinkActions } from "@ext/core/lib/process-links.ts";
 import { addIgnoredDomain } from "@ext/core/lib/ignored-domains.ts";
 import { getSettings, prependHistory, saveSettings } from "@ext/core/lib/storage.ts";
@@ -80,6 +81,36 @@ export async function handleDiscordMessage(
           channelId,
           author: message.author,
         });
+
+        const { positive, negative } = getChannelKeywords(settings, channelId);
+        const keywordAllowed = shouldOpenByKeywords(
+          message.message_text ?? "",
+          positive,
+          negative,
+        );
+
+        if (!keywordAllowed && decision.toOpen.length > 0) {
+          const now = new Date().toISOString();
+          const skippedHistory: HistoryItem[] = decision.toOpen.map((url) => ({
+            kind: "keyword_skipped",
+            url,
+            author: message.author ?? "unknown",
+            channel_id: channelId,
+            timestamp: now,
+          }));
+          const duplicateHistory = decision.historyEntries.filter(
+            (entry) => entry.kind === "duplicate",
+          );
+          if (skippedHistory.length > 0 || duplicateHistory.length > 0) {
+            await prependHistory([...skippedHistory, ...duplicateHistory]);
+          }
+
+          result = {
+            opened: [],
+            duplicates: decision.duplicates,
+          };
+          return;
+        }
 
         mergeDedupKeys(decision.newDedupKeys);
         scheduleRecentUrlsPersist();

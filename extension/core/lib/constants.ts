@@ -1,6 +1,9 @@
 export const RECENT_URL_LIMIT = 500;
 export const HISTORY_LIMIT = 200;
 export const MAX_URLS_PER_MESSAGE = 20;
+export const MAX_KEYWORDS_PER_LIST = 50;
+export const MAX_KEYWORD_LENGTH = 64;
+export const MAX_MESSAGE_TEXT_LENGTH = 8_000;
 export const RECENT_URLS_DEBOUNCE_MS = 1000;
 
 export const GITHUB_OWNER = "Quarks-1";

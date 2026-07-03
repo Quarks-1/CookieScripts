@@ -10,8 +10,9 @@ import { LinkHistory } from "@shared/components/LinkHistory.tsx";
 import { EnableSlider } from "@shared/components/EnableSlider.tsx";
 import { WatchStatusBadge } from "@shared/components/WatchStatusBadge.tsx";
 import { ChannelDomainsSection } from "../domains/discord/components/ChannelDomainsSection.tsx";
+import { ChannelKeywordsSection } from "../domains/discord/components/ChannelKeywordsSection.tsx";
 import { DetectedLinksSection } from "../domains/discord/components/DetectedLinksSection.tsx";
-import { useChannelDomainsEditor } from "../domains/discord/hooks/useChannelDomainsEditor.ts";
+import { useChannelDiscordSettings } from "../domains/discord/hooks/useChannelDiscordSettings.ts";
 import { useDetectedLinks } from "../domains/discord/hooks/useDetectedLinks.ts";
 import { useLinkHistory } from "../domains/discord/hooks/useLinkHistory.ts";
 import { RetailerAutoModeSection } from "../domains/target/components/RetailerAutoModeSection.tsx";
@@ -34,14 +35,15 @@ export default function App() {
   const { status, loading, error, refresh } = usePopupStatus();
   const discordSurface = status?.active_tab_kind === "discord_channel";
   const retailerSurface = status?.active_tab_kind === "retailer";
-  const domainsEditor = useChannelDomainsEditor(
+  const discordSettings = useChannelDiscordSettings(
     discordSurface ? (status?.active_channel_id ?? null) : null,
     (status?.enabled ?? false) && discordSurface,
   );
   const detectedLinks = useDetectedLinks(
     discordSurface ? (status?.active_channel_id ?? null) : null,
     (status?.enabled ?? false) && discordSurface,
-    domainsEditor.domains,
+    discordSettings.domains,
+    discordSettings.handleAcceptDomain,
   );
   const linkHistory = useLinkHistory();
   const updateCheck = useUpdateCheck();
@@ -182,35 +184,60 @@ export default function App() {
       )}
 
       {discordSurface && status !== null && (
-        <section aria-labelledby="popup-auto-atc-heading" className="mt-2">
-          <h2 id="popup-auto-atc-heading" className="sr-only">
-            Auto ATC
-          </h2>
-          <EnableSlider
-            id="popup-retailer-auto-atc"
-            label="Enable Auto ATC"
-            checked={status.retailer_auto_atc_enabled}
-            disabled={
-              !status.enabled ||
-              enabling ||
-              autoAtcSaving ||
-              status.active_channel_id === null ||
-              !status.has_allowed_domains
-            }
-            onChange={(next) => void handleAutoAtcChange(next)}
-          />
-          <p className="mt-1 text-xs text-zinc-500">
-            {status.has_allowed_domains
-              ? "For this channel: opens Target product links in a new window and runs add-to-cart automation."
-              : "Add at least one allowed domain to enable Auto ATC."}
-          </p>
-          {autoAtcSaving && <p className="mt-1 text-xs text-zinc-500">Saving…</p>}
-          {autoAtcError && (
-            <p role="status" aria-live="polite" className="mt-1 text-xs text-red-300">
-              {autoAtcError}
+        <>
+          <section aria-labelledby="popup-auto-atc-heading" className="mt-3">
+            <h2 id="popup-auto-atc-heading" className="sr-only">
+              Auto ATC
+            </h2>
+            <EnableSlider
+              id="popup-retailer-auto-atc"
+              label="Enable Auto ATC"
+              checked={status.retailer_auto_atc_enabled}
+              disabled={
+                !status.enabled ||
+                enabling ||
+                autoAtcSaving ||
+                status.active_channel_id === null ||
+                !status.has_allowed_domains
+              }
+              onChange={(next) => void handleAutoAtcChange(next)}
+            />
+            <p className="mt-1 text-xs text-zinc-500">
+              {status.has_allowed_domains
+                ? "For this channel: opens Target product links in a new window and runs add-to-cart automation."
+                : "Add at least one allowed domain to enable Auto ATC."}
             </p>
-          )}
-        </section>
+            {autoAtcSaving && <p className="mt-1 text-xs text-zinc-500">Saving…</p>}
+            {autoAtcError && (
+              <p role="status" aria-live="polite" className="mt-1 text-xs text-red-300">
+                {autoAtcError}
+              </p>
+            )}
+          </section>
+
+          <div className="mt-3 space-y-3">
+            {isSectionVisible("watchStatus", status) && (
+              <section aria-label="Status">
+                <WatchStatusBadge status={status} />
+              </section>
+            )}
+
+            <ChannelKeywordsSection
+              channelId={status.active_channel_id}
+              positiveKeywords={discordSettings.positiveKeywords}
+              negativeKeywords={discordSettings.negativeKeywords}
+              disabled={
+                discordSettings.disabled ||
+                enabling ||
+                !status.has_allowed_domains
+              }
+              saving={discordSettings.saving}
+              saveError={discordSettings.saveError}
+              onPositiveKeywordsChange={discordSettings.handlePositiveKeywordsChange}
+              onNegativeKeywordsChange={discordSettings.handleNegativeKeywordsChange}
+            />
+          </div>
+        </>
       )}
 
       {status?.retailer_tab_detected && (
@@ -250,21 +277,15 @@ export default function App() {
       )}
 
       {status && !loading && (
-        <div className="mt-4 space-y-4">
-          {isSectionVisible("watchStatus", status) && (
-            <section aria-label="Status">
-              <WatchStatusBadge status={status} />
-            </section>
-          )}
-
+        <div className={`space-y-3 ${discordSurface ? "mt-3" : "mt-4"}`}>
           {isSectionVisible("channelDomains", status) && (
             <ChannelDomainsSection
               channelId={status.active_channel_id}
-              domains={domainsEditor.domains}
-              disabled={domainsEditor.disabled || enabling}
-              saving={domainsEditor.saving}
-              saveError={domainsEditor.saveError}
-              onDomainsChange={domainsEditor.handleDomainsChange}
+              domains={discordSettings.domains}
+              disabled={discordSettings.disabled || enabling}
+              saving={discordSettings.saving}
+              saveError={discordSettings.saveError}
+              onDomainsChange={discordSettings.handleDomainsChange}
             />
           )}
 

@@ -5,9 +5,11 @@ import { describe, expect, it } from "vitest";
 import {
   extractAuthor,
   extractLinksFromMessage,
+  extractMessageText,
   getMessageId,
   isOwnMessage,
 } from "@ext/domains/discord/content/extract.ts";
+import { MAX_MESSAGE_TEXT_LENGTH } from "@ext/core/lib/constants.ts";
 
 describe("getMessageId", () => {
   it("parses snowflake from chat-messages id", () => {
@@ -62,6 +64,20 @@ describe("extractAuthor", () => {
 
   it("returns unknown when author missing", () => {
     expect(extractAuthor(document.createElement("div"))).toBe("unknown");
+  });
+});
+
+describe("extractMessageText", () => {
+  it("returns text content from message root", () => {
+    const root = document.createElement("div");
+    root.textContent = "restock chaos rising today";
+    expect(extractMessageText(root)).toBe("restock chaos rising today");
+  });
+
+  it("truncates very long text", () => {
+    const root = document.createElement("div");
+    root.textContent = "a".repeat(MAX_MESSAGE_TEXT_LENGTH + 100);
+    expect(extractMessageText(root)).toHaveLength(MAX_MESSAGE_TEXT_LENGTH);
   });
 });
 

@@ -25,7 +25,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 
 ### Shared components (`ui/shared/components/`)
 
-`EnableSlider`, `WatchStatusBadge`, `LinkHistory`, `DomainPills`, `DetectedLinkPills`
+`EnableSlider`, `WatchStatusBadge`, `LinkHistory`, `DomainPills`, `DetectedLinkPills`, `KeywordPills`
 
 ## Section visibility
 
@@ -40,7 +40,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 
 **Exception:** `WalmartAutoRefreshSection` renders when `status.walmart_tab_detected`, directly below Enable extension. It bundles hard-refresh auto-refresh **and** queue helpers (throttle refresh interval, pass sound, consolidate queue tabs) via `useWalmartAutoRefresh` + `useWalmartQueueSettings`.
 
-**Exception:** **Enable Auto ATC** slider (`SET_RETAILER_AUTO_ATC_ENABLED`) renders on `active_tab_kind === "discord_channel"` — not gated by `isSectionVisible`; configures per-channel Auto ATC for opened Target links.
+**Exception:** **Enable Auto ATC** slider and **Link keywords** section render on `active_tab_kind === "discord_channel"` — not gated by `isSectionVisible`; Auto ATC configures per-channel Target automation; keywords filter all auto-opened links.
 
 ## Domain UI map
 
@@ -55,7 +55,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 | Domain | Hooks |
 |---|---|
 | Core | `usePopupStatus`, `useUpdateCheck` |
-| Discord | `useChannelDomainsEditor`, `useDetectedLinks`, `useLinkHistory` |
+| Discord | `useChannelDiscordSettings`, `useDetectedLinks`, `useLinkHistory` |
 | Target | `useRetailerAutoMode`, `useRetailerAtcMode`, `useRetailerAtcQuantity`, `useRetailerAutoCheckout` |
 | Walmart | `useWalmartRecording`, `useWalmartAutoRefresh`, `useWalmartQueueSettings` |
 
