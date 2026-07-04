@@ -63,15 +63,11 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 
 ## Messages
 
-`UiToBackground` in [extension/core/types/messages.ts](../../../extension/core/types/messages.ts):
-
-- Status/settings: `GET_STATUS`, `GET_SETTINGS`, `SAVE_SETTINGS`, `GET_HISTORY`, `CLEAR_HISTORY`, `GET_DETECTED_DOMAINS`
-- Target: `SET_RETAILER_AUTO_ATC_ENABLED`, `SET_RETAILER_REFRESH_INTERVAL`, `SET_RETAILER_ATC_MODES`, `SET_RETAILER_ATC_QUANTITY`, `SET_RETAILER_AUTO_CHECKOUT_ENABLED`, `RETAILER_START_MANUAL_AUTO`, `RETAILER_STOP_MANUAL_AUTO`
-- Walmart: `WALMART_RECORDING` (action union), `SET_WALMART_AUTO_REFRESH_ENABLED`, `SET_WALMART_REFRESH_INTERVAL`
+Source of truth: [extension/core/types/messages.ts](../../../extension/core/types/messages.ts). Handler: `extension/core/background/ui-handlers.ts`. How to add/change: `.cursor/rules/runtime-messages.mdc`.
 
 Focused-window actions may pass optional `window_id`; hooks use `getSidePanelWindowId()`.
 
-Walmart queue settings (`walmart_queue_pass_sound_enabled`, `walmart_consolidate_queue_tabs_enabled`, `walmart_throttle_refresh_interval_sec` in `types/core.ts`) persist via `getExtensionSettings` / `saveExtensionSettings` — not separate `UiToBackground` messages.
+Walmart queue settings (`walmart_queue_pass_sound_enabled`, `walmart_consolidate_queue_tabs_enabled`, `walmart_throttle_refresh_interval_sec` in `types/core.ts`) persist via `getExtensionSettings` / `saveExtensionSettings` — **not** separate `UiToBackground` messages.
 
 ## Invariants
 
@@ -82,4 +78,4 @@ Global invariants and import rules: [AGENTS.md](../../../AGENTS.md).
 
 ## Tests
 
-`tests/core/sidepanel-layout.test.ts`, `tests/core/ui-handlers-status.test.ts`
+`tests/core/*` — side panel layout and UI handler status.

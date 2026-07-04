@@ -73,11 +73,9 @@ Other lib modules (`export-bundle.ts`, `recording-limits.ts`, `network-redact.ts
 
 ## Messages
 
-Source of truth: [extension/core/types/messages.ts](../../core/types/messages.ts).
+Source of truth: [extension/core/types/messages.ts](../../core/types/messages.ts). Handlers: `background/handlers/*`. How to add/change: `.cursor/rules/runtime-messages.mdc`.
 
-- Content → background: `WALMART_RECORDING_APPEND`, `WALMART_RECORDING_REATTACH`, `WALMART_PING`, `WALMART_GET_AUTO_REFRESH_CONFIG`, `WALMART_SYNC_AUTO_REFRESH`, `WALMART_HARD_RELOAD`, `WALMART_QUEUE_PASS`, `WALMART_QUEUE_TAB_CONSOLIDATE_REQUEST`
-- Background → content: `WALMART_RECORDING_START`, `WALMART_RECORDING_STOP`, `WALMART_RECORDING_MARK`, `WALMART_AUTO_REFRESH_CONFIG`
-- UI: `WALMART_RECORDING` (action union: `start` \| `stop` \| `mark` \| `clear` \| `export` in `types/walmart.ts`), `SET_WALMART_AUTO_REFRESH_ENABLED`, `SET_WALMART_REFRESH_INTERVAL`
+`WALMART_RECORDING` UI action union (`start` | `stop` | `mark` | `clear` | `export`) lives in `types/walmart.ts`.
 
 ## Invariants
 
@@ -99,7 +97,7 @@ Global invariants and import rules: [AGENTS.md](../../../AGENTS.md).
 
 ## Tests
 
-`tests/walmart/*` — recording, IDB, auto-refresh, queue pass, tab consolidation, throttle
+`tests/walmart/*`
 
 ## UI
 

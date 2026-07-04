@@ -18,7 +18,7 @@ Chrome MV3 service worker hub — message router, link opening pipeline, shared 
 | Runtime dedup/state | `background/runtime-state.ts` |
 | Link pipeline | `lib/process-links.ts`, `lib/links.ts`, `lib/validate.ts`, `lib/affiliate-unwrap.ts`, `lib/keywords.ts` |
 | Channel allowlists | `lib/channel-targets.ts`, `lib/storage.ts` |
-| UI bridge | `lib/messages.ts` — side panel (`sendToBackground`, `getExtensionStatus`, `getSidePanelWindowId`, …) and Discord content (`sendCandidateLinks`, `sendChannelInactive`, …) |
+| UI bridge | `lib/messages.ts` — side panel and Discord content helpers |
 | Update check | `lib/check-for-update.ts`, `lib/version.ts` |
 | Types | `types/messages.ts`, `types/core.ts`, `types/index.ts` |
 
@@ -48,17 +48,9 @@ flowchart LR
 
 ## Messages
 
-Unions in `types/messages.ts`: `ContentToBackground`, `RetailerToBackground`, `WalmartToBackground`, `BackgroundToContent`, `UiToBackground`.
+Source of truth: `types/messages.ts`. How to add/change: `.cursor/rules/runtime-messages.mdc`.
 
-When adding or changing a message:
-
-1. Extend unions in `types/messages.ts` (or domain types re-exported from `index.ts`).
-2. Add type guard in `background/handlers.ts` (`is*ContentMessage` / `isUiMessage`).
-3. Add handler in matching domain `background/handlers.ts` (or `ui-handlers.ts` for `UiToBackground`; Walmart routes via `handlers/index.ts`).
-4. Update `background/sender-auth.ts` only when adding a new content-script origin domain.
-5. Add/adjust tests in `tests/core/handlers-*.test.ts` or domain tests.
-
-Background → content messages use `chrome.tabs.sendMessage` and bypass `handleMessage`. Example: `SCAN_DETECTED_DOMAINS` is sent from `ui-handlers.ts` when the side panel requests detected domains.
+Routing: `background/handlers.ts` → domain `background/handlers*` (Walmart via `handlers/index.ts`). Background → content uses `chrome.tabs.sendMessage` and bypasses `handleMessage` (e.g. `SCAN_DETECTED_DOMAINS` from `ui-handlers.ts` on `GET_DETECTED_DOMAINS`).
 
 ## Invariants
 
@@ -70,11 +62,4 @@ Global invariants and import rules: [AGENTS.md](../../AGENTS.md).
 
 ## Tests
 
-`tests/core/*` — highlights:
-
-| Area | Files |
-|---|---|
-| Handler routing | `handlers-discord.test.ts`, `handlers-target.test.ts`, `handlers-walmart.test.ts`, `handlers-ui.test.ts`, `handlers-retailer-auth.test.ts` |
-| Link pipeline | `tests/discord/process-links.test.ts`, `tests/core/validate.test.ts`, `tests/core/open-product-link.test.ts` |
-| Status / UI | `status.test.ts`, `status-notify.test.ts`, `ui-handlers-status.test.ts`, `sidepanel-layout.test.ts`, `messages.test.ts` |
-| Storage / tabs | `channel-targets.test.ts`, `active-tab.test.ts`, `check-for-update.test.ts` |
+`tests/core/*` — handler routing (`handlers-*.test.ts`), link pipeline, status/UI. Cross-domain link tests: `tests/discord/process-links.test.ts`.

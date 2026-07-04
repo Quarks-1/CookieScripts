@@ -41,12 +41,9 @@ Update with reference to `docs/TARGET_AUTOMATION.md`.
 
 ## Messages
 
-Source of truth: [extension/core/types/messages.ts](../../core/types/messages.ts).
+Source of truth: [extension/core/types/messages.ts](../../core/types/messages.ts). Handlers: `background/handlers.ts`. How to add/change: `.cursor/rules/runtime-messages.mdc`.
 
-- `RetailerToBackground`: `RETAILER_AUTO_STATUS`, `RETAILER_GET_AUTO_CONFIG`, `RETAILER_SET_REFRESH_INTERVAL`, `RETAILER_HARD_RELOAD`, `RETAILER_PING`, `RETAILER_GET_TAB_AUTO_STATE`, `RETAILER_SYNC_MANUAL_STOP`, `RETAILER_SYNC_MANUAL_START`, `RETAILER_UI_STATE`, `RETAILER_PURCHASE_LIMIT_SNAPSHOT`
-- `BackgroundToContent`: `RETAILER_START_AUTO`, `RETAILER_STOP_AUTO`, `RETAILER_START_MANUAL_AUTO`, `RETAILER_GET_PURCHASE_LIMIT`, `RETAILER_PING`
-- `UiToBackground`: `SET_RETAILER_AUTO_ATC_ENABLED`, `SET_RETAILER_REFRESH_INTERVAL`, `SET_RETAILER_ATC_MODES`, `SET_RETAILER_ATC_QUANTITY`, `SET_RETAILER_AUTO_CHECKOUT_ENABLED`, `RETAILER_START_MANUAL_AUTO`, `RETAILER_STOP_MANUAL_AUTO`
-- Content `RETAILER_SET_REFRESH_INTERVAL` and UI `SET_RETAILER_REFRESH_INTERVAL` are distinct messages for the same concern.
+Content `RETAILER_SET_REFRESH_INTERVAL` and UI `SET_RETAILER_REFRESH_INTERVAL` are **distinct** messages for the same concern.
 
 ## Lib map (by concern)
 

@@ -58,6 +58,8 @@ flowchart TB
 
 **Never in AGENTS.md:** sprint status, TODOs, duplicated selector tables, payload field docs (use `messages.ts`).
 
+**Messages triad:** `messages.ts` = what exists; `.cursor/rules/runtime-messages.mdc` = how to add; layer `AGENTS.md` = where to work + invariants (never enumerate payloads).
+
 ## Task routing
 
 | If you are changing… | Read first | Then edit |
