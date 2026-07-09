@@ -202,4 +202,28 @@ describe("buildStatus", () => {
     expect(result.walmart_open_tabs[1]?.label).toBe("Cart");
     expect(result.walmart_open_tabs[1]?.isRecording).toBe(true);
   });
+
+  it("defaults open_links_in_window to true when setting is omitted", async () => {
+    activeChannels.clear();
+    const status = await buildStatus({
+      id: 1,
+      url: "https://discord.com/channels/111/222",
+    } as chrome.tabs.Tab);
+    expect(status.open_links_in_window).toBe(true);
+  });
+
+  it("reflects open_links_in_window false from settings", async () => {
+    const { getSettings } = await import("@ext/core/lib/storage.ts");
+    vi.mocked(getSettings).mockResolvedValueOnce({
+      enabled: true,
+      open_links_in_window: false,
+      channel_targets: [],
+    });
+    activeChannels.clear();
+    const status = await buildStatus({
+      id: 1,
+      url: "https://discord.com/channels/111/222",
+    } as chrome.tabs.Tab);
+    expect(status.open_links_in_window).toBe(false);
+  });
 });

@@ -86,10 +86,59 @@ describe("handleMessage — discord", () => {
       opened: ["https://walmart.com/item"],
       duplicates: [],
     });
+    expect(chrome.windows.create).toHaveBeenCalledWith({
+      url: "https://walmart.com/item",
+      focused: false,
+    });
+    expect(chrome.tabs.create).not.toHaveBeenCalled();
+  });
+
+  it("opens allowlisted links in background tabs when open_links_in_window is false", async () => {
+    const settings = {
+      enabled: true,
+      open_links_in_window: false,
+      channel_targets: [buildChannelTarget({ channel_id: "222", allowed_domains: ["walmart.com"] })],
+    };
+    vi.mocked(chrome.storage.local.get).mockImplementation(async (keys) => {
+      const keyList = Array.isArray(keys) ? keys : [keys];
+      const result: Record<string, unknown> = {};
+      for (const key of keyList) {
+        if (key === "cookiescripts:settings") {
+          result[key] = settings;
+        } else if (key === "cookiescripts:history") {
+          result[key] = [];
+        } else if (key === "cookiescripts:recentUrls") {
+          result[key] = [];
+        }
+      }
+      return result;
+    });
+
+    const sender = mockContentSender({
+      extensionId: EXTENSION_ID,
+      tabUrl: "https://discord.com/channels/111/222",
+    });
+
+    const response = await handleMessage(
+      {
+        type: "CANDIDATE_LINKS",
+        channel_id: "222",
+        urls: ["https://walmart.com/item"],
+        author: "alice",
+      },
+      sender,
+    );
+
+    expect(response).toMatchObject({
+      ok: true,
+      opened: ["https://walmart.com/item"],
+      duplicates: [],
+    });
     expect(chrome.tabs.create).toHaveBeenCalledWith({
       url: "https://walmart.com/item",
       active: false,
     });
+    expect(chrome.windows.create).not.toHaveBeenCalled();
   });
 
   it("skips allowlisted links on negative-only keyword match", async () => {
@@ -194,7 +243,8 @@ describe("handleMessage — discord", () => {
       ok: true,
       opened: ["https://walmart.com/item"],
     });
-    expect(chrome.tabs.create).toHaveBeenCalled();
+    expect(chrome.windows.create).toHaveBeenCalled();
+    expect(chrome.tabs.create).not.toHaveBeenCalled();
   });
 
   it("opens when neither keyword matches", async () => {
@@ -242,7 +292,8 @@ describe("handleMessage — discord", () => {
       ok: true,
       opened: ["https://walmart.com/item"],
     });
-    expect(chrome.tabs.create).toHaveBeenCalled();
+    expect(chrome.windows.create).toHaveBeenCalled();
+    expect(chrome.tabs.create).not.toHaveBeenCalled();
   });
 
   it("does not open links when channel has no allowlist", async () => {

@@ -31,6 +31,8 @@ export interface ExtensionSettings {
   walmart_consolidate_queue_tabs_enabled?: boolean;
   /** Global throttle-page hard-refresh interval; default 10 when omitted. */
   walmart_throttle_refresh_interval_sec?: number;
+  /** Default true when undefined — open passive auto-links in a new window. */
+  open_links_in_window?: boolean;
 }
 
 export type HistoryItemKind =

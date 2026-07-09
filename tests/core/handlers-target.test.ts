@@ -79,9 +79,78 @@ describe("handleMessage — target", () => {
     );
   });
 
-  it("opens a passive tab when retailer auto mode job is already in progress", async () => {
+  it("opens a passive window when retailer auto mode job is already in progress", async () => {
     const settings = {
       enabled: true,
+      channel_targets: [
+        buildChannelTarget({
+          channel_id: "222",
+          allowed_domains: ["target.com"],
+          retailer_auto_atc_enabled: true,
+        }),
+      ],
+    };
+    const storage = {
+      "cookiescripts:settings": settings,
+      "cookiescripts:history": [],
+      "cookiescripts:recentUrls": [],
+    };
+    vi.mocked(chrome.storage.local.get).mockImplementation(async (keys) => {
+      const keyList = Array.isArray(keys) ? keys : [keys];
+      const result: Record<string, unknown> = {};
+      for (const key of keyList) {
+        if (storage[key as keyof typeof storage] !== undefined) {
+          result[key] = storage[key as keyof typeof storage];
+        }
+      }
+      return result;
+    });
+    vi.mocked(chrome.storage.local.set).mockImplementation(async (items) => {
+      Object.assign(storage, items);
+    });
+
+    tryAcquireRetailerJob("222");
+
+    const sender = mockContentSender({
+      extensionId: EXTENSION_ID,
+      tabUrl: "https://discord.com/channels/111/222",
+    });
+
+    const response = await handleMessage(
+      {
+        type: "CANDIDATE_LINKS",
+        channel_id: "222",
+        urls: ["https://www.target.com/p/foo/-/A-123"],
+        author: "alice",
+      },
+      sender,
+    );
+
+    expect(response).toMatchObject({
+      ok: true,
+      opened: ["https://www.target.com/p/foo/-/A-123"],
+    });
+    expect(chrome.windows.create).toHaveBeenCalledTimes(1);
+    expect(chrome.windows.create).toHaveBeenCalledWith({
+      url: "https://www.target.com/p/foo/-/A-123",
+      focused: false,
+    });
+    expect(chrome.tabs.create).not.toHaveBeenCalled();
+    expect(storage["cookiescripts:history"]).toEqual([
+      expect.objectContaining({
+        kind: "retailer_auto_queued",
+        url: "https://www.target.com/p/foo/-/A-123",
+        channel_id: "222",
+        error: "Auto mode skipped — job in progress",
+      }),
+    ]);
+    releaseRetailerJob("222");
+  });
+
+  it("opens a passive tab when retailer auto mode job is queued and open_links_in_window is false", async () => {
+    const settings = {
+      enabled: true,
+      open_links_in_window: false,
       channel_targets: [
         buildChannelTarget({
           channel_id: "222",
@@ -136,14 +205,6 @@ describe("handleMessage — target", () => {
       active: false,
     });
     expect(chrome.windows.create).not.toHaveBeenCalled();
-    expect(storage["cookiescripts:history"]).toEqual([
-      expect.objectContaining({
-        kind: "retailer_auto_queued",
-        url: "https://www.target.com/p/foo/-/A-123",
-        channel_id: "222",
-        error: "Auto mode skipped — job in progress",
-      }),
-    ]);
     releaseRetailerJob("222");
   });
 

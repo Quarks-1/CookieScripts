@@ -37,6 +37,7 @@ function status(overrides: Partial<ExtensionStatus>): ExtensionStatus {
     retailer_auto_checkout_enabled: false,
     walmart_auto_refresh_enabled: false,
     walmart_refresh_interval_sec: 10,
+    open_links_in_window: true,
     ...overrides,
   };
 }

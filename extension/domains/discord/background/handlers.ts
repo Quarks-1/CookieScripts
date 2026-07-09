@@ -4,9 +4,9 @@ import { shouldOpenByKeywords } from "@ext/core/lib/keywords.ts";
 import { decideLinkActions } from "@ext/core/lib/process-links.ts";
 import { addIgnoredDomain } from "@ext/core/lib/ignored-domains.ts";
 import { getSettings, prependHistory, saveSettings } from "@ext/core/lib/storage.ts";
-import { resolveWatchConfig } from "@ext/core/lib/watch.ts";
+import { getOpenLinksInWindow, resolveWatchConfig } from "@ext/core/lib/watch.ts";
 import {
-  openPassiveProductTab,
+  openPassiveProductLink,
   openRetailerProductWindow,
   shouldOpenRetailerWindow,
 } from "@ext/core/background/open-product-link.ts";
@@ -119,6 +119,7 @@ export async function handleDiscordMessage(
         const passiveHistory: HistoryItem[] = [];
         const opened: string[] = [];
         const seenRetailerUrls = new Set<string>();
+        const inWindow = getOpenLinksInWindow(settings);
 
         for (const entry of decision.historyEntries) {
           if (entry.kind === "duplicate") {
@@ -151,7 +152,7 @@ export async function handleDiscordMessage(
                 timestamp: entry.timestamp,
               });
             } else if (windowResult.queued) {
-              await openPassiveProductTab(url);
+              await openPassiveProductLink(url, { inWindow });
               opened.push(url);
               retailerHistory.push({
                 kind: "retailer_auto_queued",
@@ -163,7 +164,7 @@ export async function handleDiscordMessage(
               });
             }
           } else {
-            await openPassiveProductTab(url);
+            await openPassiveProductLink(url, { inWindow });
             opened.push(url);
             passiveHistory.push(entry);
           }

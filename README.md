@@ -56,7 +56,7 @@ Releases are created automatically on every push to `main` (patch version bump).
 |------------|-----|
 | `storage` | Save per-channel domain allowlists, link history, dedup keys, and update-check cache locally on your device |
 | `tabs` | Open matched product links and the GitHub release page when you choose to download an update |
-| `windows` | Open Target Auto Mode product links in a separate window so your Discord monitor tab stays put |
+| `windows` | Open auto-linked product pages in separate windows (default) and Target Auto Mode product links in a focused window |
 | `host_permissions: discord.com` | Inject the content script on Discord channel pages to scan messages |
 | `host_permissions: target.com` | Inject the retailer content script for Target Auto Mode (add-to-cart automation and manual record mode) |
 | `host_permissions: api.github.com` | Check the public GitHub Releases API for newer versions (anonymous GET; no Discord or settings data sent) |
@@ -91,4 +91,4 @@ Toolbar icons are derived from [Quarks-1/autoopen](https://github.com/Quarks-1/a
 - The popup messages the service worker for extension logic; it opens the GitHub release page when you download an update
 - Service worker validates message `sender` (content vs extension-page paths)
 - Content script uses `textContent` (not `innerHTML`) for scraped Discord text
-- Matched links open in new tabs with `active: false` so you stay on Discord
+- Matched links open in a new unfocused window by default (toggleable in the side panel); background-tab mode uses `active: false` so you stay on Discord

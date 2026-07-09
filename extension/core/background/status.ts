@@ -16,6 +16,7 @@ import {
 import { buildQuantityStatusFields } from "@ext/domains/target/lib/quantity-limit.ts";
 import { sleep } from "@ext/core/lib/sleep.ts";
 import { resolveActiveTabKind } from "@ext/core/lib/active-tab.ts";
+import { getOpenLinksInWindow } from "@ext/core/lib/watch.ts";
 import { getSettings, saveSettings } from "@ext/core/lib/storage.ts";
 import { activeChannels } from "@ext/core/background/runtime-state.ts";
 import {
@@ -239,6 +240,7 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     retailer_auto_checkout_enabled: getRetailerAutoCheckoutEnabled(settings),
     walmart_auto_refresh_enabled: walmartAutoRefreshEnabled,
     walmart_refresh_interval_sec: walmartRefreshIntervalSec,
+    open_links_in_window: getOpenLinksInWindow(settings),
   };
 }
 

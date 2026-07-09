@@ -40,4 +40,6 @@ export interface ExtensionStatus {
   retailer_auto_checkout_enabled: boolean;
   walmart_auto_refresh_enabled: boolean;
   walmart_refresh_interval_sec: number;
+  /** Global preference: open passive auto-links in a new window (default true). */
+  open_links_in_window: boolean;
 }

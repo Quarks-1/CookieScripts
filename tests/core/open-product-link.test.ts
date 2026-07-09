@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   openRetailerProductWindow,
   shouldOpenRetailerWindow,
-  openPassiveProductTab,
+  openPassiveProductLink,
   waitForRetailerTabReady,
 } from "@ext/core/background/open-product-link.ts";
 import {
@@ -100,12 +100,22 @@ describe("open-product-link", () => {
     );
   });
 
-  it("opens passive tabs in background", async () => {
-    await openPassiveProductTab("https://example.com");
+  it("opens passive links in a new unfocused window", async () => {
+    await openPassiveProductLink("https://example.com", { inWindow: true });
+    expect(chrome.windows.create).toHaveBeenCalledWith({
+      url: "https://example.com",
+      focused: false,
+    });
+    expect(chrome.tabs.create).not.toHaveBeenCalled();
+  });
+
+  it("opens passive links in a background tab when inWindow is false", async () => {
+    await openPassiveProductLink("https://example.com", { inWindow: false });
     expect(chrome.tabs.create).toHaveBeenCalledWith({
       url: "https://example.com",
       active: false,
     });
+    expect(chrome.windows.create).not.toHaveBeenCalled();
   });
 
   it("starts auto mode when retailer tab becomes ready", async () => {

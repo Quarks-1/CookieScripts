@@ -75,6 +75,8 @@ export default function App() {
   const [enableError, setEnableError] = useState<string | null>(null);
   const [autoAtcSaving, setAutoAtcSaving] = useState(false);
   const [autoAtcError, setAutoAtcError] = useState<string | null>(null);
+  const [openLinksInWindowSaving, setOpenLinksInWindowSaving] = useState(false);
+  const [openLinksInWindowError, setOpenLinksInWindowError] = useState<string | null>(null);
 
   async function handleAutoAtcChange(next: boolean) {
     const channelId = status?.active_channel_id;
@@ -112,6 +114,20 @@ export default function App() {
       setEnableError(err instanceof Error ? err.message : "Failed to save");
     } finally {
       setEnabling(false);
+    }
+  }
+
+  async function handleOpenLinksInWindowChange(next: boolean) {
+    setOpenLinksInWindowSaving(true);
+    setOpenLinksInWindowError(null);
+    try {
+      const settings = await getExtensionSettings();
+      await saveExtensionSettings({ ...settings, open_links_in_window: next });
+      await refresh();
+    } catch (err) {
+      setOpenLinksInWindowError(err instanceof Error ? err.message : "Failed to save");
+    } finally {
+      setOpenLinksInWindowSaving(false);
     }
   }
 
@@ -154,6 +170,31 @@ export default function App() {
           </p>
         )}
       </section>
+
+      {status !== null && (
+        <section aria-labelledby="popup-open-links-in-window-heading" className="mt-3">
+          <h2 id="popup-open-links-in-window-heading" className="sr-only">
+            Open links in new window
+          </h2>
+          <EnableSlider
+            id="popup-open-links-in-window"
+            label="Open links in new window"
+            checked={status.open_links_in_window}
+            disabled={openLinksInWindowSaving}
+            onChange={(next) => void handleOpenLinksInWindowChange(next)}
+          />
+          <p className="mt-1 text-xs text-zinc-500">
+            Keeps auto-opened product pages in their own window so Discord and other tabs are less
+            likely to throttle them.
+          </p>
+          {openLinksInWindowSaving && <p className="mt-1 text-xs text-zinc-500">Saving…</p>}
+          {openLinksInWindowError && (
+            <p role="status" aria-live="polite" className="mt-1 text-xs text-red-300">
+              {openLinksInWindowError}
+            </p>
+          )}
+        </section>
+      )}
 
       {status?.walmart_tab_detected && (
         <WalmartAutoRefreshSection

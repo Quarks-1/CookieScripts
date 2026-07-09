@@ -2,7 +2,7 @@
 
 Chrome MV3 extension with three capabilities:
 
-1. **Discord watch** — scans channel tabs for product links; opens allowlisted domains in background tabs (no Discord user token).
+1. **Discord watch** — scans channel tabs for product links; opens allowlisted domains in new windows or background tabs per global setting (no Discord user token).
 2. **Target automation** — optional add-to-cart, hard refresh, restock wait, and auto-checkout on `target.com`.
 3. **Walmart research** — manual drop-day recorder with IndexedDB persistence and ZIP export; optional hard-refresh auto-refresh and queue helpers (pass alert, tab consolidation, throttle refresh). No auto-checkout.
 

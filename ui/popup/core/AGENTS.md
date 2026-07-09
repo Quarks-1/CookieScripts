@@ -42,6 +42,8 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 
 **Exception:** **Enable Auto ATC** slider and **Link keywords** section render on `active_tab_kind === "discord_channel"` — not gated by `isSectionVisible`; Auto ATC configures per-channel Target automation; keywords filter all auto-opened links.
 
+**Exception:** **Open links in new window** slider renders below **Enable extension** on all surfaces (not gated on `discordSurface`); persists `open_links_in_window` via `SAVE_SETTINGS`. `ExtensionStatus.open_links_in_window` reflects the stored preference (default true when omitted).
+
 ## Domain UI map
 
 | Domain | Path |

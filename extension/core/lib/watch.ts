@@ -10,3 +10,7 @@ export function resolveWatchConfig(
   }
   return getChannelDomains(settings, channelId);
 }
+
+export function getOpenLinksInWindow(settings: ExtensionSettings): boolean {
+  return settings.open_links_in_window !== false;
+}

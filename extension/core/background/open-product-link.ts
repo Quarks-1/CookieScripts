@@ -26,8 +26,15 @@ const TAB_READY_MAX_MS = 10_000;
 const START_AUTO_SEND_RETRIES = 40;
 const START_AUTO_SEND_RETRY_MS = 50;
 
-export async function openPassiveProductTab(url: string): Promise<void> {
-  await chrome.tabs.create({ url, active: false });
+export async function openPassiveProductLink(
+  url: string,
+  options: { inWindow: boolean },
+): Promise<void> {
+  if (options.inWindow) {
+    await chrome.windows.create({ url, focused: false });
+  } else {
+    await chrome.tabs.create({ url, active: false });
+  }
 }
 
 export async function waitForTabComplete(tabId: number): Promise<void> {
