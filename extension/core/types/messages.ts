@@ -18,6 +18,7 @@ export type ContentToBackground =
       urls: string[];
       author?: string;
       message_text?: string;
+      anchors?: { href: string; text: string }[];
     }
   | { type: "ADD_ALLOWED_DOMAIN"; channel_id: string; domain: string }
   | { type: "IGNORE_DOMAIN"; channel_id: string; domain: string };

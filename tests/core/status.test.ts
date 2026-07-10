@@ -267,6 +267,30 @@ describe("buildStatus", () => {
     expect(status.open_links_in_window).toBe(false);
   });
 
+  it("defaults sku_open_mode_enabled to false when setting is omitted", async () => {
+    activeChannels.clear();
+    const status = await buildStatus({
+      id: 1,
+      url: "https://discord.com/channels/111/222",
+    } as chrome.tabs.Tab);
+    expect(status.sku_open_mode_enabled).toBe(false);
+  });
+
+  it("reflects sku_open_mode_enabled true from settings", async () => {
+    const { getSettings } = await import("@ext/core/lib/storage.ts");
+    vi.mocked(getSettings).mockResolvedValueOnce({
+      enabled: true,
+      sku_open_mode_enabled: true,
+      channel_targets: [],
+    });
+    activeChannels.clear();
+    const status = await buildStatus({
+      id: 1,
+      url: "https://discord.com/channels/111/222",
+    } as chrome.tabs.Tab);
+    expect(status.sku_open_mode_enabled).toBe(true);
+  });
+
   it("defaults retailer_link_open_count to 1 when setting is omitted", async () => {
     activeChannels.clear();
     const status = await buildStatus({

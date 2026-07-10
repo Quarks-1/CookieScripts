@@ -5,6 +5,7 @@ interface ChannelKeywordsSectionProps {
   positiveKeywords: string[];
   negativeKeywords: string[];
   disabled?: boolean;
+  skuModeActive?: boolean;
   saving?: boolean;
   saveError?: string | null;
   onPositiveKeywordsChange: (keywords: string[]) => void;
@@ -16,6 +17,7 @@ export function ChannelKeywordsSection({
   positiveKeywords,
   negativeKeywords,
   disabled,
+  skuModeActive,
   saving,
   saveError,
   onPositiveKeywordsChange,
@@ -46,7 +48,9 @@ export function ChannelKeywordsSection({
         Link keywords
       </h2>
       <p className="mt-1 text-xs text-zinc-500">
-        Filters all auto-opened links for this channel.
+        {skuModeActive
+          ? "Inactive while SKU open mode is enabled."
+          : "Filters all auto-opened links for this channel."}
       </p>
 
       <div className="mt-3 space-y-3">
@@ -61,7 +65,7 @@ export function ChannelKeywordsSection({
               keywords={positiveKeywords}
               onChange={onPositiveKeywordsChange}
               variant="positive"
-              disabled={disabled || saving}
+              disabled={disabled || saving || skuModeActive}
               inputId="popup-positive-keyword-input"
               placeholder="Type a keyword and press Enter"
             />
@@ -78,7 +82,7 @@ export function ChannelKeywordsSection({
               keywords={negativeKeywords}
               onChange={onNegativeKeywordsChange}
               variant="negative"
-              disabled={disabled || saving}
+              disabled={disabled || saving || skuModeActive}
               inputId="popup-negative-keyword-input"
               placeholder="Type a keyword and press Enter"
             />

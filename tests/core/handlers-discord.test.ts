@@ -663,4 +663,197 @@ describe("handleMessage — discord", () => {
     expect(prependSpy).toHaveBeenCalledTimes(1);
     prependSpy.mockRestore();
   });
+
+  describe("SKU open mode", () => {
+    function mockSkuSettings(settings: Record<string, unknown>, storage: Record<string, unknown>) {
+      vi.mocked(chrome.storage.local.get).mockImplementation(async (keys) => {
+        const keyList = Array.isArray(keys) ? keys : [keys];
+        const result: Record<string, unknown> = {};
+        for (const key of keyList) {
+          if (key === "cookiescripts:settings") {
+            result[key] = settings;
+          } else if (key === "cookiescripts:history") {
+            result[key] = storage["cookiescripts:history"] ?? [];
+          } else if (key === "cookiescripts:recentUrls") {
+            result[key] = storage["cookiescripts:recentUrls"] ?? [];
+          }
+        }
+        return result;
+      });
+      (chrome.storage.local.set as ReturnType<typeof vi.fn>).mockImplementation(
+        async (items: Record<string, unknown>) => {
+          Object.assign(storage, items);
+        },
+      );
+    }
+
+    it("opens constructed PDP when href-only SKU matches and bypasses keyword gate", async () => {
+      const storage: Record<string, unknown> = {
+        "cookiescripts:history": [],
+        "cookiescripts:recentUrls": [],
+      };
+      const settings = {
+        enabled: true,
+        sku_open_mode_enabled: true,
+        channel_targets: [
+          buildChannelTarget({
+            channel_id: "222",
+            allowed_domains: ["target.com"],
+            negative_keywords: ["block"],
+            watch_skus: { target: ["95120834"] },
+          }),
+        ],
+      };
+      mockSkuSettings(settings, storage);
+
+      const sender = mockContentSender({
+        extensionId: EXTENSION_ID,
+        tabUrl: "https://discord.com/channels/111/222",
+      });
+
+      const response = await handleMessage(
+        {
+          type: "CANDIDATE_LINKS",
+          channel_id: "222",
+          urls: ["https://howl.link/abc", "https://www.target.com/s?searchTerm=95120834"],
+          anchors: [
+            { href: "https://howl.link/abc", text: "Pokemon TCG" },
+            { href: "https://www.target.com/s?searchTerm=95120834", text: "ATC" },
+          ],
+          message_text: "Target restock block",
+          author: "alice",
+        },
+        sender,
+      );
+
+      expect(response).toMatchObject({
+        ok: true,
+        opened: ["https://www.target.com/p/-/A-95120834"],
+      });
+      expect(chrome.windows.create).toHaveBeenCalledWith({
+        url: "https://www.target.com/p/-/A-95120834",
+        focused: true,
+      });
+      expect(chrome.tabs.create).not.toHaveBeenCalled();
+    });
+
+    it("opens constructed PDP when SKU matches but only auxiliary links exist", async () => {
+      const storage: Record<string, unknown> = {
+        "cookiescripts:history": [],
+        "cookiescripts:recentUrls": [],
+      };
+      const settings = {
+        enabled: true,
+        sku_open_mode_enabled: true,
+        channel_targets: [
+          buildChannelTarget({
+            channel_id: "222",
+            allowed_domains: ["target.com"],
+            watch_skus: { target: ["94860231"] },
+          }),
+        ],
+      };
+      mockSkuSettings(settings, storage);
+
+      const sender = mockContentSender({
+        extensionId: EXTENSION_ID,
+        tabUrl: "https://discord.com/channels/111/222",
+      });
+
+      const response = await handleMessage(
+        {
+          type: "CANDIDATE_LINKS",
+          channel_id: "222",
+          urls: ["https://www.target.com/s?searchTerm=94860231"],
+          anchors: [
+            { href: "https://www.target.com/s?searchTerm=94860231", text: "ATC" },
+          ],
+          message_text: "Target restock",
+          author: "alice",
+        },
+        sender,
+      );
+
+      expect(response).toMatchObject({
+        ok: true,
+        opened: ["https://www.target.com/p/-/A-94860231"],
+      });
+    });
+
+    it("records sku_skipped when no configured SKU matches", async () => {
+      const storage: Record<string, unknown> = {
+        "cookiescripts:history": [],
+        "cookiescripts:recentUrls": [],
+      };
+      const settings = {
+        enabled: true,
+        sku_open_mode_enabled: true,
+        channel_targets: [
+          buildChannelTarget({
+            channel_id: "222",
+            allowed_domains: ["target.com"],
+            watch_skus: { target: ["11111111"] },
+          }),
+        ],
+      };
+      mockSkuSettings(settings, storage);
+
+      const sender = mockContentSender({
+        extensionId: EXTENSION_ID,
+        tabUrl: "https://discord.com/channels/111/222",
+      });
+
+      const response = await handleMessage(
+        {
+          type: "CANDIDATE_LINKS",
+          channel_id: "222",
+          urls: ["https://howl.link/abc"],
+          message_text: "Target restock",
+          author: "alice",
+        },
+        sender,
+      );
+
+      expect(response).toEqual({ ok: true, opened: [], duplicates: [] });
+      expect(chrome.windows.create).not.toHaveBeenCalled();
+      expect(storage["cookiescripts:history"]).toEqual([
+        expect.objectContaining({
+          kind: "sku_skipped",
+          url: "https://howl.link/abc",
+        }),
+      ]);
+    });
+
+    it("no-ops in SKU mode when channel has no configured SKUs", async () => {
+      const settings = {
+        enabled: true,
+        sku_open_mode_enabled: true,
+        channel_targets: [
+          buildChannelTarget({
+            channel_id: "222",
+            allowed_domains: ["target.com"],
+          }),
+        ],
+      };
+      mockSkuSettings(settings, {});
+
+      const sender = mockContentSender({
+        extensionId: EXTENSION_ID,
+        tabUrl: "https://discord.com/channels/111/222",
+      });
+
+      const response = await handleMessage(
+        {
+          type: "CANDIDATE_LINKS",
+          channel_id: "222",
+          urls: ["https://howl.link/abc"],
+          message_text: "SKU 95120834",
+        },
+        sender,
+      );
+
+      expect(response).toEqual({ ok: true, opened: [], duplicates: [] });
+      expect(chrome.windows.create).not.toHaveBeenCalled();
+    });
+  });
 });

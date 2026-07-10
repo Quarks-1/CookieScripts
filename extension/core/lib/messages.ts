@@ -63,6 +63,7 @@ export async function saveChannelDiscordSettings(
     domains: string[];
     positiveKeywords: string[];
     negativeKeywords: string[];
+    targetSkus: string[];
   },
 ): Promise<void> {
   const settings = await getExtensionSettings();
@@ -70,6 +71,7 @@ export async function saveChannelDiscordSettings(
     allowed_domains: patch.domains,
     positive_keywords: patch.positiveKeywords,
     negative_keywords: patch.negativeKeywords,
+    target_skus: patch.targetSkus,
   });
   await saveExtensionSettings(next);
 }

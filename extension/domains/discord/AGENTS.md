@@ -18,10 +18,13 @@ Watches Discord channel tabs for product links and sends candidates to the backg
 ```mermaid
 flowchart LR
   attach[channel attach] --> observer[observers]
-  observer --> candidates[CANDIDATE_LINKS + message_text]
-  candidates --> processLinks[process-links]
-  processLinks --> keywordGate[keywords gate in handlers]
+  observer --> candidates[CANDIDATE_LINKS + message_text + anchors]
+  candidates --> mode{sku_open_mode?}
+  mode -->|off| processLinks[process-links]
+  processLinks --> keywordGate[keywords gate]
+  mode -->|on| skuWatch[decideSkuOpenAction]
   keywordGate --> openTab[open-product-link]
+  skuWatch --> openTab
 ```
 
 ## Messages
@@ -36,9 +39,9 @@ Source of truth: [extension/core/types/messages.ts](../../core/types/messages.ts
 - Thread URLs share parent channel allowlist (`parseChannelId` uses parent segment).
 - Own messages are skipped (`isOwnMessage` in extract/session).
 - Prefer visible message `textContent` URLs over Discord redirect `href`s.
-- `CANDIDATE_LINKS` may include optional `message_text` for keyword gating.
-- Side panel domain + keyword editor is Discord-surface only; settings debounce 400ms via `useChannelDiscordSettings`.
-- Per-channel positive/negative keywords gate auto-open in `background/handlers.ts` (`shouldOpenByKeywords`); skipped links use history kind `keyword_skipped`.
+- `CANDIDATE_LINKS` may include optional `message_text`, `anchors`; extraction uses `messageScanRoot` (article + embed accessories).
+- Global **SKU open mode** (`sku_open_mode_enabled`) switches handlers to `decideSkuOpenAction` (per-channel `watch_skus.target`); opens `target.com/p/-/A-{sku}` directly. Keywords are bypassed. History kind `sku_skipped` when no configured SKU matches.
+- Side panel domain + keyword/SKU editor is Discord-surface only; settings debounce 400ms via `useChannelDiscordSettings`.
 - When per-channel **Auto ATC** is enabled, Target product links open via `openTargetLinkRepeated` in core `open-product-link.ts` (repeat count from global `retailer_link_open_count`, default 1); other allowlisted links open via `openPassiveProductLink` in a new window or background tab per global `open_links_in_window` setting (default on).
 
 Global invariants and import rules: [AGENTS.md](../../../AGENTS.md).

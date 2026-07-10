@@ -1,5 +1,6 @@
 import { MAX_MESSAGE_TEXT_LENGTH } from "@ext/core/lib/constants.ts";
 import { extractUrls, isHttpOrHttpsUrl } from "@ext/core/lib/links.ts";
+import type { MessageAnchor } from "@ext/core/lib/sku-watch/types.ts";
 import { AUTHOR, OWN_MESSAGE } from "@ext/domains/discord/content/selectors.ts";
 
 const MESSAGE_ID_PATTERN = /^chat-messages-(\d+)$/;
@@ -73,4 +74,26 @@ export function extractHrefLinksFromMessage(root: Element): string[] {
     .filter(Boolean)
     .filter(isHttpOrHttpsUrl);
   return dedupeUrls(hrefs);
+}
+
+export function extractAnchorsFromMessage(root: Element): MessageAnchor[] {
+  const seen = new Set<string>();
+  const anchors: MessageAnchor[] = [];
+
+  for (const element of root.querySelectorAll("a[href]")) {
+    if (!(element instanceof HTMLAnchorElement)) {
+      continue;
+    }
+    const href = element.href;
+    if (!isHttpOrHttpsUrl(href) || seen.has(href)) {
+      continue;
+    }
+    seen.add(href);
+    anchors.push({
+      href,
+      text: element.textContent?.trim() ?? "",
+    });
+  }
+
+  return anchors;
 }

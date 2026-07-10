@@ -8,6 +8,11 @@ export interface ChannelTarget {
   positive_keywords?: string[];
   /** Case-insensitive substring block when no positive match. */
   negative_keywords?: string[];
+  /** Per-retailer SKU watch lists for SKU open mode. */
+  watch_skus?: {
+    target?: string[];
+    walmart?: string[];
+  };
 }
 
 export interface ExtensionSettings {
@@ -35,12 +40,15 @@ export interface ExtensionSettings {
   open_links_in_window?: boolean;
   /** Target product links from Discord watch open this many times; default 1. */
   retailer_link_open_count?: number;
+  /** When true, Discord auto-open uses per-channel SKUs instead of link keywords. */
+  sku_open_mode_enabled?: boolean;
 }
 
 export type HistoryItemKind =
   | "opened"
   | "duplicate"
   | "keyword_skipped"
+  | "sku_skipped"
   | "retailer_window_opened"
   | "retailer_auto_queued"
   | "retailer_auto_success"

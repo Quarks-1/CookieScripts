@@ -47,4 +47,6 @@ export interface ExtensionStatus {
   open_links_in_window: boolean;
   /** Target product links from Discord watch open this many times (default 1). */
   retailer_link_open_count: number;
+  /** When true, Discord auto-open uses per-channel SKUs instead of link keywords. */
+  sku_open_mode_enabled: boolean;
 }

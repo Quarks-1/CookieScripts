@@ -54,7 +54,7 @@ describe("retailer ATC config", () => {
   it("defaults link open count to 1 and clamps invalid values", () => {
     expect(getRetailerLinkOpenCount(DEFAULT_SETTINGS)).toBe(1);
     expect(normalizeRetailerLinkOpenCount(0)).toBe(1);
-    expect(normalizeRetailerLinkOpenCount(9)).toBe(5);
+    expect(normalizeRetailerLinkOpenCount(9)).toBe(9);
   });
 
   it("persists link open count with omit-when-default semantics", () => {

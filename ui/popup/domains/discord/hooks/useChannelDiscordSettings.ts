@@ -2,7 +2,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { STORAGE_KEYS } from "@ext/core/lib/constants.ts";
 import { normalizeDomain } from "@ext/core/lib/domains.ts";
-import { getChannelDomains, getChannelKeywords } from "@ext/core/lib/channel-targets.ts";
+import {
+  getChannelDomains,
+  getChannelKeywords,
+  getChannelWatchSkus,
+} from "@ext/core/lib/channel-targets.ts";
 import {
   getExtensionSettings,
   getExtensionStatus,
@@ -15,6 +19,7 @@ type PendingSettings = {
   domains: string[];
   positiveKeywords: string[];
   negativeKeywords: string[];
+  targetSkus: string[];
 };
 
 type ChangeOptions = {
@@ -25,6 +30,7 @@ export function useChannelDiscordSettings(channelId: string | null, enabled: boo
   const [domains, setDomains] = useState<string[]>([]);
   const [positiveKeywords, setPositiveKeywords] = useState<string[]>([]);
   const [negativeKeywords, setNegativeKeywords] = useState<string[]>([]);
+  const [targetSkus, setTargetSkus] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -44,6 +50,7 @@ export function useChannelDiscordSettings(channelId: string | null, enabled: boo
     const keywords = getChannelKeywords(settings, id);
     setPositiveKeywords(keywords.positive);
     setNegativeKeywords(keywords.negative);
+    setTargetSkus(getChannelWatchSkus(settings, id, "target"));
   }, []);
 
   useEffect(() => {
@@ -52,6 +59,7 @@ export function useChannelDiscordSettings(channelId: string | null, enabled: boo
       setDomains([]);
       setPositiveKeywords([]);
       setNegativeKeywords([]);
+      setTargetSkus([]);
       setSaveError(null);
       return;
     }
@@ -97,6 +105,7 @@ export function useChannelDiscordSettings(channelId: string | null, enabled: boo
           domains: pending.domains,
           positiveKeywords: pending.positiveKeywords,
           negativeKeywords: pending.negativeKeywords,
+          targetSkus: pending.targetSkus,
         });
         await loadSettings(saveChannelId);
       } catch (err) {
@@ -143,11 +152,12 @@ export function useChannelDiscordSettings(channelId: string | null, enabled: boo
           domains: nextDomains,
           positiveKeywords,
           negativeKeywords,
+          targetSkus,
         },
         options,
       );
     },
-    [negativeKeywords, positiveKeywords, scheduleSave],
+    [negativeKeywords, positiveKeywords, scheduleSave, targetSkus],
   );
 
   const handlePositiveKeywordsChange = useCallback(
@@ -162,11 +172,12 @@ export function useChannelDiscordSettings(channelId: string | null, enabled: boo
           domains,
           positiveKeywords: nextKeywords,
           negativeKeywords,
+          targetSkus,
         },
         options,
       );
     },
-    [domains, negativeKeywords, scheduleSave],
+    [domains, negativeKeywords, scheduleSave, targetSkus],
   );
 
   const handleNegativeKeywordsChange = useCallback(
@@ -181,11 +192,28 @@ export function useChannelDiscordSettings(channelId: string | null, enabled: boo
           domains,
           positiveKeywords,
           negativeKeywords: nextKeywords,
+          targetSkus,
         },
         options,
       );
     },
-    [domains, positiveKeywords, scheduleSave],
+    [domains, positiveKeywords, scheduleSave, targetSkus],
+  );
+
+  const handleTargetSkusChange = useCallback(
+    (nextSkus: string[], options?: ChangeOptions) => {
+      setTargetSkus(nextSkus);
+      scheduleSave(
+        {
+          domains,
+          positiveKeywords,
+          negativeKeywords,
+          targetSkus: nextSkus,
+        },
+        options,
+      );
+    },
+    [domains, negativeKeywords, positiveKeywords, scheduleSave],
   );
 
   const handleAcceptDomain = useCallback(
@@ -206,12 +234,14 @@ export function useChannelDiscordSettings(channelId: string | null, enabled: boo
     domains,
     positiveKeywords,
     negativeKeywords,
+    targetSkus,
     saving,
     saveError,
     disabled: !enabled || channelId === null,
     handleDomainsChange,
     handlePositiveKeywordsChange,
     handleNegativeKeywordsChange,
+    handleTargetSkusChange,
     handleAcceptDomain,
   };
 }

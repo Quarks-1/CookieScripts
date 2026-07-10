@@ -32,6 +32,14 @@ export {
 } from "@ext/domains/target/lib/open-tab-active.ts";
 
 export {
+  buildTargetProductUrlFromSku,
+  isTargetAuxiliaryLink,
+  normalizeTargetSku,
+  normalizeTargetSkuList,
+  targetSkuWatchProfile,
+} from "@ext/domains/target/lib/sku-watch.ts";
+
+export {
   classifyRetailerPageKind,
   disambiguateOpenTabLabels,
   labelRetailerTab,

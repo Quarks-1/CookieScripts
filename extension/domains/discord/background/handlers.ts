@@ -1,10 +1,17 @@
 import { resolveContentChannel } from "@ext/core/lib/channels.ts";
-import { addChannelDomain, getChannelDomains, getChannelKeywords } from "@ext/core/lib/channel-targets.ts";
+import {
+  addChannelDomain,
+  getChannelDomains,
+  getChannelKeywords,
+  getChannelWatchSkus,
+} from "@ext/core/lib/channel-targets.ts";
 import { shouldOpenByKeywords } from "@ext/core/lib/keywords.ts";
+import { normalizeUrlForDedup } from "@ext/core/lib/links.ts";
 import { decideLinkActions } from "@ext/core/lib/process-links.ts";
 import { addIgnoredDomain } from "@ext/core/lib/ignored-domains.ts";
+import { decideSkuOpenAction } from "@ext/core/lib/sku-watch/decide.ts";
 import { getSettings, prependHistory, saveSettings } from "@ext/core/lib/storage.ts";
-import { getOpenLinksInWindow, resolveWatchConfig } from "@ext/core/lib/watch.ts";
+import { getOpenLinksInWindow, getSkuOpenModeEnabled, resolveWatchConfig } from "@ext/core/lib/watch.ts";
 import { openTargetLinkRepeated } from "@ext/core/background/open-product-link.ts";
 import {
   enqueueLinkProcessing,
@@ -27,6 +34,74 @@ function watchConfigResponse(channelId: string, settings: ExtensionSettings) {
     type: "WATCH_CONFIG" as const,
     channel_id: settings.enabled ? channelId : null,
     allowed_domains: allowedDomains,
+  };
+}
+
+async function handleSkuModeCandidateLinks(
+  message: Extract<ContentToBackground, { type: "CANDIDATE_LINKS" }>,
+  channelId: string,
+  settings: ExtensionSettings,
+): Promise<{ opened: string[]; duplicates: string[] }> {
+  const configuredSkus = getChannelWatchSkus(settings, channelId, "target");
+  const decision = decideSkuOpenAction({
+    messageText: message.message_text ?? "",
+    urls: message.urls,
+    anchors: message.anchors,
+    configuredSkus,
+  });
+
+  if (decision.action === "none") {
+    return { opened: [], duplicates: [] };
+  }
+
+  const author = message.author ?? "unknown";
+  const now = new Date().toISOString();
+
+  if (decision.action === "skip") {
+    if (decision.url) {
+      await prependHistory([
+        {
+          kind: "sku_skipped",
+          url: decision.url,
+          author,
+          channel_id: channelId,
+          timestamp: now,
+        },
+      ]);
+    }
+    return { opened: [], duplicates: [] };
+  }
+
+  const dedupKey = normalizeUrlForDedup(decision.url);
+  if (recentUrlKeys.has(dedupKey)) {
+    await prependHistory([
+      {
+        kind: "duplicate",
+        url: decision.url,
+        author,
+        channel_id: channelId,
+        timestamp: now,
+      },
+    ]);
+    return { opened: [], duplicates: [decision.url] };
+  }
+
+  mergeDedupKeys([dedupKey]);
+  scheduleRecentUrlsPersist();
+
+  const openResult = await openTargetLinkRepeated(decision.url, channelId, settings, {
+    inWindow: getOpenLinksInWindow(settings),
+    author,
+    timestamp: now,
+  });
+
+  if (openResult.histories.length > 0) {
+    await prependHistory(openResult.histories);
+  }
+
+  return {
+    opened: openResult.opened,
+    duplicates: [],
   };
 }
 
@@ -69,6 +144,11 @@ export async function handleDiscordMessage(
       };
 
       await enqueueLinkProcessing(async () => {
+        if (getSkuOpenModeEnabled(settings)) {
+          result = await handleSkuModeCandidateLinks(message, channelId, settings);
+          return;
+        }
+
         const decision = decideLinkActions({
           urls: message.urls,
           allowedDomains,
@@ -119,13 +199,13 @@ export async function handleDiscordMessage(
             histories.push(entry);
             continue;
           }
-          const result = await openTargetLinkRepeated(entry.url, channelId, settings, {
+          const openResult = await openTargetLinkRepeated(entry.url, channelId, settings, {
             inWindow: getOpenLinksInWindow(settings),
             author: entry.author,
             timestamp: entry.timestamp,
           });
-          opened.push(...result.opened);
-          histories.push(...result.histories);
+          opened.push(...openResult.opened);
+          histories.push(...openResult.histories);
         }
 
         if (histories.length > 0) {

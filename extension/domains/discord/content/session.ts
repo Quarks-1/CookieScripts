@@ -1,5 +1,6 @@
 import {
   extractAuthor,
+  extractAnchorsFromMessage,
   extractLinksFromMessage,
   extractMessageText,
   getMessageId,
@@ -10,6 +11,7 @@ import {
   startDetectedDomainScan,
   stopDetectedDomainScan,
 } from "@ext/domains/discord/content/detected-domains.ts";
+import { messageScanRoot } from "@ext/domains/discord/content/page-domains.ts";
 import { hookSpaNavigation } from "@ext/core/lib/spa-navigation.ts";
 import { attachMessagePipeline } from "@ext/domains/discord/content/observers.ts";
 import { MESSAGE_ARTICLE } from "@ext/domains/discord/content/selectors.ts";
@@ -143,7 +145,8 @@ function onMessageAdded(node: Element): void {
     return;
   }
 
-  const urls = extractLinksFromMessage(node);
+  const scanRoot = messageScanRoot(node);
+  const urls = extractLinksFromMessage(scanRoot);
   if (urls.length === 0) {
     return;
   }
@@ -152,8 +155,9 @@ function onMessageAdded(node: Element): void {
     type: "CANDIDATE_LINKS",
     channel_id: channelId,
     urls,
+    anchors: extractAnchorsFromMessage(scanRoot),
     author: extractAuthor(node),
-    message_text: extractMessageText(node),
+    message_text: extractMessageText(scanRoot),
   });
 }
 

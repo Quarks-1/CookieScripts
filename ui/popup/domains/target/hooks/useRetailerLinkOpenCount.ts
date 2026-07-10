@@ -15,7 +15,7 @@ function parseOpenCountDraft(raw: string): number {
   if (!Number.isFinite(parsed)) {
     return 1;
   }
-  return Math.max(1, Math.min(5, Math.floor(parsed)));
+  return Math.max(1, Math.floor(parsed));
 }
 
 export function useRetailerLinkOpenCount(

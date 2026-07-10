@@ -1,4 +1,4 @@
-import { MAX_KEYWORD_LENGTH, MAX_KEYWORDS_PER_LIST } from "@ext/core/lib/constants.ts";
+import { MAX_KEYWORD_LENGTH, MAX_KEYWORDS_PER_LIST, MAX_SKU_LENGTH, MAX_SKUS_PER_LIST } from "@ext/core/lib/constants.ts";
 import type { ChannelTarget } from "@ext/core/types/index.ts";
 
 function validateChannelId(channelId: string): string | null {
@@ -34,6 +34,30 @@ function validateKeywordList(
     }
     if (keyword.length > MAX_KEYWORD_LENGTH) {
       return `${fieldName} entries must be at most ${MAX_KEYWORD_LENGTH} characters`;
+    }
+  }
+  return null;
+}
+
+function validateSkuList(skus: string[] | undefined, fieldName: string): string | null {
+  if (skus === undefined) {
+    return null;
+  }
+  if (!Array.isArray(skus)) {
+    return `${fieldName} must be an array`;
+  }
+  if (skus.length > MAX_SKUS_PER_LIST) {
+    return `${fieldName} must have at most ${MAX_SKUS_PER_LIST} entries`;
+  }
+  for (const sku of skus) {
+    if (typeof sku !== "string" || sku.length === 0) {
+      return `${fieldName} entries must be non-empty strings`;
+    }
+    if (sku.length > MAX_SKU_LENGTH) {
+      return `${fieldName} entries must be at most ${MAX_SKU_LENGTH} characters`;
+    }
+    if (!/^\d+$/.test(sku)) {
+      return `${fieldName} entries must be digits only`;
     }
   }
   return null;
@@ -85,6 +109,14 @@ export function validateChannelTarget(target: ChannelTarget): string | null {
   const negativeError = validateKeywordList(target.negative_keywords, "negative_keywords");
   if (negativeError) {
     return negativeError;
+  }
+  const targetSkusError = validateSkuList(target.watch_skus?.target, "watch_skus.target");
+  if (targetSkusError) {
+    return targetSkusError;
+  }
+  const walmartSkusError = validateSkuList(target.watch_skus?.walmart, "watch_skus.walmart");
+  if (walmartSkusError) {
+    return walmartSkusError;
   }
   return validateKeywordOverlap(target);
 }

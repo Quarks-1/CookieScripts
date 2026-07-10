@@ -195,7 +195,7 @@ export function normalizeRetailerLinkOpenCount(value: number): number {
   if (!Number.isFinite(value) || value < 1) {
     return 1;
   }
-  return Math.min(Math.floor(value), 5);
+  return Math.floor(value);
 }
 
 export function getRetailerLinkOpenCount(settings: ExtensionSettings): number {

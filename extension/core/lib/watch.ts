@@ -14,3 +14,7 @@ export function resolveWatchConfig(
 export function getOpenLinksInWindow(settings: ExtensionSettings): boolean {
   return settings.open_links_in_window !== false;
 }
+
+export function getSkuOpenModeEnabled(settings: ExtensionSettings): boolean {
+  return settings.sku_open_mode_enabled === true;
+}

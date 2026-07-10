@@ -160,7 +160,26 @@ describe("getChannelKeywords", () => {
 });
 
 describe("upsertChannelDiscordTarget", () => {
-  it("stores normalized keywords", () => {
+  it("preserves watch_skus when target_skus omitted from patch", () => {
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      channel_targets: [
+        buildChannelTarget({
+          channel_id: "111",
+          allowed_domains: ["walmart.com"],
+          watch_skus: { target: ["95120834"] },
+        }),
+      ],
+    };
+    const result = upsertChannelDiscordTarget(settings, "111", {
+      allowed_domains: ["walmart.com"],
+      positive_keywords: ["pokemon"],
+      negative_keywords: [],
+    });
+    expect(result.channel_targets[0]?.watch_skus).toEqual({ target: ["95120834"] });
+  });
+
+  it("stores normalized keywords and SKUs", () => {
     const settings = {
       ...DEFAULT_SETTINGS,
       channel_targets: [buildChannelTarget({ channel_id: "111", allowed_domains: ["walmart.com"] })],
@@ -169,12 +188,14 @@ describe("upsertChannelDiscordTarget", () => {
       allowed_domains: ["walmart.com"],
       positive_keywords: ["Pokemon"],
       negative_keywords: ["  Scam  Link  "],
+      target_skus: ["95120834", "94860231"],
     });
     expect(result.channel_targets[0]).toEqual({
       channel_id: "111",
       allowed_domains: ["walmart.com"],
       positive_keywords: ["pokemon"],
       negative_keywords: ["scam link"],
+      watch_skus: { target: ["95120834", "94860231"] },
     });
   });
 

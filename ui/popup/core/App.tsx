@@ -12,6 +12,7 @@ import { EnableSlider } from "@shared/components/EnableSlider.tsx";
 import { WatchStatusBadge } from "@shared/components/WatchStatusBadge.tsx";
 import { ChannelDomainsSection } from "../domains/discord/components/ChannelDomainsSection.tsx";
 import { ChannelKeywordsSection } from "../domains/discord/components/ChannelKeywordsSection.tsx";
+import { ChannelSkuWatchSection } from "../domains/discord/components/ChannelSkuWatchSection.tsx";
 import { DetectedLinksSection } from "../domains/discord/components/DetectedLinksSection.tsx";
 import { useChannelDiscordSettings } from "../domains/discord/hooks/useChannelDiscordSettings.ts";
 import { useDetectedLinks } from "../domains/discord/hooks/useDetectedLinks.ts";
@@ -79,6 +80,8 @@ export default function App() {
   const [autoAtcError, setAutoAtcError] = useState<string | null>(null);
   const [openLinksInWindowSaving, setOpenLinksInWindowSaving] = useState(false);
   const [openLinksInWindowError, setOpenLinksInWindowError] = useState<string | null>(null);
+  const [skuOpenModeSaving, setSkuOpenModeSaving] = useState(false);
+  const [skuOpenModeError, setSkuOpenModeError] = useState<string | null>(null);
   const linkOpenCount = useRetailerLinkOpenCount(status, refresh);
 
   async function handleAutoAtcChange(next: boolean) {
@@ -131,6 +134,20 @@ export default function App() {
       setOpenLinksInWindowError(err instanceof Error ? err.message : "Failed to save");
     } finally {
       setOpenLinksInWindowSaving(false);
+    }
+  }
+
+  async function handleSkuOpenModeChange(next: boolean) {
+    setSkuOpenModeSaving(true);
+    setSkuOpenModeError(null);
+    try {
+      const settings = await getExtensionSettings();
+      await saveExtensionSettings({ ...settings, sku_open_mode_enabled: next });
+      await refresh();
+    } catch (err) {
+      setSkuOpenModeError(err instanceof Error ? err.message : "Failed to save");
+    } finally {
+      setSkuOpenModeSaving(false);
     }
   }
 
@@ -200,6 +217,30 @@ export default function App() {
       )}
 
       {status !== null && (
+        <section aria-labelledby="popup-sku-open-mode-heading" className="mt-3">
+          <h2 id="popup-sku-open-mode-heading" className="sr-only">
+            SKU open mode
+          </h2>
+          <EnableSlider
+            id="popup-sku-open-mode"
+            label="SKU open mode"
+            checked={status.sku_open_mode_enabled}
+            disabled={skuOpenModeSaving}
+            onChange={(next) => void handleSkuOpenModeChange(next)}
+          />
+          <p className="mt-1 text-xs text-zinc-500">
+            When on, auto-open uses per-channel Target SKUs instead of link keywords.
+          </p>
+          {skuOpenModeSaving && <p className="mt-1 text-xs text-zinc-500">Saving…</p>}
+          {skuOpenModeError && (
+            <p role="status" aria-live="polite" className="mt-1 text-xs text-red-300">
+              {skuOpenModeError}
+            </p>
+          )}
+        </section>
+      )}
+
+      {status !== null && (
         <section aria-labelledby="popup-retailer-link-open-count-heading" className="mt-3">
           <h2 id="popup-retailer-link-open-count-heading" className="sr-only">
             Target opens per link
@@ -209,7 +250,6 @@ export default function App() {
             label="Target opens per link"
             description="Each Target product link opens this many times. With Auto ATC enabled, all run automation."
             min={1}
-            max={5}
             step={1}
             value={linkOpenCount.draftCount}
             disabled={linkOpenCount.disabled}
@@ -297,6 +337,7 @@ export default function App() {
               channelId={status.active_channel_id}
               positiveKeywords={discordSettings.positiveKeywords}
               negativeKeywords={discordSettings.negativeKeywords}
+              skuModeActive={status.sku_open_mode_enabled}
               disabled={
                 discordSettings.disabled ||
                 enabling ||
@@ -306,6 +347,19 @@ export default function App() {
               saveError={discordSettings.saveError}
               onPositiveKeywordsChange={discordSettings.handlePositiveKeywordsChange}
               onNegativeKeywordsChange={discordSettings.handleNegativeKeywordsChange}
+            />
+
+            <ChannelSkuWatchSection
+              channelId={status.active_channel_id}
+              targetSkus={discordSettings.targetSkus}
+              disabled={
+                discordSettings.disabled ||
+                enabling ||
+                !status.has_allowed_domains
+              }
+              saving={discordSettings.saving}
+              saveError={discordSettings.saveError}
+              onTargetSkusChange={discordSettings.handleTargetSkusChange}
             />
           </div>
         </>

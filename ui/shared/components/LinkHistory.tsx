@@ -15,6 +15,8 @@ function kindLabel(kind: HistoryItem["kind"]) {
       return "Duplicate";
     case "keyword_skipped":
       return "Keyword skipped";
+    case "sku_skipped":
+      return "SKU skipped";
     case "retailer_window_opened":
       return "Target window";
     case "retailer_auto_queued":
@@ -35,6 +37,8 @@ function kindTone(kind: HistoryItem["kind"]) {
     case "duplicate":
       return "text-amber-300";
     case "keyword_skipped":
+      return "text-amber-300";
+    case "sku_skipped":
       return "text-amber-300";
     case "retailer_auto_queued":
       return "text-amber-300";
