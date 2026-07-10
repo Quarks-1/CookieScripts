@@ -12,7 +12,7 @@ Target.com product-page automation: add-to-cart, optional auto-checkout, hard re
 | Session (split) | `content/session/index.ts` + siblings (see below) |
 | Playback | `content/automation/playback.ts`, `checkout-auto.ts` |
 | Pure logic | `lib/*` — barrel `@ext/domains/target/lib/index.ts` from core |
-| Background | `background/handlers.ts`, `runtime-state.ts`, `tab-ready.ts`, `tab-message.ts` |
+| Background | `background/handlers.ts`, `runtime-state.ts`, `tab-ready.ts`, `tab-message.ts`, `tabs.ts` |
 | Types | `types/retailer.ts` (re-exported via `@ext/core/types/index.ts`) |
 | Research | `docs/TARGET_AUTOMATION.md`, `scripts/target-*.mjs` (local Playwright/API probes — not shipped) |
 
@@ -56,6 +56,7 @@ Content `RETAILER_SET_REFRESH_INTERVAL` and UI `SET_RETAILER_REFRESH_INTERVAL` a
 | Quantity | `quantity-limit.ts` (barrel export) |
 | Checkout | `lib/checkout/*` (`steps.ts`, `place-order.ts`, `checkout-state.ts`, `checkout-url.ts`, `waiting-checkout.ts`) |
 | DOM helpers | `dom.ts`, `selectors.ts` |
+| SKU / tab UI | `sku-watch.ts`, `tab-label.ts`, `open-tab-active.ts` |
 
 Core/UI-core import settings helpers via `@ext/domains/target/lib/index.ts` only (see `eslint.config.js`).
 
@@ -66,6 +67,7 @@ Core/UI-core import settings helpers via `@ext/domains/target/lib/index.ts` only
 - Backend ATC via `public/injected/cart-probe.js` (runtime path `injected/cart-probe.js`), not content script.
 - Hard refresh resume uses Target tab `sessionStorage` (`auto-resume.ts`).
 - Avoid re-monolithing `content/session/`.
+- Content scripts guard `chrome.runtime` messaging when extension context is invalidated (post-reload).
 
 Global invariants and import rules: [AGENTS.md](../../../AGENTS.md).
 

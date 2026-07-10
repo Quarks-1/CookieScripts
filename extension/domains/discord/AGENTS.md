@@ -52,6 +52,6 @@ Global invariants and import rules: [AGENTS.md](../../../AGENTS.md).
 
 ## UI
 
-Side panel domains/keywords editor, detected links: `ui/popup/domains/discord/`. Link history uses `@shared/components/LinkHistory.tsx`.
+Side panel domains/keyword/SKU editor, detected links: `ui/popup/domains/discord/`. Link history uses `@shared/components/LinkHistory.tsx`.
 
 Manifest: content script `run_at: document_idle` on `https://discord.com/channels/*`.

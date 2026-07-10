@@ -25,7 +25,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 
 ### Shared components (`ui/shared/components/`)
 
-`EnableSlider`, `WatchStatusBadge`, `LinkHistory`, `DomainPills`, `DetectedLinkPills`, `KeywordPills`, `CompactNumberField`
+`EnableSlider`, `WatchStatusBadge`, `LinkHistory`, `DomainPills`, `DetectedLinkPills`, `KeywordPills`, `SkuPills`, `CompactNumberField`
 
 ## Section visibility
 
@@ -40,7 +40,9 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 
 **Exception:** `WalmartAutoRefreshSection` renders when `status.walmart_tab_detected`, directly below Enable extension. It bundles hard-refresh auto-refresh **and** queue helpers (throttle refresh interval, pass sound, consolidate queue tabs) via `useWalmartAutoRefresh` + `useWalmartQueueSettings`.
 
-**Exception:** **Enable Auto ATC** slider and **Link keywords** section render on `active_tab_kind === "discord_channel"` — not gated by `isSectionVisible`; Auto ATC configures per-channel Target automation; keywords filter all auto-opened links.
+**Exception:** **Enable Auto ATC** slider, **Link keywords** (`ChannelKeywordsSection`), and **Target SKUs** (`ChannelSkuWatchSection`) render on `active_tab_kind === "discord_channel"` — not gated by `isSectionVisible`; Auto ATC configures per-channel Target automation; keywords filter auto-opened links when SKU open mode is off (keywords disabled while SKU mode is on).
+
+**Exception:** **SKU open mode** slider renders below **Open links in new window** on all surfaces; persists `sku_open_mode_enabled` via `saveExtensionSettings` (default false when omitted).
 
 **Exception:** **Open links in new window** slider renders below **Enable extension** on all surfaces (not gated on `discordSurface`); persists `open_links_in_window` via `SAVE_SETTINGS`. `ExtensionStatus.open_links_in_window` reflects the stored preference (default true when omitted).
 
