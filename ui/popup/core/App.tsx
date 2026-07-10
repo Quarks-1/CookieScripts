@@ -7,6 +7,7 @@ import {
 } from "@ext/core/lib/messages.ts";
 import type { BackgroundResponse } from "@ext/core/types/index.ts";
 import { LinkHistory } from "@shared/components/LinkHistory.tsx";
+import { CompactNumberField } from "@shared/components/CompactNumberField.tsx";
 import { EnableSlider } from "@shared/components/EnableSlider.tsx";
 import { WatchStatusBadge } from "@shared/components/WatchStatusBadge.tsx";
 import { ChannelDomainsSection } from "../domains/discord/components/ChannelDomainsSection.tsx";
@@ -203,32 +204,19 @@ export default function App() {
           <h2 id="popup-retailer-link-open-count-heading" className="sr-only">
             Target opens per link
           </h2>
-          <div className="flex items-center justify-between gap-3">
-            <label htmlFor="popup-retailer-link-open-count" className="text-sm text-zinc-300">
-              Target opens per link
-            </label>
-            <input
-              id="popup-retailer-link-open-count"
-              type="number"
-              min={1}
-              max={5}
-              step={1}
-              value={linkOpenCount.draftCount}
-              disabled={linkOpenCount.disabled}
-              onFocus={linkOpenCount.onFocus}
-              onChange={(event) => linkOpenCount.setDraftCount(event.target.value)}
-              onBlur={() => void linkOpenCount.commit()}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  event.currentTarget.blur();
-                }
-              }}
-              className="w-14 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm text-zinc-100 disabled:opacity-50"
-            />
-          </div>
-          <p className="mt-1 text-xs text-zinc-500">
-            Each Target product link opens this many times. With Auto ATC enabled, all run automation.
-          </p>
+          <CompactNumberField
+            id="popup-retailer-link-open-count"
+            label="Target opens per link"
+            description="Each Target product link opens this many times. With Auto ATC enabled, all run automation."
+            min={1}
+            max={5}
+            step={1}
+            value={linkOpenCount.draftCount}
+            disabled={linkOpenCount.disabled}
+            onFocus={linkOpenCount.onFocus}
+            onChange={linkOpenCount.setDraftCount}
+            onBlur={() => void linkOpenCount.commit()}
+          />
           {linkOpenCount.saving && <p className="mt-1 text-xs text-zinc-500">Saving…</p>}
           {linkOpenCount.saveError && (
             <p role="status" aria-live="polite" className="mt-1 text-xs text-red-300">

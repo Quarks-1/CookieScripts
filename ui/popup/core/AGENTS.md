@@ -25,7 +25,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 
 ### Shared components (`ui/shared/components/`)
 
-`EnableSlider`, `WatchStatusBadge`, `LinkHistory`, `DomainPills`, `DetectedLinkPills`, `KeywordPills`
+`EnableSlider`, `WatchStatusBadge`, `LinkHistory`, `DomainPills`, `DetectedLinkPills`, `KeywordPills`, `CompactNumberField`
 
 ## Section visibility
 

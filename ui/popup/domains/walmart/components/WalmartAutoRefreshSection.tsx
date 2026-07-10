@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { EnableSlider } from "@shared/components/EnableSlider.tsx";
+import { CompactNumberField } from "@shared/components/CompactNumberField.tsx";
 import {
   WALMART_AUTO_REFRESH_DEFAULT_INTERVAL_SEC,
   normalizeWalmartRefreshIntervalSec,
@@ -121,15 +122,10 @@ export function WalmartAutoRefreshSection({
         </p>
       )}
 
-      <label
-        className="block text-xs text-zinc-500"
-        htmlFor="popup-walmart-throttle-refresh-interval"
-      >
-        Throttle refresh interval (seconds)
-      </label>
-      <input
+      <CompactNumberField
         id="popup-walmart-throttle-refresh-interval"
-        type="number"
+        label="Throttle refresh interval (seconds)"
+        description="Hard-refresh throttle/hold pages on this interval (all Walmart tabs)."
         min={1}
         max={3600}
         step={1}
@@ -138,18 +134,9 @@ export function WalmartAutoRefreshSection({
         onFocus={() => {
           throttleIntervalFocusedRef.current = true;
         }}
-        onChange={(event) => setDraftThrottleInterval(event.target.value)}
+        onChange={setDraftThrottleInterval}
         onBlur={commitThrottleInterval}
-        onKeyDown={(event) => {
-          if (event.key === "Enter") {
-            event.currentTarget.blur();
-          }
-        }}
-        className="w-full rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm text-zinc-100"
       />
-      <p className="text-xs text-zinc-500">
-        Hard-refresh throttle/hold pages on this interval (all Walmart tabs).
-      </p>
 
       <EnableSlider
         id="popup-walmart-auto-refresh"
@@ -168,15 +155,10 @@ export function WalmartAutoRefreshSection({
         </p>
       )}
 
-      <label
-        className="block text-xs text-zinc-500"
-        htmlFor="popup-walmart-refresh-interval"
-      >
-        Hard refresh interval (seconds)
-      </label>
-      <input
+      <CompactNumberField
         id="popup-walmart-refresh-interval"
-        type="number"
+        label="Hard refresh interval (seconds)"
+        description="Hard-refresh this Walmart tab on this interval."
         min={1}
         max={3600}
         step={1}
@@ -185,16 +167,9 @@ export function WalmartAutoRefreshSection({
         onFocus={() => {
           intervalFocusedRef.current = true;
         }}
-        onChange={(event) => setDraftInterval(event.target.value)}
+        onChange={setDraftInterval}
         onBlur={commitRefreshInterval}
-        onKeyDown={(event) => {
-          if (event.key === "Enter") {
-            event.currentTarget.blur();
-          }
-        }}
-        className="w-full rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm text-zinc-100"
       />
-      <p className="text-xs text-zinc-500">Hard-refresh this Walmart tab on this interval.</p>
       {savingRefresh && <p className="text-xs text-zinc-500">Saving refresh interval…</p>}
       {refreshError && (
         <p role="status" aria-live="polite" className="text-xs text-red-300">

@@ -1,4 +1,5 @@
 import { EnableSlider } from "@shared/components/EnableSlider.tsx";
+import { CompactNumberField } from "@shared/components/CompactNumberField.tsx";
 
 type TargetAtcTogglesProps = {
   frontendEnabled: boolean;
@@ -82,25 +83,17 @@ export function TargetAtcToggles({
         disabled={autoCheckoutDisabled}
         onChange={onAutoCheckoutChange}
       />
-      <div className="flex items-end justify-between gap-2">
-        <label className="block text-xs text-zinc-500" htmlFor="popup-atc-quantity">
-          Quantity
-        </label>
-        {purchaseLimit != null && (
-          <span className="text-xs text-zinc-500">Max: {purchaseLimit}</span>
-        )}
-      </div>
-      <input
+      <CompactNumberField
         id="popup-atc-quantity"
-        type="number"
+        label="Quantity"
+        description={purchaseLimit != null ? `Max: ${purchaseLimit}` : undefined}
         min={1}
         step={1}
         value={quantityDraft}
         disabled={quantityInputDisabled}
         onFocus={onQuantityFocus}
-        onChange={(event) => onQuantityChange(event.target.value)}
+        onChange={onQuantityChange}
         onBlur={onQuantityBlur}
-        className="w-full rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm text-zinc-100 disabled:opacity-50"
       />
       <EnableSlider
         id="popup-max-quantity"

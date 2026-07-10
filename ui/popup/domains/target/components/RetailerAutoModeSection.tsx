@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
+import { CompactNumberField } from "@shared/components/CompactNumberField.tsx";
+
 function parseRefreshIntervalDraft(raw: string): number {
   if (raw.trim() === "") {
     return 0;
@@ -98,12 +100,11 @@ export function RetailerAutoModeSection({
           </p>
         )}
 
-        <label className="mt-3 block text-xs text-zinc-500" htmlFor="popup-retailer-refresh-interval">
-          Hard refresh interval (seconds, 0 = off)
-        </label>
-        <input
+        <CompactNumberField
+          className="mt-3"
           id="popup-retailer-refresh-interval"
-          type="number"
+          label="Hard refresh interval (seconds, 0 = off)"
+          description="While the main Add to cart button is disabled, hard-refresh the page on this interval until it becomes available."
           min={0}
           max={3600}
           step={1}
@@ -112,19 +113,9 @@ export function RetailerAutoModeSection({
           onFocus={() => {
             intervalFocusedRef.current = true;
           }}
-          onChange={(event) => setDraftInterval(event.target.value)}
+          onChange={setDraftInterval}
           onBlur={commitRefreshInterval}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              event.currentTarget.blur();
-            }
-          }}
-          className="mt-1 w-full rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm text-zinc-100"
         />
-        <p className="mt-1 text-xs text-zinc-500">
-          While the main Add to cart button is disabled, hard-refresh the page on this interval until
-          it becomes available.
-        </p>
 
         {savingRefresh && <p className="mt-1 text-xs text-zinc-500">Saving refresh interval…</p>}
         {refreshError && (
