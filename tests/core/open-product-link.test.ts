@@ -1,9 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
-  openRetailerProductWindow,
   openTargetLinkRepeated,
-  shouldOpenRetailerWindow,
   openPassiveProductLink,
   waitForRetailerTabReady,
 } from "@ext/core/background/open-product-link.ts";
@@ -99,14 +97,6 @@ describe("open-product-link", () => {
     });
   });
 
-  it("detects retailer window branch", () => {
-    const settings = buildRetailerSettings();
-    expect(shouldOpenRetailerWindow(PRODUCT_URL, CHANNEL_ID, settings)).toBe(true);
-    expect(shouldOpenRetailerWindow("https://walmart.com/item", CHANNEL_ID, settings)).toBe(
-      false,
-    );
-  });
-
   it("opens passive links in a new unfocused window", async () => {
     await openPassiveProductLink("https://example.com", { inWindow: true });
     expect(chrome.windows.create).toHaveBeenCalledWith({
@@ -152,14 +142,14 @@ describe("open-product-link", () => {
   it("starts auto mode when retailer tab becomes ready", async () => {
     pingResponses = [{ ok: true }];
 
-    const result = await openRetailerProductWindow(
-      PRODUCT_URL,
-      CHANNEL_ID,
-      buildRetailerSettings(),
-      { startAuto: true, historyTimestamp: HISTORY_TIMESTAMP },
-    );
+    const result = await openTargetLinkRepeated(PRODUCT_URL, CHANNEL_ID, buildRetailerSettings(), {
+      inWindow: true,
+      author: "alice",
+      timestamp: HISTORY_TIMESTAMP,
+    });
 
-    expect(result).toEqual({ opened: true, tabId: 100 });
+    expect(result.opened).toEqual([PRODUCT_URL]);
+    expect(result.histories[0]?.kind).toBe("retailer_window_opened");
     expect(chrome.windows.create).toHaveBeenCalledWith({ url: PRODUCT_URL, focused: true });
     expect(getRetailerTabUiState(100)).toEqual({
       status: "Running auto mode…",
@@ -174,14 +164,13 @@ describe("open-product-link", () => {
   it("retries start auto when the content script is not ready yet", async () => {
     startAutoResponses = ["throw", "throw", "ok"];
 
-    const result = await openRetailerProductWindow(
-      PRODUCT_URL,
-      CHANNEL_ID,
-      buildRetailerSettings(),
-      { startAuto: true, historyTimestamp: HISTORY_TIMESTAMP },
-    );
+    const result = await openTargetLinkRepeated(PRODUCT_URL, CHANNEL_ID, buildRetailerSettings(), {
+      inWindow: true,
+      author: "alice",
+      timestamp: HISTORY_TIMESTAMP,
+    });
 
-    expect(result.opened).toBe(true);
+    expect(result.opened).toEqual([PRODUCT_URL]);
     expect(chrome.tabs.sendMessage).toHaveBeenCalledWith(
       expect.any(Number),
       expect.objectContaining({ type: "RETAILER_START_AUTO" }),
@@ -192,15 +181,14 @@ describe("open-product-link", () => {
   it("returns failure history when auto start cannot be delivered", async () => {
     startAutoResponses = Array.from({ length: 40 }, () => "throw" as const);
 
-    const result = await openRetailerProductWindow(
-      PRODUCT_URL,
-      CHANNEL_ID,
-      buildRetailerSettings(),
-      { startAuto: true, historyTimestamp: HISTORY_TIMESTAMP },
-    );
+    const result = await openTargetLinkRepeated(PRODUCT_URL, CHANNEL_ID, buildRetailerSettings(), {
+      inWindow: true,
+      author: "alice",
+      timestamp: HISTORY_TIMESTAMP,
+    });
 
-    expect(result.opened).toBe(false);
-    expect(result.failureHistory).toEqual(
+    expect(result.opened).toEqual([]);
+    expect(result.histories[0]).toEqual(
       expect.objectContaining({
         kind: "retailer_auto_failed",
         url: PRODUCT_URL,

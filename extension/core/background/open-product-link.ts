@@ -24,15 +24,32 @@ const TAB_READY_MAX_MS = 10_000;
 const START_AUTO_SEND_RETRIES = 40;
 const START_AUTO_SEND_RETRY_MS = 50;
 
+interface ChromeOpenResult {
+  tabId: number | null;
+  windowId: number | null;
+}
+
+async function createChromeOpen(
+  url: string,
+  options: { inWindow: boolean; focused?: boolean },
+): Promise<ChromeOpenResult> {
+  if (options.inWindow) {
+    const created = await chrome.windows.create({ url, focused: options.focused ?? false });
+    return {
+      tabId: created.tabs?.[0]?.id ?? null,
+      windowId: created.id ?? null,
+    };
+  }
+
+  const tab = await chrome.tabs.create({ url, active: false });
+  return { tabId: tab.id ?? null, windowId: null };
+}
+
 export async function openPassiveProductLink(
   url: string,
   options: { inWindow: boolean; focused?: boolean },
 ): Promise<void> {
-  if (options.inWindow) {
-    await chrome.windows.create({ url, focused: options.focused ?? false });
-  } else {
-    await chrome.tabs.create({ url, active: false });
-  }
+  await createChromeOpen(url, options);
 }
 
 export async function waitForTabComplete(tabId: number): Promise<void> {
@@ -116,36 +133,29 @@ function buildRetailerAutoStartFailureHistory(
   };
 }
 
-export interface OpenRetailerWindowResult {
+interface TargetIterationResult {
   opened: boolean;
-  tabId: number | null;
-  failureHistory?: HistoryItem;
+  history?: HistoryItem;
 }
 
-export async function openRetailerProductWindow(
+async function openTargetIteration(
   url: string,
   channelId: string,
   settings: ExtensionSettings,
-  options: { startAuto: boolean; historyTimestamp: string },
-): Promise<OpenRetailerWindowResult> {
-  if (!isRetailerProductUrl(url) || !getRetailerAutoAtcEnabled(settings, channelId)) {
-    return { opened: false, tabId: null };
-  }
-
-  const created = await chrome.windows.create({ url, focused: true });
-  const tabId = created.tabs?.[0]?.id ?? null;
-  const windowId = created.id ?? null;
-
-  if (tabId === null) {
-    return { opened: false, tabId: null };
-  }
-
-  bindRetailerTab(tabId, channelId);
-  if (windowId !== null) {
-    registerRetailerWindow(windowId, tabId);
-  }
-
+  options: { startAuto: boolean; inWindow: boolean; author: string; timestamp: string },
+): Promise<TargetIterationResult> {
   if (options.startAuto) {
+    const { tabId, windowId } = await createChromeOpen(url, { inWindow: true, focused: true });
+
+    if (tabId === null) {
+      return { opened: false };
+    }
+
+    bindRetailerTab(tabId, channelId);
+    if (windowId !== null) {
+      registerRetailerWindow(windowId, tabId);
+    }
+
     setRetailerTabUiState(tabId, { status: "Starting auto mode…", running: true });
     const sent = await sendRetailerStartAutoWithRetries(tabId, channelId, url, settings);
     if (!sent) {
@@ -159,25 +169,38 @@ export async function openRetailerProductWindow(
       }
       return {
         opened: false,
-        tabId: null,
-        failureHistory: buildRetailerAutoStartFailureHistory(
-          channelId,
-          url,
-          options.historyTimestamp,
-        ),
+        history: buildRetailerAutoStartFailureHistory(channelId, url, options.timestamp),
       };
     }
+
+    return {
+      opened: true,
+      history: {
+        kind: "retailer_window_opened",
+        url,
+        author: options.author,
+        channel_id: channelId,
+        timestamp: options.timestamp,
+      },
+    };
   }
 
-  return { opened: true, tabId };
-}
+  try {
+    await createChromeOpen(url, { inWindow: options.inWindow, focused: options.inWindow });
+  } catch {
+    return { opened: false };
+  }
 
-export function shouldOpenRetailerWindow(
-  url: string,
-  channelId: string,
-  settings: ExtensionSettings,
-): boolean {
-  return isRetailerProductUrl(url) && getRetailerAutoAtcEnabled(settings, channelId);
+  return {
+    opened: true,
+    history: {
+      kind: "opened",
+      url,
+      author: options.author,
+      channel_id: channelId,
+      timestamp: options.timestamp,
+    },
+  };
 }
 
 export async function openTargetLinkRepeated(
@@ -203,45 +226,22 @@ export async function openTargetLinkRepeated(
   }
 
   const count = getRetailerLinkOpenCount(settings);
+  const startAuto = getRetailerAutoAtcEnabled(settings, channelId);
   const opened: string[] = [];
   const histories: HistoryItem[] = [];
 
   for (let i = 0; i < count; i++) {
-    if (shouldOpenRetailerWindow(url, channelId, settings)) {
-      const result = await openRetailerProductWindow(url, channelId, settings, {
-        startAuto: true,
-        historyTimestamp: options.timestamp,
-      });
-      if (result.opened) {
-        opened.push(url);
-        histories.push({
-          kind: "retailer_window_opened",
-          url,
-          author: options.author,
-          channel_id: channelId,
-          timestamp: options.timestamp,
-        });
-      } else if (result.failureHistory) {
-        histories.push(result.failureHistory);
-      }
-      continue;
-    }
-
-    try {
-      await openPassiveProductLink(url, {
-        inWindow: options.inWindow,
-        focused: options.inWindow,
-      });
+    const result = await openTargetIteration(url, channelId, settings, {
+      startAuto,
+      inWindow: options.inWindow,
+      author: options.author,
+      timestamp: options.timestamp,
+    });
+    if (result.opened) {
       opened.push(url);
-      histories.push({
-        kind: "opened",
-        url,
-        author: options.author,
-        channel_id: channelId,
-        timestamp: options.timestamp,
-      });
-    } catch {
-      // Continue remaining iterations.
+    }
+    if (result.history) {
+      histories.push(result.history);
     }
   }
 
