@@ -1,3 +1,5 @@
+import { isExtensionContextValid } from "@ext/core/lib/messages.ts";
+
 export const CART_PROBE_REQUEST_EVENT = "cookiescripts:cart-probe-request";
 export const CART_PROBE_RESPONSE_EVENT = "cookiescripts:cart-probe-response";
 
@@ -28,6 +30,9 @@ export function isPageProbeFailure(
 }
 
 function defaultGetScriptUrl(): string {
+  if (!isExtensionContextValid()) {
+    throw new Error("Extension context invalidated.");
+  }
   return chrome.runtime.getURL(CART_PROBE_SCRIPT_PATH);
 }
 
@@ -71,9 +76,16 @@ function injectBridgeScript(
   doc: Document,
   getScriptUrl: () => string,
 ): Promise<"ready" | "failed"> {
+  let scriptSrc: string;
+  try {
+    scriptSrc = getScriptUrl();
+  } catch {
+    return Promise.resolve("failed");
+  }
+
   const script = doc.createElement("script");
   script.id = BRIDGE_SCRIPT_ID;
-  script.src = getScriptUrl();
+  script.src = scriptSrc;
   script.setAttribute("data-cs-bridge", BRIDGE_LOADING);
 
   const promise = new Promise<"ready" | "failed">((resolve) => {

@@ -1,4 +1,5 @@
 import { STORAGE_KEYS } from "@ext/core/lib/constants.ts";
+import { isExtensionContextValid } from "@ext/core/lib/messages.ts";
 import type { ExtensionSettings } from "@ext/core/types/index.ts";
 import { readRetailerAutoResume } from "@ext/domains/target/lib/auto-resume.ts";
 import {
@@ -30,7 +31,7 @@ export function isCheckoutDisabledInSettings(settings: ExtensionSettings): boole
 
 export function watchSettings(): void {
   chrome.storage.onChanged.addListener((changes, area) => {
-    if (area !== "local") {
+    if (area !== "local" || !isExtensionContextValid()) {
       return;
     }
     const settingsChange = changes[STORAGE_KEYS.settings];

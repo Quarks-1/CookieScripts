@@ -1,3 +1,4 @@
+import { isExtensionContextValid } from "@ext/core/lib/messages.ts";
 import { stashPendingStartAuto } from "@ext/domains/target/lib/pending-start-auto.ts";
 import type { BackgroundToContent } from "@ext/core/types/index.ts";
 
@@ -8,6 +9,10 @@ declare global {
 }
 
 chrome.runtime.onMessage.addListener((message: BackgroundToContent) => {
+  if (!isExtensionContextValid()) {
+    return;
+  }
+
   if (message.type === "RETAILER_PING") {
     return { ok: true as const };
   }

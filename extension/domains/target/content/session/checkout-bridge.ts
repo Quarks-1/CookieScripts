@@ -53,7 +53,13 @@ export async function runCheckoutAutoMode(): Promise<void> {
     getRefreshIntervalSec: () => state.cachedRefreshIntervalSec,
     publishUiState,
     requestHardReload: async () => {
-      await sendToBackground({ type: "RETAILER_HARD_RELOAD" });
+      try {
+        await sendToBackground({ type: "RETAILER_HARD_RELOAD" });
+      } catch (err) {
+        if (isExtensionContextInvalidatedError(err)) {
+          endSession();
+        }
+      }
     },
     onSuccess: completeCheckoutSuccess,
     onFailed: async (error: string) => {

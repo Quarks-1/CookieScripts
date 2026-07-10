@@ -75,4 +75,6 @@ Global invariants and import rules: [AGENTS.md](../../../AGENTS.md).
 
 ## UI
 
-ATC toggles, auto mode, quantity, auto checkout: `ui/popup/domains/target/`
+ATC toggles, auto mode, quantity, auto checkout, **tab pills**: `ui/popup/domains/target/`
+
+Tab pills (`TargetTabPills` in `RetailerAutoModeSection`) list open Target tabs from `status.retailer_open_tabs`. When the focused tab is not Target, the section shows pills + hint only (controls hidden).

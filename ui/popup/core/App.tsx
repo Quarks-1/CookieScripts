@@ -362,6 +362,8 @@ export default function App() {
 
           {isSectionVisible("retailerAuto", status) && (
             <RetailerAutoModeSection
+              openTabs={status.retailer_open_tabs}
+              showControls={status.retailer_tab_detected}
               refreshIntervalSec={retailerAuto.refreshIntervalSec}
               manualStatus={retailerAuto.manualStatus}
               manualRunning={retailerAuto.manualRunning}

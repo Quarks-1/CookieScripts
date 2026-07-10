@@ -1,3 +1,4 @@
+import type { RetailerOpenTabSummary } from "@ext/domains/target/types/retailer.ts";
 import type { WalmartOpenTabSummary } from "@ext/domains/walmart/types/walmart.ts";
 
 import type { ActiveTabKind } from "@ext/core/types/core.ts";
@@ -10,6 +11,8 @@ export interface ExtensionStatus {
   discord_tab_detected: boolean;
   /** Active tab is on target.com (or affiliate redirect to Target). */
   retailer_tab_detected: boolean;
+  any_retailer_tab_open: boolean;
+  retailer_open_tabs: RetailerOpenTabSummary[];
   /** Active tab is on walmart.com. */
   walmart_tab_detected: boolean;
   walmart_recording_active: boolean;

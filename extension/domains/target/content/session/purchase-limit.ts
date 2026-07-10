@@ -11,6 +11,10 @@ import {
 } from "@ext/domains/target/content/session/session-state.ts";
 
 function publishPurchaseLimitSnapshot(allowNull = false): void {
+  if (!isExtensionContextValid()) {
+    endSession();
+    return;
+  }
   if (!isRetailerProductUrl(location.href)) {
     return;
   }
@@ -31,6 +35,10 @@ function publishPurchaseLimitSnapshot(allowNull = false): void {
 }
 
 function resetPurchaseLimitSnapshot(): void {
+  if (!isExtensionContextValid()) {
+    endSession();
+    return;
+  }
   void sendToBackground({
     type: "RETAILER_PURCHASE_LIMIT_SNAPSHOT",
     purchase_limit: null,

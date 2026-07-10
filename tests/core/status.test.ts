@@ -31,6 +31,10 @@ vi.mock("@ext/domains/walmart/background/tabs.ts", () => ({
   listAllWalmartTabs: vi.fn().mockResolvedValue([]),
 }));
 
+vi.mock("@ext/domains/target/background/tabs.ts", () => ({
+  listAllRetailerTabs: vi.fn().mockResolvedValue([]),
+}));
+
 describe("buildStatus", () => {
   beforeEach(() => {
     clearRetailerRuntimeState();
@@ -201,6 +205,42 @@ describe("buildStatus", () => {
     expect(result.walmart_open_tabs[1]?.isActive).toBe(true);
     expect(result.walmart_open_tabs[1]?.label).toBe("Cart");
     expect(result.walmart_open_tabs[1]?.isRecording).toBe(true);
+  });
+
+  it("populates retailer_open_tabs with stable sort, labels, and running state", async () => {
+    const { listAllRetailerTabs } = await import("@ext/domains/target/background/tabs.ts");
+    const { setRetailerTabUiState } = await import("@ext/domains/target/background/runtime-state.ts");
+    vi.mocked(listAllRetailerTabs).mockResolvedValueOnce([
+      {
+        id: 2,
+        windowId: 10,
+        url: "https://www.target.com/cart",
+        title: "Cart : Target",
+      },
+      {
+        id: 1,
+        windowId: 10,
+        url: "https://www.target.com/",
+        title: "Target",
+      },
+    ] as chrome.tabs.Tab[]);
+    setRetailerTabUiState(2, { status: "Running auto mode…", running: true });
+
+    activeChannels.clear();
+    const result = await buildStatus({
+      id: 2,
+      url: "https://www.target.com/cart",
+    } as chrome.tabs.Tab);
+
+    expect(result.any_retailer_tab_open).toBe(true);
+    expect(result.retailer_open_tabs).toHaveLength(2);
+    expect(result.retailer_open_tabs[0]?.tabId).toBe(1);
+    expect(result.retailer_open_tabs[0]?.isActive).toBe(false);
+    expect(result.retailer_open_tabs[0]?.label).toBe("Home");
+    expect(result.retailer_open_tabs[1]?.tabId).toBe(2);
+    expect(result.retailer_open_tabs[1]?.isActive).toBe(true);
+    expect(result.retailer_open_tabs[1]?.label).toBe("Cart");
+    expect(result.retailer_open_tabs[1]?.isRunning).toBe(true);
   });
 
   it("defaults open_links_in_window to true when setting is omitted", async () => {

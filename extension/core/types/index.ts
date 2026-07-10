@@ -1,4 +1,8 @@
-export type { AutomationStep } from "@ext/domains/target/types/retailer.ts";
+export type {
+  AutomationStep,
+  RetailerOpenTabSummary,
+  RetailerPageKind,
+} from "@ext/domains/target/types/retailer.ts";
 export type {
   DomButtonSummary,
   ElementDescriptor,

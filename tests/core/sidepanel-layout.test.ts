@@ -9,6 +9,8 @@ function status(overrides: Partial<ExtensionStatus>): ExtensionStatus {
     active_tab_kind: "other",
     discord_tab_detected: false,
     retailer_tab_detected: false,
+    any_retailer_tab_open: false,
+    retailer_open_tabs: [],
     walmart_tab_detected: false,
     walmart_recording_active: false,
     walmart_recording_tab_count: 0,
@@ -62,17 +64,22 @@ describe("isSectionVisible", () => {
     expect(isSectionVisible("globalHint", discord)).toBe(false);
   });
 
-  it("shows retailer auto only on retailer surface when enabled", () => {
+  it("shows retailer auto on retailer surface or when any retailer tab is open", () => {
     const retailer = status({ active_tab_kind: "retailer", retailer_tab_detected: true });
     const paused = status({
       active_tab_kind: "retailer",
       retailer_tab_detected: true,
       enabled: false,
     });
+    const discordWithRetailerTab = status({
+      active_tab_kind: "discord_channel",
+      any_retailer_tab_open: true,
+    });
 
     expect(isSectionVisible("retailerAuto", retailer)).toBe(true);
     expect(isSectionVisible("retailerAuto", paused)).toBe(false);
     expect(isSectionVisible("retailerAuto", status({ active_tab_kind: "other" }))).toBe(false);
+    expect(isSectionVisible("retailerAuto", discordWithRetailerTab)).toBe(true);
   });
 
   it("shows link history only on discord_channel surface", () => {

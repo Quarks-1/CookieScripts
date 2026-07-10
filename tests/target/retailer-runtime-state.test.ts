@@ -1,5 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+vi.mock("@ext/core/background/status-notify.ts", () => ({
+  notifyStatusChanged: vi.fn().mockResolvedValue(undefined),
+}));
+
 import {
   clearRetailerManualAutoStopped,
   clearRetailerRuntimeState,

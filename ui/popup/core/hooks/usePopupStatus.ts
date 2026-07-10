@@ -2,9 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 
 import { STORAGE_KEYS } from "@ext/core/lib/constants.ts";
 import { resolveActiveTabKind } from "@ext/core/lib/active-tab.ts";
+import { patchRetailerOpenTabActive } from "@ext/domains/target/lib/index.ts";
 import { patchWalmartOpenTabActive } from "@ext/domains/walmart/lib/index.ts";
 import { getExtensionStatus } from "@ext/core/lib/messages.ts";
 import type { ExtensionStatus } from "@ext/core/types/index.ts";
+import { enrichRetailerOpenTabHighlights } from "../../domains/target/hooks/retailer-open-tab-highlights.ts";
 import { enrichWalmartOpenTabHighlights } from "../../domains/walmart/hooks/walmart-open-tab-highlights.ts";
 
 export function usePopupStatus() {
@@ -14,7 +16,9 @@ export function usePopupStatus() {
 
   const refresh = useCallback(async () => {
     try {
-      const next = await enrichWalmartOpenTabHighlights(await getExtensionStatus());
+      const next = await enrichRetailerOpenTabHighlights(
+        await enrichWalmartOpenTabHighlights(await getExtensionStatus()),
+      );
       setStatus(next);
       setError(null);
     } catch (err) {
@@ -61,13 +65,23 @@ export function usePopupStatus() {
 
     function onTabActivated(activeInfo: chrome.tabs.TabActiveInfo) {
       setStatus((prev) => {
-        if (!prev || prev.walmart_open_tabs.length === 0) {
+        if (!prev) {
           return prev;
         }
-        return {
-          ...prev,
-          walmart_open_tabs: patchWalmartOpenTabActive(prev.walmart_open_tabs, activeInfo.tabId),
-        };
+        let next = prev;
+        if (prev.walmart_open_tabs.length > 0) {
+          next = {
+            ...next,
+            walmart_open_tabs: patchWalmartOpenTabActive(prev.walmart_open_tabs, activeInfo.tabId),
+          };
+        }
+        if (prev.retailer_open_tabs.length > 0) {
+          next = {
+            ...next,
+            retailer_open_tabs: patchRetailerOpenTabActive(prev.retailer_open_tabs, activeInfo.tabId),
+          };
+        }
+        return next === prev ? prev : next;
       });
       void refresh();
     }

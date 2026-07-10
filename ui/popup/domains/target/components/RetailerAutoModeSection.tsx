@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 
+import type { RetailerOpenTabSummary } from "@ext/core/types/index.ts";
 import { CompactNumberField } from "@shared/components/CompactNumberField.tsx";
+
+import { TargetTabPills } from "./TargetTabPills.tsx";
 
 function parseRefreshIntervalDraft(raw: string): number {
   if (raw.trim() === "") {
@@ -14,6 +17,8 @@ function parseRefreshIntervalDraft(raw: string): number {
 }
 
 interface RetailerAutoModeSectionProps {
+  openTabs: RetailerOpenTabSummary[];
+  showControls: boolean;
   refreshIntervalSec: number;
   manualStatus: string;
   manualRunning: boolean;
@@ -30,6 +35,8 @@ interface RetailerAutoModeSectionProps {
 }
 
 export function RetailerAutoModeSection({
+  openTabs,
+  showControls,
   refreshIntervalSec,
   manualStatus,
   manualRunning,
@@ -68,67 +75,73 @@ export function RetailerAutoModeSection({
       <h2 id="retailer-auto-heading" className="text-sm font-medium text-zinc-400">
         Target Auto Mode
       </h2>
-      <div className="mt-2">
-        {manualStatus && (
-          <p className="text-xs text-zinc-400" role="status" aria-live="polite">
-            {manualStatus}
-          </p>
-        )}
+      <TargetTabPills openTabs={openTabs} />
+      {!showControls && openTabs.length > 0 && (
+        <p className="mt-2 text-xs text-zinc-500">Focus a Target tab to control automation.</p>
+      )}
+      {showControls && (
+        <div className="mt-2">
+          {manualStatus && (
+            <p className="text-xs text-zinc-400" role="status" aria-live="polite">
+              {manualStatus}
+            </p>
+          )}
 
-        <div className="mt-3 flex flex-col gap-2">
-          <button
-            type="button"
-            disabled={controlsDisabled || manualRunning || autoStartBlocked}
-            onClick={onStartManual}
-            className="w-full rounded border border-zinc-600 bg-zinc-800 px-3 py-2 text-sm text-zinc-100 disabled:opacity-50"
-          >
-            {acting && !manualRunning ? "Starting…" : "Start Auto Mode"}
-          </button>
-          <button
-            type="button"
-            disabled={controlsDisabled || !manualRunning}
-            onClick={onStopManual}
-            className="w-full rounded border border-zinc-600 bg-zinc-800 px-3 py-2 text-sm text-zinc-100 disabled:opacity-50"
-          >
-            {acting && manualRunning ? "Stopping…" : "Stop Auto Mode"}
-          </button>
+          <div className="mt-3 flex flex-col gap-2">
+            <button
+              type="button"
+              disabled={controlsDisabled || manualRunning || autoStartBlocked}
+              onClick={onStartManual}
+              className="w-full rounded border border-zinc-600 bg-zinc-800 px-3 py-2 text-sm text-zinc-100 disabled:opacity-50"
+            >
+              {acting && !manualRunning ? "Starting…" : "Start Auto Mode"}
+            </button>
+            <button
+              type="button"
+              disabled={controlsDisabled || !manualRunning}
+              onClick={onStopManual}
+              className="w-full rounded border border-zinc-600 bg-zinc-800 px-3 py-2 text-sm text-zinc-100 disabled:opacity-50"
+            >
+              {acting && manualRunning ? "Stopping…" : "Stop Auto Mode"}
+            </button>
+          </div>
+
+          {autoStartBlocked && purchaseLimit != null && (
+            <p role="status" aria-live="polite" className="mt-2 text-xs text-red-300">
+              Quantity cannot exceed max ({purchaseLimit})
+            </p>
+          )}
+
+          <CompactNumberField
+            className="mt-3"
+            id="popup-retailer-refresh-interval"
+            label="Hard refresh interval (seconds, 0 = off)"
+            description="While the main Add to cart button is disabled, hard-refresh the page on this interval until it becomes available."
+            min={0}
+            max={3600}
+            step={1}
+            value={draftInterval}
+            disabled={refreshDisabled}
+            onFocus={() => {
+              intervalFocusedRef.current = true;
+            }}
+            onChange={setDraftInterval}
+            onBlur={commitRefreshInterval}
+          />
+
+          {savingRefresh && <p className="mt-1 text-xs text-zinc-500">Saving refresh interval…</p>}
+          {refreshError && (
+            <p role="status" aria-live="polite" className="mt-1 text-xs text-red-300">
+              {refreshError}
+            </p>
+          )}
+          {actionError && (
+            <p role="status" aria-live="polite" className="mt-1 text-xs text-red-300">
+              {actionError}
+            </p>
+          )}
         </div>
-
-        {autoStartBlocked && purchaseLimit != null && (
-          <p role="status" aria-live="polite" className="mt-2 text-xs text-red-300">
-            Quantity cannot exceed max ({purchaseLimit})
-          </p>
-        )}
-
-        <CompactNumberField
-          className="mt-3"
-          id="popup-retailer-refresh-interval"
-          label="Hard refresh interval (seconds, 0 = off)"
-          description="While the main Add to cart button is disabled, hard-refresh the page on this interval until it becomes available."
-          min={0}
-          max={3600}
-          step={1}
-          value={draftInterval}
-          disabled={refreshDisabled}
-          onFocus={() => {
-            intervalFocusedRef.current = true;
-          }}
-          onChange={setDraftInterval}
-          onBlur={commitRefreshInterval}
-        />
-
-        {savingRefresh && <p className="mt-1 text-xs text-zinc-500">Saving refresh interval…</p>}
-        {refreshError && (
-          <p role="status" aria-live="polite" className="mt-1 text-xs text-red-300">
-            {refreshError}
-          </p>
-        )}
-        {actionError && (
-          <p role="status" aria-live="polite" className="mt-1 text-xs text-red-300">
-            {actionError}
-          </p>
-        )}
-      </div>
+      )}
     </section>
   );
 }

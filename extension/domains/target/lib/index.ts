@@ -24,3 +24,15 @@ export {
 } from "@ext/domains/target/lib/channel-config.ts";
 
 export { buildQuantityStatusFields } from "@ext/domains/target/lib/quantity-limit.ts";
+
+export {
+  applyRetailerOpenTabHighlights,
+  isRetailerOpenTabActive,
+  patchRetailerOpenTabActive,
+} from "@ext/domains/target/lib/open-tab-active.ts";
+
+export {
+  classifyRetailerPageKind,
+  disambiguateOpenTabLabels,
+  labelRetailerTab,
+} from "@ext/domains/target/lib/tab-label.ts";

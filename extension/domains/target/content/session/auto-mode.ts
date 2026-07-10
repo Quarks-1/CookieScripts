@@ -72,33 +72,52 @@ export function shouldContinueAutoMode(): boolean {
 }
 
 export async function loadAutoConfig(channelId: string): Promise<RetailerAutoConfig> {
-  const response = (await sendToBackground({
-    type: "RETAILER_GET_AUTO_CONFIG",
-    channel_id: channelId,
-  })) as {
-    ok?: boolean;
-    refresh_interval_sec?: number;
-    frontend_atc_enabled?: boolean;
-    backend_atc_enabled?: boolean;
-    atc_quantity?: number;
-    use_max_quantity?: boolean;
-    auto_checkout_enabled?: boolean;
+  const defaults: RetailerAutoConfig = {
+    refreshIntervalSec: 0,
+    frontendAtcEnabled: true,
+    backendAtcEnabled: false,
+    atcQuantity: 1,
+    useMaxQuantity: false,
+    autoCheckoutEnabled: false,
   };
-  return {
-    refreshIntervalSec:
-      response?.ok === true && typeof response.refresh_interval_sec === "number"
-        ? response.refresh_interval_sec
-        : 0,
-    frontendAtcEnabled:
-      response?.ok === true && response.frontend_atc_enabled === false ? false : true,
-    backendAtcEnabled: response?.ok === true && response.backend_atc_enabled === true,
-    atcQuantity:
-      response?.ok === true && typeof response.atc_quantity === "number"
-        ? Math.max(1, Math.floor(response.atc_quantity))
-        : 1,
-    useMaxQuantity: response?.ok === true && response.use_max_quantity === true,
-    autoCheckoutEnabled: response?.ok === true && response.auto_checkout_enabled === true,
-  };
+  if (!isExtensionContextValid()) {
+    endSession();
+    return defaults;
+  }
+  try {
+    const response = (await sendToBackground({
+      type: "RETAILER_GET_AUTO_CONFIG",
+      channel_id: channelId,
+    })) as {
+      ok?: boolean;
+      refresh_interval_sec?: number;
+      frontend_atc_enabled?: boolean;
+      backend_atc_enabled?: boolean;
+      atc_quantity?: number;
+      use_max_quantity?: boolean;
+      auto_checkout_enabled?: boolean;
+    };
+    return {
+      refreshIntervalSec:
+        response?.ok === true && typeof response.refresh_interval_sec === "number"
+          ? response.refresh_interval_sec
+          : 0,
+      frontendAtcEnabled:
+        response?.ok === true && response.frontend_atc_enabled === false ? false : true,
+      backendAtcEnabled: response?.ok === true && response.backend_atc_enabled === true,
+      atcQuantity:
+        response?.ok === true && typeof response.atc_quantity === "number"
+          ? Math.max(1, Math.floor(response.atc_quantity))
+          : 1,
+      useMaxQuantity: response?.ok === true && response.use_max_quantity === true,
+      autoCheckoutEnabled: response?.ok === true && response.auto_checkout_enabled === true,
+    };
+  } catch (err) {
+    if (isExtensionContextInvalidatedError(err)) {
+      endSession();
+    }
+    return defaults;
+  }
 }
 
 function applyStartAutoConfig(message: StartAutoMessage): boolean {
@@ -146,8 +165,13 @@ function failQuantityGate(purchaseLimit: number | null): boolean {
 }
 
 export function syncCartProbeBridge(): void {
+  if (!isExtensionContextValid() || state.sessionEnded) {
+    return;
+  }
   if (state.cachedBackendAtcEnabled && isRetailerProductUrl(location.href)) {
-    void ensurePageCartProbeBridge(document);
+    void ensurePageCartProbeBridge(document).catch(() => {
+      // Bridge injection can fail after extension reload; auto mode handles probe fallback.
+    });
   }
 }
 
@@ -158,7 +182,17 @@ async function warmCartProbeBridge(): Promise<void> {
 }
 
 async function requestHardReload(): Promise<void> {
-  await sendToBackground({ type: "RETAILER_HARD_RELOAD" });
+  if (!isExtensionContextValid()) {
+    endSession();
+    return;
+  }
+  try {
+    await sendToBackground({ type: "RETAILER_HARD_RELOAD" });
+  } catch (err) {
+    if (isExtensionContextInvalidatedError(err)) {
+      endSession();
+    }
+  }
 }
 
 export function autoModePlaybackOptions(

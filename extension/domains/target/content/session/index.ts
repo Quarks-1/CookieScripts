@@ -1,5 +1,5 @@
 import { hookSpaNavigation } from "@ext/core/lib/spa-navigation.ts";
-import { isExtensionContextValid } from "@ext/core/lib/messages.ts";
+import { isExtensionContextInvalidatedError, isExtensionContextValid } from "@ext/core/lib/messages.ts";
 import type { BackgroundToContent } from "@ext/core/types/index.ts";
 import {
   shouldResumeRetailerCheckout,
@@ -41,16 +41,28 @@ export function startRetailerSession(): void {
   }
 
   if (isRetailerProductUrl(location.href)) {
-    void loadAutoConfig("manual").then((config) => {
-      applyCachedAutoConfig(config);
-      syncCartProbeBridge();
-    });
+    void loadAutoConfig("manual")
+      .then((config) => {
+        applyCachedAutoConfig(config);
+        syncCartProbeBridge();
+      })
+      .catch((err) => {
+        if (isExtensionContextInvalidatedError(err)) {
+          endSession();
+        }
+      });
   } else {
     const checkoutResume = shouldResumeRetailerCheckout(location.href);
     if (checkoutResume) {
-      void loadAutoConfig(checkoutResume.channel_id).then((config) => {
-        applyCachedAutoConfig(config);
-      });
+      void loadAutoConfig(checkoutResume.channel_id)
+        .then((config) => {
+          applyCachedAutoConfig(config);
+        })
+        .catch((err) => {
+          if (isExtensionContextInvalidatedError(err)) {
+            endSession();
+          }
+        });
     }
   }
 
@@ -102,5 +114,9 @@ export function startRetailerSession(): void {
     handleStartAuto(pendingStartAuto);
   }
 
-  void initRetailerSession();
+  void initRetailerSession().catch((err) => {
+    if (isExtensionContextInvalidatedError(err)) {
+      endSession();
+    }
+  });
 }

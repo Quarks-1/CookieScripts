@@ -34,15 +34,22 @@ export function isSectionVisible(
     );
   }
 
+  if (section === "retailerAuto") {
+    if (!status.enabled) {
+      return false;
+    }
+    return (
+      status.active_tab_kind === "retailer" ||
+      status.any_retailer_tab_open
+    );
+  }
+
   const rule = VISIBILITY[section];
   if (rule === "always") {
     return true;
   }
   if (status.active_tab_kind !== rule) {
     return false;
-  }
-  if (section === "retailerAuto") {
-    return status.enabled;
   }
   return true;
 }

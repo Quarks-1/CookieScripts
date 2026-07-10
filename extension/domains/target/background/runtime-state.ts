@@ -4,6 +4,8 @@
  * 2. Cleanup on tab/window removal clears tab bindings and UI state
  */
 
+import { notifyStatusChanged } from "@ext/core/background/status-notify.ts";
+
 const tabChannelMap = new Map<number, string>();
 const windowTabMap = new Map<number, number>();
 
@@ -77,8 +79,12 @@ export async function broadcastRetailerStopAuto(channelId?: string): Promise<voi
 }
 
 export function markRetailerManualAutoStopped(tabId: number): void {
+  const wasRunning = getRetailerTabUiState(tabId).running;
   manualAutoStoppedTabs.add(tabId);
   setRetailerTabUiState(tabId, { status: "Stopped", running: false });
+  if (wasRunning) {
+    void notifyStatusChanged();
+  }
 }
 
 export function clearRetailerManualAutoStopped(tabId: number): void {
@@ -136,7 +142,12 @@ export function getRetailerTabPurchaseLimit(
 }
 
 export function setRetailerTabUiState(tabId: number, state: RetailerTabUiState): void {
+  const before = getRetailerTabUiState(tabId).running;
   tabUiState.set(tabId, state);
+  const after = getRetailerTabUiState(tabId).running;
+  if (before !== after) {
+    void notifyStatusChanged();
+  }
 }
 
 export function getRetailerTabUiState(tabId: number): RetailerTabUiState {

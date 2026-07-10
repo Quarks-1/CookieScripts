@@ -32,11 +32,11 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 | Section | Visible when |
 |---|---|
 | `watchStatus`, `channelDomains`, `detectedLinks`, `linkHistory` | `active_tab_kind === "discord_channel"` |
-| `retailerAuto` | `active_tab_kind === "retailer"` and `enabled` |
+| `retailerAuto` | `enabled` and (`active_tab_kind === "retailer"` OR `any_retailer_tab_open`) |
 | `walmartResearch` | `enabled` and (`active_tab_kind === "walmart"` OR `walmart_recording_active` OR `any_walmart_tab_open`) |
 | `globalHint` | `active_tab_kind === "other"` |
 
-**Exception:** `TargetAtcToggles` in `App.tsx` renders when `status.retailer_tab_detected` (focused Target tab), independent of `retailerAuto` section gating.
+**Exception:** `TargetAtcToggles` in `App.tsx` renders when `status.retailer_tab_detected` (focused Target tab), independent of `retailerAuto` section gating. `RetailerAutoModeSection` shows tab pills when visible; Start/Stop controls render only when `retailer_tab_detected` (pills-only + hint off-surface).
 
 **Exception:** `WalmartAutoRefreshSection` renders when `status.walmart_tab_detected`, directly below Enable extension. It bundles hard-refresh auto-refresh **and** queue helpers (throttle refresh interval, pass sound, consolidate queue tabs) via `useWalmartAutoRefresh` + `useWalmartQueueSettings`.
 
