@@ -6,13 +6,33 @@ import {
   initRuntimeState,
   recentUrlKeys,
 } from "@ext/core/background/runtime-state.ts";
-import {
-  clearRetailerRuntimeState,
-  releaseRetailerJob,
-  tryAcquireRetailerJob,
-} from "@ext/domains/target/background/runtime-state.ts";
+import { clearRetailerRuntimeState } from "@ext/domains/target/background/runtime-state.ts";
 import { EXTENSION_ID, setupChromeMocks } from "../fixtures/handlers-setup.ts";
 import { buildChannelTarget, mockContentSender } from "../fixtures/fixtures.ts";
+
+const PRODUCT_URL = "https://www.target.com/p/foo/-/A-123";
+
+function mockSettingsStorage(settings: Record<string, unknown>) {
+  const storage = {
+    "cookiescripts:settings": settings,
+    "cookiescripts:history": [],
+    "cookiescripts:recentUrls": [],
+  };
+  vi.mocked(chrome.storage.local.get).mockImplementation(async (keys) => {
+    const keyList = Array.isArray(keys) ? keys : [keys];
+    const result: Record<string, unknown> = {};
+    for (const key of keyList) {
+      if (storage[key as keyof typeof storage] !== undefined) {
+        result[key] = storage[key as keyof typeof storage];
+      }
+    }
+    return result;
+  });
+  vi.mocked(chrome.storage.local.set).mockImplementation(async (items) => {
+    Object.assign(storage, items);
+  });
+  return storage;
+}
 
 describe("handleMessage — target", () => {
   beforeEach(async () => {
@@ -25,7 +45,7 @@ describe("handleMessage — target", () => {
   });
 
   it("opens target product links in a new window when retailer auto mode is enabled", async () => {
-    const settings = {
+    mockSettingsStorage({
       enabled: true,
       channel_targets: [
         buildChannelTarget({
@@ -34,20 +54,6 @@ describe("handleMessage — target", () => {
           retailer_auto_atc_enabled: true,
         }),
       ],
-    };
-    vi.mocked(chrome.storage.local.get).mockImplementation(async (keys) => {
-      const keyList = Array.isArray(keys) ? keys : [keys];
-      const result: Record<string, unknown> = {};
-      for (const key of keyList) {
-        if (key === "cookiescripts:settings") {
-          result[key] = settings;
-        } else if (key === "cookiescripts:history") {
-          result[key] = [];
-        } else if (key === "cookiescripts:recentUrls") {
-          result[key] = [];
-        }
-      }
-      return result;
     });
 
     const sender = mockContentSender({
@@ -59,7 +65,7 @@ describe("handleMessage — target", () => {
       {
         type: "CANDIDATE_LINKS",
         channel_id: "222",
-        urls: ["https://www.target.com/p/foo/-/A-123"],
+        urls: [PRODUCT_URL],
         author: "alice",
       },
       sender,
@@ -67,10 +73,10 @@ describe("handleMessage — target", () => {
 
     expect(response).toMatchObject({
       ok: true,
-      opened: ["https://www.target.com/p/foo/-/A-123"],
+      opened: [PRODUCT_URL],
     });
     expect(chrome.windows.create).toHaveBeenCalledWith({
-      url: "https://www.target.com/p/foo/-/A-123",
+      url: PRODUCT_URL,
       focused: true,
     });
     expect(chrome.tabs.sendMessage).toHaveBeenCalledWith(
@@ -79,9 +85,10 @@ describe("handleMessage — target", () => {
     );
   });
 
-  it("opens a passive window when retailer auto mode job is already in progress", async () => {
-    const settings = {
+  it("opens target product links repeatedly when retailer_link_open_count is 3", async () => {
+    const storage = mockSettingsStorage({
       enabled: true,
+      retailer_link_open_count: 3,
       channel_targets: [
         buildChannelTarget({
           channel_id: "222",
@@ -89,27 +96,7 @@ describe("handleMessage — target", () => {
           retailer_auto_atc_enabled: true,
         }),
       ],
-    };
-    const storage = {
-      "cookiescripts:settings": settings,
-      "cookiescripts:history": [],
-      "cookiescripts:recentUrls": [],
-    };
-    vi.mocked(chrome.storage.local.get).mockImplementation(async (keys) => {
-      const keyList = Array.isArray(keys) ? keys : [keys];
-      const result: Record<string, unknown> = {};
-      for (const key of keyList) {
-        if (storage[key as keyof typeof storage] !== undefined) {
-          result[key] = storage[key as keyof typeof storage];
-        }
-      }
-      return result;
     });
-    vi.mocked(chrome.storage.local.set).mockImplementation(async (items) => {
-      Object.assign(storage, items);
-    });
-
-    tryAcquireRetailerJob("222");
 
     const sender = mockContentSender({
       extensionId: EXTENSION_ID,
@@ -120,7 +107,7 @@ describe("handleMessage — target", () => {
       {
         type: "CANDIDATE_LINKS",
         channel_id: "222",
-        urls: ["https://www.target.com/p/foo/-/A-123"],
+        urls: [PRODUCT_URL],
         author: "alice",
       },
       sender,
@@ -128,114 +115,29 @@ describe("handleMessage — target", () => {
 
     expect(response).toMatchObject({
       ok: true,
-      opened: ["https://www.target.com/p/foo/-/A-123"],
+      opened: [PRODUCT_URL, PRODUCT_URL, PRODUCT_URL],
     });
-    expect(chrome.windows.create).toHaveBeenCalledTimes(1);
-    expect(chrome.windows.create).toHaveBeenCalledWith({
-      url: "https://www.target.com/p/foo/-/A-123",
-      focused: false,
-    });
-    expect(chrome.tabs.create).not.toHaveBeenCalled();
+    expect(chrome.windows.create).toHaveBeenCalledTimes(3);
+    expect(chrome.tabs.sendMessage).toHaveBeenCalledTimes(3);
+    expect(storage["cookiescripts:history"]).toHaveLength(3);
     expect(storage["cookiescripts:history"]).toEqual([
-      expect.objectContaining({
-        kind: "retailer_auto_queued",
-        url: "https://www.target.com/p/foo/-/A-123",
-        channel_id: "222",
-        error: "Auto mode skipped — job in progress",
-      }),
+      expect.objectContaining({ kind: "retailer_window_opened", url: PRODUCT_URL }),
+      expect.objectContaining({ kind: "retailer_window_opened", url: PRODUCT_URL }),
+      expect.objectContaining({ kind: "retailer_window_opened", url: PRODUCT_URL }),
     ]);
-    releaseRetailerJob("222");
-  });
-
-  it("opens a passive tab when retailer auto mode job is queued and open_links_in_window is false", async () => {
-    const settings = {
-      enabled: true,
-      open_links_in_window: false,
-      channel_targets: [
-        buildChannelTarget({
-          channel_id: "222",
-          allowed_domains: ["target.com"],
-          retailer_auto_atc_enabled: true,
-        }),
-      ],
-    };
-    const storage = {
-      "cookiescripts:settings": settings,
-      "cookiescripts:history": [],
-      "cookiescripts:recentUrls": [],
-    };
-    vi.mocked(chrome.storage.local.get).mockImplementation(async (keys) => {
-      const keyList = Array.isArray(keys) ? keys : [keys];
-      const result: Record<string, unknown> = {};
-      for (const key of keyList) {
-        if (storage[key as keyof typeof storage] !== undefined) {
-          result[key] = storage[key as keyof typeof storage];
-        }
-      }
-      return result;
-    });
-    vi.mocked(chrome.storage.local.set).mockImplementation(async (items) => {
-      Object.assign(storage, items);
-    });
-
-    tryAcquireRetailerJob("222");
-
-    const sender = mockContentSender({
-      extensionId: EXTENSION_ID,
-      tabUrl: "https://discord.com/channels/111/222",
-    });
-
-    const response = await handleMessage(
-      {
-        type: "CANDIDATE_LINKS",
-        channel_id: "222",
-        urls: ["https://www.target.com/p/foo/-/A-123"],
-        author: "alice",
-      },
-      sender,
-    );
-
-    expect(response).toMatchObject({
-      ok: true,
-      opened: ["https://www.target.com/p/foo/-/A-123"],
-    });
-    expect(chrome.tabs.create).toHaveBeenCalledTimes(1);
-    expect(chrome.tabs.create).toHaveBeenCalledWith({
-      url: "https://www.target.com/p/foo/-/A-123",
-      active: false,
-    });
-    expect(chrome.windows.create).not.toHaveBeenCalled();
-    releaseRetailerJob("222");
   });
 
   it("does not open target window on negative-only keyword match", async () => {
-    const storage: Record<string, unknown> = {
-      "cookiescripts:settings": {
-        enabled: true,
-        channel_targets: [
-          buildChannelTarget({
-            channel_id: "222",
-            allowed_domains: ["target.com"],
-            retailer_auto_atc_enabled: true,
-            negative_keywords: ["chaos rising"],
-          }),
-        ],
-      },
-      "cookiescripts:history": [],
-      "cookiescripts:recentUrls": [],
-    };
-    vi.mocked(chrome.storage.local.get).mockImplementation(async (keys) => {
-      const keyList = Array.isArray(keys) ? keys : [keys];
-      const result: Record<string, unknown> = {};
-      for (const key of keyList) {
-        if (storage[key] !== undefined) {
-          result[key] = storage[key];
-        }
-      }
-      return result;
-    });
-    vi.mocked(chrome.storage.local.set).mockImplementation(async (items) => {
-      Object.assign(storage, items);
+    const storage = mockSettingsStorage({
+      enabled: true,
+      channel_targets: [
+        buildChannelTarget({
+          channel_id: "222",
+          allowed_domains: ["target.com"],
+          retailer_auto_atc_enabled: true,
+          negative_keywords: ["chaos rising"],
+        }),
+      ],
     });
 
     const sender = mockContentSender({
@@ -247,7 +149,7 @@ describe("handleMessage — target", () => {
       {
         type: "CANDIDATE_LINKS",
         channel_id: "222",
-        urls: ["https://www.target.com/p/foo/-/A-123"],
+        urls: [PRODUCT_URL],
         message_text: "restock chaos rising today",
       },
       sender,
@@ -259,7 +161,7 @@ describe("handleMessage — target", () => {
     expect(storage["cookiescripts:history"]).toEqual([
       expect.objectContaining({
         kind: "keyword_skipped",
-        url: "https://www.target.com/p/foo/-/A-123",
+        url: PRODUCT_URL,
       }),
     ]);
   });

@@ -33,6 +33,8 @@ export interface ExtensionSettings {
   walmart_throttle_refresh_interval_sec?: number;
   /** Default true when undefined — open passive auto-links in a new window. */
   open_links_in_window?: boolean;
+  /** Target product links from Discord watch open this many times; default 1. */
+  retailer_link_open_count?: number;
 }
 
 export type HistoryItemKind =

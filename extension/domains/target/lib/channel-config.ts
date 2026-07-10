@@ -190,3 +190,28 @@ export function setRetailerAutoCheckoutEnabled(
   }
   return next;
 }
+
+export function normalizeRetailerLinkOpenCount(value: number): number {
+  if (!Number.isFinite(value) || value < 1) {
+    return 1;
+  }
+  return Math.min(Math.floor(value), 5);
+}
+
+export function getRetailerLinkOpenCount(settings: ExtensionSettings): number {
+  return normalizeRetailerLinkOpenCount(settings.retailer_link_open_count ?? 1);
+}
+
+export function setRetailerLinkOpenCount(
+  settings: ExtensionSettings,
+  count: number,
+): ExtensionSettings {
+  const normalized = normalizeRetailerLinkOpenCount(count);
+  const next = { ...settings };
+  if (normalized === 1) {
+    delete next.retailer_link_open_count;
+  } else {
+    next.retailer_link_open_count = normalized;
+  }
+  return next;
+}

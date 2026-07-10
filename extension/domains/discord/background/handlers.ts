@@ -5,11 +5,7 @@ import { decideLinkActions } from "@ext/core/lib/process-links.ts";
 import { addIgnoredDomain } from "@ext/core/lib/ignored-domains.ts";
 import { getSettings, prependHistory, saveSettings } from "@ext/core/lib/storage.ts";
 import { getOpenLinksInWindow, resolveWatchConfig } from "@ext/core/lib/watch.ts";
-import {
-  openPassiveProductLink,
-  openRetailerProductWindow,
-  shouldOpenRetailerWindow,
-} from "@ext/core/background/open-product-link.ts";
+import { openTargetLinkRepeated } from "@ext/core/background/open-product-link.ts";
 import {
   enqueueLinkProcessing,
   mergeDedupKeys,
@@ -115,64 +111,25 @@ export async function handleDiscordMessage(
         mergeDedupKeys(decision.newDedupKeys);
         scheduleRecentUrlsPersist();
 
-        const retailerHistory: HistoryItem[] = [];
-        const passiveHistory: HistoryItem[] = [];
         const opened: string[] = [];
-        const seenRetailerUrls = new Set<string>();
-        const inWindow = getOpenLinksInWindow(settings);
+        const histories: HistoryItem[] = [];
 
         for (const entry of decision.historyEntries) {
           if (entry.kind === "duplicate") {
-            passiveHistory.push(entry);
+            histories.push(entry);
             continue;
           }
-
-          const url = entry.url;
-          if (shouldOpenRetailerWindow(url, channelId, settings)) {
-            if (seenRetailerUrls.has(url)) {
-              passiveHistory.push({
-                ...entry,
-                kind: "duplicate",
-              });
-              continue;
-            }
-            seenRetailerUrls.add(url);
-
-            const windowResult = await openRetailerProductWindow(url, channelId, settings, {
-              startAuto: true,
-            });
-
-            if (windowResult.opened) {
-              opened.push(url);
-              retailerHistory.push({
-                kind: "retailer_window_opened",
-                url,
-                author: entry.author,
-                channel_id: channelId,
-                timestamp: entry.timestamp,
-              });
-            } else if (windowResult.queued) {
-              await openPassiveProductLink(url, { inWindow });
-              opened.push(url);
-              retailerHistory.push({
-                kind: "retailer_auto_queued",
-                url,
-                author: entry.author,
-                channel_id: channelId,
-                timestamp: entry.timestamp,
-                error: "Auto mode skipped — job in progress",
-              });
-            }
-          } else {
-            await openPassiveProductLink(url, { inWindow });
-            opened.push(url);
-            passiveHistory.push(entry);
-          }
+          const result = await openTargetLinkRepeated(entry.url, channelId, settings, {
+            inWindow: getOpenLinksInWindow(settings),
+            author: entry.author,
+            timestamp: entry.timestamp,
+          });
+          opened.push(...result.opened);
+          histories.push(...result.histories);
         }
 
-        const allHistory = [...retailerHistory, ...passiveHistory];
-        if (allHistory.length > 0) {
-          await prependHistory(allHistory);
+        if (histories.length > 0) {
+          await prependHistory(histories);
         }
 
         result = {

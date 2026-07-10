@@ -20,6 +20,7 @@ import { TargetAtcToggles } from "../domains/target/components/TargetAtcToggles.
 import { useRetailerAutoCheckout } from "../domains/target/hooks/useRetailerAutoCheckout.ts";
 import { useRetailerAtcMode } from "../domains/target/hooks/useRetailerAtcMode.ts";
 import { useRetailerAtcQuantity } from "../domains/target/hooks/useRetailerAtcQuantity.ts";
+import { useRetailerLinkOpenCount } from "../domains/target/hooks/useRetailerLinkOpenCount.ts";
 import { useRetailerAutoMode } from "../domains/target/hooks/useRetailerAutoMode.ts";
 import { WalmartResearchSection } from "../domains/walmart/components/WalmartResearchSection.tsx";
 import { WalmartAutoRefreshSection } from "../domains/walmart/components/WalmartAutoRefreshSection.tsx";
@@ -77,6 +78,7 @@ export default function App() {
   const [autoAtcError, setAutoAtcError] = useState<string | null>(null);
   const [openLinksInWindowSaving, setOpenLinksInWindowSaving] = useState(false);
   const [openLinksInWindowError, setOpenLinksInWindowError] = useState<string | null>(null);
+  const linkOpenCount = useRetailerLinkOpenCount(status, refresh);
 
   async function handleAutoAtcChange(next: boolean) {
     const channelId = status?.active_channel_id;
@@ -191,6 +193,46 @@ export default function App() {
           {openLinksInWindowError && (
             <p role="status" aria-live="polite" className="mt-1 text-xs text-red-300">
               {openLinksInWindowError}
+            </p>
+          )}
+        </section>
+      )}
+
+      {status !== null && (
+        <section aria-labelledby="popup-retailer-link-open-count-heading" className="mt-3">
+          <h2 id="popup-retailer-link-open-count-heading" className="sr-only">
+            Target opens per link
+          </h2>
+          <div className="flex items-center justify-between gap-3">
+            <label htmlFor="popup-retailer-link-open-count" className="text-sm text-zinc-300">
+              Target opens per link
+            </label>
+            <input
+              id="popup-retailer-link-open-count"
+              type="number"
+              min={1}
+              max={5}
+              step={1}
+              value={linkOpenCount.draftCount}
+              disabled={linkOpenCount.disabled}
+              onFocus={linkOpenCount.onFocus}
+              onChange={(event) => linkOpenCount.setDraftCount(event.target.value)}
+              onBlur={() => void linkOpenCount.commit()}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.currentTarget.blur();
+                }
+              }}
+              className="w-14 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm text-zinc-100 disabled:opacity-50"
+            />
+          </div>
+          <p className="mt-1 text-xs text-zinc-500">
+            Each Target product link opens this many times. With Auto ATC enabled, all run automation.
+          </p>
+          {linkOpenCount.saving && <p className="mt-1 text-xs text-zinc-500">Saving…</p>}
+          {linkOpenCount.saveError && (
+            <p role="status" aria-live="polite" className="mt-1 text-xs text-red-300">
+              {linkOpenCount.saveError}
             </p>
           )}
         </section>

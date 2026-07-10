@@ -38,6 +38,7 @@ function status(overrides: Partial<ExtensionStatus>): ExtensionStatus {
     walmart_auto_refresh_enabled: false,
     walmart_refresh_interval_sec: 10,
     open_links_in_window: true,
+    retailer_link_open_count: 1,
     ...overrides,
   };
 }

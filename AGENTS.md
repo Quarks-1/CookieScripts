@@ -171,7 +171,7 @@ npm run lint         # import boundary rules + TypeScript ESLint
 1. **Bootstrap quiet period** — Discord seeds message IDs on attach; without it, historical links open on load.
 2. **Empty allowlist** — observe only; `process-links` no-ops on `[]`.
 3. **Sender auth** — never bypass `extension/core/background/sender-auth.ts`.
-4. **Retailer job mutex** — one Target automation job at a time (`tryAcquireRetailerJob`).
+4. **Target repeat opens** — Discord-initiated Target `/p/` links open up to `retailer_link_open_count` times per unique URL per message (default 1); no per-channel Auto ATC concurrency cap.
 5. **Backend ATC** — cart API runs in page context via `public/injected/cart-probe.js`, not content script.
 6. **No new permissions** — never add `cookies`, `webRequest`, or `<all_urls>`.
 7. **Discord selectors** — patch `extension/domains/discord/content/selectors.ts` only; bump `SELECTOR_VERSION`.

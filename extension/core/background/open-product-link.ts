@@ -2,9 +2,7 @@ import {
   bindRetailerTab,
   onRetailerTabRemoved,
   registerRetailerWindow,
-  releaseRetailerJob,
   setRetailerTabUiState,
-  tryAcquireRetailerJob,
 } from "@ext/domains/target/background/runtime-state.ts";
 import {
   getRetailerAtcQuantity,
@@ -12,13 +10,13 @@ import {
   getRetailerAutoCheckoutEnabled,
   getRetailerBackendAtcEnabled,
   getRetailerFrontendAtcEnabled,
+  getRetailerLinkOpenCount,
   getRetailerRefreshIntervalSec,
   getRetailerUseMaxQuantity,
 } from "@ext/domains/target/lib/channel-config.ts";
 import { isRetailerProductUrl } from "@ext/domains/target/lib/host.ts";
 import { sleep } from "@ext/core/lib/sleep.ts";
-import { prependHistory } from "@ext/core/lib/storage.ts";
-import type { ExtensionSettings } from "@ext/core/types/index.ts";
+import type { ExtensionSettings, HistoryItem } from "@ext/core/types/index.ts";
 
 export { waitForRetailerTabReady } from "@ext/domains/target/background/tab-ready.ts";
 
@@ -28,10 +26,10 @@ const START_AUTO_SEND_RETRY_MS = 50;
 
 export async function openPassiveProductLink(
   url: string,
-  options: { inWindow: boolean },
+  options: { inWindow: boolean; focused?: boolean },
 ): Promise<void> {
   if (options.inWindow) {
-    await chrome.windows.create({ url, focused: false });
+    await chrome.windows.create({ url, focused: options.focused ?? false });
   } else {
     await chrome.tabs.create({ url, active: false });
   }
@@ -103,37 +101,35 @@ async function sendRetailerStartAutoWithRetries(
   return false;
 }
 
-async function recordRetailerAutoStartFailure(channelId: string, url: string): Promise<void> {
-  await prependHistory([
-    {
-      kind: "retailer_auto_failed",
-      url,
-      author: "retailer-auto",
-      channel_id: channelId,
-      timestamp: new Date().toISOString(),
-      error: "Automation failed to start",
-    },
-  ]);
+function buildRetailerAutoStartFailureHistory(
+  channelId: string,
+  url: string,
+  timestamp: string,
+): HistoryItem {
+  return {
+    kind: "retailer_auto_failed",
+    url,
+    author: "retailer-auto",
+    channel_id: channelId,
+    timestamp,
+    error: "Automation failed to start",
+  };
 }
 
 export interface OpenRetailerWindowResult {
   opened: boolean;
   tabId: number | null;
-  queued: boolean;
+  failureHistory?: HistoryItem;
 }
 
 export async function openRetailerProductWindow(
   url: string,
   channelId: string,
   settings: ExtensionSettings,
-  options: { startAuto: boolean },
+  options: { startAuto: boolean; historyTimestamp: string },
 ): Promise<OpenRetailerWindowResult> {
   if (!isRetailerProductUrl(url) || !getRetailerAutoAtcEnabled(settings, channelId)) {
-    return { opened: false, tabId: null, queued: false };
-  }
-
-  if (!tryAcquireRetailerJob(channelId)) {
-    return { opened: false, tabId: null, queued: true };
+    return { opened: false, tabId: null };
   }
 
   const created = await chrome.windows.create({ url, focused: true });
@@ -141,8 +137,7 @@ export async function openRetailerProductWindow(
   const windowId = created.id ?? null;
 
   if (tabId === null) {
-    releaseRetailerJob(channelId);
-    return { opened: false, tabId: null, queued: false };
+    return { opened: false, tabId: null };
   }
 
   bindRetailerTab(tabId, channelId);
@@ -154,7 +149,6 @@ export async function openRetailerProductWindow(
     setRetailerTabUiState(tabId, { status: "Starting auto mode…", running: true });
     const sent = await sendRetailerStartAutoWithRetries(tabId, channelId, url, settings);
     if (!sent) {
-      await recordRetailerAutoStartFailure(channelId, url);
       onRetailerTabRemoved(tabId);
       if (windowId !== null) {
         try {
@@ -163,10 +157,19 @@ export async function openRetailerProductWindow(
           // Window may already be closed.
         }
       }
+      return {
+        opened: false,
+        tabId: null,
+        failureHistory: buildRetailerAutoStartFailureHistory(
+          channelId,
+          url,
+          options.historyTimestamp,
+        ),
+      };
     }
   }
 
-  return { opened: true, tabId, queued: false };
+  return { opened: true, tabId };
 }
 
 export function shouldOpenRetailerWindow(
@@ -175,4 +178,72 @@ export function shouldOpenRetailerWindow(
   settings: ExtensionSettings,
 ): boolean {
   return isRetailerProductUrl(url) && getRetailerAutoAtcEnabled(settings, channelId);
+}
+
+export async function openTargetLinkRepeated(
+  url: string,
+  channelId: string,
+  settings: ExtensionSettings,
+  options: { inWindow: boolean; author: string; timestamp: string },
+): Promise<{ opened: string[]; histories: HistoryItem[] }> {
+  if (!isRetailerProductUrl(url)) {
+    await openPassiveProductLink(url, { inWindow: options.inWindow });
+    return {
+      opened: [url],
+      histories: [
+        {
+          kind: "opened",
+          url,
+          author: options.author,
+          channel_id: channelId,
+          timestamp: options.timestamp,
+        },
+      ],
+    };
+  }
+
+  const count = getRetailerLinkOpenCount(settings);
+  const opened: string[] = [];
+  const histories: HistoryItem[] = [];
+
+  for (let i = 0; i < count; i++) {
+    if (shouldOpenRetailerWindow(url, channelId, settings)) {
+      const result = await openRetailerProductWindow(url, channelId, settings, {
+        startAuto: true,
+        historyTimestamp: options.timestamp,
+      });
+      if (result.opened) {
+        opened.push(url);
+        histories.push({
+          kind: "retailer_window_opened",
+          url,
+          author: options.author,
+          channel_id: channelId,
+          timestamp: options.timestamp,
+        });
+      } else if (result.failureHistory) {
+        histories.push(result.failureHistory);
+      }
+      continue;
+    }
+
+    try {
+      await openPassiveProductLink(url, {
+        inWindow: options.inWindow,
+        focused: options.inWindow,
+      });
+      opened.push(url);
+      histories.push({
+        kind: "opened",
+        url,
+        author: options.author,
+        channel_id: channelId,
+        timestamp: options.timestamp,
+      });
+    } catch {
+      // Continue remaining iterations.
+    }
+  }
+
+  return { opened, histories };
 }

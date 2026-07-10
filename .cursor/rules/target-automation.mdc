@@ -12,7 +12,7 @@ globs:
 - Session logic is split under `content/session/` — avoid re-monolithing.
 - PDP selectors: `lib/selectors.ts`; checkout: `lib/checkout/selectors.ts` — see `extension/domains/target/docs/TARGET_AUTOMATION.md`.
 - Backend ATC must run in page context via `public/injected/cart-probe.js`, not content script.
-- One automation job at a time (`tryAcquireRetailerJob`); do not bypass mutex.
+- Discord-initiated Auto ATC has no per-channel concurrency cap; each unique detected Target `/p/` URL opens up to `retailer_link_open_count` times per message (default 1).
 - Hard refresh resume uses Target tab `sessionStorage` (`auto-resume.ts`).
 
 See `extension/domains/target/AGENTS.md`.

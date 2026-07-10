@@ -226,4 +226,28 @@ describe("buildStatus", () => {
     } as chrome.tabs.Tab);
     expect(status.open_links_in_window).toBe(false);
   });
+
+  it("defaults retailer_link_open_count to 1 when setting is omitted", async () => {
+    activeChannels.clear();
+    const status = await buildStatus({
+      id: 1,
+      url: "https://discord.com/channels/111/222",
+    } as chrome.tabs.Tab);
+    expect(status.retailer_link_open_count).toBe(1);
+  });
+
+  it("reflects retailer_link_open_count from settings", async () => {
+    const { getSettings } = await import("@ext/core/lib/storage.ts");
+    vi.mocked(getSettings).mockResolvedValueOnce({
+      enabled: true,
+      retailer_link_open_count: 3,
+      channel_targets: [],
+    });
+    activeChannels.clear();
+    const status = await buildStatus({
+      id: 1,
+      url: "https://discord.com/channels/111/222",
+    } as chrome.tabs.Tab);
+    expect(status.retailer_link_open_count).toBe(3);
+  });
 });

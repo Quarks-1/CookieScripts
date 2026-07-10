@@ -10,7 +10,7 @@ Watches Discord channel tabs for product links and sends candidates to the backg
 | Session / observer | `content/session.ts` (`hookSpaNavigation`, `MESSAGE_BOOTSTRAP_QUIET_MS`), `observers.ts`, `extract.ts` |
 | Domain detection | `content/detected-domains.ts`, `content/page-domains.ts` |
 | DOM selectors | `content/selectors.ts` — **only** edit selectors here; bump `SELECTOR_VERSION` |
-| Background handler | `background/handlers.ts` — link open (`openPassiveProductLink` / `openRetailerProductWindow` when Auto ATC enabled) |
+| Background handler | `background/handlers.ts` — link open (`openTargetLinkRepeated` in core `open-product-link.ts`) |
 | Link pipeline (core) | `@ext/core/lib/process-links.ts`, `links.ts`, `validate.ts`, `affiliate-unwrap.ts`, `keywords.ts` |
 
 ## Data flow
@@ -39,7 +39,7 @@ Source of truth: [extension/core/types/messages.ts](../../core/types/messages.ts
 - `CANDIDATE_LINKS` may include optional `message_text` for keyword gating.
 - Side panel domain + keyword editor is Discord-surface only; settings debounce 400ms via `useChannelDiscordSettings`.
 - Per-channel positive/negative keywords gate auto-open in `background/handlers.ts` (`shouldOpenByKeywords`); skipped links use history kind `keyword_skipped`.
-- When per-channel **Auto ATC** is enabled, Target product links open in a separate window with automation (`shouldOpenRetailerWindow` / `openRetailerProductWindow` in core `open-product-link.ts`); other allowlisted links open via `openPassiveProductLink` in a new window or background tab per global `open_links_in_window` setting (default on).
+- When per-channel **Auto ATC** is enabled, Target product links open via `openTargetLinkRepeated` in core `open-product-link.ts` (repeat count from global `retailer_link_open_count`, default 1); other allowlisted links open via `openPassiveProductLink` in a new window or background tab per global `open_links_in_window` setting (default on).
 
 Global invariants and import rules: [AGENTS.md](../../../AGENTS.md).
 

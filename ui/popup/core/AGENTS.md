@@ -44,6 +44,8 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 
 **Exception:** **Open links in new window** slider renders below **Enable extension** on all surfaces (not gated on `discordSurface`); persists `open_links_in_window` via `SAVE_SETTINGS`. `ExtensionStatus.open_links_in_window` reflects the stored preference (default true when omitted).
 
+**Exception:** **Target opens per link** number input renders below **Open links in new window** on all surfaces; persists `retailer_link_open_count` via `saveExtensionSettings` (default 1 when omitted).
+
 ## Domain UI map
 
 | Domain | Path |
@@ -58,7 +60,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 |---|---|
 | Core | `usePopupStatus`, `useUpdateCheck` |
 | Discord | `useChannelDiscordSettings`, `useDetectedLinks`, `useLinkHistory` |
-| Target | `useRetailerAutoMode`, `useRetailerAtcMode`, `useRetailerAtcQuantity`, `useRetailerAutoCheckout` |
+| Target | `useRetailerAutoMode`, `useRetailerAtcMode`, `useRetailerAtcQuantity`, `useRetailerAutoCheckout`, `useRetailerLinkOpenCount` |
 | Walmart | `useWalmartRecording`, `useWalmartAutoRefresh`, `useWalmartQueueSettings` |
 
 `LinkHistory` component lives in `@shared/components/LinkHistory.tsx` (not under discord domain).

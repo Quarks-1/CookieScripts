@@ -1,11 +1,9 @@
 /**
  * Retailer automation runtime state:
- * 1. activeJobs tracks in-flight automation per channel (max 1)
- * 2. tabChannelMap binds retailer tab IDs to Discord channel_id for status validation
- * 3. Cleanup on tab/window removal releases concurrency slots
+ * 1. tabChannelMap binds retailer tab IDs to Discord channel_id for status validation
+ * 2. Cleanup on tab/window removal clears tab bindings and UI state
  */
 
-const activeJobs = new Set<string>();
 const tabChannelMap = new Map<number, string>();
 const windowTabMap = new Map<number, number>();
 
@@ -37,18 +35,6 @@ const DEFAULT_TAB_UI_STATE: RetailerTabUiState = {
   running: false,
 };
 
-export function tryAcquireRetailerJob(channelId: string): boolean {
-  if (activeJobs.has(channelId)) {
-    return false;
-  }
-  activeJobs.add(channelId);
-  return true;
-}
-
-export function releaseRetailerJob(channelId: string): void {
-  activeJobs.delete(channelId);
-}
-
 export function bindRetailerTab(tabId: number, channelId: string): void {
   tabChannelMap.set(tabId, channelId);
 }
@@ -62,10 +48,6 @@ export function registerRetailerWindow(windowId: number, tabId: number): void {
 }
 
 export function onRetailerTabRemoved(tabId: number): void {
-  const channelId = tabChannelMap.get(tabId);
-  if (channelId) {
-    releaseRetailerJob(channelId);
-  }
   tabChannelMap.delete(tabId);
   tabUiState.delete(tabId);
   tabPurchaseLimits.delete(tabId);
@@ -121,7 +103,6 @@ export async function stopRetailerTabAuto(tabId: number): Promise<void> {
 }
 
 export function clearRetailerRuntimeState(): void {
-  activeJobs.clear();
   tabChannelMap.clear();
   windowTabMap.clear();
   tabUiState.clear();

@@ -62,7 +62,7 @@ Core/UI-core import settings helpers via `@ext/domains/target/lib/index.ts` only
 ## Invariants
 
 - `retailer_*` naming for persisted keys and messages.
-- One automation job at a time (`tryAcquireRetailerJob`).
+- Discord-initiated Auto ATC has no per-channel concurrency cap; each unique detected Target `/p/` URL opens up to `retailer_link_open_count` times per message (default 1).
 - Backend ATC via `public/injected/cart-probe.js` (runtime path `injected/cart-probe.js`), not content script.
 - Hard refresh resume uses Target tab `sessionStorage` (`auto-resume.ts`).
 - Avoid re-monolithing `content/session/`.

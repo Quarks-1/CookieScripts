@@ -4,7 +4,6 @@ import {
   getRetailerTabUiState,
   isRetailerManualAutoStopped,
   markRetailerManualAutoStopped,
-  releaseRetailerJob,
   setRetailerTabPurchaseLimit,
   setRetailerTabUiState,
 } from "@ext/domains/target/background/runtime-state.ts";
@@ -79,7 +78,6 @@ export async function handleRetailerMessage(
         },
       ]);
 
-      releaseRetailerJob(message.channel_id);
       return { ok: true };
     }
     case "RETAILER_UI_STATE": {

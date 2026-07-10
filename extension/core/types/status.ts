@@ -42,4 +42,6 @@ export interface ExtensionStatus {
   walmart_refresh_interval_sec: number;
   /** Global preference: open passive auto-links in a new window (default true). */
   open_links_in_window: boolean;
+  /** Target product links from Discord watch open this many times (default 1). */
+  retailer_link_open_count: number;
 }

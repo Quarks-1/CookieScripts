@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   openRetailerProductWindow,
+  openTargetLinkRepeated,
   shouldOpenRetailerWindow,
   openPassiveProductLink,
   waitForRetailerTabReady,
@@ -9,8 +10,6 @@ import {
 import {
   clearRetailerRuntimeState,
   getRetailerTabUiState,
-  tryAcquireRetailerJob,
-  releaseRetailerJob,
 } from "@ext/domains/target/background/runtime-state.ts";
 import { DEFAULT_SETTINGS } from "@ext/core/types/index.ts";
 import { buildChannelTarget } from "../fixtures/fixtures.ts";
@@ -18,15 +17,17 @@ import { buildChannelTarget } from "../fixtures/fixtures.ts";
 const EXTENSION_ID = "test-extension-id";
 const PRODUCT_URL = "https://www.target.com/p/foo/-/A-123";
 const CHANNEL_ID = "222";
+const HISTORY_TIMESTAMP = "2026-01-01T00:00:00.000Z";
 
-function buildRetailerSettings() {
+function buildRetailerSettings(overrides: Record<string, unknown> = {}) {
   return {
     ...DEFAULT_SETTINGS,
+    ...overrides,
     channel_targets: [
       buildChannelTarget({
         channel_id: CHANNEL_ID,
         allowed_domains: ["target.com"],
-          retailer_auto_atc_enabled: true,
+        retailer_auto_atc_enabled: true,
       }),
     ],
   };
@@ -36,10 +37,12 @@ describe("open-product-link", () => {
   let storage: Record<string, unknown>;
   let pingResponses: Array<{ ok: boolean } | undefined>;
   let startAutoResponses: Array<"ok" | "throw">;
+  let windowTabId: number;
 
   beforeEach(() => {
     vi.restoreAllMocks();
     clearRetailerRuntimeState();
+    windowTabId = 99;
     storage = {
       "cookiescripts:history": [],
     };
@@ -67,7 +70,7 @@ describe("open-product-link", () => {
       },
       tabs: {
         create: vi.fn(async () => ({ id: 42 })),
-        get: vi.fn(async () => ({ id: 99, status: "complete" })),
+        get: vi.fn(async () => ({ id: windowTabId, status: "complete" })),
         sendMessage: vi.fn(async (_tabId: number, message: { type: string }) => {
           if (message.type === "RETAILER_PING") {
             const next = pingResponses.shift();
@@ -87,7 +90,11 @@ describe("open-product-link", () => {
         onUpdated: { addListener: vi.fn(), removeListener: vi.fn() },
       },
       windows: {
-        create: vi.fn(async () => ({ id: 10, tabs: [{ id: 99 }] })),
+        create: vi.fn(async () => {
+          windowTabId += 1;
+          return { id: 10 + windowTabId, tabs: [{ id: windowTabId }] };
+        }),
+        remove: vi.fn(async () => undefined),
       },
     });
   });
@@ -109,6 +116,30 @@ describe("open-product-link", () => {
     expect(chrome.tabs.create).not.toHaveBeenCalled();
   });
 
+  it("opens passive target links in focused windows when auto atc is off", async () => {
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      channel_targets: [
+        buildChannelTarget({
+          channel_id: CHANNEL_ID,
+          allowed_domains: ["target.com"],
+        }),
+      ],
+    };
+
+    const result = await openTargetLinkRepeated(PRODUCT_URL, CHANNEL_ID, settings, {
+      inWindow: true,
+      author: "alice",
+      timestamp: HISTORY_TIMESTAMP,
+    });
+
+    expect(result.opened).toEqual([PRODUCT_URL]);
+    expect(chrome.windows.create).toHaveBeenCalledWith({
+      url: PRODUCT_URL,
+      focused: true,
+    });
+  });
+
   it("opens passive links in a background tab when inWindow is false", async () => {
     await openPassiveProductLink("https://example.com", { inWindow: false });
     expect(chrome.tabs.create).toHaveBeenCalledWith({
@@ -125,21 +156,19 @@ describe("open-product-link", () => {
       PRODUCT_URL,
       CHANNEL_ID,
       buildRetailerSettings(),
-      { startAuto: true },
+      { startAuto: true, historyTimestamp: HISTORY_TIMESTAMP },
     );
 
-    expect(result).toEqual({ opened: true, tabId: 99, queued: false });
+    expect(result).toEqual({ opened: true, tabId: 100 });
     expect(chrome.windows.create).toHaveBeenCalledWith({ url: PRODUCT_URL, focused: true });
-    expect(getRetailerTabUiState(99)).toEqual({
+    expect(getRetailerTabUiState(100)).toEqual({
       status: "Running auto mode…",
       running: true,
     });
     expect(chrome.tabs.sendMessage).toHaveBeenCalledWith(
-      99,
+      100,
       expect.objectContaining({ type: "RETAILER_START_AUTO", channel_id: CHANNEL_ID }),
     );
-    expect(tryAcquireRetailerJob(CHANNEL_ID)).toBe(false);
-    releaseRetailerJob(CHANNEL_ID);
   });
 
   it("retries start auto when the content script is not ready yet", async () => {
@@ -149,40 +178,86 @@ describe("open-product-link", () => {
       PRODUCT_URL,
       CHANNEL_ID,
       buildRetailerSettings(),
-      { startAuto: true },
+      { startAuto: true, historyTimestamp: HISTORY_TIMESTAMP },
     );
 
     expect(result.opened).toBe(true);
     expect(chrome.tabs.sendMessage).toHaveBeenCalledWith(
-      99,
+      expect.any(Number),
       expect.objectContaining({ type: "RETAILER_START_AUTO" }),
     );
     expect(storage["cookiescripts:history"]).toEqual([]);
   });
 
-  it("records failure history and releases job when auto start cannot be delivered", async () => {
+  it("returns failure history when auto start cannot be delivered", async () => {
     startAutoResponses = Array.from({ length: 40 }, () => "throw" as const);
 
     const result = await openRetailerProductWindow(
       PRODUCT_URL,
       CHANNEL_ID,
       buildRetailerSettings(),
-      { startAuto: true },
+      { startAuto: true, historyTimestamp: HISTORY_TIMESTAMP },
     );
 
-    expect(result.opened).toBe(true);
-    expect(tryAcquireRetailerJob(CHANNEL_ID)).toBe(true);
-    releaseRetailerJob(CHANNEL_ID);
-    expect(storage["cookiescripts:history"]).toHaveLength(1);
-    expect(storage["cookiescripts:history"]).toEqual([
+    expect(result.opened).toBe(false);
+    expect(result.failureHistory).toEqual(
       expect.objectContaining({
         kind: "retailer_auto_failed",
         url: PRODUCT_URL,
         channel_id: CHANNEL_ID,
+        timestamp: HISTORY_TIMESTAMP,
         error: "Automation failed to start",
       }),
-    ]);
-    vi.restoreAllMocks();
+    );
+    expect(storage["cookiescripts:history"]).toEqual([]);
+    expect(chrome.windows.remove).toHaveBeenCalled();
+  });
+
+  it("opens target product links repeatedly with auto mode", async () => {
+    startAutoResponses = ["ok", "ok", "ok"];
+    const settings = buildRetailerSettings({ retailer_link_open_count: 3 });
+
+    const result = await openTargetLinkRepeated(PRODUCT_URL, CHANNEL_ID, settings, {
+      inWindow: true,
+      author: "alice",
+      timestamp: HISTORY_TIMESTAMP,
+    });
+
+    expect(result.opened).toEqual([PRODUCT_URL, PRODUCT_URL, PRODUCT_URL]);
+    expect(result.histories).toHaveLength(3);
+    expect(result.histories.every((entry) => entry.kind === "retailer_window_opened")).toBe(true);
+    expect(chrome.windows.create).toHaveBeenCalledTimes(3);
+    expect(chrome.tabs.sendMessage).toHaveBeenCalledTimes(3);
+  });
+
+  it("continues repeat opens after auto start failure", async () => {
+    startAutoResponses = Array.from({ length: 40 }, () => "throw" as const);
+    const settings = buildRetailerSettings({ retailer_link_open_count: 2 });
+
+    const result = await openTargetLinkRepeated(PRODUCT_URL, CHANNEL_ID, settings, {
+      inWindow: true,
+      author: "alice",
+      timestamp: HISTORY_TIMESTAMP,
+    });
+
+    expect(result.opened).toEqual([]);
+    expect(result.histories).toHaveLength(2);
+    expect(result.histories.every((entry) => entry.kind === "retailer_auto_failed")).toBe(true);
+    expect(chrome.windows.create).toHaveBeenCalledTimes(2);
+  });
+
+  it("opens non-target links once regardless of open count", async () => {
+    const settings = buildRetailerSettings({ retailer_link_open_count: 3 });
+
+    const result = await openTargetLinkRepeated("https://walmart.com/item", CHANNEL_ID, settings, {
+      inWindow: true,
+      author: "alice",
+      timestamp: HISTORY_TIMESTAMP,
+    });
+
+    expect(result.opened).toEqual(["https://walmart.com/item"]);
+    expect(result.histories).toHaveLength(1);
+    expect(chrome.windows.create).toHaveBeenCalledTimes(1);
   });
 
   it("waitForRetailerTabReady returns false when ping never succeeds", async () => {

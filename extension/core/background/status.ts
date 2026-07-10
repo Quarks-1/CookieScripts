@@ -5,6 +5,7 @@ import {
   getRetailerAutoCheckoutEnabled,
   getRetailerBackendAtcEnabled,
   getRetailerFrontendAtcEnabled,
+  getRetailerLinkOpenCount,
   getRetailerRefreshIntervalSec,
   getRetailerUseMaxQuantity,
   setRetailerAtcModes,
@@ -241,6 +242,7 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     walmart_auto_refresh_enabled: walmartAutoRefreshEnabled,
     walmart_refresh_interval_sec: walmartRefreshIntervalSec,
     open_links_in_window: getOpenLinksInWindow(settings),
+    retailer_link_open_count: getRetailerLinkOpenCount(settings),
   };
 }
 

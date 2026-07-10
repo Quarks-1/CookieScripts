@@ -517,4 +517,150 @@ describe("handleMessage — discord", () => {
     expect(response).toEqual({ ok: true, domains: ["walmart.com"] });
     expect(chrome.tabs.sendMessage).toHaveBeenCalledWith(1, { type: "SCAN_DETECTED_DOMAINS" });
   });
+
+  it("opens walmart links once when retailer_link_open_count is 3", async () => {
+    const settings = {
+      enabled: true,
+      retailer_link_open_count: 3,
+      channel_targets: [buildChannelTarget({ channel_id: "222", allowed_domains: ["walmart.com"] })],
+    };
+    vi.mocked(chrome.storage.local.get).mockImplementation(async (keys) => {
+      const keyList = Array.isArray(keys) ? keys : [keys];
+      const result: Record<string, unknown> = {};
+      for (const key of keyList) {
+        if (key === "cookiescripts:settings") {
+          result[key] = settings;
+        } else if (key === "cookiescripts:history") {
+          result[key] = [];
+        } else if (key === "cookiescripts:recentUrls") {
+          result[key] = [];
+        }
+      }
+      return result;
+    });
+
+    const sender = mockContentSender({
+      extensionId: EXTENSION_ID,
+      tabUrl: "https://discord.com/channels/111/222",
+    });
+
+    const response = await handleMessage(
+      {
+        type: "CANDIDATE_LINKS",
+        channel_id: "222",
+        urls: ["https://walmart.com/item"],
+        author: "alice",
+      },
+      sender,
+    );
+
+    expect(response).toMatchObject({
+      ok: true,
+      opened: ["https://walmart.com/item"],
+      duplicates: [],
+    });
+    expect(chrome.windows.create).toHaveBeenCalledTimes(1);
+  });
+
+  it("opens target links once per unique url when the same url appears twice in one message", async () => {
+    const storage: Record<string, unknown> = {
+      "cookiescripts:settings": {
+        enabled: true,
+        retailer_link_open_count: 3,
+        channel_targets: [
+          buildChannelTarget({
+            channel_id: "222",
+            allowed_domains: ["target.com"],
+            retailer_auto_atc_enabled: true,
+          }),
+        ],
+      },
+      "cookiescripts:history": [],
+      "cookiescripts:recentUrls": [],
+    };
+    vi.mocked(chrome.storage.local.get).mockImplementation(async (keys) => {
+      const keyList = Array.isArray(keys) ? keys : [keys];
+      const result: Record<string, unknown> = {};
+      for (const key of keyList) {
+        if (storage[key] !== undefined) {
+          result[key] = storage[key];
+        }
+      }
+      return result;
+    });
+    vi.mocked(chrome.storage.local.set).mockImplementation(async (items) => {
+      Object.assign(storage, items);
+    });
+
+    const sender = mockContentSender({
+      extensionId: EXTENSION_ID,
+      tabUrl: "https://discord.com/channels/111/222",
+    });
+
+    const productUrl = "https://www.target.com/p/foo/-/A-123";
+    const response = await handleMessage(
+      {
+        type: "CANDIDATE_LINKS",
+        channel_id: "222",
+        urls: [productUrl, productUrl],
+        author: "alice",
+      },
+      sender,
+    );
+
+    expect(response).toMatchObject({
+      ok: true,
+      opened: [productUrl, productUrl, productUrl],
+      duplicates: [],
+    });
+    expect(chrome.windows.create).toHaveBeenCalledTimes(3);
+    expect(storage["cookiescripts:history"]).toHaveLength(3);
+    expect(storage["cookiescripts:history"]).toEqual([
+      expect.objectContaining({ kind: "retailer_window_opened", url: productUrl }),
+      expect.objectContaining({ kind: "retailer_window_opened", url: productUrl }),
+      expect.objectContaining({ kind: "retailer_window_opened", url: productUrl }),
+    ]);
+  });
+
+  it("prepends open history once per candidate links batch", async () => {
+    const storageModule = await import("@ext/core/lib/storage.ts");
+    const prependSpy = vi.spyOn(storageModule, "prependHistory");
+    const settings = {
+      enabled: true,
+      retailer_link_open_count: 2,
+      channel_targets: [buildChannelTarget({ channel_id: "222", allowed_domains: ["walmart.com"] })],
+    };
+    vi.mocked(chrome.storage.local.get).mockImplementation(async (keys) => {
+      const keyList = Array.isArray(keys) ? keys : [keys];
+      const result: Record<string, unknown> = {};
+      for (const key of keyList) {
+        if (key === "cookiescripts:settings") {
+          result[key] = settings;
+        } else if (key === "cookiescripts:history") {
+          result[key] = [];
+        } else if (key === "cookiescripts:recentUrls") {
+          result[key] = [];
+        }
+      }
+      return result;
+    });
+
+    const sender = mockContentSender({
+      extensionId: EXTENSION_ID,
+      tabUrl: "https://discord.com/channels/111/222",
+    });
+
+    await handleMessage(
+      {
+        type: "CANDIDATE_LINKS",
+        channel_id: "222",
+        urls: ["https://walmart.com/item"],
+        author: "alice",
+      },
+      sender,
+    );
+
+    expect(prependSpy).toHaveBeenCalledTimes(1);
+    prependSpy.mockRestore();
+  });
 });
