@@ -23,9 +23,6 @@ export function ChannelDomainsSection({
         <h2 id="domains-heading" className="text-sm font-medium text-zinc-400">
           Allowed domains
         </h2>
-        <p className="mt-2 text-sm text-zinc-500">
-          Open a Discord channel tab to configure domains.
-        </p>
       </section>
     );
   }
@@ -41,9 +38,6 @@ export function ChannelDomainsSection({
           <dd className="font-mono text-zinc-300">{channelId}</dd>
         </div>
       </dl>
-      <p className="mt-1 text-xs text-zinc-500">
-        Allowlist applies to this channel and its threads.
-      </p>
       <div className="mt-3">
         <DomainPills
           domains={domains}

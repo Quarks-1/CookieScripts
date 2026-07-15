@@ -10,6 +10,8 @@ interface KeywordPillsProps {
   onChange: (keywords: string[]) => void;
   variant: KeywordPillsVariant;
   disabled?: boolean;
+  /** When set, disables only the add-keyword input (remove buttons still follow `disabled`). */
+  inputDisabled?: boolean;
   inputId?: string;
   placeholder?: string;
 }
@@ -33,11 +35,13 @@ export function KeywordPills({
   onChange,
   variant,
   disabled,
+  inputDisabled,
   inputId,
   placeholder = "Type a keyword and press Enter",
 }: KeywordPillsProps) {
   const [draft, setDraft] = useState("");
   const styles = VARIANT_STYLES[variant];
+  const addDisabled = inputDisabled ?? disabled;
 
   function addDraft() {
     const keyword = normalizeKeyword(draft);
@@ -96,7 +100,7 @@ export function KeywordPills({
         id={inputId}
         type="text"
         value={draft}
-        disabled={disabled}
+        disabled={addDisabled}
         onChange={(event) => setDraft(event.target.value)}
         onKeyDown={handleKeyDown}
         onBlur={() => {

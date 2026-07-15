@@ -6,8 +6,7 @@ export type SidepanelSection =
   | "detectedLinks"
   | "retailerAuto"
   | "walmartResearch"
-  | "linkHistory"
-  | "globalHint";
+  | "linkHistory";
 
 const VISIBILITY: Record<SidepanelSection, ActiveTabKind | "always"> = {
   watchStatus: "discord_channel",
@@ -15,7 +14,6 @@ const VISIBILITY: Record<SidepanelSection, ActiveTabKind | "always"> = {
   detectedLinks: "discord_channel",
   retailerAuto: "retailer",
   walmartResearch: "walmart",
-  globalHint: "other",
   linkHistory: "discord_channel",
 };
 

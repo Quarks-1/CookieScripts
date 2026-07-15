@@ -17,7 +17,7 @@ import {
 import { buildQuantityStatusFields } from "@ext/domains/target/lib/quantity-limit.ts";
 import { sleep } from "@ext/core/lib/sleep.ts";
 import { resolveActiveTabKind } from "@ext/core/lib/active-tab.ts";
-import { getOpenLinksInWindow, getSkuOpenModeEnabled } from "@ext/core/lib/watch.ts";
+import { getOpenLinksInWindow, getSkuOpenModeEnabled, getWalmartRecordingUiEnabled } from "@ext/core/lib/watch.ts";
 import { getSettings, saveSettings } from "@ext/core/lib/storage.ts";
 import { activeChannels } from "@ext/core/background/runtime-state.ts";
 import { listAllRetailerTabs } from "@ext/domains/target/background/tabs.ts";
@@ -299,6 +299,7 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     open_links_in_window: getOpenLinksInWindow(settings),
     retailer_link_open_count: getRetailerLinkOpenCount(settings),
     sku_open_mode_enabled: getSkuOpenModeEnabled(settings),
+    walmart_recording_ui_enabled: getWalmartRecordingUiEnabled(settings),
   };
 }
 

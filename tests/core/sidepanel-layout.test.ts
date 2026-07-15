@@ -42,6 +42,7 @@ function status(overrides: Partial<ExtensionStatus>): ExtensionStatus {
     open_links_in_window: true,
     retailer_link_open_count: 1,
     sku_open_mode_enabled: false,
+    walmart_recording_ui_enabled: false,
     ...overrides,
   };
 }
@@ -61,8 +62,6 @@ describe("isSectionVisible", () => {
     expect(isSectionVisible("detectedLinks", retailer)).toBe(false);
 
     expect(isSectionVisible("watchStatus", other)).toBe(false);
-    expect(isSectionVisible("globalHint", other)).toBe(true);
-    expect(isSectionVisible("globalHint", discord)).toBe(false);
   });
 
   it("shows retailer auto on retailer surface or when any retailer tab is open", () => {

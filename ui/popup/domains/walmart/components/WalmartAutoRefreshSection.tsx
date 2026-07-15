@@ -125,7 +125,6 @@ export function WalmartAutoRefreshSection({
       <CompactNumberField
         id="popup-walmart-throttle-refresh-interval"
         label="Throttle refresh interval (seconds)"
-        description="Hard-refresh throttle/hold pages on this interval (all Walmart tabs)."
         min={1}
         max={3600}
         step={1}
@@ -145,9 +144,6 @@ export function WalmartAutoRefreshSection({
         disabled={toggleDisabled}
         onChange={onEnabledChange}
       />
-      {refreshIntervalSec < 1 && !disabled && (
-        <p className="text-xs text-zinc-500">Set interval to at least 1 second to enable.</p>
-      )}
       {savingEnabled && <p className="text-xs text-zinc-500">Saving…</p>}
       {enableError && (
         <p role="status" aria-live="polite" className="text-xs text-red-300">
@@ -158,7 +154,6 @@ export function WalmartAutoRefreshSection({
       <CompactNumberField
         id="popup-walmart-refresh-interval"
         label="Hard refresh interval (seconds)"
-        description="Hard-refresh this Walmart tab on this interval."
         min={1}
         max={3600}
         step={1}

@@ -32,9 +32,6 @@ export function ChannelKeywordsSection({
         <h2 id="keywords-heading" className="text-sm font-medium text-zinc-400">
           Link keywords
         </h2>
-        <p className="mt-2 text-sm text-zinc-500">
-          Open a Discord channel tab to configure.
-        </p>
       </section>
     );
   }
@@ -47,25 +44,17 @@ export function ChannelKeywordsSection({
       <h2 id="keywords-heading" className="text-sm font-medium text-zinc-400">
         Link keywords
       </h2>
-      <p className="mt-1 text-xs text-zinc-500">
-        {skuModeActive
-          ? "Inactive while SKU open mode is enabled."
-          : "Filters all auto-opened links for this channel."}
-      </p>
 
       <div className="mt-3 space-y-3">
         <div>
           <h3 className="text-sm font-medium text-zinc-300">Positive keywords</h3>
-          <p className="mt-1 text-xs text-zinc-500">
-            If any positive keyword appears in the message, links still open — even when a
-            negative keyword also matches.
-          </p>
           <div className="mt-2">
             <KeywordPills
               keywords={positiveKeywords}
               onChange={onPositiveKeywordsChange}
               variant="positive"
-              disabled={disabled || saving || skuModeActive}
+              disabled={disabled || saving}
+              inputDisabled={disabled || saving || skuModeActive}
               inputId="popup-positive-keyword-input"
               placeholder="Type a keyword and press Enter"
             />
@@ -74,15 +63,13 @@ export function ChannelKeywordsSection({
 
         <div>
           <h3 className="text-sm font-medium text-zinc-300">Negative keywords</h3>
-          <p className="mt-1 text-xs text-zinc-500">
-            Skip auto-open when a negative keyword appears and no positive keyword matches.
-          </p>
           <div className="mt-2">
             <KeywordPills
               keywords={negativeKeywords}
               onChange={onNegativeKeywordsChange}
               variant="negative"
-              disabled={disabled || saving || skuModeActive}
+              disabled={disabled || saving}
+              inputDisabled={disabled || saving || skuModeActive}
               inputId="popup-negative-keyword-input"
               placeholder="Type a keyword and press Enter"
             />

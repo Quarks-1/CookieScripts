@@ -76,9 +76,30 @@ export function RetailerAutoModeSection({
         Target Auto Mode
       </h2>
       <TargetTabPills openTabs={openTabs} />
-      {!showControls && openTabs.length > 0 && (
-        <p className="mt-2 text-xs text-zinc-500">Focus a Target tab to control automation.</p>
+
+      <CompactNumberField
+        className="mt-3"
+        id="popup-retailer-refresh-interval"
+        label="Hard refresh interval (seconds, 0 = off)"
+        min={0}
+        max={3600}
+        step={1}
+        value={draftInterval}
+        disabled={refreshDisabled}
+        onFocus={() => {
+          intervalFocusedRef.current = true;
+        }}
+        onChange={setDraftInterval}
+        onBlur={commitRefreshInterval}
+      />
+
+      {savingRefresh && <p className="mt-1 text-xs text-zinc-500">Saving refresh interval…</p>}
+      {refreshError && (
+        <p role="status" aria-live="polite" className="mt-1 text-xs text-red-300">
+          {refreshError}
+        </p>
       )}
+
       {showControls && (
         <div className="mt-2">
           {manualStatus && (
@@ -112,29 +133,6 @@ export function RetailerAutoModeSection({
             </p>
           )}
 
-          <CompactNumberField
-            className="mt-3"
-            id="popup-retailer-refresh-interval"
-            label="Hard refresh interval (seconds, 0 = off)"
-            description="While the main Add to cart button is disabled, hard-refresh the page on this interval until it becomes available."
-            min={0}
-            max={3600}
-            step={1}
-            value={draftInterval}
-            disabled={refreshDisabled}
-            onFocus={() => {
-              intervalFocusedRef.current = true;
-            }}
-            onChange={setDraftInterval}
-            onBlur={commitRefreshInterval}
-          />
-
-          {savingRefresh && <p className="mt-1 text-xs text-zinc-500">Saving refresh interval…</p>}
-          {refreshError && (
-            <p role="status" aria-live="polite" className="mt-1 text-xs text-red-300">
-              {refreshError}
-            </p>
-          )}
           {actionError && (
             <p role="status" aria-live="polite" className="mt-1 text-xs text-red-300">
               {actionError}

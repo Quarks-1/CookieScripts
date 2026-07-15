@@ -154,7 +154,7 @@ export function useRetailerAtcQuantity(
     void saveQuantity(parsed, next);
   };
 
-  const maxToggleChecked = useMaxQuantity && purchaseLimit != null;
+  const maxToggleChecked = useMaxQuantity;
   const showInvalidError =
     status?.retailer_quantity_invalid === true && !effectiveUseMax && purchaseLimit != null;
 

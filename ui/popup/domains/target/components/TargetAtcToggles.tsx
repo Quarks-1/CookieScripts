@@ -55,7 +55,7 @@ export function TargetAtcToggles({
   const controlsDisabled = disabled || saving || quantitySaving;
   const autoCheckoutDisabled = disabled || autoCheckoutSaving;
   const quantityInputDisabled = controlsDisabled || effectiveUseMax;
-  const maxToggleDisabled = controlsDisabled || purchaseLimit == null;
+  const maxToggleDisabled = controlsDisabled;
 
   return (
     <section aria-labelledby="target-atc-heading" className="mt-3 space-y-2">
@@ -86,7 +86,6 @@ export function TargetAtcToggles({
       <CompactNumberField
         id="popup-atc-quantity"
         label="Quantity"
-        description={purchaseLimit != null ? `Max: ${purchaseLimit}` : undefined}
         min={1}
         step={1}
         value={quantityDraft}
@@ -102,16 +101,6 @@ export function TargetAtcToggles({
         disabled={maxToggleDisabled}
         onChange={onUseMaxChange}
       />
-      {purchaseLimit == null && (
-        <p className="text-xs text-zinc-500">Max quantity unavailable on this page.</p>
-      )}
-      <p className="text-xs text-zinc-500">
-        Frontend uses the page button. Backend uses the cart API.
-      </p>
-      <p className="text-xs text-zinc-500">
-        Auto checkout requires a signed-in Target account with saved address and payment in this
-        window.
-      </p>
       {autoCheckoutSaving && <p className="text-xs text-zinc-500">Saving auto checkout…</p>}
       {saving && <p className="text-xs text-zinc-500">Saving ATC modes…</p>}
       {showInvalidError && purchaseLimit != null && (

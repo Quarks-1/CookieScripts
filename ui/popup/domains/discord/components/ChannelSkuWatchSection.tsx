@@ -26,9 +26,6 @@ export function ChannelSkuWatchSection({
         <h2 id="sku-watch-heading" className="text-sm font-medium text-zinc-400">
           Target SKUs
         </h2>
-        <p className="mt-2 text-sm text-zinc-500">
-          Open a Discord channel tab to configure.
-        </p>
       </section>
     );
   }
@@ -41,10 +38,6 @@ export function ChannelSkuWatchSection({
       <h2 id="sku-watch-heading" className="text-sm font-medium text-zinc-400">
         Target SKUs
       </h2>
-      <p className="mt-1 text-xs text-zinc-500">
-        Matches SKU in message text or link URLs (including ATC links). Opens
-        target.com/p/-/A-{"{sku}"} directly.
-      </p>
 
       <div className="mt-3">
         <SkuPills

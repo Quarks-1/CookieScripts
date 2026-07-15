@@ -120,10 +120,6 @@ export function WalmartResearchSection({
         Walmart Research
       </h2>
       <WalmartTabPills openTabs={openTabs} />
-      <p className="mt-2 text-xs text-zinc-500">
-        Record queue → checkout flow for offline analysis. Exports save to{" "}
-        <strong>Downloads/CookieScripts/walmart-live/</strong>
-      </p>
 
       {!disclaimerAccepted && (
         <div className="mt-3 rounded border border-amber-700/50 bg-amber-950/30 p-3 text-xs text-amber-100">

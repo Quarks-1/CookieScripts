@@ -1,4 +1,5 @@
 import { flushRecentUrls, initRuntimeState, onTabRemoved } from "@ext/core/background/runtime-state.ts";
+import { notifyStatusChanged } from "@ext/core/background/status-notify.ts";
 import { onRetailerTabRemoved, onRetailerWindowRemoved } from "@ext/domains/target/background/runtime-state.ts";
 import { onWalmartTabRemoved, loadWalmartRecordingState } from "@ext/domains/walmart/background/handlers/index.ts";
 import {
@@ -26,6 +27,10 @@ void initPromise.then(() => {
 
 chrome.runtime.onMessage.addListener((message, sender) => {
   return initPromise.then(() => handleMessage(message, sender));
+});
+
+chrome.tabs.onActivated.addListener(() => {
+  void notifyStatusChanged();
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
