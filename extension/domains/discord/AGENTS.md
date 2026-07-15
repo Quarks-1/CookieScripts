@@ -11,7 +11,7 @@ Watches Discord channel tabs for product links and sends candidates to the backg
 | Domain detection | `content/detected-domains.ts`, `content/page-domains.ts` |
 | DOM selectors | `content/selectors.ts` — **only** edit selectors here; bump `SELECTOR_VERSION` |
 | Background handler | `background/handlers.ts` — link open (`openTargetLinkRepeated` in core `open-product-link.ts`) |
-| Link pipeline (core) | `@ext/core/lib/process-links.ts`, `links.ts`, `validate.ts`, `affiliate-unwrap.ts`, `keywords.ts` |
+| Link pipeline (core) | `@ext/core/lib/process-links.ts`, `links.ts`, `validate.ts`, `affiliate-unwrap.ts`, `keywords.ts`, `retailer-url.ts` |
 
 ## Data flow
 
@@ -21,10 +21,12 @@ flowchart LR
   observer --> candidates[CANDIDATE_LINKS + message_text + anchors]
   candidates --> mode{sku_open_mode?}
   mode -->|off| processLinks[process-links]
-  processLinks --> keywordGate[keywords gate]
-  mode -->|on| skuWatch[decideSkuOpenAction]
+  processLinks --> keywordGate[per-retailer keywords gate]
+  mode -->|on| targetSku[Target SKU path]
+  mode -->|on| walmartLinks[Walmart link path]
   keywordGate --> openTab[open-product-link]
-  skuWatch --> openTab
+  targetSku --> openTab
+  walmartLinks --> openTab
 ```
 
 ## Messages
@@ -40,18 +42,19 @@ Source of truth: [extension/core/types/messages.ts](../../core/types/messages.ts
 - Own messages are skipped (`isOwnMessage` in extract/session).
 - Prefer visible message `textContent` URLs over Discord redirect `href`s.
 - `CANDIDATE_LINKS` may include optional `message_text`, `anchors`; extraction uses `messageScanRoot` (article + embed accessories).
-- Global **SKU open mode** (`sku_open_mode_enabled`) switches handlers to `decideSkuOpenAction` (per-channel `watch_skus.target`); opens `target.com/p/-/A-{sku}` directly. Keywords are bypassed. History kind `sku_skipped` when no configured SKU matches.
-- Side panel domain + keyword/SKU editor is Discord-surface only; settings debounce 400ms via `useChannelDiscordSettings`.
+- Per-channel **watch_keywords** (`target` / `walmart` buckets) gate auto-open per retailer URL (`shouldOpenByKeywords`); skipped links use history kind `keyword_skipped`.
+- Global **SKU open mode** (`sku_open_mode_enabled`): Target opens via `decideSkuOpenAction` + `watch_skus.target` (constructed PDP); Walmart links still use link pipeline + Walmart keywords; other allowlisted domains are blocked. History kind `sku_skipped` when configured Target SKUs exist but none match.
+- Side panel Channel filters: Target subsection (keywords + SKUs) and Walmart subsection (keywords only); settings debounce 400ms via `useChannelDiscordSettings`.
 - When per-channel **Auto ATC** is enabled, Target product links open via `openTargetLinkRepeated` in core `open-product-link.ts` (repeat count from global `retailer_link_open_count`, default 1); other allowlisted links open via `openPassiveProductLink` in a new window or background tab per global `open_links_in_window` setting (default on).
 
 Global invariants and import rules: [AGENTS.md](../../../AGENTS.md).
 
 ## Tests
 
-`tests/discord/*`
+`tests/discord/*`, `tests/core/handlers-discord.test.ts`, `tests/core/channel-targets.test.ts`, `tests/core/retailer-url.test.ts`
 
 ## UI
 
-Side panel domains/keyword/SKU editor, detected links: `ui/popup/domains/discord/`. Link history uses `@shared/components/LinkHistory.tsx`.
+Side panel Channel filters (Target + Walmart keyword/SKU editor), detected links: `ui/popup/domains/discord/`. Link history uses `@shared/components/LinkHistory.tsx`.
 
 Manifest: content script `run_at: document_idle` on `https://discord.com/channels/*`.

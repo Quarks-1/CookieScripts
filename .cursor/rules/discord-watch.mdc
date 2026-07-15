@@ -4,6 +4,7 @@ globs:
   - extension/domains/discord/**
   - extension/core/lib/process-links.ts
   - extension/core/lib/links.ts
+  - extension/core/lib/retailer-url.ts
 ---
 
 # Discord watch
@@ -14,9 +15,9 @@ globs:
 - Own messages are skipped (`isOwnMessage` in extract/session).
 - Thread URLs share parent channel allowlist (`parseChannelId` uses parent segment).
 - Prefer visible message `textContent` URLs over Discord redirect `href`s.
-- Side panel domain + keyword/SKU editor is Discord-surface only; settings debounce 400ms via `useChannelDiscordSettings`.
-- Per-channel positive/negative keywords gate auto-open when SKU open mode is off (`shouldOpenByKeywords`); skipped links use history kind `keyword_skipped`.
-- Global **SKU open mode** uses `messageScanRoot` extraction and `decideSkuOpenAction` in handlers; per-channel `watch_skus.target`; opens constructed Target PDP; history kind `sku_skipped`.
+- Side panel Channel filters (Target keywords + SKUs, Walmart keywords) is Discord-surface only; settings debounce 400ms via `useChannelDiscordSettings`.
+- Per-channel **watch_keywords** (`target` / `walmart`) gate auto-open per retailer URL when SKU open mode is off; skipped links use history kind `keyword_skipped`.
+- Global **SKU open mode**: Target via `decideSkuOpenAction` + `watch_skus.target` (constructed PDP; `sku_skipped` on miss); Walmart links still use link pipeline + Walmart keywords; other allowlisted domains blocked in SKU mode.
 - When per-channel **Auto ATC** is enabled, Target product links open via `openTargetLinkRepeated` in core `open-product-link.ts` (repeat count from global `retailer_link_open_count`, default 1; Auto ATC path handled internally); other allowlisted links open via `openPassiveProductLink` in a new window or background tab per global `open_links_in_window` setting (default on).
 
 See `extension/domains/discord/AGENTS.md`.

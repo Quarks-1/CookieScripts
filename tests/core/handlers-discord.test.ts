@@ -824,7 +824,7 @@ describe("handleMessage — discord", () => {
       ]);
     });
 
-    it("no-ops in SKU mode when channel has no configured SKUs", async () => {
+    it("no-ops Target SKU path when channel has no configured SKUs", async () => {
       const settings = {
         enabled: true,
         sku_open_mode_enabled: true,
@@ -854,6 +854,128 @@ describe("handleMessage — discord", () => {
 
       expect(response).toEqual({ ok: true, opened: [], duplicates: [] });
       expect(chrome.windows.create).not.toHaveBeenCalled();
+    });
+
+    it("opens Walmart links in SKU mode when Walmart keywords pass", async () => {
+      const storage: Record<string, unknown> = {
+        "cookiescripts:history": [],
+        "cookiescripts:recentUrls": [],
+      };
+      const settings = {
+        enabled: true,
+        sku_open_mode_enabled: true,
+        channel_targets: [
+          buildChannelTarget({
+            channel_id: "222",
+            allowed_domains: ["walmart.com", "target.com"],
+            watch_keywords: {
+              walmart: { positive: ["pokemon"], negative: [] },
+            },
+            watch_skus: { target: ["95120834"] },
+          }),
+        ],
+      };
+      mockSkuSettings(settings, storage);
+
+      const sender = mockContentSender({
+        extensionId: EXTENSION_ID,
+        tabUrl: "https://discord.com/channels/111/222",
+      });
+
+      const response = await handleMessage(
+        {
+          type: "CANDIDATE_LINKS",
+          channel_id: "222",
+          urls: ["https://www.walmart.com/ip/pokemon"],
+          message_text: "pokemon drop",
+          author: "alice",
+        },
+        sender,
+      );
+
+      expect(response).toMatchObject({
+        ok: true,
+        opened: ["https://www.walmart.com/ip/pokemon"],
+      });
+      expect(chrome.windows.create).toHaveBeenCalledWith({
+        url: "https://www.walmart.com/ip/pokemon",
+        focused: false,
+      });
+    });
+
+    it("blocks other allowlisted domains in SKU mode", async () => {
+      const settings = {
+        enabled: true,
+        sku_open_mode_enabled: true,
+        channel_targets: [
+          buildChannelTarget({
+            channel_id: "222",
+            allowed_domains: ["amazon.com"],
+          }),
+        ],
+      };
+      mockSkuSettings(settings, {});
+
+      const sender = mockContentSender({
+        extensionId: EXTENSION_ID,
+        tabUrl: "https://discord.com/channels/111/222",
+      });
+
+      const response = await handleMessage(
+        {
+          type: "CANDIDATE_LINKS",
+          channel_id: "222",
+          urls: ["https://amazon.com/dp/123"],
+          message_text: "deal",
+        },
+        sender,
+      );
+
+      expect(response).toEqual({ ok: true, opened: [], duplicates: [] });
+      expect(chrome.windows.create).not.toHaveBeenCalled();
+      expect(chrome.tabs.create).not.toHaveBeenCalled();
+    });
+
+    it("uses Walmart keywords not Target keywords for Walmart links in normal mode", async () => {
+      const storage: Record<string, unknown> = {
+        "cookiescripts:history": [],
+        "cookiescripts:recentUrls": [],
+      };
+      const settings = {
+        enabled: true,
+        channel_targets: [
+          buildChannelTarget({
+            channel_id: "222",
+            allowed_domains: ["walmart.com"],
+            watch_keywords: {
+              target: { positive: [], negative: ["pokemon"] },
+              walmart: { positive: [], negative: [] },
+            },
+          }),
+        ],
+      };
+      mockSkuSettings(settings, storage);
+
+      const sender = mockContentSender({
+        extensionId: EXTENSION_ID,
+        tabUrl: "https://discord.com/channels/111/222",
+      });
+
+      const response = await handleMessage(
+        {
+          type: "CANDIDATE_LINKS",
+          channel_id: "222",
+          urls: ["https://walmart.com/item"],
+          message_text: "pokemon drop",
+        },
+        sender,
+      );
+
+      expect(response).toMatchObject({
+        ok: true,
+        opened: ["https://walmart.com/item"],
+      });
+      expect(chrome.windows.create).toHaveBeenCalled();
     });
   });
 });

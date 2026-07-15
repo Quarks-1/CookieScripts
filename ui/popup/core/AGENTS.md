@@ -28,7 +28,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 
 ### Shared components (`ui/shared/components/`)
 
-`EnableSlider`, `WatchStatusBadge`, `LinkHistory`, `DomainPills`, `DetectedLinkPills`, `KeywordPills`, `SkuPills`, `CompactNumberField`
+`EnableSlider`, `WatchStatusBadge`, `LinkHistory`, `CollapsiblePillList`, `DomainPills`, `DetectedLinkPills`, `KeywordPills`, `SkuPills`, `CompactNumberField`
 
 ## Layout
 
@@ -62,7 +62,7 @@ Used inside domain panels for intra-panel gating:
 
 **Exception:** `WalmartAutoRefreshSection` in `WalmartPanel` renders when `status.walmart_tab_detected`.
 
-**Exception:** **Link keywords** and **Target SKUs** render in `DiscordPanel` on `discord_channel` surface.
+**Exception:** **Channel filters** (`ChannelFiltersSection`) renders in `DiscordPanel` on `discord_channel` surface.
 
 **Note:** **Enable Auto ATC** (`retailer_auto_atc_enabled`, per-channel) UI lives in `TargetAutoAtcSection` on the Target tab. Toggle is disabled without a focused Discord channel with allowed domains.
 

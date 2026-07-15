@@ -4,10 +4,15 @@ export interface ChannelTarget {
   retailer_auto_atc_enabled?: boolean;
   /** Hard-refresh interval while main add-to-cart is disabled; 0 = off. */
   retailer_refresh_interval_sec?: number;
-  /** Case-insensitive substring allow overrides for negative matches. */
+  /** @deprecated Migrated to watch_keywords; read-only fallback until persisted. */
   positive_keywords?: string[];
-  /** Case-insensitive substring block when no positive match. */
+  /** @deprecated Migrated to watch_keywords; read-only fallback until persisted. */
   negative_keywords?: string[];
+  /** Per-retailer keyword lists for Discord link gating. */
+  watch_keywords?: {
+    target?: { positive?: string[]; negative?: string[] };
+    walmart?: { positive?: string[]; negative?: string[] };
+  };
   /** Per-retailer SKU watch lists for SKU open mode. */
   watch_skus?: {
     target?: string[];

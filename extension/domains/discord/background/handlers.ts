@@ -9,6 +9,7 @@ import { shouldOpenByKeywords } from "@ext/core/lib/keywords.ts";
 import { normalizeUrlForDedup } from "@ext/core/lib/links.ts";
 import { decideLinkActions } from "@ext/core/lib/process-links.ts";
 import { addIgnoredDomain } from "@ext/core/lib/ignored-domains.ts";
+import { partitionUrlsByRetailer, resolveWatchKeywordRetailer } from "@ext/core/lib/retailer-url.ts";
 import { decideSkuOpenAction } from "@ext/core/lib/sku-watch/decide.ts";
 import { getSettings, prependHistory, saveSettings } from "@ext/core/lib/storage.ts";
 import { getOpenLinksInWindow, getSkuOpenModeEnabled, resolveWatchConfig } from "@ext/core/lib/watch.ts";
@@ -37,11 +38,25 @@ function watchConfigResponse(channelId: string, settings: ExtensionSettings) {
   };
 }
 
-async function handleSkuModeCandidateLinks(
+type LinkOpenResult = { opened: string[]; duplicates: string[] };
+
+function keywordsForUrl(
+  settings: ExtensionSettings,
+  channelId: string,
+  url: string,
+): { positive: string[]; negative: string[] } {
+  const retailer = resolveWatchKeywordRetailer(url);
+  if (retailer === null) {
+    return { positive: [], negative: [] };
+  }
+  return getChannelKeywords(settings, channelId, retailer);
+}
+
+async function handleSkuModeTargetPath(
   message: Extract<ContentToBackground, { type: "CANDIDATE_LINKS" }>,
   channelId: string,
   settings: ExtensionSettings,
-): Promise<{ opened: string[]; duplicates: string[] }> {
+): Promise<LinkOpenResult> {
   const configuredSkus = getChannelWatchSkus(settings, channelId, "target");
   const decision = decideSkuOpenAction({
     messageText: message.message_text ?? "",
@@ -105,6 +120,145 @@ async function handleSkuModeCandidateLinks(
   };
 }
 
+async function handleWalmartLinkPath(
+  message: Extract<ContentToBackground, { type: "CANDIDATE_LINKS" }>,
+  channelId: string,
+  settings: ExtensionSettings,
+  allowedDomains: string[],
+): Promise<LinkOpenResult> {
+  const walmartUrls = partitionUrlsByRetailer(message.urls).walmart;
+  if (walmartUrls.length === 0) {
+    return { opened: [], duplicates: [] };
+  }
+
+  const decision = decideLinkActions({
+    urls: walmartUrls,
+    allowedDomains,
+    recentUrlKeys,
+    enabled: settings.enabled,
+    channelId,
+    author: message.author,
+  });
+
+  const messageText = message.message_text ?? "";
+  const author = message.author ?? "unknown";
+  const now = new Date().toISOString();
+  const histories: HistoryItem[] = [];
+  const opened: string[] = [];
+  const duplicates = [...decision.duplicates];
+  const newDedupKeys: string[] = [];
+
+  for (const entry of decision.historyEntries) {
+    if (entry.kind === "duplicate") {
+      histories.push(entry);
+      continue;
+    }
+
+    const { positive, negative } = keywordsForUrl(settings, channelId, entry.url);
+    if (!shouldOpenByKeywords(messageText, positive, negative)) {
+      histories.push({
+        kind: "keyword_skipped",
+        url: entry.url,
+        author,
+        channel_id: channelId,
+        timestamp: now,
+      });
+      continue;
+    }
+
+    const dedupKey = normalizeUrlForDedup(entry.url);
+    newDedupKeys.push(dedupKey);
+    const openResult = await openTargetLinkRepeated(entry.url, channelId, settings, {
+      inWindow: getOpenLinksInWindow(settings),
+      author: entry.author,
+      timestamp: entry.timestamp,
+    });
+    opened.push(...openResult.opened);
+    histories.push(...openResult.histories);
+  }
+
+  if (newDedupKeys.length > 0) {
+    mergeDedupKeys(newDedupKeys);
+    scheduleRecentUrlsPersist();
+  }
+
+  if (histories.length > 0) {
+    await prependHistory(histories);
+  }
+
+  return { opened, duplicates };
+}
+
+async function handleNormalModeCandidateLinks(
+  message: Extract<ContentToBackground, { type: "CANDIDATE_LINKS" }>,
+  channelId: string,
+  settings: ExtensionSettings,
+  allowedDomains: string[],
+): Promise<LinkOpenResult> {
+  const decision = decideLinkActions({
+    urls: message.urls,
+    allowedDomains,
+    recentUrlKeys,
+    enabled: settings.enabled,
+    channelId,
+    author: message.author,
+  });
+
+  const messageText = message.message_text ?? "";
+  const author = message.author ?? "unknown";
+  const now = new Date().toISOString();
+  const histories: HistoryItem[] = [];
+  const opened: string[] = [];
+  const newDedupKeys: string[] = [];
+
+  for (const entry of decision.historyEntries) {
+    if (entry.kind === "duplicate") {
+      histories.push(entry);
+      continue;
+    }
+
+    const { positive, negative } = keywordsForUrl(settings, channelId, entry.url);
+    if (!shouldOpenByKeywords(messageText, positive, negative)) {
+      histories.push({
+        kind: "keyword_skipped",
+        url: entry.url,
+        author,
+        channel_id: channelId,
+        timestamp: now,
+      });
+      continue;
+    }
+
+    const dedupKey = normalizeUrlForDedup(entry.url);
+    newDedupKeys.push(dedupKey);
+    const openResult = await openTargetLinkRepeated(entry.url, channelId, settings, {
+      inWindow: getOpenLinksInWindow(settings),
+      author: entry.author,
+      timestamp: entry.timestamp,
+    });
+    opened.push(...openResult.opened);
+    histories.push(...openResult.histories);
+  }
+
+  if (newDedupKeys.length > 0) {
+    mergeDedupKeys(newDedupKeys);
+    scheduleRecentUrlsPersist();
+  }
+
+  if (histories.length > 0) {
+    await prependHistory(histories);
+  }
+
+  return { opened, duplicates: decision.duplicates };
+}
+
+function mergeLinkOpenResults(a: LinkOpenResult, b: LinkOpenResult): LinkOpenResult {
+  return {
+    opened: [...a.opened, ...b.opened],
+    duplicates: [...a.duplicates, ...b.duplicates],
+  };
+}
+
 export async function handleDiscordMessage(
   message: ContentToBackground,
   sender: chrome.runtime.MessageSender,
@@ -138,84 +292,27 @@ export async function handleDiscordMessage(
         return { ok: true, opened: [], duplicates: [] };
       }
 
-      let result: { opened: string[]; duplicates: string[] } = {
-        opened: [],
-        duplicates: [],
-      };
+      let result: LinkOpenResult = { opened: [], duplicates: [] };
 
       await enqueueLinkProcessing(async () => {
         if (getSkuOpenModeEnabled(settings)) {
-          result = await handleSkuModeCandidateLinks(message, channelId, settings);
-          return;
-        }
-
-        const decision = decideLinkActions({
-          urls: message.urls,
-          allowedDomains,
-          recentUrlKeys,
-          enabled: settings.enabled,
-          channelId,
-          author: message.author,
-        });
-
-        const { positive, negative } = getChannelKeywords(settings, channelId);
-        const keywordAllowed = shouldOpenByKeywords(
-          message.message_text ?? "",
-          positive,
-          negative,
-        );
-
-        if (!keywordAllowed && decision.toOpen.length > 0) {
-          const now = new Date().toISOString();
-          const skippedHistory: HistoryItem[] = decision.toOpen.map((url) => ({
-            kind: "keyword_skipped",
-            url,
-            author: message.author ?? "unknown",
-            channel_id: channelId,
-            timestamp: now,
-          }));
-          const duplicateHistory = decision.historyEntries.filter(
-            (entry) => entry.kind === "duplicate",
+          const targetResult = await handleSkuModeTargetPath(message, channelId, settings);
+          const walmartResult = await handleWalmartLinkPath(
+            message,
+            channelId,
+            settings,
+            allowedDomains,
           );
-          if (skippedHistory.length > 0 || duplicateHistory.length > 0) {
-            await prependHistory([...skippedHistory, ...duplicateHistory]);
-          }
-
-          result = {
-            opened: [],
-            duplicates: decision.duplicates,
-          };
+          result = mergeLinkOpenResults(targetResult, walmartResult);
           return;
         }
 
-        mergeDedupKeys(decision.newDedupKeys);
-        scheduleRecentUrlsPersist();
-
-        const opened: string[] = [];
-        const histories: HistoryItem[] = [];
-
-        for (const entry of decision.historyEntries) {
-          if (entry.kind === "duplicate") {
-            histories.push(entry);
-            continue;
-          }
-          const openResult = await openTargetLinkRepeated(entry.url, channelId, settings, {
-            inWindow: getOpenLinksInWindow(settings),
-            author: entry.author,
-            timestamp: entry.timestamp,
-          });
-          opened.push(...openResult.opened);
-          histories.push(...openResult.histories);
-        }
-
-        if (histories.length > 0) {
-          await prependHistory(histories);
-        }
-
-        result = {
-          opened,
-          duplicates: decision.duplicates,
-        };
+        result = await handleNormalModeCandidateLinks(
+          message,
+          channelId,
+          settings,
+          allowedDomains,
+        );
       });
 
       return { ok: true, ...result };

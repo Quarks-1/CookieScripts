@@ -1,3 +1,4 @@
+import { migrateChannelWatchKeywords } from "@ext/core/lib/channel-targets.ts";
 import { MAX_KEYWORD_LENGTH, MAX_KEYWORDS_PER_LIST, MAX_SKU_LENGTH, MAX_SKUS_PER_LIST } from "@ext/core/lib/constants.ts";
 import type { ChannelTarget } from "@ext/core/types/index.ts";
 
@@ -63,16 +64,45 @@ function validateSkuList(skus: string[] | undefined, fieldName: string): string 
   return null;
 }
 
-function validateKeywordOverlap(target: ChannelTarget): string | null {
-  const positive = target.positive_keywords ?? [];
-  const negative = target.negative_keywords ?? [];
-  if (positive.length === 0 || negative.length === 0) {
+function validateRetailerKeywordOverlap(
+  positive: string[] | undefined,
+  negative: string[] | undefined,
+  label: string,
+): string | null {
+  const pos = positive ?? [];
+  const neg = negative ?? [];
+  if (pos.length === 0 || neg.length === 0) {
     return null;
   }
-  const negativeSet = new Set(negative);
-  for (const keyword of positive) {
+  const negativeSet = new Set(neg);
+  for (const keyword of pos) {
     if (negativeSet.has(keyword)) {
-      return "positive_keywords and negative_keywords must not overlap";
+      return `${label} positive and negative keywords must not overlap`;
+    }
+  }
+  return null;
+}
+
+function validateWatchKeywords(target: ChannelTarget): string | null {
+  const retailers = ["target", "walmart"] as const;
+  for (const retailer of retailers) {
+    const bucket = target.watch_keywords?.[retailer];
+    const prefix = `watch_keywords.${retailer}`;
+    const positiveError = validateKeywordList(bucket?.positive, `${prefix}.positive`);
+    if (positiveError) {
+      return positiveError;
+    }
+    const negativeError = validateKeywordList(bucket?.negative, `${prefix}.negative`);
+    if (negativeError) {
+      return negativeError;
+    }
+    const overlapError = validateRetailerKeywordOverlap(
+      bucket?.positive,
+      bucket?.negative,
+      prefix,
+    );
+    if (overlapError) {
+      return overlapError;
     }
   }
   return null;
@@ -102,23 +132,26 @@ export function validateChannelTarget(target: ChannelTarget): string | null {
       return "retailer_refresh_interval_sec must be between 1 and 3600";
     }
   }
-  const positiveError = validateKeywordList(target.positive_keywords, "positive_keywords");
-  if (positiveError) {
-    return positiveError;
+
+  const normalized = migrateChannelWatchKeywords({
+    channel_targets: [target],
+    enabled: true,
+  }).settings.channel_targets[0]!;
+
+  const watchKeywordsError = validateWatchKeywords(normalized);
+  if (watchKeywordsError) {
+    return watchKeywordsError;
   }
-  const negativeError = validateKeywordList(target.negative_keywords, "negative_keywords");
-  if (negativeError) {
-    return negativeError;
-  }
-  const targetSkusError = validateSkuList(target.watch_skus?.target, "watch_skus.target");
+
+  const targetSkusError = validateSkuList(normalized.watch_skus?.target, "watch_skus.target");
   if (targetSkusError) {
     return targetSkusError;
   }
-  const walmartSkusError = validateSkuList(target.watch_skus?.walmart, "watch_skus.walmart");
+  const walmartSkusError = validateSkuList(normalized.watch_skus?.walmart, "watch_skus.walmart");
   if (walmartSkusError) {
     return walmartSkusError;
   }
-  return validateKeywordOverlap(target);
+  return null;
 }
 
 export function validatePersistedTargets(targets: ChannelTarget[]): string | null {

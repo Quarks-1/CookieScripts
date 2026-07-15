@@ -4,6 +4,7 @@ import {
   addChannelDomain,
   getChannelDomains,
   getChannelKeywords,
+  migrateChannelWatchKeywords,
   upsertChannelDiscordTarget,
   upsertChannelDomains,
   upsertChannelKeywords,
@@ -111,7 +112,7 @@ describe("upsertChannelDomains", () => {
     expect(result.channel_targets[0]?.retailer_auto_atc_enabled).toBe(true);
   });
 
-  it("preserves keywords when domains are updated", () => {
+  it("preserves legacy keywords when domains are updated", () => {
     const settings = {
       ...DEFAULT_SETTINGS,
       channel_targets: [
@@ -133,15 +134,8 @@ describe("upsertChannelDomains", () => {
   });
 });
 
-describe("getChannelKeywords", () => {
-  it("returns empty lists for unknown channel", () => {
-    expect(getChannelKeywords(DEFAULT_SETTINGS, "999")).toEqual({
-      positive: [],
-      negative: [],
-    });
-  });
-
-  it("returns stored keyword lists", () => {
+describe("migrateChannelWatchKeywords", () => {
+  it("copies legacy keywords to both retailers and strips legacy fields", () => {
     const settings = {
       ...DEFAULT_SETTINGS,
       channel_targets: [
@@ -152,7 +146,83 @@ describe("getChannelKeywords", () => {
         }),
       ],
     };
-    expect(getChannelKeywords(settings, "111")).toEqual({
+    const { settings: migrated, changed } = migrateChannelWatchKeywords(settings);
+    expect(changed).toBe(true);
+    expect(migrated.channel_targets[0]).toEqual({
+      channel_id: "111",
+      allowed_domains: ["walmart.com"],
+      watch_keywords: {
+        target: { positive: ["pokemon"], negative: ["scam"] },
+        walmart: { positive: ["pokemon"], negative: ["scam"] },
+      },
+    });
+  });
+
+  it("no-ops when watch_keywords already exists", () => {
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      channel_targets: [
+        buildChannelTarget({
+          channel_id: "111",
+          watch_keywords: {
+            target: { positive: ["a"], negative: [] },
+            walmart: { positive: ["b"], negative: [] },
+          },
+        }),
+      ],
+    };
+    const { changed } = migrateChannelWatchKeywords(settings);
+    expect(changed).toBe(false);
+  });
+});
+
+describe("getChannelKeywords", () => {
+  it("returns empty lists for unknown channel", () => {
+    expect(getChannelKeywords(DEFAULT_SETTINGS, "999", "target")).toEqual({
+      positive: [],
+      negative: [],
+    });
+  });
+
+  it("returns stored watch_keywords for retailer", () => {
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      channel_targets: [
+        buildChannelTarget({
+          channel_id: "111",
+          watch_keywords: {
+            target: { positive: ["pokemon"], negative: ["scam"] },
+            walmart: { positive: ["walmart-only"], negative: [] },
+          },
+        }),
+      ],
+    };
+    expect(getChannelKeywords(settings, "111", "target")).toEqual({
+      positive: ["pokemon"],
+      negative: ["scam"],
+    });
+    expect(getChannelKeywords(settings, "111", "walmart")).toEqual({
+      positive: ["walmart-only"],
+      negative: [],
+    });
+  });
+
+  it("falls back to legacy fields for both retailers when watch_keywords absent", () => {
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      channel_targets: [
+        buildChannelTarget({
+          channel_id: "111",
+          positive_keywords: ["pokemon"],
+          negative_keywords: ["scam"],
+        }),
+      ],
+    };
+    expect(getChannelKeywords(settings, "111", "target")).toEqual({
+      positive: ["pokemon"],
+      negative: ["scam"],
+    });
+    expect(getChannelKeywords(settings, "111", "walmart")).toEqual({
       positive: ["pokemon"],
       negative: ["scam"],
     });
@@ -173,47 +243,57 @@ describe("upsertChannelDiscordTarget", () => {
     };
     const result = upsertChannelDiscordTarget(settings, "111", {
       allowed_domains: ["walmart.com"],
-      positive_keywords: ["pokemon"],
-      negative_keywords: [],
+      target_positive_keywords: ["pokemon"],
+      target_negative_keywords: [],
+      walmart_positive_keywords: [],
+      walmart_negative_keywords: [],
     });
     expect(result.channel_targets[0]?.watch_skus).toEqual({ target: ["95120834"] });
   });
 
-  it("stores normalized keywords and SKUs", () => {
+  it("stores normalized keywords and SKUs in watch_keywords", () => {
     const settings = {
       ...DEFAULT_SETTINGS,
       channel_targets: [buildChannelTarget({ channel_id: "111", allowed_domains: ["walmart.com"] })],
     };
     const result = upsertChannelDiscordTarget(settings, "111", {
       allowed_domains: ["walmart.com"],
-      positive_keywords: ["Pokemon"],
-      negative_keywords: ["  Scam  Link  "],
+      target_positive_keywords: ["Pokemon"],
+      target_negative_keywords: ["  Scam  Link  "],
+      walmart_positive_keywords: ["deal"],
+      walmart_negative_keywords: [],
       target_skus: ["95120834", "94860231"],
     });
     expect(result.channel_targets[0]).toEqual({
       channel_id: "111",
       allowed_domains: ["walmart.com"],
-      positive_keywords: ["pokemon"],
-      negative_keywords: ["scam link"],
+      watch_keywords: {
+        target: { positive: ["pokemon"], negative: ["scam link"] },
+        walmart: { positive: ["deal"] },
+      },
       watch_skus: { target: ["95120834", "94860231"] },
     });
   });
 
-  it("omits empty keyword arrays", () => {
+  it("omits empty keyword buckets", () => {
     const settings = {
       ...DEFAULT_SETTINGS,
       channel_targets: [
         buildChannelTarget({
           channel_id: "111",
           allowed_domains: ["walmart.com"],
-          positive_keywords: ["pokemon"],
+          watch_keywords: {
+            target: { positive: ["pokemon"], negative: [] },
+          },
         }),
       ],
     };
     const result = upsertChannelDiscordTarget(settings, "111", {
       allowed_domains: ["walmart.com"],
-      positive_keywords: [],
-      negative_keywords: [],
+      target_positive_keywords: [],
+      target_negative_keywords: [],
+      walmart_positive_keywords: [],
+      walmart_negative_keywords: [],
     });
     expect(result.channel_targets[0]).toEqual({
       channel_id: "111",
@@ -224,9 +304,31 @@ describe("upsertChannelDiscordTarget", () => {
 
 describe("upsertChannelKeywords", () => {
   it("throws when channel has no domains", () => {
-    expect(() => upsertChannelKeywords(DEFAULT_SETTINGS, "111", ["pokemon"], [])).toThrow(
-      /allowed domain/i,
-    );
+    expect(() =>
+      upsertChannelKeywords(DEFAULT_SETTINGS, "111", "target", ["pokemon"], []),
+    ).toThrow(/allowed domain/i);
+  });
+
+  it("updates only the specified retailer bucket", () => {
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      channel_targets: [
+        buildChannelTarget({
+          channel_id: "111",
+          allowed_domains: ["walmart.com"],
+          watch_keywords: {
+            target: { positive: ["target-kw"], negative: [] },
+            walmart: { positive: ["old"], negative: [] },
+          },
+        }),
+      ],
+    };
+    const result = upsertChannelKeywords(settings, "111", "walmart", ["new"], ["block"]);
+    expect(getChannelKeywords(result, "111", "target").positive).toEqual(["target-kw"]);
+    expect(getChannelKeywords(result, "111", "walmart")).toEqual({
+      positive: ["new"],
+      negative: ["block"],
+    });
   });
 });
 

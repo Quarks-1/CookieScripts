@@ -53,17 +53,22 @@ describe("validateChannelTarget", () => {
   it("rejects keyword longer than max length", () => {
     expect(
       validateChannelTarget(
-        buildChannelTarget({ positive_keywords: ["a".repeat(65)] }),
+        buildChannelTarget({
+          watch_keywords: {
+            target: { positive: ["a".repeat(65)], negative: [] },
+          },
+        }),
       ),
-    ).toMatch(/positive_keywords/i);
+    ).toMatch(/watch_keywords\.target\.positive/i);
   });
 
-  it("rejects overlapping positive and negative keywords", () => {
+  it("rejects overlapping positive and negative keywords per retailer", () => {
     expect(
       validateChannelTarget(
         buildChannelTarget({
-          positive_keywords: ["scam"],
-          negative_keywords: ["scam"],
+          watch_keywords: {
+            walmart: { positive: ["scam"], negative: ["scam"] },
+          },
         }),
       ),
     ).toMatch(/overlap/i);

@@ -1,10 +1,10 @@
 import type { ExtensionStatus } from "@ext/core/types/index.ts";
 import { LinkHistory } from "@shared/components/LinkHistory.tsx";
 import { WatchStatusBadge } from "@shared/components/WatchStatusBadge.tsx";
-import { ChannelDomainsSection } from "../../domains/discord/components/ChannelDomainsSection.tsx";
-import { ChannelKeywordsSection } from "../../domains/discord/components/ChannelKeywordsSection.tsx";
-import { ChannelSkuWatchSection } from "../../domains/discord/components/ChannelSkuWatchSection.tsx";
+import { ChannelFiltersSection } from "../../domains/discord/components/ChannelFiltersSection.tsx";
 import { DetectedLinksSection } from "../../domains/discord/components/DetectedLinksSection.tsx";
+import { TargetChannelFiltersSection } from "../../domains/discord/components/TargetChannelFiltersSection.tsx";
+import { WalmartChannelFiltersSection } from "../../domains/discord/components/WalmartChannelFiltersSection.tsx";
 import { useChannelDiscordSettings } from "../../domains/discord/hooks/useChannelDiscordSettings.ts";
 import { useDetectedLinks } from "../../domains/discord/hooks/useDetectedLinks.ts";
 import { useLinkHistory } from "../../domains/discord/hooks/useLinkHistory.ts";
@@ -28,40 +28,46 @@ export function DiscordPanel({ status, disabled }: DiscordPanelProps) {
   );
   const linkHistory = useLinkHistory();
 
+  const filtersDisabled = discordSettings.disabled || disabled;
+
   return (
     <div className="space-y-3">
       <section aria-label="Status">
         <WatchStatusBadge status={status} />
       </section>
 
-      <ChannelKeywordsSection
-        channelId={channelId}
-        positiveKeywords={discordSettings.positiveKeywords}
-        negativeKeywords={discordSettings.negativeKeywords}
-        skuModeActive={status.sku_open_mode_enabled}
-        disabled={discordSettings.disabled || disabled || !status.has_allowed_domains}
-        saving={discordSettings.saving}
-        saveError={discordSettings.saveError}
-        onPositiveKeywordsChange={discordSettings.handlePositiveKeywordsChange}
-        onNegativeKeywordsChange={discordSettings.handleNegativeKeywordsChange}
-      />
-
-      <ChannelSkuWatchSection
-        channelId={channelId}
-        targetSkus={discordSettings.targetSkus}
-        disabled={discordSettings.disabled || disabled || !status.has_allowed_domains}
-        saving={discordSettings.saving}
-        saveError={discordSettings.saveError}
-        onTargetSkusChange={discordSettings.handleTargetSkusChange}
-      />
-
-      <ChannelDomainsSection
+      <ChannelFiltersSection
         channelId={channelId}
         domains={discordSettings.domains}
-        disabled={discordSettings.disabled || disabled}
+        disabled={filtersDisabled}
         saving={discordSettings.saving}
         saveError={discordSettings.saveError}
         onDomainsChange={discordSettings.handleDomainsChange}
+      />
+
+      <TargetChannelFiltersSection
+        channelId={channelId}
+        positiveKeywords={discordSettings.targetPositiveKeywords}
+        negativeKeywords={discordSettings.targetNegativeKeywords}
+        targetSkus={discordSettings.targetSkus}
+        hasAllowedDomains={status.has_allowed_domains}
+        skuModeActive={status.sku_open_mode_enabled}
+        disabled={filtersDisabled}
+        saving={discordSettings.saving}
+        onPositiveKeywordsChange={discordSettings.handleTargetPositiveKeywordsChange}
+        onNegativeKeywordsChange={discordSettings.handleTargetNegativeKeywordsChange}
+        onTargetSkusChange={discordSettings.handleTargetSkusChange}
+      />
+
+      <WalmartChannelFiltersSection
+        channelId={channelId}
+        positiveKeywords={discordSettings.walmartPositiveKeywords}
+        negativeKeywords={discordSettings.walmartNegativeKeywords}
+        hasAllowedDomains={status.has_allowed_domains}
+        disabled={filtersDisabled}
+        saving={discordSettings.saving}
+        onPositiveKeywordsChange={discordSettings.handleWalmartPositiveKeywordsChange}
+        onNegativeKeywordsChange={discordSettings.handleWalmartNegativeKeywordsChange}
       />
 
       <DetectedLinksSection

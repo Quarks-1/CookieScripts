@@ -61,16 +61,20 @@ export async function saveChannelDiscordSettings(
   channelId: string,
   patch: {
     domains: string[];
-    positiveKeywords: string[];
-    negativeKeywords: string[];
+    targetPositiveKeywords: string[];
+    targetNegativeKeywords: string[];
+    walmartPositiveKeywords: string[];
+    walmartNegativeKeywords: string[];
     targetSkus: string[];
   },
 ): Promise<void> {
   const settings = await getExtensionSettings();
   const next = upsertChannelDiscordTarget(settings, channelId, {
     allowed_domains: patch.domains,
-    positive_keywords: patch.positiveKeywords,
-    negative_keywords: patch.negativeKeywords,
+    target_positive_keywords: patch.targetPositiveKeywords,
+    target_negative_keywords: patch.targetNegativeKeywords,
+    walmart_positive_keywords: patch.walmartPositiveKeywords,
+    walmart_negative_keywords: patch.walmartNegativeKeywords,
     target_skus: patch.targetSkus,
   });
   await saveExtensionSettings(next);

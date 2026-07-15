@@ -54,6 +54,10 @@ export function TargetLinkSettingsSection({
         disabled={disabled || skuOpenModeSaving}
         onChange={(next) => void handleSkuOpenModeChange(next)}
       />
+      <p className="text-xs text-zinc-500">
+        Opens Target products from configured SKUs. Walmart links still use Walmart keywords in
+        Channel filters on the Discord tab.
+      </p>
       {skuOpenModeSaving && <p className="text-xs text-zinc-500">Saving…</p>}
       {skuOpenModeError && (
         <p role="status" aria-live="polite" className="text-xs text-red-300">
