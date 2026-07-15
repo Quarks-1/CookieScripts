@@ -10,7 +10,7 @@ import { EnableSlider } from "@shared/components/EnableSlider.tsx";
 import { useRetailerLinkOpenCount } from "../hooks/useRetailerLinkOpenCount.ts";
 
 // Target-only Discord link-open settings today (`sku_open_mode_enabled`, `retailer_link_open_count`).
-// UI lives on the Target tab; move to `GlobalSettingsSection` if other retailers gain SKU/open-count support.
+// UI lives on the Target tab; move to `GlobalPanel` if other retailers gain SKU/open-count support.
 
 interface TargetLinkSettingsSectionProps {
   status: ExtensionStatus;

@@ -1,6 +1,6 @@
 # Side panel UI (core)
 
-React shell for the Chrome side panel — pinned global settings, read-only context bar, domain panel bodies.
+React shell for the Chrome side panel — pinned header and domain tabs, scrollable domain panel bodies.
 
 ## Entry points
 
@@ -18,7 +18,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 | App shell | `App.tsx` |
 | Segment map | `sidepanel-tabs.ts` (`activeTabKindToSidepanelTab`) |
 | Section gating | `sidepanel-layout.ts` (`isSectionVisible`) |
-| Pinned shell | `components/SidepanelHeader.tsx`, `GlobalSettingsSection.tsx`, `SidepanelContextBar.tsx` |
+| Pinned shell | `components/SidepanelHeader.tsx`, `SidepanelContextBar.tsx` |
 | Panel bodies | `panels/DiscordPanel.tsx`, `TargetPanel.tsx`, `WalmartPanel.tsx`, `GlobalPanel.tsx` |
 | Global hooks | `hooks/usePopupStatus.ts`, `hooks/useUpdateCheck.ts` |
 | Shared components | `components/VersionStatus.tsx`, `ui/shared/components/*` |
@@ -35,8 +35,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 **Pinned shell** (sticky, always visible):
 
 1. `SidepanelHeader` — title, version, Enable extension
-2. `GlobalSettingsSection` — open links in new window
-3. `SidepanelContextBar` — clickable domain tabs (Discord · Target · Walmart · Global). When the focused browser tab changes to a supported domain (`active_tab_kind` ≠ `other`), the side panel follows via `resolveSidepanelTabForActiveTabChange` in `sidepanel-tabs.ts`. Manual tab picks persist until `active_tab_kind` changes; unsupported tabs do not override the current selection.
+2. `SidepanelContextBar` — clickable domain tabs (Discord · Target · Walmart · Global). When the focused browser tab changes to a supported domain (`active_tab_kind` ≠ `other`), the side panel follows via `resolveSidepanelTabForActiveTabChange` in `sidepanel-tabs.ts`. Manual tab picks persist until `active_tab_kind` changes; unsupported tabs do not override the current selection.
 
 **Scrollable panel body** — one panel mounted at a time (user-selected tab):
 
@@ -45,7 +44,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 | Discord | `DiscordPanel` | Yes — channel-specific controls need a focused Discord channel tab (`active_channel_id`) |
 | Target | `TargetPanel` | Yes — link opens, Enable Auto ATC, ATC toggles, hard refresh interval, etc. |
 | Walmart | `WalmartPanel` | Yes — auto-refresh, queue helpers, recording |
-| Global | `GlobalPanel` | `Show Walmart recording` toggle (`walmart_recording_ui_enabled`) |
+| Global | `GlobalPanel` | Open links in new window, Show Walmart recording |
 
 Inactive panels unmount; domain hooks run only on the selected tab. Target/Walmart panel hooks load settings regardless of whether a matching browser tab is focused. Start/Stop runtime controls on Target still require a focused Target tab (`showControls={retailer_tab_detected}`).
 
@@ -67,7 +66,7 @@ Used inside domain panels for intra-panel gating:
 
 **Note:** **Enable Auto ATC** (`retailer_auto_atc_enabled`, per-channel) UI lives in `TargetAutoAtcSection` on the Target tab. Toggle is disabled without a focused Discord channel with allowed domains.
 
-**Note:** `sku_open_mode_enabled` and `retailer_link_open_count` UI live in `TargetLinkSettingsSection` (Target tab only today). Move to `GlobalSettingsSection` if other retailers gain SKU/open-count support.
+**Note:** `sku_open_mode_enabled` and `retailer_link_open_count` UI live in `TargetLinkSettingsSection` (Target tab only today). Move to `GlobalPanel` if other retailers gain SKU/open-count support.
 
 ## Domain UI map
 

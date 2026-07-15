@@ -4,7 +4,6 @@ import {
   getExtensionSettings,
   saveExtensionSettings,
 } from "@ext/core/lib/messages.ts";
-import { GlobalSettingsSection } from "./components/GlobalSettingsSection.tsx";
 import { SidepanelContextBar } from "./components/SidepanelContextBar.tsx";
 import { SidepanelHeader } from "./components/SidepanelHeader.tsx";
 import { usePopupStatus } from "./hooks/usePopupStatus.ts";
@@ -81,10 +80,7 @@ export default function App() {
           updateCheck={updateCheck}
         />
         {status !== null && selectedTab !== null && (
-          <>
-            <GlobalSettingsSection status={status} disabled={enabling} onRefresh={refresh} />
-            <SidepanelContextBar activeTab={selectedTab} onTabChange={setSelectedTab} />
-          </>
+          <SidepanelContextBar activeTab={selectedTab} onTabChange={setSelectedTab} />
         )}
       </div>
 
