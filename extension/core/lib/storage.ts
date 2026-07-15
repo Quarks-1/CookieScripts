@@ -1,7 +1,7 @@
 import { HISTORY_LIMIT, RECENT_URL_LIMIT, STORAGE_KEYS } from "@ext/core/lib/constants.ts";
 import { migrateChannelWatchKeywords } from "@ext/core/lib/channel-targets.ts";
 import { validatePersistedTargets } from "@ext/core/lib/validate.ts";
-import { migrateRetailerAutoAtcChannelFlags } from "@ext/domains/target/lib/index.ts";
+import { migrateRetailerAutoAtcChannelFlags } from "@ext/domains/target/lib/channel-config.ts";
 import { DEFAULT_SETTINGS, type ExtensionSettings, type HistoryItem } from "@ext/core/types/index.ts";
 
 export async function getSettings(): Promise<ExtensionSettings> {
