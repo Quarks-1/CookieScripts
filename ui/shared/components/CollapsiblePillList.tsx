@@ -1,4 +1,6 @@
-import { useRef, useState, type InputHTMLAttributes, type KeyboardEvent } from "react";
+import { useRef, useState, type ClipboardEvent, type InputHTMLAttributes, type KeyboardEvent } from "react";
+
+import { mergePastedPillItems } from "../lib/merge-pasted-pill-items.ts";
 
 type BlurBehavior = "clear" | "commit";
 
@@ -17,6 +19,7 @@ interface CollapsiblePillListProps {
   inputId?: string;
   disabled?: boolean;
   inputDisabled?: boolean;
+  splitPasteOnSeparators?: boolean;
 }
 
 export function CollapsiblePillList({
@@ -34,6 +37,7 @@ export function CollapsiblePillList({
   inputId,
   disabled,
   inputDisabled,
+  splitPasteOnSeparators,
 }: CollapsiblePillListProps) {
   const [expanded, setExpanded] = useState(false);
   const [draft, setDraft] = useState("");
@@ -107,6 +111,28 @@ export function CollapsiblePillList({
     setDraft(sanitize ? sanitize(raw) : raw);
   }
 
+  function handlePaste(event: ClipboardEvent<HTMLInputElement>) {
+    if (!splitPasteOnSeparators) {
+      return;
+    }
+
+    const merged = mergePastedPillItems(
+      items,
+      event.clipboardData.getData("text"),
+      normalize,
+      maxItems,
+    );
+    if (!merged) {
+      return;
+    }
+
+    event.preventDefault();
+    if (!arraysEqual(merged, items)) {
+      onChange(merged);
+    }
+    collapse();
+  }
+
   return (
     <ul className="flex flex-wrap items-center gap-1.5">
       {items.map((item) => (
@@ -139,6 +165,7 @@ export function CollapsiblePillList({
             disabled={addBlocked}
             onChange={(event) => handleDraftChange(event.target.value)}
             onKeyDown={handleKeyDown}
+            onPaste={handlePaste}
             onBlur={handleBlur}
             placeholder={placeholder}
             aria-label={addAriaLabel}
@@ -161,4 +188,11 @@ export function CollapsiblePillList({
       ) : null}
     </ul>
   );
+}
+
+function arraysEqual(left: string[], right: string[]): boolean {
+  if (left.length !== right.length) {
+    return false;
+  }
+  return left.every((value, index) => value === right[index]);
 }

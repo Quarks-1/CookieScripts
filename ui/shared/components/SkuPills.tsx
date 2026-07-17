@@ -40,6 +40,7 @@ export function SkuPills({
       inputId={inputId}
       disabled={disabled}
       inputDisabled={inputDisabled}
+      splitPasteOnSeparators
     />
   );
 }
