@@ -4,12 +4,13 @@ import {
   getChannelDomains,
   getGlobalKeywords,
   getGlobalWatchSkus,
+  type WatchSkuRetailer,
 } from "@ext/core/lib/channel-targets.ts";
 import { shouldOpenByKeywords } from "@ext/core/lib/keywords.ts";
 import { normalizeUrlForDedup } from "@ext/core/lib/links.ts";
 import { decideLinkActions } from "@ext/core/lib/process-links.ts";
 import { addIgnoredDomain } from "@ext/core/lib/ignored-domains.ts";
-import { partitionUrlsByRetailer, resolveWatchKeywordRetailer } from "@ext/core/lib/retailer-url.ts";
+import { resolveWatchKeywordRetailer } from "@ext/core/lib/retailer-url.ts";
 import { decideSkuOpenAction } from "@ext/core/lib/sku-watch/decide.ts";
 import { getSettings, prependHistory, saveSettings } from "@ext/core/lib/storage.ts";
 import { getOpenLinksInWindow, getSkuOpenModeEnabled, resolveWatchConfig } from "@ext/core/lib/watch.ts";
@@ -51,13 +52,14 @@ function keywordsForUrl(
   return getGlobalKeywords(settings, retailer);
 }
 
-async function handleSkuModeTargetPath(
+async function handleSkuModeRetailerPath(
+  retailer: WatchSkuRetailer,
   message: Extract<ContentToBackground, { type: "CANDIDATE_LINKS" }>,
   channelId: string,
   settings: ExtensionSettings,
 ): Promise<LinkOpenResult> {
-  const configuredSkus = getGlobalWatchSkus(settings, "target");
-  const decision = decideSkuOpenAction({
+  const configuredSkus = getGlobalWatchSkus(settings, retailer);
+  const decision = decideSkuOpenAction(retailer, {
     messageText: message.message_text ?? "",
     urls: message.urls,
     anchors: message.anchors,
@@ -119,73 +121,20 @@ async function handleSkuModeTargetPath(
   };
 }
 
-async function handleWalmartLinkPath(
+async function handleSkuModeTargetPath(
   message: Extract<ContentToBackground, { type: "CANDIDATE_LINKS" }>,
   channelId: string,
   settings: ExtensionSettings,
-  allowedDomains: string[],
 ): Promise<LinkOpenResult> {
-  const walmartUrls = partitionUrlsByRetailer(message.urls).walmart;
-  if (walmartUrls.length === 0) {
-    return { opened: [], duplicates: [] };
-  }
+  return handleSkuModeRetailerPath("target", message, channelId, settings);
+}
 
-  const decision = decideLinkActions({
-    urls: walmartUrls,
-    allowedDomains,
-    recentUrlKeys,
-    enabled: settings.enabled,
-    channelId,
-    author: message.author,
-  });
-
-  const messageText = message.message_text ?? "";
-  const author = message.author ?? "unknown";
-  const now = new Date().toISOString();
-  const histories: HistoryItem[] = [];
-  const opened: string[] = [];
-  const duplicates = [...decision.duplicates];
-  const newDedupKeys: string[] = [];
-
-  for (const entry of decision.historyEntries) {
-    if (entry.kind === "duplicate") {
-      histories.push(entry);
-      continue;
-    }
-
-    const { positive, negative } = keywordsForUrl(settings, entry.url);
-    if (!shouldOpenByKeywords(messageText, positive, negative)) {
-      histories.push({
-        kind: "keyword_skipped",
-        url: entry.url,
-        author,
-        channel_id: channelId,
-        timestamp: now,
-      });
-      continue;
-    }
-
-    const dedupKey = normalizeUrlForDedup(entry.url);
-    newDedupKeys.push(dedupKey);
-    const openResult = await openTargetLinkRepeated(entry.url, channelId, settings, {
-      inWindow: getOpenLinksInWindow(settings),
-      author: entry.author,
-      timestamp: entry.timestamp,
-    });
-    opened.push(...openResult.opened);
-    histories.push(...openResult.histories);
-  }
-
-  if (newDedupKeys.length > 0) {
-    mergeDedupKeys(newDedupKeys);
-    scheduleRecentUrlsPersist();
-  }
-
-  if (histories.length > 0) {
-    await prependHistory(histories);
-  }
-
-  return { opened, duplicates };
+async function handleSkuModeWalmartPath(
+  message: Extract<ContentToBackground, { type: "CANDIDATE_LINKS" }>,
+  channelId: string,
+  settings: ExtensionSettings,
+): Promise<LinkOpenResult> {
+  return handleSkuModeRetailerPath("walmart", message, channelId, settings);
 }
 
 async function handleNormalModeCandidateLinks(
@@ -296,12 +245,7 @@ export async function handleDiscordMessage(
       await enqueueLinkProcessing(async () => {
         if (getSkuOpenModeEnabled(settings)) {
           const targetResult = await handleSkuModeTargetPath(message, channelId, settings);
-          const walmartResult = await handleWalmartLinkPath(
-            message,
-            channelId,
-            settings,
-            allowedDomains,
-          );
+          const walmartResult = await handleSkuModeWalmartPath(message, channelId, settings);
           result = mergeLinkOpenResults(targetResult, walmartResult);
           return;
         }

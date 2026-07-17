@@ -16,6 +16,8 @@ interface GlobalPanelProps {
 export function GlobalPanel({ status, disabled, onRefresh }: GlobalPanelProps) {
   const [openLinksInWindowSaving, setOpenLinksInWindowSaving] = useState(false);
   const [openLinksInWindowError, setOpenLinksInWindowError] = useState<string | null>(null);
+  const [skuOpenModeSaving, setSkuOpenModeSaving] = useState(false);
+  const [skuOpenModeError, setSkuOpenModeError] = useState<string | null>(null);
   const [walmartRecordingUiSaving, setWalmartRecordingUiSaving] = useState(false);
   const [walmartRecordingUiError, setWalmartRecordingUiError] = useState<string | null>(null);
 
@@ -30,6 +32,20 @@ export function GlobalPanel({ status, disabled, onRefresh }: GlobalPanelProps) {
       setOpenLinksInWindowError(err instanceof Error ? err.message : "Failed to save");
     } finally {
       setOpenLinksInWindowSaving(false);
+    }
+  }
+
+  async function handleSkuOpenModeChange(next: boolean) {
+    setSkuOpenModeSaving(true);
+    setSkuOpenModeError(null);
+    try {
+      const settings = await getExtensionSettings();
+      await saveExtensionSettings({ ...settings, sku_open_mode_enabled: next });
+      await onRefresh();
+    } catch (err) {
+      setSkuOpenModeError(err instanceof Error ? err.message : "Failed to save");
+    } finally {
+      setSkuOpenModeSaving(false);
     }
   }
 
@@ -64,6 +80,25 @@ export function GlobalPanel({ status, disabled, onRefresh }: GlobalPanelProps) {
         {openLinksInWindowError && (
           <p role="status" aria-live="polite" className="mt-1 text-xs text-red-300">
             {openLinksInWindowError}
+          </p>
+        )}
+      </section>
+
+      <section aria-labelledby="global-sku-open-mode-heading">
+        <h2 id="global-sku-open-mode-heading" className="sr-only">
+          SKU open mode
+        </h2>
+        <EnableSlider
+          id="popup-sku-open-mode"
+          label="SKU open mode"
+          checked={status.sku_open_mode_enabled}
+          disabled={disabled || skuOpenModeSaving}
+          onChange={(next) => void handleSkuOpenModeChange(next)}
+        />
+        {skuOpenModeSaving && <p className="mt-1 text-xs text-zinc-500">Saving…</p>}
+        {skuOpenModeError && (
+          <p role="status" aria-live="polite" className="mt-1 text-xs text-red-300">
+            {skuOpenModeError}
           </p>
         )}
       </section>

@@ -23,10 +23,10 @@ flowchart LR
   mode -->|off| processLinks[process-links]
   processLinks --> keywordGate[global keywords gate]
   mode -->|on| targetSku[Target SKU path]
-  mode -->|on| walmartLinks[Walmart link path]
+  mode -->|on| walmartSku[Walmart SKU path]
   keywordGate --> openTab[open-product-link]
   targetSku --> openTab
-  walmartLinks --> openTab
+  walmartSku --> openTab
 ```
 
 ## Messages
@@ -43,8 +43,8 @@ Source of truth: [extension/core/types/messages.ts](../../core/types/messages.ts
 - Prefer visible message `textContent` URLs over Discord redirect `href`s.
 - `CANDIDATE_LINKS` may include optional `message_text`, `anchors`; extraction uses `messageScanRoot` (article + embed accessories).
 - Global **watch_keywords** (`target` / `walmart` buckets) gate auto-open per retailer URL (`shouldOpenByKeywords`); skipped links use history kind `keyword_skipped`.
-- Global **SKU open mode** (`sku_open_mode_enabled`): Target opens via `decideSkuOpenAction` + global `watch_skus.target` (constructed PDP); Walmart links still use link pipeline + global Walmart keywords; other allowlisted domains are blocked. History kind `sku_skipped` when configured Target SKUs exist but none match.
-- Side panel Discord tab: global Target keywords/SKUs and Walmart keywords via `useGlobalDiscordWatchSettings` (always editable when extension enabled); per-channel domains via `useChannelDiscordSettings`.
+- Global **SKU open mode** (`sku_open_mode_enabled`): Target and Walmart open via `decideSkuOpenAction` + global `watch_skus.{target,walmart}` (constructed PDPs); keywords bypassed for both. Independent `sku_skipped` per retailer when that list is non-empty but none match. Other allowlisted domains are blocked.
+- Side panel Discord tab: global Target keywords/SKUs and Walmart keywords/SKUs via `useGlobalDiscordWatchSettings` (always editable when extension enabled); per-channel domains via `useChannelDiscordSettings`.
 - When global **Auto ATC** (`retailer_auto_atc_enabled`) is enabled, Target product links open via `openTargetLinkRepeated` in core `open-product-link.ts` (repeat count from global `retailer_link_open_count`, default 1); other allowlisted links open via `openPassiveProductLink` in a new window or background tab per global `open_links_in_window` setting (default on).
 
 Global invariants and import rules: [AGENTS.md](../../../AGENTS.md).

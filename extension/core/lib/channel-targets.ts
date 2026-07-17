@@ -1,6 +1,7 @@
 import { normalizeDomain } from "@ext/core/lib/domains.ts";
 import { normalizeKeywordList } from "@ext/core/lib/keywords.ts";
 import { normalizeTargetSkuList } from "@ext/domains/target/lib/index.ts";
+import { normalizeWalmartSkuList } from "@ext/domains/walmart/lib/index.ts";
 import { allowlistIncludesRetailerHost } from "@ext/domains/target/lib/host.ts";
 import type { ChannelTarget, ExtensionSettings } from "@ext/core/types/index.ts";
 
@@ -110,17 +111,19 @@ function buildGlobalWatchKeywords(patch: {
 
 function buildGlobalWatchSkus(
   existing: ExtensionSettings["watch_skus"] | undefined,
-  patch?: { target?: string[] },
+  patch?: { target?: string[]; walmart?: string[] },
 ): ExtensionSettings["watch_skus"] | undefined {
   const existingSkus = existing ?? {};
   const target =
     patch?.target !== undefined ? normalizeTargetSkuList(patch.target) : existingSkus.target;
+  const walmart =
+    patch?.walmart !== undefined ? normalizeWalmartSkuList(patch.walmart) : existingSkus.walmart;
   const next: NonNullable<ExtensionSettings["watch_skus"]> = {};
   if (target?.length) {
     next.target = target;
   }
-  if (existingSkus.walmart?.length) {
-    next.walmart = existingSkus.walmart;
+  if (walmart?.length) {
+    next.walmart = walmart;
   }
   return cleanupGlobalWatchSkus(Object.keys(next).length > 0 ? next : undefined);
 }
@@ -184,11 +187,13 @@ export function upsertGlobalWatchSettings(
     walmart_positive_keywords: string[];
     walmart_negative_keywords: string[];
     target_skus?: string[];
+    walmart_skus?: string[];
   },
 ): ExtensionSettings {
   const watch_keywords = buildGlobalWatchKeywords(patch);
   const watch_skus = buildGlobalWatchSkus(settings.watch_skus, {
     target: patch.target_skus,
+    walmart: patch.walmart_skus,
   });
 
   const next: ExtensionSettings = { ...settings };

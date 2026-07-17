@@ -670,6 +670,8 @@ describe("handleMessage — discord", () => {
   });
 
   describe("SKU open mode", () => {
+    const WALMART_FIXTURE_SKU = "19965460207";
+
     function mockSkuSettings(settings: Record<string, unknown>, storage: Record<string, unknown>) {
       vi.mocked(chrome.storage.local.get).mockImplementation(async (keys) => {
         const keyList = Array.isArray(keys) ? keys : [keys];
@@ -860,7 +862,7 @@ describe("handleMessage — discord", () => {
       expect(chrome.windows.create).not.toHaveBeenCalled();
     });
 
-    it("opens Walmart links in SKU mode when Walmart keywords pass", async () => {
+    it("opens constructed Walmart PDP when SKU matches and bypasses keyword gate", async () => {
       const storage: Record<string, unknown> = {
         "cookiescripts:history": [],
         "cookiescripts:recentUrls": [],
@@ -868,18 +870,234 @@ describe("handleMessage — discord", () => {
       const settings = {
         enabled: true,
         sku_open_mode_enabled: true,
-        watch_keywords: {
-          walmart: { positive: ["pokemon"], negative: [] },
-        },
-        watch_skus: { target: ["95120834"] },
+        watch_skus: { walmart: [WALMART_FIXTURE_SKU] },
         channel_targets: [
           buildChannelTarget({
             channel_id: "222",
-            allowed_domains: ["walmart.com", "target.com"],
+            allowed_domains: ["walmart.com"],
           }),
         ],
       };
       mockSkuSettings(settings, storage);
+
+      const sender = mockContentSender({
+        extensionId: EXTENSION_ID,
+        tabUrl: "https://discord.com/channels/111/222",
+      });
+
+      const response = await handleMessage(
+        {
+          type: "CANDIDATE_LINKS",
+          channel_id: "222",
+          urls: [
+            "https://goto.walmart.com/c/abc",
+            `https://www.walmart.com/search?q=${WALMART_FIXTURE_SKU}`,
+          ],
+          anchors: [
+            { href: "https://goto.walmart.com/c/abc", text: "Pokemon TCG" },
+            { href: `https://www.walmart.com/search?q=${WALMART_FIXTURE_SKU}`, text: "ATC" },
+          ],
+          message_text: "Walmart restock",
+          author: "alice",
+        },
+        sender,
+      );
+
+      expect(response).toMatchObject({
+        ok: true,
+        opened: [`https://www.walmart.com/ip/${WALMART_FIXTURE_SKU}`],
+      });
+      expect(chrome.windows.create).toHaveBeenCalledWith({
+        url: `https://www.walmart.com/ip/${WALMART_FIXTURE_SKU}`,
+        focused: false,
+      });
+    });
+
+    it("records walmart sku_skipped when configured Walmart SKUs do not match", async () => {
+      const storage: Record<string, unknown> = {
+        "cookiescripts:history": [],
+        "cookiescripts:recentUrls": [],
+      };
+      const settings = {
+        enabled: true,
+        sku_open_mode_enabled: true,
+        watch_skus: { walmart: ["11111111"] },
+        channel_targets: [
+          buildChannelTarget({
+            channel_id: "222",
+            allowed_domains: ["walmart.com"],
+          }),
+        ],
+      };
+      mockSkuSettings(settings, storage);
+
+      const sender = mockContentSender({
+        extensionId: EXTENSION_ID,
+        tabUrl: "https://discord.com/channels/111/222",
+      });
+
+      const response = await handleMessage(
+        {
+          type: "CANDIDATE_LINKS",
+          channel_id: "222",
+          urls: ["https://howl.link/abc"],
+          message_text: "Walmart restock",
+          author: "alice",
+        },
+        sender,
+      );
+
+      expect(response).toEqual({ ok: true, opened: [], duplicates: [] });
+      expect(chrome.windows.create).not.toHaveBeenCalled();
+      expect(storage["cookiescripts:history"]).toEqual([
+        expect.objectContaining({
+          kind: "sku_skipped",
+          url: "https://howl.link/abc",
+        }),
+      ]);
+    });
+
+    it("no-ops Walmart SKU path when no configured Walmart SKUs", async () => {
+      const settings = {
+        enabled: true,
+        sku_open_mode_enabled: true,
+        channel_targets: [
+          buildChannelTarget({
+            channel_id: "222",
+            allowed_domains: ["walmart.com"],
+          }),
+        ],
+      };
+      mockSkuSettings(settings, {});
+
+      const sender = mockContentSender({
+        extensionId: EXTENSION_ID,
+        tabUrl: "https://discord.com/channels/111/222",
+      });
+
+      const response = await handleMessage(
+        {
+          type: "CANDIDATE_LINKS",
+          channel_id: "222",
+          urls: [`https://www.walmart.com/search?q=${WALMART_FIXTURE_SKU}`],
+          message_text: `SKU ${WALMART_FIXTURE_SKU}`,
+        },
+        sender,
+      );
+
+      expect(response).toEqual({ ok: true, opened: [], duplicates: [] });
+      expect(chrome.windows.create).not.toHaveBeenCalled();
+    });
+
+    it("opens both retailers when Target and Walmart SKUs match", async () => {
+      const storage: Record<string, unknown> = {
+        "cookiescripts:history": [],
+        "cookiescripts:recentUrls": [],
+      };
+      const settings = {
+        enabled: true,
+        sku_open_mode_enabled: true,
+        watch_skus: { target: ["95120834"], walmart: [WALMART_FIXTURE_SKU] },
+        channel_targets: [
+          buildChannelTarget({
+            channel_id: "222",
+            allowed_domains: ["target.com", "walmart.com"],
+          }),
+        ],
+      };
+      mockSkuSettings(settings, storage);
+
+      const sender = mockContentSender({
+        extensionId: EXTENSION_ID,
+        tabUrl: "https://discord.com/channels/111/222",
+      });
+
+      const response = await handleMessage(
+        {
+          type: "CANDIDATE_LINKS",
+          channel_id: "222",
+          urls: [
+            "https://www.target.com/s?searchTerm=95120834",
+            `https://www.walmart.com/search?q=${WALMART_FIXTURE_SKU}`,
+          ],
+          message_text: "multi restock",
+          author: "alice",
+        },
+        sender,
+      );
+
+      expect(response).toMatchObject({
+        ok: true,
+        opened: [
+          "https://www.target.com/p/-/A-95120834",
+          `https://www.walmart.com/ip/${WALMART_FIXTURE_SKU}`,
+        ],
+      });
+    });
+
+    it("records walmart sku_skipped when Target opens but Walmart SKU does not match", async () => {
+      const storage: Record<string, unknown> = {
+        "cookiescripts:history": [],
+        "cookiescripts:recentUrls": [],
+      };
+      const settings = {
+        enabled: true,
+        sku_open_mode_enabled: true,
+        watch_skus: { target: ["95120834"], walmart: ["11111111"] },
+        channel_targets: [
+          buildChannelTarget({
+            channel_id: "222",
+            allowed_domains: ["target.com", "walmart.com"],
+          }),
+        ],
+      };
+      mockSkuSettings(settings, storage);
+
+      const sender = mockContentSender({
+        extensionId: EXTENSION_ID,
+        tabUrl: "https://discord.com/channels/111/222",
+      });
+
+      const response = await handleMessage(
+        {
+          type: "CANDIDATE_LINKS",
+          channel_id: "222",
+          urls: ["https://www.target.com/s?searchTerm=95120834"],
+          message_text: "Target only",
+          author: "alice",
+        },
+        sender,
+      );
+
+      expect(response).toMatchObject({
+        ok: true,
+        opened: ["https://www.target.com/p/-/A-95120834"],
+      });
+      expect(storage["cookiescripts:history"]).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            kind: "sku_skipped",
+            url: "https://www.target.com/s?searchTerm=95120834",
+          }),
+        ]),
+      );
+    });
+
+    it("does not open Walmart links via keywords in SKU mode", async () => {
+      const settings = {
+        enabled: true,
+        sku_open_mode_enabled: true,
+        watch_keywords: {
+          walmart: { positive: ["pokemon"], negative: [] },
+        },
+        channel_targets: [
+          buildChannelTarget({
+            channel_id: "222",
+            allowed_domains: ["walmart.com"],
+          }),
+        ],
+      };
+      mockSkuSettings(settings, {});
 
       const sender = mockContentSender({
         extensionId: EXTENSION_ID,
@@ -897,14 +1115,8 @@ describe("handleMessage — discord", () => {
         sender,
       );
 
-      expect(response).toMatchObject({
-        ok: true,
-        opened: ["https://www.walmart.com/ip/pokemon"],
-      });
-      expect(chrome.windows.create).toHaveBeenCalledWith({
-        url: "https://www.walmart.com/ip/pokemon",
-        focused: false,
-      });
+      expect(response).toEqual({ ok: true, opened: [], duplicates: [] });
+      expect(chrome.windows.create).not.toHaveBeenCalled();
     });
 
     it("blocks other allowlisted domains in SKU mode", async () => {

@@ -6,6 +6,7 @@ import { CollapsiblePillList } from "./CollapsiblePillList.tsx";
 interface SkuPillsProps {
   skus: string[];
   onChange: (skus: string[]) => void;
+  normalizeSku?: (raw: string) => string | null;
   disabled?: boolean;
   inputDisabled?: boolean;
   inputId?: string;
@@ -16,6 +17,7 @@ interface SkuPillsProps {
 export function SkuPills({
   skus,
   onChange,
+  normalizeSku = normalizeTargetSku,
   disabled,
   inputDisabled,
   inputId,
@@ -26,7 +28,7 @@ export function SkuPills({
     <CollapsiblePillList
       items={skus}
       onChange={onChange}
-      normalize={normalizeTargetSku}
+      normalize={normalizeSku}
       blurBehavior="clear"
       maxItems={MAX_SKUS_PER_LIST}
       pillClassName="border-sky-700 bg-sky-950/80 text-sky-200"

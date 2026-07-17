@@ -44,7 +44,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 | Discord | `DiscordPanel` | Yes — per-channel domains need a focused Discord channel tab; global keywords/SKUs always editable when extension is on |
 | Target | `TargetPanel` | Yes — link opens, Enable Auto ATC, ATC toggles, hard refresh interval, etc. |
 | Walmart | `WalmartPanel` | Yes — auto-refresh, queue helpers, recording |
-| Global | `GlobalPanel` | Open links in new window, Show Walmart recording |
+| Global | `GlobalPanel` | Open links in new window, SKU open mode, Show Walmart recording |
 
 Inactive panels unmount; domain hooks run only on the selected tab. Target/Walmart panel hooks load settings regardless of whether a matching browser tab is focused. Start/Stop runtime controls on Target still require a focused Target tab (`showControls={retailer_tab_detected}`).
 
@@ -66,7 +66,7 @@ Used inside domain panels for intra-panel gating:
 
 **Note:** **Enable Auto ATC** (`retailer_auto_atc_enabled`, global) UI lives in `TargetAutoAtcSection` on the Target tab. Always toggleable when the extension is enabled.
 
-**Note:** `sku_open_mode_enabled` and `retailer_link_open_count` UI live in `TargetLinkSettingsSection` (Target tab only today). Move to `GlobalPanel` if other retailers gain SKU/open-count support.
+**Note:** `sku_open_mode_enabled` UI lives in `GlobalPanel`. `retailer_link_open_count` UI lives in `TargetLinkSettingsSection` (Target tab). SKU mode applies to Target and Walmart configured SKU lists on the Discord tab.
 
 ## Domain UI map
 

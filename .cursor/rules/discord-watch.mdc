@@ -17,7 +17,7 @@ globs:
 - Prefer visible message `textContent` URLs over Discord redirect `href`s.
 - Side panel Discord tab: global Target keywords + SKUs and Walmart keywords are always editable when the extension is enabled; domains stay per-channel via `useChannelDiscordSettings` (400ms debounce). Global watch lists persist via `useGlobalDiscordWatchSettings`.
 - Global **watch_keywords** (`target` / `walmart`) gate auto-open per retailer URL when SKU open mode is off; skipped links use history kind `keyword_skipped`.
-- Global **SKU open mode**: Target via `decideSkuOpenAction` + global `watch_skus.target` (constructed PDP; `sku_skipped` on miss); Walmart links still use link pipeline + global Walmart keywords; other allowlisted domains blocked in SKU mode.
+- Global **SKU open mode**: Target and Walmart via `decideSkuOpenAction` + global `watch_skus.{target,walmart}` (constructed PDPs; independent `sku_skipped` per retailer on miss); other allowlisted domains blocked in SKU mode.
 - When global **Auto ATC** (`retailer_auto_atc_enabled`) is enabled, Target product links open via `openTargetLinkRepeated` in core `open-product-link.ts` (repeat count from global `retailer_link_open_count`, default 1; Auto ATC path handled internally); other allowlisted links open via `openPassiveProductLink` in a new window or background tab per global `open_links_in_window` setting (default on).
 
 See `extension/domains/discord/AGENTS.md`.

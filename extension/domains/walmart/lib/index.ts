@@ -16,3 +16,11 @@ export {
   normalizeWalmartRefreshIntervalSec,
   shouldWalmartHardRefresh,
 } from "@ext/domains/walmart/lib/auto-refresh.ts";
+
+export {
+  buildWalmartProductUrlFromSku,
+  isWalmartAuxiliaryLink,
+  normalizeWalmartSku,
+  normalizeWalmartSkuList,
+  walmartSkuWatchProfile,
+} from "@ext/domains/walmart/lib/sku-watch.ts";

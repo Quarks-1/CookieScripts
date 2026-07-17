@@ -64,10 +64,13 @@ export function DiscordPanel({ status, disabled }: DiscordPanelProps) {
       <WalmartChannelFiltersSection
         positiveKeywords={globalWatchSettings.walmartPositiveKeywords}
         negativeKeywords={globalWatchSettings.walmartNegativeKeywords}
+        walmartSkus={globalWatchSettings.walmartSkus}
+        skuModeActive={status.sku_open_mode_enabled}
         disabled={watchFiltersDisabled}
         saving={globalWatchSettings.saving}
         onPositiveKeywordsChange={globalWatchSettings.handleWalmartPositiveKeywordsChange}
         onNegativeKeywordsChange={globalWatchSettings.handleWalmartNegativeKeywordsChange}
+        onWalmartSkusChange={globalWatchSettings.handleWalmartSkusChange}
       />
 
       <DetectedLinksSection

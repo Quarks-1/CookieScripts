@@ -125,7 +125,7 @@ describe("upsertGlobalWatchSettings", () => {
   it("preserves watch_skus when target_skus omitted from patch", () => {
     const settings = {
       ...DEFAULT_SETTINGS,
-      watch_skus: { target: ["95120834"] },
+      watch_skus: { target: ["95120834"], walmart: ["19965460207"] },
     };
     const result = upsertGlobalWatchSettings(settings, {
       target_positive_keywords: ["pokemon"],
@@ -133,7 +133,33 @@ describe("upsertGlobalWatchSettings", () => {
       walmart_positive_keywords: [],
       walmart_negative_keywords: [],
     });
-    expect(result.watch_skus).toEqual({ target: ["95120834"] });
+    expect(result.watch_skus).toEqual({ target: ["95120834"], walmart: ["19965460207"] });
+  });
+
+  it("stores normalized walmart_skus", () => {
+    const result = upsertGlobalWatchSettings(DEFAULT_SETTINGS, {
+      target_positive_keywords: [],
+      target_negative_keywords: [],
+      walmart_positive_keywords: [],
+      walmart_negative_keywords: [],
+      walmart_skus: ["19965460207", "19965460207"],
+    });
+    expect(result.watch_skus).toEqual({ walmart: ["19965460207"] });
+  });
+
+  it("preserves target watch_skus when only walmart_skus patched", () => {
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      watch_skus: { target: ["95120834"] },
+    };
+    const result = upsertGlobalWatchSettings(settings, {
+      target_positive_keywords: [],
+      target_negative_keywords: [],
+      walmart_positive_keywords: [],
+      walmart_negative_keywords: [],
+      walmart_skus: ["19965460207"],
+    });
+    expect(result.watch_skus).toEqual({ target: ["95120834"], walmart: ["19965460207"] });
   });
 
   it("omits empty keyword buckets", () => {
@@ -157,10 +183,10 @@ describe("getGlobalWatchSkus", () => {
   it("returns configured SKUs for retailer", () => {
     const settings = {
       ...DEFAULT_SETTINGS,
-      watch_skus: { target: ["95120834"] },
+      watch_skus: { target: ["95120834"], walmart: ["19965460207"] },
     };
     expect(getGlobalWatchSkus(settings, "target")).toEqual(["95120834"]);
-    expect(getGlobalWatchSkus(settings, "walmart")).toEqual([]);
+    expect(getGlobalWatchSkus(settings, "walmart")).toEqual(["19965460207"]);
   });
 });
 

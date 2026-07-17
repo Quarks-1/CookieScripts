@@ -61,7 +61,7 @@ describe("validateGlobalWatchSettings", () => {
         watch_keywords: {
           target: { positive: ["pokemon"], negative: [] },
         },
-        watch_skus: { target: ["95120834"] },
+        watch_skus: { target: ["95120834"], walmart: ["19965460207"] },
         retailer_auto_atc_enabled: true,
       }),
     ).toBeNull();

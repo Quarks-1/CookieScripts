@@ -16,6 +16,7 @@ type PendingSettings = {
   walmartPositiveKeywords: string[];
   walmartNegativeKeywords: string[];
   targetSkus: string[];
+  walmartSkus: string[];
 };
 
 type ChangeOptions = {
@@ -28,6 +29,7 @@ export function useGlobalDiscordWatchSettings(enabled: boolean) {
   const [walmartPositiveKeywords, setWalmartPositiveKeywords] = useState<string[]>([]);
   const [walmartNegativeKeywords, setWalmartNegativeKeywords] = useState<string[]>([]);
   const [targetSkus, setTargetSkus] = useState<string[]>([]);
+  const [walmartSkus, setWalmartSkus] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -50,6 +52,7 @@ export function useGlobalDiscordWatchSettings(enabled: boolean) {
     setWalmartPositiveKeywords(walmartKeywords.positive);
     setWalmartNegativeKeywords(walmartKeywords.negative);
     setTargetSkus(getGlobalWatchSkus(settings, "target"));
+    setWalmartSkus(getGlobalWatchSkus(settings, "walmart"));
   }, []);
 
   useEffect(() => {
@@ -60,6 +63,7 @@ export function useGlobalDiscordWatchSettings(enabled: boolean) {
       setWalmartPositiveKeywords([]);
       setWalmartNegativeKeywords([]);
       setTargetSkus([]);
+      setWalmartSkus([]);
       setSaveError(null);
       return;
     }
@@ -103,6 +107,7 @@ export function useGlobalDiscordWatchSettings(enabled: boolean) {
           walmart_positive_keywords: pending.walmartPositiveKeywords,
           walmart_negative_keywords: pending.walmartNegativeKeywords,
           target_skus: pending.targetSkus,
+          walmart_skus: pending.walmartSkus,
         });
         await saveExtensionSettings(next);
         await loadSettings();
@@ -149,11 +154,13 @@ export function useGlobalDiscordWatchSettings(enabled: boolean) {
       walmartPositiveKeywords,
       walmartNegativeKeywords,
       targetSkus,
+      walmartSkus,
     }),
     [
       targetNegativeKeywords,
       targetPositiveKeywords,
       targetSkus,
+      walmartSkus,
       walmartNegativeKeywords,
       walmartPositiveKeywords,
     ],
@@ -215,12 +222,21 @@ export function useGlobalDiscordWatchSettings(enabled: boolean) {
     [currentPending, scheduleSave],
   );
 
+  const handleWalmartSkusChange = useCallback(
+    (nextSkus: string[], options?: ChangeOptions) => {
+      setWalmartSkus(nextSkus);
+      scheduleSave({ ...currentPending(), walmartSkus: nextSkus }, options);
+    },
+    [currentPending, scheduleSave],
+  );
+
   return {
     targetPositiveKeywords,
     targetNegativeKeywords,
     walmartPositiveKeywords,
     walmartNegativeKeywords,
     targetSkus,
+    walmartSkus,
     saving,
     saveError,
     handleTargetPositiveKeywordsChange,
@@ -228,5 +244,6 @@ export function useGlobalDiscordWatchSettings(enabled: boolean) {
     handleWalmartPositiveKeywordsChange,
     handleWalmartNegativeKeywordsChange,
     handleTargetSkusChange,
+    handleWalmartSkusChange,
   };
 }

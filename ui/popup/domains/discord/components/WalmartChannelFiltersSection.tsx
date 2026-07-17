@@ -1,23 +1,32 @@
 import { KeywordPills } from "@shared/components/KeywordPills.tsx";
+import { SkuPills } from "@shared/components/SkuPills.tsx";
+import { normalizeWalmartSku } from "@ext/domains/walmart/lib/index.ts";
 
 interface WalmartChannelFiltersSectionProps {
   positiveKeywords: string[];
   negativeKeywords: string[];
+  walmartSkus: string[];
+  skuModeActive?: boolean;
   disabled?: boolean;
   saving?: boolean;
   onPositiveKeywordsChange: (keywords: string[]) => void;
   onNegativeKeywordsChange: (keywords: string[]) => void;
+  onWalmartSkusChange: (skus: string[]) => void;
 }
 
 export function WalmartChannelFiltersSection({
   positiveKeywords,
   negativeKeywords,
+  walmartSkus,
+  skuModeActive,
   disabled,
   saving,
   onPositiveKeywordsChange,
   onNegativeKeywordsChange,
+  onWalmartSkusChange,
 }: WalmartChannelFiltersSectionProps) {
   const listDisabled = disabled || saving;
+  const keywordInputDisabled = listDisabled || skuModeActive === true;
 
   return (
     <section
@@ -37,7 +46,7 @@ export function WalmartChannelFiltersSection({
               onChange={onPositiveKeywordsChange}
               variant="positive"
               disabled={listDisabled}
-              inputDisabled={listDisabled}
+              inputDisabled={keywordInputDisabled}
               inputId="popup-walmart-positive-keyword-input"
               addAriaLabel="Add Walmart positive keyword"
             />
@@ -52,9 +61,24 @@ export function WalmartChannelFiltersSection({
               onChange={onNegativeKeywordsChange}
               variant="negative"
               disabled={listDisabled}
-              inputDisabled={listDisabled}
+              inputDisabled={keywordInputDisabled}
               inputId="popup-walmart-negative-keyword-input"
               addAriaLabel="Add Walmart negative keyword"
+            />
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-xs text-zinc-500">SKUs</h3>
+          <div className="mt-0.5">
+            <SkuPills
+              skus={walmartSkus}
+              onChange={onWalmartSkusChange}
+              normalizeSku={normalizeWalmartSku}
+              disabled={listDisabled}
+              inputDisabled={listDisabled}
+              inputId="popup-walmart-sku-input"
+              addAriaLabel="Add Walmart SKU"
             />
           </div>
         </div>
