@@ -1,10 +1,23 @@
+import type { RetailerAutoCheckoutMode } from "@ext/core/types/index.ts";
 import { EnableSlider } from "@shared/components/EnableSlider.tsx";
 import { CompactNumberField } from "@shared/components/CompactNumberField.tsx";
+import { ThreeWayToggle } from "@shared/components/ThreeWayToggle.tsx";
+
+const AUTO_CHECKOUT_OPTIONS = [
+  { value: "off", label: "Off" },
+  { value: "sku_only", label: "SKU only" },
+  { value: "all", label: "All" },
+] as const satisfies readonly [
+  { value: RetailerAutoCheckoutMode; label: string },
+  { value: RetailerAutoCheckoutMode; label: string },
+  { value: RetailerAutoCheckoutMode; label: string },
+];
 
 type TargetAtcTogglesProps = {
   frontendEnabled: boolean;
   backendEnabled: boolean;
-  autoCheckoutEnabled: boolean;
+  autoCheckoutMode: RetailerAutoCheckoutMode;
+  autoAtcEnabled: boolean;
   disabled: boolean;
   saving: boolean;
   saveError: string | null;
@@ -12,7 +25,7 @@ type TargetAtcTogglesProps = {
   autoCheckoutSaveError: string | null;
   onFrontendChange: (next: boolean) => void;
   onBackendChange: (next: boolean) => void;
-  onAutoCheckoutChange: (next: boolean) => void;
+  onAutoCheckoutModeChange: (next: RetailerAutoCheckoutMode) => void;
   quantityDraft: string;
   purchaseLimit: number | null;
   effectiveUseMax: boolean;
@@ -30,7 +43,8 @@ type TargetAtcTogglesProps = {
 export function TargetAtcToggles({
   frontendEnabled,
   backendEnabled,
-  autoCheckoutEnabled,
+  autoCheckoutMode,
+  autoAtcEnabled,
   disabled,
   saving,
   saveError,
@@ -38,7 +52,7 @@ export function TargetAtcToggles({
   autoCheckoutSaveError,
   onFrontendChange,
   onBackendChange,
-  onAutoCheckoutChange,
+  onAutoCheckoutModeChange,
   quantityDraft,
   purchaseLimit,
   effectiveUseMax,
@@ -53,7 +67,7 @@ export function TargetAtcToggles({
   onUseMaxChange,
 }: TargetAtcTogglesProps) {
   const controlsDisabled = disabled || saving || quantitySaving;
-  const autoCheckoutDisabled = disabled || autoCheckoutSaving;
+  const autoCheckoutDisabled = disabled || autoCheckoutSaving || !autoAtcEnabled;
   const quantityInputDisabled = controlsDisabled || effectiveUseMax;
   const maxToggleDisabled = controlsDisabled;
 
@@ -76,12 +90,13 @@ export function TargetAtcToggles({
         disabled={controlsDisabled}
         onChange={onBackendChange}
       />
-      <EnableSlider
+      <ThreeWayToggle
         id="popup-auto-checkout"
         label="Auto checkout"
-        checked={autoCheckoutEnabled}
+        value={autoCheckoutMode}
+        options={AUTO_CHECKOUT_OPTIONS}
         disabled={autoCheckoutDisabled}
-        onChange={onAutoCheckoutChange}
+        onChange={onAutoCheckoutModeChange}
       />
       <CompactNumberField
         id="popup-atc-quantity"

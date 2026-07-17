@@ -1,7 +1,7 @@
 import type { RetailerOpenTabSummary } from "@ext/domains/target/types/retailer.ts";
 import type { WalmartOpenTabSummary } from "@ext/domains/walmart/types/walmart.ts";
 
-import type { ActiveTabKind } from "@ext/core/types/core.ts";
+import type { ActiveTabKind, RetailerAutoCheckoutMode } from "@ext/core/types/core.ts";
 
 export interface ExtensionStatus {
   enabled: boolean;
@@ -40,7 +40,7 @@ export interface ExtensionStatus {
   retailer_purchase_limit: number | null;
   retailer_quantity_invalid: boolean;
   retailer_auto_start_blocked: boolean;
-  retailer_auto_checkout_enabled: boolean;
+  retailer_auto_checkout_mode: RetailerAutoCheckoutMode;
   walmart_auto_refresh_enabled: boolean;
   walmart_refresh_interval_sec: number;
   /** Global preference: open passive auto-links in a new window (default true). */

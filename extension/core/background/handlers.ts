@@ -71,7 +71,7 @@ function isUiMessage(message: RuntimeMessage): message is UiToBackground {
     message.type === "SET_RETAILER_REFRESH_INTERVAL" ||
     message.type === "SET_RETAILER_ATC_MODES" ||
     message.type === "SET_RETAILER_ATC_QUANTITY" ||
-    message.type === "SET_RETAILER_AUTO_CHECKOUT_ENABLED" ||
+    message.type === "SET_RETAILER_AUTO_CHECKOUT_MODE" ||
     message.type === "RETAILER_START_MANUAL_AUTO" ||
     message.type === "RETAILER_STOP_MANUAL_AUTO" ||
     message.type === "WALMART_RECORDING" ||

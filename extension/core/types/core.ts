@@ -1,3 +1,5 @@
+export type RetailerAutoCheckoutMode = "off" | "sku_only" | "all";
+
 export interface ChannelTarget {
   channel_id: string;
   allowed_domains: string[];
@@ -30,7 +32,12 @@ export interface ExtensionSettings {
   retailer_atc_quantity?: number;
   /** When true, use page purchase_limit instead of retailer_atc_quantity. */
   retailer_use_max_quantity?: boolean;
-  /** When true, continue through signed-in checkout to order confirmation. */
+  /** Auto checkout scope after ATC: off, SKU-match Discord opens only, or all opens. */
+  retailer_auto_checkout_mode?: RetailerAutoCheckoutMode;
+  /**
+   * @deprecated Read for migration only — use `retailer_auto_checkout_mode`.
+   * `true` maps to `"all"` when mode is omitted.
+   */
   retailer_auto_checkout_enabled?: boolean;
   /** Default true when undefined — play beep on Walmart queue pass. */
   walmart_queue_pass_sound_enabled?: boolean;

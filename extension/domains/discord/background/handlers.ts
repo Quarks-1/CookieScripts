@@ -109,6 +109,7 @@ async function handleSkuModeRetailerPath(
     inWindow: getOpenLinksInWindow(settings),
     author,
     timestamp: now,
+    openedViaSkuMatch: retailer === "target",
   });
 
   if (openResult.histories.length > 0) {
@@ -183,6 +184,7 @@ async function handleNormalModeCandidateLinks(
       inWindow: getOpenLinksInWindow(settings),
       author: entry.author,
       timestamp: entry.timestamp,
+      openedViaSkuMatch: false,
     });
     opened.push(...openResult.opened);
     histories.push(...openResult.histories);

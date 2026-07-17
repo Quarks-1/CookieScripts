@@ -3,7 +3,13 @@ import {
   mergeChannelTarget,
 } from "@ext/core/lib/channel-targets.ts";
 import { allowlistIncludesRetailerHost } from "@ext/domains/target/lib/host.ts";
-import type { ExtensionSettings } from "@ext/core/types/index.ts";
+import type { ExtensionSettings, RetailerAutoCheckoutMode } from "@ext/core/types/index.ts";
+
+export const RETAILER_AUTO_CHECKOUT_MODES = new Set<RetailerAutoCheckoutMode>([
+  "off",
+  "sku_only",
+  "all",
+]);
 
 export function normalizeRetailerRefreshIntervalSec(value: number): number {
   if (!Number.isFinite(value) || value <= 0) {
@@ -139,19 +145,38 @@ export function setRetailerAtcQuantity(
   return next;
 }
 
-export function getRetailerAutoCheckoutEnabled(settings: ExtensionSettings): boolean {
-  return settings.retailer_auto_checkout_enabled === true;
+export function getRetailerAutoCheckoutMode(settings: ExtensionSettings): RetailerAutoCheckoutMode {
+  const mode = settings.retailer_auto_checkout_mode;
+  if (mode && RETAILER_AUTO_CHECKOUT_MODES.has(mode)) {
+    return mode;
+  }
+  return settings.retailer_auto_checkout_enabled === true ? "all" : "off";
 }
 
-export function setRetailerAutoCheckoutEnabled(
+export function shouldEnableRetailerAutoCheckout(
   settings: ExtensionSettings,
-  enabled: boolean,
+  context: { openedViaSkuMatch?: boolean },
+): boolean {
+  const mode = getRetailerAutoCheckoutMode(settings);
+  if (mode === "off") {
+    return false;
+  }
+  if (mode === "all") {
+    return true;
+  }
+  return context.openedViaSkuMatch === true;
+}
+
+export function setRetailerAutoCheckoutMode(
+  settings: ExtensionSettings,
+  mode: RetailerAutoCheckoutMode,
 ): ExtensionSettings {
   const next = { ...settings };
-  if (enabled) {
-    next.retailer_auto_checkout_enabled = true;
+  delete next.retailer_auto_checkout_enabled;
+  if (mode === "off") {
+    delete next.retailer_auto_checkout_mode;
   } else {
-    delete next.retailer_auto_checkout_enabled;
+    next.retailer_auto_checkout_mode = mode;
   }
   return next;
 }

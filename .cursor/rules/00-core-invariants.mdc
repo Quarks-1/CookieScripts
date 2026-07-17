@@ -13,5 +13,5 @@ alwaysApply: true
 - Never add `cookies`, `webRequest`, or `<all_urls>` permissions.
 - After service-worker/manifest changes: reload extension + refresh Discord, Target, Walmart tabs.
 - Prefer pure logic in `extension/core/lib/*` or domain `lib/*` with Vitest; keep `chrome.*` in background/content layers.
-- Run `npm test` and `npm run lint` before committing.
+- Run `npm test`, `npm run lint`, and `npm run build` after implementing a plan or feature, and before committing.
 - See `extension/core/AGENTS.md`.

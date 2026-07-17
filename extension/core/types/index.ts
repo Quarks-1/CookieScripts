@@ -25,6 +25,7 @@ export type {
   ExtensionSettings,
   HistoryItem,
   HistoryItemKind,
+  RetailerAutoCheckoutMode,
 } from "@ext/core/types/core.ts";
 export { DEFAULT_SETTINGS } from "@ext/core/types/core.ts";
 

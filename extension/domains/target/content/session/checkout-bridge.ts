@@ -80,7 +80,7 @@ export async function runCheckoutAutoMode(): Promise<void> {
     const config = await loadAutoConfig(resume.channel_id);
     applyCachedAutoConfig(config);
 
-    if (!state.cachedAutoCheckoutEnabled) {
+    if (!resume.auto_checkout_enabled) {
       await checkoutCallbacks.onStopped();
       return;
     }

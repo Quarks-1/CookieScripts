@@ -36,7 +36,7 @@ function status(overrides: Partial<ExtensionStatus>): ExtensionStatus {
     retailer_purchase_limit: null,
     retailer_quantity_invalid: false,
     retailer_auto_start_blocked: false,
-    retailer_auto_checkout_enabled: false,
+    retailer_auto_checkout_mode: "off",
     walmart_auto_refresh_enabled: false,
     walmart_refresh_interval_sec: 10,
     open_links_in_window: true,

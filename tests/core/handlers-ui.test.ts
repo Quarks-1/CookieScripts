@@ -50,20 +50,33 @@ describe("handleMessage — ui", () => {
     expect(recentUrlKeys.size).toBe(0);
   });
 
-  it("persists retailer auto checkout toggle", async () => {
+  it("persists retailer auto checkout mode", async () => {
     const storage = setupChromeMocks();
     const sender = mockExtensionPageSender(EXTENSION_ID);
 
     const response = await handleMessage(
-      { type: "SET_RETAILER_AUTO_CHECKOUT_ENABLED", enabled: true },
+      { type: "SET_RETAILER_AUTO_CHECKOUT_MODE", mode: "all" },
       sender,
     );
 
     expect(response).toEqual({ ok: true });
     expect(storage["cookiescripts:settings"]).toEqual({
       ...DEFAULT_SETTINGS,
-      retailer_auto_checkout_enabled: true,
+      retailer_auto_checkout_mode: "all",
     });
+  });
+
+  it("rejects invalid retailer auto checkout mode", async () => {
+    const storage = setupChromeMocks();
+    const sender = mockExtensionPageSender(EXTENSION_ID);
+
+    const response = await handleMessage(
+      { type: "SET_RETAILER_AUTO_CHECKOUT_MODE", mode: "invalid" as "all" },
+      sender,
+    );
+
+    expect(response).toEqual({ ok: false, error: "Invalid auto checkout mode" });
+    expect(storage["cookiescripts:settings"]).toEqual(DEFAULT_SETTINGS);
   });
 
   it("persists global retailer auto atc toggle without channel_id", async () => {

@@ -21,7 +21,8 @@ Chrome MV3 extension with three capabilities:
 2. Put pure logic in `extension/core/lib/*` or domain `lib/*` (Vitest); keep `chrome.*` in background/content layers.
 3. New runtime messages: follow [extension/core/AGENTS.md](extension/core/AGENTS.md) § Messages and `.cursor/rules/runtime-messages.mdc`.
 4. After service-worker or manifest edits: reload extension on `chrome://extensions`, then refresh Discord, Target, and Walmart tabs.
-5. Before committing code: `npm test` and `npm run lint`. Documentation-only commits on `main`: include `[skip ci]` in the commit message to skip the release workflow (CI still runs).
+5. After implementing a plan or feature: run `npm test`, `npm run lint`, and `npm run build` (build catches TypeScript/Vite errors tests may miss).
+6. Before committing code: same verification as step 5. Documentation-only commits on `main`: include `[skip ci]` in the commit message to skip the release workflow (CI still runs).
 
 **Naming:** folders/docs use **target**; storage/messages keep **retailer** (`RETAILER_*`, `retailer_*`).
 
@@ -164,7 +165,7 @@ npm run lint         # import boundary rules + TypeScript ESLint
 1. Reload extension on `chrome://extensions`
 2. Refresh open Discord, Target, and Walmart tabs
 
-**Before committing:** run `npm test` and `npm run lint`.
+**Before committing:** run `npm test`, `npm run lint`, and `npm run build`.
 
 ## Critical invariants
 

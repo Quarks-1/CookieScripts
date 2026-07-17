@@ -1,4 +1,5 @@
 import type { RetailerAutoConfig } from "@ext/domains/target/content/automation/checkout-auto.ts";
+import { readRetailerAutoResume } from "@ext/domains/target/lib/auto-resume.ts";
 
 export type Session = {
   channelId: string | null;
@@ -37,10 +38,19 @@ export const PURCHASE_LIMIT_SNAPSHOT_DELAYS_MS = [500, 2_000, 4_000, 8_000] as c
 export const PURCHASE_LIMIT_WATCH_DEBOUNCE_MS = 150;
 
 export function applyCachedAutoConfig(config: RetailerAutoConfig): void {
+  const previousCheckout = state.cachedAutoCheckoutEnabled;
+  const resumeCheckout = readRetailerAutoResume()?.auto_checkout_enabled === true;
+
   state.cachedRefreshIntervalSec = config.refreshIntervalSec;
   state.cachedFrontendAtcEnabled = config.frontendAtcEnabled;
   state.cachedBackendAtcEnabled = config.backendAtcEnabled;
   state.cachedAtcQuantity = config.atcQuantity;
   state.cachedUseMaxQuantity = config.useMaxQuantity;
   state.cachedAutoCheckoutEnabled = config.autoCheckoutEnabled;
+
+  if (session.running) {
+    state.cachedAutoCheckoutEnabled = previousCheckout;
+  } else if (resumeCheckout) {
+    state.cachedAutoCheckoutEnabled = true;
+  }
 }

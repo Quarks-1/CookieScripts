@@ -30,7 +30,8 @@ export function TargetPanel({ status, disabled, onRefresh }: TargetPanelProps) {
       <TargetAtcToggles
         frontendEnabled={retailerAtc.frontendEnabled}
         backendEnabled={retailerAtc.backendEnabled}
-        autoCheckoutEnabled={retailerAutoCheckout.enabled}
+        autoCheckoutMode={retailerAutoCheckout.mode}
+        autoAtcEnabled={status.retailer_auto_atc_enabled}
         disabled={disabled}
         saving={retailerAtc.saving}
         saveError={retailerAtc.saveError}
@@ -38,7 +39,7 @@ export function TargetPanel({ status, disabled, onRefresh }: TargetPanelProps) {
         autoCheckoutSaveError={retailerAutoCheckout.saveError}
         onFrontendChange={(next) => void retailerAtc.handleFrontendChange(next)}
         onBackendChange={(next) => void retailerAtc.handleBackendChange(next)}
-        onAutoCheckoutChange={(next) => void retailerAutoCheckout.onChange(next)}
+        onAutoCheckoutModeChange={(next) => void retailerAutoCheckout.onChange(next)}
         quantityDraft={retailerAtcQuantity.draftQuantity}
         purchaseLimit={retailerAtcQuantity.purchaseLimit}
         effectiveUseMax={retailerAtcQuantity.effectiveUseMax}

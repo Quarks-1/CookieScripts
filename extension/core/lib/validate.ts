@@ -90,6 +90,13 @@ export function validateGlobalWatchSettings(settings: ExtensionSettings): string
     return "retailer_auto_atc_enabled must be a boolean";
   }
 
+  if (settings.retailer_auto_checkout_mode !== undefined) {
+    const mode = settings.retailer_auto_checkout_mode;
+    if (mode !== "off" && mode !== "sku_only" && mode !== "all") {
+      return "retailer_auto_checkout_mode must be off, sku_only, or all";
+    }
+  }
+
   const retailers = ["target", "walmart"] as const;
   for (const retailer of retailers) {
     const bucket = settings.watch_keywords?.[retailer];

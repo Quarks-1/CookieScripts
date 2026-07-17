@@ -2,7 +2,7 @@ import { getChannelDomains } from "@ext/core/lib/channel-targets.ts";
 import {
   getRetailerAtcQuantity,
   getRetailerAutoAtcEnabled,
-  getRetailerAutoCheckoutEnabled,
+  getRetailerAutoCheckoutMode,
   getRetailerBackendAtcEnabled,
   getRetailerFrontendAtcEnabled,
   getRetailerLinkOpenCount,
@@ -11,13 +11,14 @@ import {
   setRetailerAtcModes,
   setRetailerAtcQuantity,
   setRetailerAutoAtcEnabled,
-  setRetailerAutoCheckoutEnabled,
+  setRetailerAutoCheckoutMode,
   setRetailerRefreshInterval,
 } from "@ext/domains/target/lib/channel-config.ts";
 import { buildQuantityStatusFields } from "@ext/domains/target/lib/quantity-limit.ts";
 import { sleep } from "@ext/core/lib/sleep.ts";
 import { resolveActiveTabKind } from "@ext/core/lib/active-tab.ts";
 import { getOpenLinksInWindow, getSkuOpenModeEnabled, getWalmartRecordingUiEnabled } from "@ext/core/lib/watch.ts";
+import type { RetailerAutoCheckoutMode } from "@ext/core/types/index.ts";
 import { getSettings, saveSettings } from "@ext/core/lib/storage.ts";
 import { activeChannels } from "@ext/core/background/runtime-state.ts";
 import { listAllRetailerTabs } from "@ext/domains/target/background/tabs.ts";
@@ -292,7 +293,7 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     retailer_purchase_limit: retailerPurchaseLimit,
     retailer_quantity_invalid: quantityStatus.retailer_quantity_invalid,
     retailer_auto_start_blocked: quantityStatus.retailer_auto_start_blocked,
-    retailer_auto_checkout_enabled: getRetailerAutoCheckoutEnabled(settings),
+    retailer_auto_checkout_mode: getRetailerAutoCheckoutMode(settings),
     walmart_auto_refresh_enabled: walmartAutoRefreshEnabled,
     walmart_refresh_interval_sec: walmartRefreshIntervalSec,
     open_links_in_window: getOpenLinksInWindow(settings),
@@ -344,11 +345,11 @@ export async function setRetailerAtcQuantityForSettings(
   return next;
 }
 
-export async function setRetailerAutoCheckoutEnabledForSettings(
-  enabled: boolean,
+export async function setRetailerAutoCheckoutModeForSettings(
+  mode: RetailerAutoCheckoutMode,
 ): Promise<ExtensionSettings> {
   const settings = await getSettings();
-  const next = setRetailerAutoCheckoutEnabled(settings, enabled);
+  const next = setRetailerAutoCheckoutMode(settings, mode);
   await saveSettings(next);
   return next;
 }

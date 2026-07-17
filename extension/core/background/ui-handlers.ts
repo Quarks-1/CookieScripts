@@ -1,11 +1,13 @@
+import type { RetailerAutoCheckoutMode } from "@ext/core/types/index.ts";
 import {
   buildStatus,
   setRetailerAtcModesForSettings,
   setRetailerAtcQuantityForSettings,
   setRetailerAutoAtcEnabledGlobal,
-  setRetailerAutoCheckoutEnabledForSettings,
+  setRetailerAutoCheckoutModeForSettings,
   setRetailerRefreshIntervalForChannel,
 } from "@ext/core/background/status.ts";
+import { RETAILER_AUTO_CHECKOUT_MODES } from "@ext/domains/target/lib/channel-config.ts";
 import { getActiveRetailerTabInWindow } from "@ext/domains/target/background/tab-message.ts";
 import { getActiveTabInWindow } from "@ext/core/background/window-active-tab.ts";
 import {
@@ -97,9 +99,12 @@ export async function handleUiMessage(
         return { ok: false, error: error instanceof Error ? error.message : "Save failed" };
       }
     }
-    case "SET_RETAILER_AUTO_CHECKOUT_ENABLED": {
+    case "SET_RETAILER_AUTO_CHECKOUT_MODE": {
+      if (!RETAILER_AUTO_CHECKOUT_MODES.has(message.mode)) {
+        return { ok: false, error: "Invalid auto checkout mode" };
+      }
       try {
-        await setRetailerAutoCheckoutEnabledForSettings(message.enabled);
+        await setRetailerAutoCheckoutModeForSettings(message.mode as RetailerAutoCheckoutMode);
         return { ok: true };
       } catch (error) {
         return { ok: false, error: error instanceof Error ? error.message : "Save failed" };

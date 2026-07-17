@@ -1,6 +1,7 @@
 import { STORAGE_KEYS } from "@ext/core/lib/constants.ts";
 import { isExtensionContextValid } from "@ext/core/lib/messages.ts";
 import type { ExtensionSettings } from "@ext/core/types/index.ts";
+import { getRetailerAutoCheckoutMode } from "@ext/domains/target/lib/channel-config.ts";
 import { readRetailerAutoResume } from "@ext/domains/target/lib/auto-resume.ts";
 import {
   loadAutoConfig,
@@ -25,7 +26,7 @@ export function isRetailerAutoDisabledInSettings(settings: ExtensionSettings): b
 }
 
 export function isCheckoutDisabledInSettings(settings: ExtensionSettings): boolean {
-  return settings.retailer_auto_checkout_enabled !== true;
+  return getRetailerAutoCheckoutMode(settings) === "off";
 }
 
 export function watchSettings(): void {

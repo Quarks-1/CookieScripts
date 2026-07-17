@@ -257,4 +257,69 @@ describe("open-product-link", () => {
     await expect(promise).resolves.toBe(false);
     vi.useRealTimers();
   });
+
+  it("sends auto_checkout_enabled false when checkout mode is off", async () => {
+    pingResponses = [{ ok: true }];
+    const settings = buildRetailerSettings({ retailer_auto_checkout_mode: "off" });
+
+    await openTargetLinkRepeated(PRODUCT_URL, CHANNEL_ID, settings, {
+      inWindow: true,
+      author: "alice",
+      timestamp: HISTORY_TIMESTAMP,
+    });
+
+    expect(chrome.tabs.sendMessage).toHaveBeenCalledWith(
+      expect.any(Number),
+      expect.objectContaining({ auto_checkout_enabled: false }),
+    );
+  });
+
+  it("sends auto_checkout_enabled true for all mode", async () => {
+    pingResponses = [{ ok: true }];
+    const settings = buildRetailerSettings({ retailer_auto_checkout_mode: "all" });
+
+    await openTargetLinkRepeated(PRODUCT_URL, CHANNEL_ID, settings, {
+      inWindow: true,
+      author: "alice",
+      timestamp: HISTORY_TIMESTAMP,
+      openedViaSkuMatch: false,
+    });
+
+    expect(chrome.tabs.sendMessage).toHaveBeenCalledWith(
+      expect.any(Number),
+      expect.objectContaining({ auto_checkout_enabled: true }),
+    );
+  });
+
+  it("sends auto_checkout_enabled for sku_only only when opened via SKU match", async () => {
+    pingResponses = [{ ok: true }];
+    const settings = buildRetailerSettings({ retailer_auto_checkout_mode: "sku_only" });
+
+    await openTargetLinkRepeated(PRODUCT_URL, CHANNEL_ID, settings, {
+      inWindow: true,
+      author: "alice",
+      timestamp: HISTORY_TIMESTAMP,
+      openedViaSkuMatch: true,
+    });
+
+    expect(chrome.tabs.sendMessage).toHaveBeenCalledWith(
+      expect.any(Number),
+      expect.objectContaining({ auto_checkout_enabled: true }),
+    );
+
+    vi.mocked(chrome.tabs.sendMessage).mockClear();
+    windowTabId = 99;
+
+    await openTargetLinkRepeated(PRODUCT_URL, CHANNEL_ID, settings, {
+      inWindow: true,
+      author: "alice",
+      timestamp: HISTORY_TIMESTAMP,
+      openedViaSkuMatch: false,
+    });
+
+    expect(chrome.tabs.sendMessage).toHaveBeenCalledWith(
+      expect.any(Number),
+      expect.objectContaining({ auto_checkout_enabled: false }),
+    );
+  });
 });

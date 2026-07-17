@@ -6,7 +6,7 @@ import type {
   WalmartRecordingEvent,
 } from "@ext/domains/walmart/types/walmart.ts";
 
-import type { ExtensionSettings, HistoryItem } from "@ext/core/types/core.ts";
+import type { ExtensionSettings, HistoryItem, RetailerAutoCheckoutMode } from "@ext/core/types/core.ts";
 import type { ExtensionStatus } from "@ext/core/types/status.ts";
 
 export type ContentToBackground =
@@ -128,7 +128,7 @@ export type UiToBackground =
       quantity: number;
       use_max_quantity: boolean;
     }
-  | { type: "SET_RETAILER_AUTO_CHECKOUT_ENABLED"; enabled: boolean }
+  | { type: "SET_RETAILER_AUTO_CHECKOUT_MODE"; mode: RetailerAutoCheckoutMode }
   | { type: "RETAILER_START_MANUAL_AUTO"; window_id?: number }
   | { type: "RETAILER_STOP_MANUAL_AUTO"; window_id?: number }
   | {

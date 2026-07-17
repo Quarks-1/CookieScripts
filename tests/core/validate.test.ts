@@ -97,4 +97,13 @@ describe("validateGlobalWatchSettings", () => {
       }),
     ).toMatch(/retailer_auto_atc_enabled must be a boolean/i);
   });
+
+  it("rejects invalid retailer_auto_checkout_mode", () => {
+    expect(
+      validateGlobalWatchSettings({
+        ...DEFAULT_SETTINGS,
+        retailer_auto_checkout_mode: "sometimes" as "off",
+      }),
+    ).toMatch(/retailer_auto_checkout_mode must be off, sku_only, or all/i);
+  });
 });

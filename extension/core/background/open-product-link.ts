@@ -7,7 +7,7 @@ import {
 import {
   getRetailerAtcQuantity,
   getRetailerAutoAtcEnabled,
-  getRetailerAutoCheckoutEnabled,
+  shouldEnableRetailerAutoCheckout,
   getRetailerBackendAtcEnabled,
   getRetailerFrontendAtcEnabled,
   getRetailerLinkOpenCount,
@@ -80,6 +80,7 @@ async function sendRetailerStartAuto(
   channelId: string,
   url: string,
   settings: ExtensionSettings,
+  openedViaSkuMatch: boolean,
 ): Promise<boolean> {
   try {
     await chrome.tabs.sendMessage(tabId, {
@@ -92,7 +93,9 @@ async function sendRetailerStartAuto(
       backend_atc_enabled: getRetailerBackendAtcEnabled(settings),
       atc_quantity: getRetailerAtcQuantity(settings),
       use_max_quantity: getRetailerUseMaxQuantity(settings),
-      auto_checkout_enabled: getRetailerAutoCheckoutEnabled(settings),
+      auto_checkout_enabled: shouldEnableRetailerAutoCheckout(settings, {
+        openedViaSkuMatch,
+      }),
     });
     setRetailerTabUiState(tabId, { status: "Running auto mode…", running: true });
     return true;
@@ -106,9 +109,10 @@ async function sendRetailerStartAutoWithRetries(
   channelId: string,
   url: string,
   settings: ExtensionSettings,
+  openedViaSkuMatch: boolean,
 ): Promise<boolean> {
   for (let attempt = 0; attempt < START_AUTO_SEND_RETRIES; attempt++) {
-    if (await sendRetailerStartAuto(tabId, channelId, url, settings)) {
+    if (await sendRetailerStartAuto(tabId, channelId, url, settings, openedViaSkuMatch)) {
       return true;
     }
     if (attempt < START_AUTO_SEND_RETRIES - 1) {
@@ -142,7 +146,13 @@ async function openTargetIteration(
   url: string,
   channelId: string,
   settings: ExtensionSettings,
-  options: { startAuto: boolean; inWindow: boolean; author: string; timestamp: string },
+  options: {
+    startAuto: boolean;
+    inWindow: boolean;
+    author: string;
+    timestamp: string;
+    openedViaSkuMatch: boolean;
+  },
 ): Promise<TargetIterationResult> {
   if (options.startAuto) {
     const { tabId, windowId } = await createChromeOpen(url, { inWindow: true, focused: true });
@@ -157,7 +167,13 @@ async function openTargetIteration(
     }
 
     setRetailerTabUiState(tabId, { status: "Starting auto mode…", running: true });
-    const sent = await sendRetailerStartAutoWithRetries(tabId, channelId, url, settings);
+    const sent = await sendRetailerStartAutoWithRetries(
+      tabId,
+      channelId,
+      url,
+      settings,
+      options.openedViaSkuMatch,
+    );
     if (!sent) {
       onRetailerTabRemoved(tabId);
       if (windowId !== null) {
@@ -207,7 +223,7 @@ export async function openTargetLinkRepeated(
   url: string,
   channelId: string,
   settings: ExtensionSettings,
-  options: { inWindow: boolean; author: string; timestamp: string },
+  options: { inWindow: boolean; author: string; timestamp: string; openedViaSkuMatch?: boolean },
 ): Promise<{ opened: string[]; histories: HistoryItem[] }> {
   if (!isRetailerProductUrl(url)) {
     await openPassiveProductLink(url, { inWindow: options.inWindow });
@@ -230,12 +246,15 @@ export async function openTargetLinkRepeated(
   const opened: string[] = [];
   const histories: HistoryItem[] = [];
 
+  const openedViaSkuMatch = options.openedViaSkuMatch === true;
+
   for (let i = 0; i < count; i++) {
     const result = await openTargetIteration(url, channelId, settings, {
       startAuto,
       inWindow: options.inWindow,
       author: options.author,
       timestamp: options.timestamp,
+      openedViaSkuMatch,
     });
     if (result.opened) {
       opened.push(url);

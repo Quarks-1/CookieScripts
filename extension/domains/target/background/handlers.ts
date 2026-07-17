@@ -7,7 +7,7 @@ import {
   setRetailerTabPurchaseLimit,
   setRetailerTabUiState,
 } from "@ext/domains/target/background/runtime-state.ts";
-import { getRetailerAtcQuantity, getRetailerAutoCheckoutEnabled, getRetailerBackendAtcEnabled, getRetailerFrontendAtcEnabled, getRetailerRefreshIntervalSec, getRetailerUseMaxQuantity } from "@ext/domains/target/lib/channel-config.ts";
+import { getRetailerAtcQuantity, getRetailerBackendAtcEnabled, getRetailerFrontendAtcEnabled, getRetailerRefreshIntervalSec, getRetailerUseMaxQuantity, shouldEnableRetailerAutoCheckout } from "@ext/domains/target/lib/channel-config.ts";
 import { setRetailerRefreshIntervalForChannel } from "@ext/core/background/status.ts";
 import { getSettings, prependHistory } from "@ext/core/lib/storage.ts";
 import type { BackgroundResponse, RetailerToBackground } from "@ext/core/types/index.ts";
@@ -45,7 +45,9 @@ export async function handleRetailerMessage(
         backend_atc_enabled: getRetailerBackendAtcEnabled(settings),
         atc_quantity: getRetailerAtcQuantity(settings),
         use_max_quantity: getRetailerUseMaxQuantity(settings),
-        auto_checkout_enabled: getRetailerAutoCheckoutEnabled(settings),
+        auto_checkout_enabled: shouldEnableRetailerAutoCheckout(settings, {
+          openedViaSkuMatch: false,
+        }),
       };
     }
     case "RETAILER_SET_REFRESH_INTERVAL": {
