@@ -226,7 +226,7 @@ export async function openTargetLinkRepeated(
   }
 
   const count = getRetailerLinkOpenCount(settings);
-  const startAuto = getRetailerAutoAtcEnabled(settings, channelId);
+  const startAuto = getRetailerAutoAtcEnabled(settings);
   const opened: string[] = [];
   const histories: HistoryItem[] = [];
 

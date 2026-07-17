@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 
 import {
   validateChannelTarget,
+  validateGlobalWatchSettings,
   validatePersistedTargets,
 } from "@ext/core/lib/validate.ts";
+import { DEFAULT_SETTINGS } from "@ext/core/types/index.ts";
 import { buildChannelTarget } from "../fixtures/fixtures.ts";
 
 describe("validatePersistedTargets", () => {
@@ -49,28 +51,50 @@ describe("validateChannelTarget", () => {
       /allowed domain/i,
     );
   });
+});
+
+describe("validateGlobalWatchSettings", () => {
+  it("accepts valid global watch settings", () => {
+    expect(
+      validateGlobalWatchSettings({
+        ...DEFAULT_SETTINGS,
+        watch_keywords: {
+          target: { positive: ["pokemon"], negative: [] },
+        },
+        watch_skus: { target: ["95120834"] },
+        retailer_auto_atc_enabled: true,
+      }),
+    ).toBeNull();
+  });
 
   it("rejects keyword longer than max length", () => {
     expect(
-      validateChannelTarget(
-        buildChannelTarget({
-          watch_keywords: {
-            target: { positive: ["a".repeat(65)], negative: [] },
-          },
-        }),
-      ),
+      validateGlobalWatchSettings({
+        ...DEFAULT_SETTINGS,
+        watch_keywords: {
+          target: { positive: ["a".repeat(65)], negative: [] },
+        },
+      }),
     ).toMatch(/watch_keywords\.target\.positive/i);
   });
 
   it("rejects overlapping positive and negative keywords per retailer", () => {
     expect(
-      validateChannelTarget(
-        buildChannelTarget({
-          watch_keywords: {
-            walmart: { positive: ["scam"], negative: ["scam"] },
-          },
-        }),
-      ),
+      validateGlobalWatchSettings({
+        ...DEFAULT_SETTINGS,
+        watch_keywords: {
+          walmart: { positive: ["scam"], negative: ["scam"] },
+        },
+      }),
     ).toMatch(/overlap/i);
+  });
+
+  it("rejects non-boolean retailer_auto_atc_enabled", () => {
+    expect(
+      validateGlobalWatchSettings({
+        ...DEFAULT_SETTINGS,
+        retailer_auto_atc_enabled: "yes" as unknown as boolean,
+      }),
+    ).toMatch(/retailer_auto_atc_enabled must be a boolean/i);
   });
 });

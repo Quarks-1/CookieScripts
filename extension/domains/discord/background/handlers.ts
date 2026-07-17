@@ -2,8 +2,8 @@ import { resolveContentChannel } from "@ext/core/lib/channels.ts";
 import {
   addChannelDomain,
   getChannelDomains,
-  getChannelKeywords,
-  getChannelWatchSkus,
+  getGlobalKeywords,
+  getGlobalWatchSkus,
 } from "@ext/core/lib/channel-targets.ts";
 import { shouldOpenByKeywords } from "@ext/core/lib/keywords.ts";
 import { normalizeUrlForDedup } from "@ext/core/lib/links.ts";
@@ -42,14 +42,13 @@ type LinkOpenResult = { opened: string[]; duplicates: string[] };
 
 function keywordsForUrl(
   settings: ExtensionSettings,
-  channelId: string,
   url: string,
 ): { positive: string[]; negative: string[] } {
   const retailer = resolveWatchKeywordRetailer(url);
   if (retailer === null) {
     return { positive: [], negative: [] };
   }
-  return getChannelKeywords(settings, channelId, retailer);
+  return getGlobalKeywords(settings, retailer);
 }
 
 async function handleSkuModeTargetPath(
@@ -57,7 +56,7 @@ async function handleSkuModeTargetPath(
   channelId: string,
   settings: ExtensionSettings,
 ): Promise<LinkOpenResult> {
-  const configuredSkus = getChannelWatchSkus(settings, channelId, "target");
+  const configuredSkus = getGlobalWatchSkus(settings, "target");
   const decision = decideSkuOpenAction({
     messageText: message.message_text ?? "",
     urls: message.urls,
@@ -154,7 +153,7 @@ async function handleWalmartLinkPath(
       continue;
     }
 
-    const { positive, negative } = keywordsForUrl(settings, channelId, entry.url);
+    const { positive, negative } = keywordsForUrl(settings, entry.url);
     if (!shouldOpenByKeywords(messageText, positive, negative)) {
       histories.push({
         kind: "keyword_skipped",
@@ -217,7 +216,7 @@ async function handleNormalModeCandidateLinks(
       continue;
     }
 
-    const { positive, negative } = keywordsForUrl(settings, channelId, entry.url);
+    const { positive, negative } = keywordsForUrl(settings, entry.url);
     if (!shouldOpenByKeywords(messageText, positive, negative)) {
       histories.push({
         kind: "keyword_skipped",

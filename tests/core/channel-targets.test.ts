@@ -3,11 +3,11 @@ import { describe, expect, it } from "vitest";
 import {
   addChannelDomain,
   getChannelDomains,
-  getChannelKeywords,
-  migrateChannelWatchKeywords,
-  upsertChannelDiscordTarget,
+  getGlobalKeywords,
+  getGlobalWatchSkus,
+  stripChannelWatchFields,
   upsertChannelDomains,
-  upsertChannelKeywords,
+  upsertGlobalWatchSettings,
 } from "@ext/core/lib/channel-targets.ts";
 import { DEFAULT_SETTINGS } from "@ext/core/types/index.ts";
 import { buildChannelTarget } from "../fixtures/fixtures.ts";
@@ -77,108 +77,11 @@ describe("upsertChannelDomains", () => {
       { channel_id: "111", allowed_domains: ["c.com"] },
     ]);
   });
-
-  it("preserves retailer_auto_atc_enabled when domains are updated", () => {
-    const settings = {
-      ...DEFAULT_SETTINGS,
-      channel_targets: [
-        buildChannelTarget({
-          channel_id: "111",
-          allowed_domains: ["target.com"],
-          retailer_auto_atc_enabled: true,
-        }),
-      ],
-    };
-    const result = upsertChannelDomains(settings, "111", ["target.com", "amazon.com"]);
-    expect(result.channel_targets[0]).toEqual({
-      channel_id: "111",
-      allowed_domains: ["target.com", "amazon.com"],
-      retailer_auto_atc_enabled: true,
-    });
-  });
-
-  it("preserves retailer_auto_atc_enabled when target.com is removed", () => {
-    const settings = {
-      ...DEFAULT_SETTINGS,
-      channel_targets: [
-        buildChannelTarget({
-          channel_id: "111",
-          allowed_domains: ["target.com"],
-          retailer_auto_atc_enabled: true,
-        }),
-      ],
-    };
-    const result = upsertChannelDomains(settings, "111", ["mavely.app.link"]);
-    expect(result.channel_targets[0]?.retailer_auto_atc_enabled).toBe(true);
-  });
-
-  it("preserves legacy keywords when domains are updated", () => {
-    const settings = {
-      ...DEFAULT_SETTINGS,
-      channel_targets: [
-        buildChannelTarget({
-          channel_id: "111",
-          allowed_domains: ["walmart.com"],
-          positive_keywords: ["pokemon"],
-          negative_keywords: ["scam"],
-        }),
-      ],
-    };
-    const result = upsertChannelDomains(settings, "111", ["walmart.com", "target.com"]);
-    expect(result.channel_targets[0]).toEqual({
-      channel_id: "111",
-      allowed_domains: ["walmart.com", "target.com"],
-      positive_keywords: ["pokemon"],
-      negative_keywords: ["scam"],
-    });
-  });
 });
 
-describe("migrateChannelWatchKeywords", () => {
-  it("copies legacy keywords to both retailers and strips legacy fields", () => {
-    const settings = {
-      ...DEFAULT_SETTINGS,
-      channel_targets: [
-        buildChannelTarget({
-          channel_id: "111",
-          positive_keywords: ["pokemon"],
-          negative_keywords: ["scam"],
-        }),
-      ],
-    };
-    const { settings: migrated, changed } = migrateChannelWatchKeywords(settings);
-    expect(changed).toBe(true);
-    expect(migrated.channel_targets[0]).toEqual({
-      channel_id: "111",
-      allowed_domains: ["walmart.com"],
-      watch_keywords: {
-        target: { positive: ["pokemon"], negative: ["scam"] },
-        walmart: { positive: ["pokemon"], negative: ["scam"] },
-      },
-    });
-  });
-
-  it("no-ops when watch_keywords already exists", () => {
-    const settings = {
-      ...DEFAULT_SETTINGS,
-      channel_targets: [
-        buildChannelTarget({
-          channel_id: "111",
-          watch_keywords: {
-            target: { positive: ["a"], negative: [] },
-            walmart: { positive: ["b"], negative: [] },
-          },
-        }),
-      ],
-    };
-    const { changed } = migrateChannelWatchKeywords(settings);
-    expect(changed).toBe(false);
-  });
-});
-
-describe("getChannelKeywords", () => {
-  it("returns empty lists for unknown channel", () => {
-    expect(getChannelKeywords(DEFAULT_SETTINGS, "999", "target")).toEqual({
+describe("getGlobalKeywords", () => {
+  it("returns empty lists when unset", () => {
+    expect(getGlobalKeywords(DEFAULT_SETTINGS, "target")).toEqual({
       positive: [],
       negative: [],
     });
@@ -187,148 +90,130 @@ describe("getChannelKeywords", () => {
   it("returns stored watch_keywords for retailer", () => {
     const settings = {
       ...DEFAULT_SETTINGS,
-      channel_targets: [
-        buildChannelTarget({
-          channel_id: "111",
-          watch_keywords: {
-            target: { positive: ["pokemon"], negative: ["scam"] },
-            walmart: { positive: ["walmart-only"], negative: [] },
-          },
-        }),
-      ],
+      watch_keywords: {
+        target: { positive: ["pokemon"], negative: ["scam"] },
+        walmart: { positive: ["walmart-only"], negative: [] },
+      },
     };
-    expect(getChannelKeywords(settings, "111", "target")).toEqual({
+    expect(getGlobalKeywords(settings, "target")).toEqual({
       positive: ["pokemon"],
       negative: ["scam"],
     });
-    expect(getChannelKeywords(settings, "111", "walmart")).toEqual({
+    expect(getGlobalKeywords(settings, "walmart")).toEqual({
       positive: ["walmart-only"],
       negative: [],
     });
   });
-
-  it("falls back to legacy fields for both retailers when watch_keywords absent", () => {
-    const settings = {
-      ...DEFAULT_SETTINGS,
-      channel_targets: [
-        buildChannelTarget({
-          channel_id: "111",
-          positive_keywords: ["pokemon"],
-          negative_keywords: ["scam"],
-        }),
-      ],
-    };
-    expect(getChannelKeywords(settings, "111", "target")).toEqual({
-      positive: ["pokemon"],
-      negative: ["scam"],
-    });
-    expect(getChannelKeywords(settings, "111", "walmart")).toEqual({
-      positive: ["pokemon"],
-      negative: ["scam"],
-    });
-  });
 });
 
-describe("upsertChannelDiscordTarget", () => {
-  it("preserves watch_skus when target_skus omitted from patch", () => {
-    const settings = {
-      ...DEFAULT_SETTINGS,
-      channel_targets: [
-        buildChannelTarget({
-          channel_id: "111",
-          allowed_domains: ["walmart.com"],
-          watch_skus: { target: ["95120834"] },
-        }),
-      ],
-    };
-    const result = upsertChannelDiscordTarget(settings, "111", {
-      allowed_domains: ["walmart.com"],
-      target_positive_keywords: ["pokemon"],
-      target_negative_keywords: [],
-      walmart_positive_keywords: [],
-      walmart_negative_keywords: [],
-    });
-    expect(result.channel_targets[0]?.watch_skus).toEqual({ target: ["95120834"] });
-  });
-
-  it("stores normalized keywords and SKUs in watch_keywords", () => {
-    const settings = {
-      ...DEFAULT_SETTINGS,
-      channel_targets: [buildChannelTarget({ channel_id: "111", allowed_domains: ["walmart.com"] })],
-    };
-    const result = upsertChannelDiscordTarget(settings, "111", {
-      allowed_domains: ["walmart.com"],
+describe("upsertGlobalWatchSettings", () => {
+  it("stores normalized keywords and SKUs globally", () => {
+    const result = upsertGlobalWatchSettings(DEFAULT_SETTINGS, {
       target_positive_keywords: ["Pokemon"],
       target_negative_keywords: ["  Scam  Link  "],
       walmart_positive_keywords: ["deal"],
       walmart_negative_keywords: [],
       target_skus: ["95120834", "94860231"],
     });
-    expect(result.channel_targets[0]).toEqual({
-      channel_id: "111",
-      allowed_domains: ["walmart.com"],
-      watch_keywords: {
-        target: { positive: ["pokemon"], negative: ["scam link"] },
-        walmart: { positive: ["deal"] },
-      },
-      watch_skus: { target: ["95120834", "94860231"] },
+    expect(result.watch_keywords).toEqual({
+      target: { positive: ["pokemon"], negative: ["scam link"] },
+      walmart: { positive: ["deal"] },
     });
+    expect(result.watch_skus).toEqual({ target: ["95120834", "94860231"] });
+  });
+
+  it("preserves watch_skus when target_skus omitted from patch", () => {
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      watch_skus: { target: ["95120834"] },
+    };
+    const result = upsertGlobalWatchSettings(settings, {
+      target_positive_keywords: ["pokemon"],
+      target_negative_keywords: [],
+      walmart_positive_keywords: [],
+      walmart_negative_keywords: [],
+    });
+    expect(result.watch_skus).toEqual({ target: ["95120834"] });
   });
 
   it("omits empty keyword buckets", () => {
     const settings = {
       ...DEFAULT_SETTINGS,
-      channel_targets: [
-        buildChannelTarget({
-          channel_id: "111",
-          allowed_domains: ["walmart.com"],
-          watch_keywords: {
-            target: { positive: ["pokemon"], negative: [] },
-          },
-        }),
-      ],
+      watch_keywords: {
+        target: { positive: ["pokemon"], negative: [] },
+      },
     };
-    const result = upsertChannelDiscordTarget(settings, "111", {
-      allowed_domains: ["walmart.com"],
+    const result = upsertGlobalWatchSettings(settings, {
       target_positive_keywords: [],
       target_negative_keywords: [],
       walmart_positive_keywords: [],
       walmart_negative_keywords: [],
     });
-    expect(result.channel_targets[0]).toEqual({
-      channel_id: "111",
-      allowed_domains: ["walmart.com"],
-    });
+    expect(result.watch_keywords).toBeUndefined();
   });
 });
 
-describe("upsertChannelKeywords", () => {
-  it("throws when channel has no domains", () => {
-    expect(() =>
-      upsertChannelKeywords(DEFAULT_SETTINGS, "111", "target", ["pokemon"], []),
-    ).toThrow(/allowed domain/i);
-  });
-
-  it("updates only the specified retailer bucket", () => {
+describe("getGlobalWatchSkus", () => {
+  it("returns configured SKUs for retailer", () => {
     const settings = {
       ...DEFAULT_SETTINGS,
+      watch_skus: { target: ["95120834"] },
+    };
+    expect(getGlobalWatchSkus(settings, "target")).toEqual(["95120834"]);
+    expect(getGlobalWatchSkus(settings, "walmart")).toEqual([]);
+  });
+});
+
+describe("stripChannelWatchFields", () => {
+  it("removes per-channel watch fields without touching global settings", () => {
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      watch_keywords: {
+        target: { positive: ["global-kw"], negative: [] },
+      },
+      watch_skus: { target: ["95120834"] },
+      retailer_auto_atc_enabled: true,
       channel_targets: [
-        buildChannelTarget({
+        {
           channel_id: "111",
           allowed_domains: ["walmart.com"],
           watch_keywords: {
-            target: { positive: ["target-kw"], negative: [] },
-            walmart: { positive: ["old"], negative: [] },
+            target: { positive: ["old"], negative: [] },
           },
-        }),
+          watch_skus: { target: ["11111111"] },
+          retailer_auto_atc_enabled: true,
+          positive_keywords: ["legacy"],
+          negative_keywords: ["legacy-neg"],
+        } as (typeof DEFAULT_SETTINGS.channel_targets)[number] & {
+          watch_keywords?: unknown;
+          watch_skus?: unknown;
+          retailer_auto_atc_enabled?: boolean;
+          positive_keywords?: string[];
+          negative_keywords?: string[];
+        },
       ],
     };
-    const result = upsertChannelKeywords(settings, "111", "walmart", ["new"], ["block"]);
-    expect(getChannelKeywords(result, "111", "target").positive).toEqual(["target-kw"]);
-    expect(getChannelKeywords(result, "111", "walmart")).toEqual({
-      positive: ["new"],
-      negative: ["block"],
+
+    const { settings: stripped, changed } = stripChannelWatchFields(settings);
+    expect(changed).toBe(true);
+    expect(stripped.channel_targets[0]).toEqual({
+      channel_id: "111",
+      allowed_domains: ["walmart.com"],
     });
+    expect(stripped.watch_keywords).toEqual({
+      target: { positive: ["global-kw"], negative: [] },
+    });
+    expect(stripped.watch_skus).toEqual({ target: ["95120834"] });
+    expect(stripped.retailer_auto_atc_enabled).toBe(true);
+  });
+
+  it("returns unchanged when no legacy fields exist", () => {
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      channel_targets: [buildChannelTarget({ channel_id: "111" })],
+    };
+    const { changed } = stripChannelWatchFields(settings);
+    expect(changed).toBe(false);
   });
 });
 

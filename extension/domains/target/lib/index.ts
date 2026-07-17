@@ -13,7 +13,6 @@ export {
   getRetailerFrontendAtcEnabled,
   getRetailerRefreshIntervalSec,
   getRetailerUseMaxQuantity,
-  migrateRetailerAutoAtcChannelFlags,
   normalizeRetailerAtcQuantity,
   normalizeRetailerRefreshIntervalSec,
   setRetailerAtcModes,

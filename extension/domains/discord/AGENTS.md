@@ -21,7 +21,7 @@ flowchart LR
   observer --> candidates[CANDIDATE_LINKS + message_text + anchors]
   candidates --> mode{sku_open_mode?}
   mode -->|off| processLinks[process-links]
-  processLinks --> keywordGate[per-retailer keywords gate]
+  processLinks --> keywordGate[global keywords gate]
   mode -->|on| targetSku[Target SKU path]
   mode -->|on| walmartLinks[Walmart link path]
   keywordGate --> openTab[open-product-link]
@@ -42,10 +42,10 @@ Source of truth: [extension/core/types/messages.ts](../../core/types/messages.ts
 - Own messages are skipped (`isOwnMessage` in extract/session).
 - Prefer visible message `textContent` URLs over Discord redirect `href`s.
 - `CANDIDATE_LINKS` may include optional `message_text`, `anchors`; extraction uses `messageScanRoot` (article + embed accessories).
-- Per-channel **watch_keywords** (`target` / `walmart` buckets) gate auto-open per retailer URL (`shouldOpenByKeywords`); skipped links use history kind `keyword_skipped`.
-- Global **SKU open mode** (`sku_open_mode_enabled`): Target opens via `decideSkuOpenAction` + `watch_skus.target` (constructed PDP); Walmart links still use link pipeline + Walmart keywords; other allowlisted domains are blocked. History kind `sku_skipped` when configured Target SKUs exist but none match.
-- Side panel Channel filters: Target subsection (keywords + SKUs) and Walmart subsection (keywords only); settings debounce 400ms via `useChannelDiscordSettings`.
-- When per-channel **Auto ATC** is enabled, Target product links open via `openTargetLinkRepeated` in core `open-product-link.ts` (repeat count from global `retailer_link_open_count`, default 1); other allowlisted links open via `openPassiveProductLink` in a new window or background tab per global `open_links_in_window` setting (default on).
+- Global **watch_keywords** (`target` / `walmart` buckets) gate auto-open per retailer URL (`shouldOpenByKeywords`); skipped links use history kind `keyword_skipped`.
+- Global **SKU open mode** (`sku_open_mode_enabled`): Target opens via `decideSkuOpenAction` + global `watch_skus.target` (constructed PDP); Walmart links still use link pipeline + global Walmart keywords; other allowlisted domains are blocked. History kind `sku_skipped` when configured Target SKUs exist but none match.
+- Side panel Discord tab: global Target keywords/SKUs and Walmart keywords via `useGlobalDiscordWatchSettings` (always editable when extension enabled); per-channel domains via `useChannelDiscordSettings`.
+- When global **Auto ATC** (`retailer_auto_atc_enabled`) is enabled, Target product links open via `openTargetLinkRepeated` in core `open-product-link.ts` (repeat count from global `retailer_link_open_count`, default 1); other allowlisted links open via `openPassiveProductLink` in a new window or background tab per global `open_links_in_window` setting (default on).
 
 Global invariants and import rules: [AGENTS.md](../../../AGENTS.md).
 

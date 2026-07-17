@@ -1,28 +1,25 @@
 export interface ChannelTarget {
   channel_id: string;
   allowed_domains: string[];
-  retailer_auto_atc_enabled?: boolean;
   /** Hard-refresh interval while main add-to-cart is disabled; 0 = off. */
   retailer_refresh_interval_sec?: number;
-  /** @deprecated Migrated to watch_keywords; read-only fallback until persisted. */
-  positive_keywords?: string[];
-  /** @deprecated Migrated to watch_keywords; read-only fallback until persisted. */
-  negative_keywords?: string[];
-  /** Per-retailer keyword lists for Discord link gating. */
-  watch_keywords?: {
-    target?: { positive?: string[]; negative?: string[] };
-    walmart?: { positive?: string[]; negative?: string[] };
-  };
-  /** Per-retailer SKU watch lists for SKU open mode. */
-  watch_skus?: {
-    target?: string[];
-    walmart?: string[];
-  };
 }
 
 export interface ExtensionSettings {
   channel_targets: ChannelTarget[];
   enabled: boolean;
+  /** Global per-retailer keyword lists for Discord link gating. */
+  watch_keywords?: {
+    target?: { positive?: string[]; negative?: string[] };
+    walmart?: { positive?: string[]; negative?: string[] };
+  };
+  /** Global per-retailer SKU watch lists for SKU open mode. */
+  watch_skus?: {
+    target?: string[];
+    walmart?: string[];
+  };
+  /** When true, Discord-initiated Target links start auto ATC. */
+  retailer_auto_atc_enabled?: boolean;
   /** Used when auto mode runs with channel_id "manual". */
   retailer_refresh_interval_sec?: number;
   /** Default true when undefined — DOM button click add-to-cart. */
@@ -45,7 +42,7 @@ export interface ExtensionSettings {
   open_links_in_window?: boolean;
   /** Target product links from Discord watch open this many times; default 1. */
   retailer_link_open_count?: number;
-  /** When true, Discord auto-open uses per-channel SKUs instead of link keywords. */
+  /** When true, Discord auto-open uses global SKUs instead of link keywords. */
   sku_open_mode_enabled?: boolean;
   /** When true, show Walmart research/recording controls in the side panel. */
   walmart_recording_ui_enabled?: boolean;

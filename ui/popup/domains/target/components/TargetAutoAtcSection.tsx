@@ -20,7 +20,7 @@ export function TargetAutoAtcSection({ status, disabled, onRefresh }: TargetAuto
         id="popup-retailer-auto-atc"
         label="Enable Auto ATC"
         checked={autoAtc.enabled}
-        disabled={disabled || autoAtc.saving || autoAtc.controlsDisabled}
+        disabled={disabled || autoAtc.saving}
         onChange={(next) => void autoAtc.onChange(next)}
       />
       {autoAtc.saving && <p className="mt-1 text-xs text-zinc-500">Saving…</p>}

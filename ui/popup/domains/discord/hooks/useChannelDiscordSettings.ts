@@ -2,27 +2,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { STORAGE_KEYS } from "@ext/core/lib/constants.ts";
 import { normalizeDomain } from "@ext/core/lib/domains.ts";
-import {
-  getChannelDomains,
-  getChannelKeywords,
-  getChannelWatchSkus,
-} from "@ext/core/lib/channel-targets.ts";
+import { getChannelDomains } from "@ext/core/lib/channel-targets.ts";
 import {
   getExtensionSettings,
   getExtensionStatus,
-  saveChannelDiscordSettings,
+  saveChannelDomains,
 } from "@ext/core/lib/messages.ts";
 
 const SAVE_DEBOUNCE_MS = 400;
-
-type PendingSettings = {
-  domains: string[];
-  targetPositiveKeywords: string[];
-  targetNegativeKeywords: string[];
-  walmartPositiveKeywords: string[];
-  walmartNegativeKeywords: string[];
-  targetSkus: string[];
-};
 
 type ChangeOptions = {
   immediate?: boolean;
@@ -30,45 +17,28 @@ type ChangeOptions = {
 
 export function useChannelDiscordSettings(channelId: string | null, enabled: boolean) {
   const [domains, setDomains] = useState<string[]>([]);
-  const [targetPositiveKeywords, setTargetPositiveKeywords] = useState<string[]>([]);
-  const [targetNegativeKeywords, setTargetNegativeKeywords] = useState<string[]>([]);
-  const [walmartPositiveKeywords, setWalmartPositiveKeywords] = useState<string[]>([]);
-  const [walmartNegativeKeywords, setWalmartNegativeKeywords] = useState<string[]>([]);
-  const [targetSkus, setTargetSkus] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pendingRef = useRef<PendingSettings | null>(null);
+  const pendingDomainsRef = useRef<string[] | null>(null);
 
   const clearDebounce = useCallback(() => {
     if (debounceRef.current !== null) {
       clearTimeout(debounceRef.current);
       debounceRef.current = null;
     }
-    pendingRef.current = null;
+    pendingDomainsRef.current = null;
   }, []);
 
   const loadSettings = useCallback(async (id: string) => {
     const settings = await getExtensionSettings();
     setDomains(getChannelDomains(settings, id));
-    const targetKeywords = getChannelKeywords(settings, id, "target");
-    const walmartKeywords = getChannelKeywords(settings, id, "walmart");
-    setTargetPositiveKeywords(targetKeywords.positive);
-    setTargetNegativeKeywords(targetKeywords.negative);
-    setWalmartPositiveKeywords(walmartKeywords.positive);
-    setWalmartNegativeKeywords(walmartKeywords.negative);
-    setTargetSkus(getChannelWatchSkus(settings, id, "target"));
   }, []);
 
   useEffect(() => {
     clearDebounce();
     if (channelId === null) {
       setDomains([]);
-      setTargetPositiveKeywords([]);
-      setTargetNegativeKeywords([]);
-      setWalmartPositiveKeywords([]);
-      setWalmartNegativeKeywords([]);
-      setTargetSkus([]);
       setSaveError(null);
       return;
     }
@@ -98,7 +68,7 @@ export function useChannelDiscordSettings(channelId: string | null, enabled: boo
   }, [clearDebounce]);
 
   const flushSave = useCallback(
-    async (pending: PendingSettings) => {
+    async (nextDomains: string[]) => {
       if (!enabled) {
         return;
       }
@@ -110,28 +80,21 @@ export function useChannelDiscordSettings(channelId: string | null, enabled: boo
         if (saveChannelId === null) {
           return;
         }
-        await saveChannelDiscordSettings(saveChannelId, {
-          domains: pending.domains,
-          targetPositiveKeywords: pending.targetPositiveKeywords,
-          targetNegativeKeywords: pending.targetNegativeKeywords,
-          walmartPositiveKeywords: pending.walmartPositiveKeywords,
-          walmartNegativeKeywords: pending.walmartNegativeKeywords,
-          targetSkus: pending.targetSkus,
-        });
+        await saveChannelDomains(saveChannelId, nextDomains);
         await loadSettings(saveChannelId);
       } catch (err) {
         setSaveError(err instanceof Error ? err.message : "Save failed");
       } finally {
         setSaving(false);
-        pendingRef.current = null;
+        pendingDomainsRef.current = null;
       }
     },
     [enabled, loadSettings],
   );
 
   const scheduleSave = useCallback(
-    (pending: PendingSettings, options?: ChangeOptions) => {
-      pendingRef.current = pending;
+    (nextDomains: string[], options?: ChangeOptions) => {
+      pendingDomainsRef.current = nextDomains;
       setSaveError(null);
 
       if (debounceRef.current !== null) {
@@ -140,102 +103,27 @@ export function useChannelDiscordSettings(channelId: string | null, enabled: boo
       }
 
       if (options?.immediate) {
-        void flushSave(pending);
+        void flushSave(nextDomains);
         return;
       }
 
       debounceRef.current = setTimeout(() => {
         debounceRef.current = null;
-        const nextPending = pendingRef.current;
-        if (nextPending !== null) {
-          void flushSave(nextPending);
+        const pending = pendingDomainsRef.current;
+        if (pending !== null) {
+          void flushSave(pending);
         }
       }, SAVE_DEBOUNCE_MS);
     },
     [flushSave],
   );
 
-  const currentPending = useCallback(
-    (): PendingSettings => ({
-      domains,
-      targetPositiveKeywords,
-      targetNegativeKeywords,
-      walmartPositiveKeywords,
-      walmartNegativeKeywords,
-      targetSkus,
-    }),
-    [
-      domains,
-      targetNegativeKeywords,
-      targetPositiveKeywords,
-      targetSkus,
-      walmartNegativeKeywords,
-      walmartPositiveKeywords,
-    ],
-  );
-
   const handleDomainsChange = useCallback(
     (nextDomains: string[], options?: ChangeOptions) => {
       setDomains(nextDomains);
-      scheduleSave({ ...currentPending(), domains: nextDomains }, options);
+      scheduleSave(nextDomains, options);
     },
-    [currentPending, scheduleSave],
-  );
-
-  const handleTargetPositiveKeywordsChange = useCallback(
-    (nextKeywords: string[], options?: ChangeOptions) => {
-      const blocked = new Set(targetNegativeKeywords);
-      if (nextKeywords.some((keyword) => blocked.has(keyword))) {
-        return;
-      }
-      setTargetPositiveKeywords(nextKeywords);
-      scheduleSave({ ...currentPending(), targetPositiveKeywords: nextKeywords }, options);
-    },
-    [currentPending, scheduleSave, targetNegativeKeywords],
-  );
-
-  const handleTargetNegativeKeywordsChange = useCallback(
-    (nextKeywords: string[], options?: ChangeOptions) => {
-      const blocked = new Set(targetPositiveKeywords);
-      if (nextKeywords.some((keyword) => blocked.has(keyword))) {
-        return;
-      }
-      setTargetNegativeKeywords(nextKeywords);
-      scheduleSave({ ...currentPending(), targetNegativeKeywords: nextKeywords }, options);
-    },
-    [currentPending, scheduleSave, targetPositiveKeywords],
-  );
-
-  const handleWalmartPositiveKeywordsChange = useCallback(
-    (nextKeywords: string[], options?: ChangeOptions) => {
-      const blocked = new Set(walmartNegativeKeywords);
-      if (nextKeywords.some((keyword) => blocked.has(keyword))) {
-        return;
-      }
-      setWalmartPositiveKeywords(nextKeywords);
-      scheduleSave({ ...currentPending(), walmartPositiveKeywords: nextKeywords }, options);
-    },
-    [currentPending, scheduleSave, walmartNegativeKeywords],
-  );
-
-  const handleWalmartNegativeKeywordsChange = useCallback(
-    (nextKeywords: string[], options?: ChangeOptions) => {
-      const blocked = new Set(walmartPositiveKeywords);
-      if (nextKeywords.some((keyword) => blocked.has(keyword))) {
-        return;
-      }
-      setWalmartNegativeKeywords(nextKeywords);
-      scheduleSave({ ...currentPending(), walmartNegativeKeywords: nextKeywords }, options);
-    },
-    [currentPending, scheduleSave, walmartPositiveKeywords],
-  );
-
-  const handleTargetSkusChange = useCallback(
-    (nextSkus: string[], options?: ChangeOptions) => {
-      setTargetSkus(nextSkus);
-      scheduleSave({ ...currentPending(), targetSkus: nextSkus }, options);
-    },
-    [currentPending, scheduleSave],
+    [scheduleSave],
   );
 
   const handleAcceptDomain = useCallback(
@@ -254,20 +142,10 @@ export function useChannelDiscordSettings(channelId: string | null, enabled: boo
 
   return {
     domains,
-    targetPositiveKeywords,
-    targetNegativeKeywords,
-    walmartPositiveKeywords,
-    walmartNegativeKeywords,
-    targetSkus,
     saving,
     saveError,
     disabled: !enabled || channelId === null,
     handleDomainsChange,
-    handleTargetPositiveKeywordsChange,
-    handleTargetNegativeKeywordsChange,
-    handleWalmartPositiveKeywordsChange,
-    handleWalmartNegativeKeywordsChange,
-    handleTargetSkusChange,
     handleAcceptDomain,
   };
 }

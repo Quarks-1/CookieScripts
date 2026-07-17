@@ -229,8 +229,7 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
   const allowedDomains =
     activeChannelId !== null ? getChannelDomains(settings, activeChannelId) : [];
   const isActive = settings.enabled && activeChannelId !== null;
-  const retailerAutoAtcEnabled =
-    activeChannelId !== null ? getRetailerAutoAtcEnabled(settings, activeChannelId) : false;
+  const retailerAutoAtcEnabled = getRetailerAutoAtcEnabled(settings);
   const retailerRefreshIntervalSec =
     activeChannelId !== null
       ? getRetailerRefreshIntervalSec(settings, activeChannelId)
@@ -303,12 +302,11 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
   };
 }
 
-export async function setRetailerAutoAtcEnabledForChannel(
-  channelId: string,
+export async function setRetailerAutoAtcEnabledGlobal(
   enabled: boolean,
 ): Promise<ExtensionSettings> {
   const settings = await getSettings();
-  const next = setRetailerAutoAtcEnabled(settings, channelId, enabled);
+  const next = setRetailerAutoAtcEnabled(settings, enabled);
   await saveSettings(next);
   return next;
 }

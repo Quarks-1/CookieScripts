@@ -1,9 +1,8 @@
-import { getChannelDomains } from "@ext/core/lib/channel-targets.ts";
 import {
   buildStatus,
   setRetailerAtcModesForSettings,
   setRetailerAtcQuantityForSettings,
-  setRetailerAutoAtcEnabledForChannel,
+  setRetailerAutoAtcEnabledGlobal,
   setRetailerAutoCheckoutEnabledForSettings,
   setRetailerRefreshIntervalForChannel,
 } from "@ext/core/background/status.ts";
@@ -65,14 +64,9 @@ export async function handleUiMessage(
     }
     case "SET_RETAILER_AUTO_ATC_ENABLED": {
       try {
-        const settings = await getSettings();
-        const domains = getChannelDomains(settings, message.channel_id);
-        if (domains.length === 0) {
-          return { ok: false, error: "Add at least one allowed domain first" };
-        }
-        await setRetailerAutoAtcEnabledForChannel(message.channel_id, message.enabled);
+        await setRetailerAutoAtcEnabledGlobal(message.enabled);
         if (!message.enabled) {
-          await broadcastRetailerStopAuto(message.channel_id);
+          await broadcastRetailerStopAuto();
         }
         return { ok: true };
       } catch (error) {

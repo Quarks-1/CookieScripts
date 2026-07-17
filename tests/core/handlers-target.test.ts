@@ -47,11 +47,11 @@ describe("handleMessage — target", () => {
   it("opens target product links in a new window when retailer auto mode is enabled", async () => {
     mockSettingsStorage({
       enabled: true,
+      retailer_auto_atc_enabled: true,
       channel_targets: [
         buildChannelTarget({
           channel_id: "222",
           allowed_domains: ["target.com"],
-          retailer_auto_atc_enabled: true,
         }),
       ],
     });
@@ -89,11 +89,11 @@ describe("handleMessage — target", () => {
     const storage = mockSettingsStorage({
       enabled: true,
       retailer_link_open_count: 3,
+      retailer_auto_atc_enabled: true,
       channel_targets: [
         buildChannelTarget({
           channel_id: "222",
           allowed_domains: ["target.com"],
-          retailer_auto_atc_enabled: true,
         }),
       ],
     });
@@ -130,12 +130,14 @@ describe("handleMessage — target", () => {
   it("does not open target window on negative-only keyword match", async () => {
     const storage = mockSettingsStorage({
       enabled: true,
+      retailer_auto_atc_enabled: true,
+      watch_keywords: {
+        target: { negative: ["chaos rising"] },
+      },
       channel_targets: [
         buildChannelTarget({
           channel_id: "222",
           allowed_domains: ["target.com"],
-          retailer_auto_atc_enabled: true,
-          negative_keywords: ["chaos rising"],
         }),
       ],
     });

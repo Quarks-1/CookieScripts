@@ -1,6 +1,5 @@
-import { migrateChannelWatchKeywords } from "@ext/core/lib/channel-targets.ts";
 import { MAX_KEYWORD_LENGTH, MAX_KEYWORDS_PER_LIST, MAX_SKU_LENGTH, MAX_SKUS_PER_LIST } from "@ext/core/lib/constants.ts";
-import type { ChannelTarget } from "@ext/core/types/index.ts";
+import type { ChannelTarget, ExtensionSettings } from "@ext/core/types/index.ts";
 
 function validateChannelId(channelId: string): string | null {
   if (!/^\d+$/.test(channelId)) {
@@ -83,10 +82,17 @@ function validateRetailerKeywordOverlap(
   return null;
 }
 
-function validateWatchKeywords(target: ChannelTarget): string | null {
+export function validateGlobalWatchSettings(settings: ExtensionSettings): string | null {
+  if (
+    settings.retailer_auto_atc_enabled !== undefined &&
+    typeof settings.retailer_auto_atc_enabled !== "boolean"
+  ) {
+    return "retailer_auto_atc_enabled must be a boolean";
+  }
+
   const retailers = ["target", "walmart"] as const;
   for (const retailer of retailers) {
-    const bucket = target.watch_keywords?.[retailer];
+    const bucket = settings.watch_keywords?.[retailer];
     const prefix = `watch_keywords.${retailer}`;
     const positiveError = validateKeywordList(bucket?.positive, `${prefix}.positive`);
     if (positiveError) {
@@ -105,6 +111,15 @@ function validateWatchKeywords(target: ChannelTarget): string | null {
       return overlapError;
     }
   }
+
+  const targetSkusError = validateSkuList(settings.watch_skus?.target, "watch_skus.target");
+  if (targetSkusError) {
+    return targetSkusError;
+  }
+  const walmartSkusError = validateSkuList(settings.watch_skus?.walmart, "watch_skus.walmart");
+  if (walmartSkusError) {
+    return walmartSkusError;
+  }
   return null;
 }
 
@@ -116,12 +131,6 @@ export function validateChannelTarget(target: ChannelTarget): string | null {
   if (!target.allowed_domains.length) {
     return "Each channel needs at least one allowed domain";
   }
-  if (
-    target.retailer_auto_atc_enabled !== undefined &&
-    typeof target.retailer_auto_atc_enabled !== "boolean"
-  ) {
-    return "retailer_auto_atc_enabled must be a boolean";
-  }
   if (target.retailer_refresh_interval_sec !== undefined) {
     if (
       typeof target.retailer_refresh_interval_sec !== "number" ||
@@ -131,25 +140,6 @@ export function validateChannelTarget(target: ChannelTarget): string | null {
     ) {
       return "retailer_refresh_interval_sec must be between 1 and 3600";
     }
-  }
-
-  const normalized = migrateChannelWatchKeywords({
-    channel_targets: [target],
-    enabled: true,
-  }).settings.channel_targets[0]!;
-
-  const watchKeywordsError = validateWatchKeywords(normalized);
-  if (watchKeywordsError) {
-    return watchKeywordsError;
-  }
-
-  const targetSkusError = validateSkuList(normalized.watch_skus?.target, "watch_skus.target");
-  if (targetSkusError) {
-    return targetSkusError;
-  }
-  const walmartSkusError = validateSkuList(normalized.watch_skus?.walmart, "watch_skus.walmart");
-  if (walmartSkusError) {
-    return walmartSkusError;
   }
   return null;
 }

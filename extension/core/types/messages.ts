@@ -120,7 +120,7 @@ export type UiToBackground =
   | { type: "GET_HISTORY" }
   | { type: "CLEAR_HISTORY" }
   | { type: "GET_DETECTED_DOMAINS"; window_id?: number }
-  | { type: "SET_RETAILER_AUTO_ATC_ENABLED"; channel_id: string; enabled: boolean }
+  | { type: "SET_RETAILER_AUTO_ATC_ENABLED"; enabled: boolean }
   | { type: "SET_RETAILER_REFRESH_INTERVAL"; channel_id: string; interval_sec: number }
   | { type: "SET_RETAILER_ATC_MODES"; frontend_enabled: boolean; backend_enabled: boolean }
   | {

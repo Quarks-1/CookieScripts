@@ -3,7 +3,7 @@ import {
   mergeChannelTarget,
 } from "@ext/core/lib/channel-targets.ts";
 import { allowlistIncludesRetailerHost } from "@ext/domains/target/lib/host.ts";
-import type { ChannelTarget, ExtensionSettings } from "@ext/core/types/index.ts";
+import type { ExtensionSettings } from "@ext/core/types/index.ts";
 
 export function normalizeRetailerRefreshIntervalSec(value: number): number {
   if (!Number.isFinite(value) || value <= 0) {
@@ -25,56 +25,21 @@ export function getRetailerRefreshIntervalSec(
   return normalizeRetailerRefreshIntervalSec(settings.retailer_refresh_interval_sec ?? 0);
 }
 
-export function getRetailerAutoAtcEnabled(settings: ExtensionSettings, channelId: string): boolean {
-  const target = getChannelTarget(settings, channelId);
-  return target?.retailer_auto_atc_enabled === true;
+export function getRetailerAutoAtcEnabled(settings: ExtensionSettings): boolean {
+  return settings.retailer_auto_atc_enabled === true;
 }
 
 export function setRetailerAutoAtcEnabled(
   settings: ExtensionSettings,
-  channelId: string,
   enabled: boolean,
 ): ExtensionSettings {
-  const domains = getChannelTarget(settings, channelId)?.allowed_domains ?? [];
-  if (domains.length === 0) {
-    return settings;
+  const next = { ...settings };
+  if (enabled) {
+    next.retailer_auto_atc_enabled = true;
+  } else {
+    delete next.retailer_auto_atc_enabled;
   }
-  return mergeChannelTarget(settings, channelId, {
-    allowed_domains: domains,
-    retailer_auto_atc_enabled: enabled,
-  });
-}
-
-type LegacyChannelTarget = ChannelTarget & { retailer_auto_enabled?: boolean };
-
-export function migrateRetailerAutoAtcChannelFlags(settings: ExtensionSettings): {
-  settings: ExtensionSettings;
-  changed: boolean;
-} {
-  let changed = false;
-  const channel_targets = settings.channel_targets.map((row) => {
-    const legacy = row as LegacyChannelTarget;
-    if (legacy.retailer_auto_enabled === undefined) {
-      return row;
-    }
-
-    changed = true;
-    const { retailer_auto_enabled: _removed, ...rest } = legacy;
-    const next: ChannelTarget = { ...rest };
-    if (legacy.retailer_auto_enabled === true && next.retailer_auto_atc_enabled !== true) {
-      next.retailer_auto_atc_enabled = true;
-    }
-    if (next.retailer_auto_atc_enabled !== true) {
-      delete next.retailer_auto_atc_enabled;
-    }
-    return next;
-  });
-
-  if (!changed) {
-    return { settings, changed: false };
-  }
-
-  return { settings: { ...settings, channel_targets }, changed: true };
+  return next;
 }
 
 export function setRetailerRefreshInterval(

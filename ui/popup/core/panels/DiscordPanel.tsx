@@ -6,6 +6,7 @@ import { DetectedLinksSection } from "../../domains/discord/components/DetectedL
 import { TargetChannelFiltersSection } from "../../domains/discord/components/TargetChannelFiltersSection.tsx";
 import { WalmartChannelFiltersSection } from "../../domains/discord/components/WalmartChannelFiltersSection.tsx";
 import { useChannelDiscordSettings } from "../../domains/discord/hooks/useChannelDiscordSettings.ts";
+import { useGlobalDiscordWatchSettings } from "../../domains/discord/hooks/useGlobalDiscordWatchSettings.ts";
 import { useDetectedLinks } from "../../domains/discord/hooks/useDetectedLinks.ts";
 import { useLinkHistory } from "../../domains/discord/hooks/useLinkHistory.ts";
 
@@ -18,8 +19,10 @@ export function DiscordPanel({ status, disabled }: DiscordPanelProps) {
   const onDiscordChannel = status.active_tab_kind === "discord_channel";
   const channelId = onDiscordChannel ? status.active_channel_id : null;
   const channelActive = onDiscordChannel && status.enabled;
+  const watchSettingsEnabled = status.enabled;
 
   const discordSettings = useChannelDiscordSettings(channelId, channelActive);
+  const globalWatchSettings = useGlobalDiscordWatchSettings(watchSettingsEnabled);
   const detectedLinks = useDetectedLinks(
     channelId,
     channelActive,
@@ -29,6 +32,7 @@ export function DiscordPanel({ status, disabled }: DiscordPanelProps) {
   const linkHistory = useLinkHistory();
 
   const filtersDisabled = discordSettings.disabled || disabled;
+  const watchFiltersDisabled = !watchSettingsEnabled || disabled;
 
   return (
     <div className="space-y-3">
@@ -46,28 +50,24 @@ export function DiscordPanel({ status, disabled }: DiscordPanelProps) {
       />
 
       <TargetChannelFiltersSection
-        channelId={channelId}
-        positiveKeywords={discordSettings.targetPositiveKeywords}
-        negativeKeywords={discordSettings.targetNegativeKeywords}
-        targetSkus={discordSettings.targetSkus}
-        hasAllowedDomains={status.has_allowed_domains}
+        positiveKeywords={globalWatchSettings.targetPositiveKeywords}
+        negativeKeywords={globalWatchSettings.targetNegativeKeywords}
+        targetSkus={globalWatchSettings.targetSkus}
         skuModeActive={status.sku_open_mode_enabled}
-        disabled={filtersDisabled}
-        saving={discordSettings.saving}
-        onPositiveKeywordsChange={discordSettings.handleTargetPositiveKeywordsChange}
-        onNegativeKeywordsChange={discordSettings.handleTargetNegativeKeywordsChange}
-        onTargetSkusChange={discordSettings.handleTargetSkusChange}
+        disabled={watchFiltersDisabled}
+        saving={globalWatchSettings.saving}
+        onPositiveKeywordsChange={globalWatchSettings.handleTargetPositiveKeywordsChange}
+        onNegativeKeywordsChange={globalWatchSettings.handleTargetNegativeKeywordsChange}
+        onTargetSkusChange={globalWatchSettings.handleTargetSkusChange}
       />
 
       <WalmartChannelFiltersSection
-        channelId={channelId}
-        positiveKeywords={discordSettings.walmartPositiveKeywords}
-        negativeKeywords={discordSettings.walmartNegativeKeywords}
-        hasAllowedDomains={status.has_allowed_domains}
-        disabled={filtersDisabled}
-        saving={discordSettings.saving}
-        onPositiveKeywordsChange={discordSettings.handleWalmartPositiveKeywordsChange}
-        onNegativeKeywordsChange={discordSettings.handleWalmartNegativeKeywordsChange}
+        positiveKeywords={globalWatchSettings.walmartPositiveKeywords}
+        negativeKeywords={globalWatchSettings.walmartNegativeKeywords}
+        disabled={watchFiltersDisabled}
+        saving={globalWatchSettings.saving}
+        onPositiveKeywordsChange={globalWatchSettings.handleWalmartPositiveKeywordsChange}
+        onNegativeKeywordsChange={globalWatchSettings.handleWalmartNegativeKeywordsChange}
       />
 
       <DetectedLinksSection

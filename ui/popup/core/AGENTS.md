@@ -41,7 +41,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 
 | Tab | Panel | Settings always visible |
 |---|---|---|
-| Discord | `DiscordPanel` | Yes — channel-specific controls need a focused Discord channel tab (`active_channel_id`) |
+| Discord | `DiscordPanel` | Yes — per-channel domains need a focused Discord channel tab; global keywords/SKUs always editable when extension is on |
 | Target | `TargetPanel` | Yes — link opens, Enable Auto ATC, ATC toggles, hard refresh interval, etc. |
 | Walmart | `WalmartPanel` | Yes — auto-refresh, queue helpers, recording |
 | Global | `GlobalPanel` | Open links in new window, Show Walmart recording |
@@ -64,7 +64,7 @@ Used inside domain panels for intra-panel gating:
 
 **Exception:** **Channel filters** (`ChannelFiltersSection`) renders in `DiscordPanel` on `discord_channel` surface.
 
-**Note:** **Enable Auto ATC** (`retailer_auto_atc_enabled`, per-channel) UI lives in `TargetAutoAtcSection` on the Target tab. Toggle is disabled without a focused Discord channel with allowed domains.
+**Note:** **Enable Auto ATC** (`retailer_auto_atc_enabled`, global) UI lives in `TargetAutoAtcSection` on the Target tab. Always toggleable when the extension is enabled.
 
 **Note:** `sku_open_mode_enabled` and `retailer_link_open_count` UI live in `TargetLinkSettingsSection` (Target tab only today). Move to `GlobalPanel` if other retailers gain SKU/open-count support.
 
@@ -81,7 +81,7 @@ Used inside domain panels for intra-panel gating:
 | Domain | Hooks |
 |---|---|
 | Core | `usePopupStatus`, `useUpdateCheck` |
-| Discord (`DiscordPanel`) | `useChannelDiscordSettings`, `useDetectedLinks`, `useLinkHistory` |
+| Discord (`DiscordPanel`) | `useChannelDiscordSettings`, `useGlobalDiscordWatchSettings`, `useDetectedLinks`, `useLinkHistory` |
 | Target (`TargetPanel`) | `useRetailerLinkOpenCount`, `useRetailerAutoAtcEnabled`, `useRetailerAutoMode`, `useRetailerAtcMode`, `useRetailerAtcQuantity`, `useRetailerAutoCheckout` |
 | Walmart (`WalmartPanel`) | `useWalmartRecording`, `useWalmartAutoRefresh`, `useWalmartQueueSettings` |
 

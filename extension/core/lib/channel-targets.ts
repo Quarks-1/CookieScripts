@@ -9,44 +9,19 @@ export type WatchKeywordRetailer = "target" | "walmart";
 
 type KeywordPair = { positive: string[]; negative: string[] };
 
+type LegacyChannelRow = ChannelTarget & {
+  watch_keywords?: ExtensionSettings["watch_keywords"];
+  watch_skus?: ExtensionSettings["watch_skus"];
+  retailer_auto_atc_enabled?: boolean;
+  positive_keywords?: string[];
+  negative_keywords?: string[];
+};
+
 function normalizeKeywordPair(positive: string[], negative: string[]): KeywordPair {
   return {
     positive: normalizeKeywordList(positive),
     negative: normalizeKeywordList(negative),
   };
-}
-
-function legacyKeywordPair(row: ChannelTarget): KeywordPair | null {
-  const positive = row.positive_keywords;
-  const negative = row.negative_keywords;
-  if (!positive?.length && !negative?.length) {
-    return null;
-  }
-  return {
-    positive: positive ?? [],
-    negative: negative ?? [],
-  };
-}
-
-function readRetailerKeywords(row: ChannelTarget | undefined, retailer: WatchKeywordRetailer): KeywordPair {
-  if (!row) {
-    return { positive: [], negative: [] };
-  }
-
-  const nested = row.watch_keywords?.[retailer];
-  if (nested) {
-    return {
-      positive: nested.positive ?? [],
-      negative: nested.negative ?? [],
-    };
-  }
-
-  const legacy = legacyKeywordPair(row);
-  if (legacy && row.watch_keywords === undefined) {
-    return legacy;
-  }
-
-  return { positive: [], negative: [] };
 }
 
 function cleanupKeywordPair(pair: { positive?: string[]; negative?: string[] } | undefined): {
@@ -66,71 +41,51 @@ function cleanupKeywordPair(pair: { positive?: string[]; negative?: string[] } |
   return Object.keys(next).length > 0 ? next : undefined;
 }
 
-function cleanupWatchKeywordFields(row: ChannelTarget): ChannelTarget {
-  const next = { ...row };
-  if (next.watch_keywords) {
-    delete next.positive_keywords;
-    delete next.negative_keywords;
+function cleanupGlobalWatchKeywords(
+  watchKeywords: ExtensionSettings["watch_keywords"],
+): ExtensionSettings["watch_keywords"] | undefined {
+  if (!watchKeywords) {
+    return undefined;
   }
-
-  if (!next.watch_keywords) {
-    return next;
-  }
-
-  const watchKeywords = { ...next.watch_keywords };
-  const target = cleanupKeywordPair(watchKeywords.target);
-  const walmart = cleanupKeywordPair(watchKeywords.walmart);
-
+  const next = { ...watchKeywords };
+  const target = cleanupKeywordPair(next.target);
+  const walmart = cleanupKeywordPair(next.walmart);
   if (target) {
-    watchKeywords.target = target;
+    next.target = target;
   } else {
-    delete watchKeywords.target;
+    delete next.target;
   }
   if (walmart) {
-    watchKeywords.walmart = walmart;
+    next.walmart = walmart;
   } else {
-    delete watchKeywords.walmart;
+    delete next.walmart;
   }
-
-  if (!watchKeywords.target && !watchKeywords.walmart) {
-    delete next.watch_keywords;
-  } else {
-    next.watch_keywords = watchKeywords;
-  }
-
-  return next;
+  return next.target || next.walmart ? next : undefined;
 }
 
-function cleanupWatchSkuFields(row: ChannelTarget): ChannelTarget {
-  const next = cleanupWatchKeywordFields(row);
-  if (!next.watch_skus) {
-    return next;
+function cleanupGlobalWatchSkus(
+  watchSkus: ExtensionSettings["watch_skus"],
+): ExtensionSettings["watch_skus"] | undefined {
+  if (!watchSkus) {
+    return undefined;
   }
-  const watchSkus = { ...next.watch_skus };
-  if (!watchSkus.target?.length) {
-    delete watchSkus.target;
+  const next = { ...watchSkus };
+  if (!next.target?.length) {
+    delete next.target;
   }
-  if (!watchSkus.walmart?.length) {
-    delete watchSkus.walmart;
+  if (!next.walmart?.length) {
+    delete next.walmart;
   }
-  if (!watchSkus.target && !watchSkus.walmart) {
-    delete next.watch_skus;
-  } else {
-    next.watch_skus = watchSkus;
-  }
-  return next;
+  return next.target || next.walmart ? next : undefined;
 }
 
-function buildWatchKeywords(
-  existing: ChannelTarget | undefined,
-  patch: {
-    target_positive_keywords: string[];
-    target_negative_keywords: string[];
-    walmart_positive_keywords: string[];
-    walmart_negative_keywords: string[];
-  },
-): ChannelTarget["watch_keywords"] | undefined {
-  const watchKeywords: NonNullable<ChannelTarget["watch_keywords"]> = {};
+function buildGlobalWatchKeywords(patch: {
+  target_positive_keywords: string[];
+  target_negative_keywords: string[];
+  walmart_positive_keywords: string[];
+  walmart_negative_keywords: string[];
+}): ExtensionSettings["watch_keywords"] | undefined {
+  const watchKeywords: NonNullable<ExtensionSettings["watch_keywords"]> = {};
 
   const target = normalizeKeywordPair(
     patch.target_positive_keywords,
@@ -138,8 +93,6 @@ function buildWatchKeywords(
   );
   if (target.positive.length || target.negative.length) {
     watchKeywords.target = target;
-  } else if (existing?.watch_keywords?.target) {
-    // Explicit clear — omit target bucket.
   }
 
   const walmart = normalizeKeywordPair(
@@ -150,7 +103,48 @@ function buildWatchKeywords(
     watchKeywords.walmart = walmart;
   }
 
-  return Object.keys(watchKeywords).length > 0 ? watchKeywords : undefined;
+  return cleanupGlobalWatchKeywords(
+    Object.keys(watchKeywords).length > 0 ? watchKeywords : undefined,
+  );
+}
+
+function buildGlobalWatchSkus(
+  existing: ExtensionSettings["watch_skus"] | undefined,
+  patch?: { target?: string[] },
+): ExtensionSettings["watch_skus"] | undefined {
+  const existingSkus = existing ?? {};
+  const target =
+    patch?.target !== undefined ? normalizeTargetSkuList(patch.target) : existingSkus.target;
+  const next: NonNullable<ExtensionSettings["watch_skus"]> = {};
+  if (target?.length) {
+    next.target = target;
+  }
+  if (existingSkus.walmart?.length) {
+    next.walmart = existingSkus.walmart;
+  }
+  return cleanupGlobalWatchSkus(Object.keys(next).length > 0 ? next : undefined);
+}
+
+function rowHasLegacyWatchFields(row: LegacyChannelRow): boolean {
+  return (
+    row.watch_keywords !== undefined ||
+    row.watch_skus !== undefined ||
+    row.retailer_auto_atc_enabled !== undefined ||
+    row.positive_keywords !== undefined ||
+    row.negative_keywords !== undefined
+  );
+}
+
+function stripLegacyRowFields(row: LegacyChannelRow): ChannelTarget {
+  const {
+    watch_keywords: _watchKeywords,
+    watch_skus: _watchSkus,
+    retailer_auto_atc_enabled: _autoAtc,
+    positive_keywords: _positive,
+    negative_keywords: _negative,
+    ...rest
+  } = row;
+  return rest;
 }
 
 export function getChannelTarget(
@@ -164,48 +158,64 @@ export function getChannelDomains(settings: ExtensionSettings, channelId: string
   return getChannelTarget(settings, channelId)?.allowed_domains ?? [];
 }
 
-export function getChannelKeywords(
+export function getGlobalKeywords(
   settings: ExtensionSettings,
-  channelId: string,
   retailer: WatchKeywordRetailer,
 ): KeywordPair {
-  return readRetailerKeywords(getChannelTarget(settings, channelId), retailer);
+  const nested = settings.watch_keywords?.[retailer];
+  return {
+    positive: nested?.positive ?? [],
+    negative: nested?.negative ?? [],
+  };
 }
 
-export function getChannelWatchSkus(
+export function getGlobalWatchSkus(
   settings: ExtensionSettings,
-  channelId: string,
   retailer: WatchSkuRetailer,
 ): string[] {
-  return getChannelTarget(settings, channelId)?.watch_skus?.[retailer] ?? [];
+  return settings.watch_skus?.[retailer] ?? [];
 }
 
-export function migrateChannelWatchKeywords(settings: ExtensionSettings): {
+export function upsertGlobalWatchSettings(
+  settings: ExtensionSettings,
+  patch: {
+    target_positive_keywords: string[];
+    target_negative_keywords: string[];
+    walmart_positive_keywords: string[];
+    walmart_negative_keywords: string[];
+    target_skus?: string[];
+  },
+): ExtensionSettings {
+  const watch_keywords = buildGlobalWatchKeywords(patch);
+  const watch_skus = buildGlobalWatchSkus(settings.watch_skus, {
+    target: patch.target_skus,
+  });
+
+  const next: ExtensionSettings = { ...settings };
+  if (watch_keywords) {
+    next.watch_keywords = watch_keywords;
+  } else {
+    delete next.watch_keywords;
+  }
+  if (watch_skus) {
+    next.watch_skus = watch_skus;
+  } else {
+    delete next.watch_skus;
+  }
+  return next;
+}
+
+export function stripChannelWatchFields(settings: ExtensionSettings): {
   settings: ExtensionSettings;
   changed: boolean;
 } {
   let changed = false;
   const channel_targets = settings.channel_targets.map((row) => {
-    if (row.watch_keywords !== undefined) {
+    if (!rowHasLegacyWatchFields(row as LegacyChannelRow)) {
       return row;
     }
-    const legacy = legacyKeywordPair(row);
-    if (!legacy) {
-      return row;
-    }
-
     changed = true;
-    const normalized = normalizeKeywordPair(legacy.positive, legacy.negative);
-    const next: ChannelTarget = {
-      ...row,
-      watch_keywords: {
-        target: { ...normalized },
-        walmart: { ...normalized },
-      },
-    };
-    delete next.positive_keywords;
-    delete next.negative_keywords;
-    return next;
+    return stripLegacyRowFields(row as LegacyChannelRow);
   });
 
   if (!changed) {
@@ -228,23 +238,6 @@ function normalizeDomainList(domains: string[]): string[] {
   return result;
 }
 
-function normalizeWatchSkus(
-  watchSkus: ChannelTarget["watch_skus"] | undefined,
-  patch?: { target?: string[] },
-): ChannelTarget["watch_skus"] | undefined {
-  const existing = watchSkus ?? {};
-  const target =
-    patch?.target !== undefined ? normalizeTargetSkuList(patch.target) : existing.target;
-  const next: NonNullable<ChannelTarget["watch_skus"]> = {};
-  if (target?.length) {
-    next.target = target;
-  }
-  if (existing.walmart?.length) {
-    next.walmart = existing.walmart;
-  }
-  return Object.keys(next).length > 0 ? next : undefined;
-}
-
 function buildChannelTargetRow(
   channelId: string,
   allowedDomains: string[],
@@ -254,21 +247,12 @@ function buildChannelTargetRow(
   const merged: ChannelTarget = {
     channel_id: channelId,
     allowed_domains: allowedDomains,
-    retailer_auto_atc_enabled: existing?.retailer_auto_atc_enabled,
     retailer_refresh_interval_sec: existing?.retailer_refresh_interval_sec,
-    watch_keywords: existing?.watch_keywords,
-    watch_skus: existing?.watch_skus,
-    positive_keywords: existing?.positive_keywords,
-    negative_keywords: existing?.negative_keywords,
     ...patch,
   };
 
   if (!allowlistIncludesRetailerHost(allowedDomains)) {
     delete merged.retailer_refresh_interval_sec;
-  }
-
-  if (merged.retailer_auto_atc_enabled !== true) {
-    delete merged.retailer_auto_atc_enabled;
   }
 
   if (
@@ -278,7 +262,7 @@ function buildChannelTargetRow(
     delete merged.retailer_refresh_interval_sec;
   }
 
-  return cleanupWatchSkuFields(merged);
+  return merged;
 }
 
 export function mergeChannelTarget(
@@ -305,61 +289,6 @@ export function upsertChannelDomains(
   domains: string[],
 ): ExtensionSettings {
   return mergeChannelTarget(settings, channelId, { allowed_domains: domains });
-}
-
-export function upsertChannelDiscordTarget(
-  settings: ExtensionSettings,
-  channelId: string,
-  patch: {
-    allowed_domains: string[];
-    target_positive_keywords: string[];
-    target_negative_keywords: string[];
-    walmart_positive_keywords: string[];
-    walmart_negative_keywords: string[];
-    target_skus?: string[];
-  },
-): ExtensionSettings {
-  const allowedDomains = normalizeDomainList(patch.allowed_domains);
-  if (allowedDomains.length === 0) {
-    throw new Error("Add at least one allowed domain first");
-  }
-
-  const existing = getChannelTarget(settings, channelId);
-  const watch_skus = normalizeWatchSkus(existing?.watch_skus, {
-    target: patch.target_skus,
-  });
-  const watch_keywords = buildWatchKeywords(existing, patch);
-
-  return mergeChannelTarget(settings, channelId, {
-    allowed_domains: allowedDomains,
-    watch_keywords,
-    watch_skus,
-  });
-}
-
-export function upsertChannelKeywords(
-  settings: ExtensionSettings,
-  channelId: string,
-  retailer: WatchKeywordRetailer,
-  positive: string[],
-  negative: string[],
-): ExtensionSettings {
-  const domains = getChannelDomains(settings, channelId);
-  if (domains.length === 0) {
-    throw new Error("Add at least one allowed domain first");
-  }
-  const existing = getChannelTarget(settings, channelId);
-  const targetKw = getChannelKeywords(settings, channelId, "target");
-  const walmartKw = getChannelKeywords(settings, channelId, "walmart");
-
-  return upsertChannelDiscordTarget(settings, channelId, {
-    allowed_domains: domains,
-    target_positive_keywords: retailer === "target" ? positive : targetKw.positive,
-    target_negative_keywords: retailer === "target" ? negative : targetKw.negative,
-    walmart_positive_keywords: retailer === "walmart" ? positive : walmartKw.positive,
-    walmart_negative_keywords: retailer === "walmart" ? negative : walmartKw.negative,
-    target_skus: existing?.watch_skus?.target,
-  });
 }
 
 export function addChannelDomain(

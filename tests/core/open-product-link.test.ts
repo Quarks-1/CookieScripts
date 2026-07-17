@@ -20,12 +20,12 @@ const HISTORY_TIMESTAMP = "2026-01-01T00:00:00.000Z";
 function buildRetailerSettings(overrides: Record<string, unknown> = {}) {
   return {
     ...DEFAULT_SETTINGS,
+    retailer_auto_atc_enabled: true,
     ...overrides,
     channel_targets: [
       buildChannelTarget({
         channel_id: CHANNEL_ID,
         allowed_domains: ["target.com"],
-        retailer_auto_atc_enabled: true,
       }),
     ],
   };

@@ -1,25 +1,26 @@
 import { HISTORY_LIMIT, RECENT_URL_LIMIT, STORAGE_KEYS } from "@ext/core/lib/constants.ts";
-import { migrateChannelWatchKeywords } from "@ext/core/lib/channel-targets.ts";
-import { validatePersistedTargets } from "@ext/core/lib/validate.ts";
-import { migrateRetailerAutoAtcChannelFlags } from "@ext/domains/target/lib/channel-config.ts";
+import { stripChannelWatchFields } from "@ext/core/lib/channel-targets.ts";
+import { validateGlobalWatchSettings, validatePersistedTargets } from "@ext/core/lib/validate.ts";
 import { DEFAULT_SETTINGS, type ExtensionSettings, type HistoryItem } from "@ext/core/types/index.ts";
 
 export async function getSettings(): Promise<ExtensionSettings> {
   const result = await chrome.storage.local.get(STORAGE_KEYS.settings);
   const base = (result[STORAGE_KEYS.settings] as ExtensionSettings | undefined) ?? DEFAULT_SETTINGS;
-  const atcMigration = migrateRetailerAutoAtcChannelFlags(base);
-  const keywordMigration = migrateChannelWatchKeywords(atcMigration.settings);
-  const settings = keywordMigration.settings;
-  if (atcMigration.changed || keywordMigration.changed) {
-    await saveSettings(settings);
+  const stripped = stripChannelWatchFields(base);
+  if (stripped.changed) {
+    await saveSettings(stripped.settings);
   }
-  return settings;
+  return stripped.settings;
 }
 
 export async function saveSettings(settings: ExtensionSettings): Promise<void> {
-  const error = validatePersistedTargets(settings.channel_targets);
-  if (error) {
-    throw new Error(error);
+  const targetsError = validatePersistedTargets(settings.channel_targets);
+  if (targetsError) {
+    throw new Error(targetsError);
+  }
+  const watchError = validateGlobalWatchSettings(settings);
+  if (watchError) {
+    throw new Error(watchError);
   }
   await chrome.storage.local.set({ [STORAGE_KEYS.settings]: settings });
 }

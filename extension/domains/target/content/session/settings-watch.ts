@@ -21,8 +21,7 @@ export function isRetailerAutoDisabledInSettings(settings: ExtensionSettings): b
   if (!session.channelId || session.channelId === "manual") {
     return false;
   }
-  const target = settings.channel_targets.find((row) => row.channel_id === session.channelId);
-  return target?.retailer_auto_atc_enabled !== true;
+  return settings.retailer_auto_atc_enabled !== true;
 }
 
 export function isCheckoutDisabledInSettings(settings: ExtensionSettings): boolean {

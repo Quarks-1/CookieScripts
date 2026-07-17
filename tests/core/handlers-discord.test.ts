@@ -145,11 +145,13 @@ describe("handleMessage — discord", () => {
     const storage: Record<string, unknown> = {
       "cookiescripts:settings": {
         enabled: true,
+        watch_keywords: {
+          walmart: { negative: ["scam"] },
+        },
         channel_targets: [
           buildChannelTarget({
             channel_id: "222",
             allowed_domains: ["walmart.com"],
-            negative_keywords: ["scam"],
           }),
         ],
       },
@@ -200,12 +202,13 @@ describe("handleMessage — discord", () => {
   it("opens when positive keyword overrides negative match", async () => {
     const settings = {
       enabled: true,
+      watch_keywords: {
+        walmart: { positive: ["pokemon"], negative: ["scam"] },
+      },
       channel_targets: [
         buildChannelTarget({
           channel_id: "222",
           allowed_domains: ["walmart.com"],
-          positive_keywords: ["pokemon"],
-          negative_keywords: ["scam"],
         }),
       ],
     };
@@ -250,11 +253,13 @@ describe("handleMessage — discord", () => {
   it("opens when neither keyword matches", async () => {
     const settings = {
       enabled: true,
+      watch_keywords: {
+        walmart: { negative: ["scam"] },
+      },
       channel_targets: [
         buildChannelTarget({
           channel_id: "222",
           allowed_domains: ["walmart.com"],
-          negative_keywords: ["scam"],
         }),
       ],
     };
@@ -566,12 +571,12 @@ describe("handleMessage — discord", () => {
     const storage: Record<string, unknown> = {
       "cookiescripts:settings": {
         enabled: true,
+        retailer_auto_atc_enabled: true,
         retailer_link_open_count: 3,
         channel_targets: [
           buildChannelTarget({
             channel_id: "222",
             allowed_domains: ["target.com"],
-            retailer_auto_atc_enabled: true,
           }),
         ],
       },
@@ -695,12 +700,11 @@ describe("handleMessage — discord", () => {
       const settings = {
         enabled: true,
         sku_open_mode_enabled: true,
+        watch_skus: { target: ["95120834"] },
         channel_targets: [
           buildChannelTarget({
             channel_id: "222",
             allowed_domains: ["target.com"],
-            negative_keywords: ["block"],
-            watch_skus: { target: ["95120834"] },
           }),
         ],
       };
@@ -745,11 +749,11 @@ describe("handleMessage — discord", () => {
       const settings = {
         enabled: true,
         sku_open_mode_enabled: true,
+        watch_skus: { target: ["94860231"] },
         channel_targets: [
           buildChannelTarget({
             channel_id: "222",
             allowed_domains: ["target.com"],
-            watch_skus: { target: ["94860231"] },
           }),
         ],
       };
@@ -788,11 +792,11 @@ describe("handleMessage — discord", () => {
       const settings = {
         enabled: true,
         sku_open_mode_enabled: true,
+        watch_skus: { target: ["11111111"] },
         channel_targets: [
           buildChannelTarget({
             channel_id: "222",
             allowed_domains: ["target.com"],
-            watch_skus: { target: ["11111111"] },
           }),
         ],
       };
@@ -864,14 +868,14 @@ describe("handleMessage — discord", () => {
       const settings = {
         enabled: true,
         sku_open_mode_enabled: true,
+        watch_keywords: {
+          walmart: { positive: ["pokemon"], negative: [] },
+        },
+        watch_skus: { target: ["95120834"] },
         channel_targets: [
           buildChannelTarget({
             channel_id: "222",
             allowed_domains: ["walmart.com", "target.com"],
-            watch_keywords: {
-              walmart: { positive: ["pokemon"], negative: [] },
-            },
-            watch_skus: { target: ["95120834"] },
           }),
         ],
       };
@@ -943,14 +947,14 @@ describe("handleMessage — discord", () => {
       };
       const settings = {
         enabled: true,
+        watch_keywords: {
+          target: { positive: [], negative: ["pokemon"] },
+          walmart: { positive: [], negative: [] },
+        },
         channel_targets: [
           buildChannelTarget({
             channel_id: "222",
             allowed_domains: ["walmart.com"],
-            watch_keywords: {
-              target: { positive: [], negative: ["pokemon"] },
-              walmart: { positive: [], negative: [] },
-            },
           }),
         ],
       };
