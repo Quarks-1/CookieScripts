@@ -1,4 +1,5 @@
 import { KeywordPills } from "@shared/components/KeywordPills.tsx";
+import { PillListSectionHeader } from "@shared/components/PillListSectionHeader.tsx";
 import { SkuPills } from "@shared/components/SkuPills.tsx";
 import { normalizeWalmartSku } from "@ext/domains/walmart/lib/index.ts";
 
@@ -39,7 +40,13 @@ export function WalmartChannelFiltersSection({
 
       <div className="mt-2 space-y-2">
         <div>
-          <h3 className="text-xs text-zinc-500">Positive keywords</h3>
+          <PillListSectionHeader
+            title="Positive keywords"
+            itemCount={positiveKeywords.length}
+            disabled={listDisabled}
+            onClear={() => onPositiveKeywordsChange([])}
+            clearAriaLabel="Clear all Walmart positive keywords"
+          />
           <div className="mt-0.5">
             <KeywordPills
               keywords={positiveKeywords}
@@ -54,7 +61,13 @@ export function WalmartChannelFiltersSection({
         </div>
 
         <div>
-          <h3 className="text-xs text-zinc-500">Negative keywords</h3>
+          <PillListSectionHeader
+            title="Negative keywords"
+            itemCount={negativeKeywords.length}
+            disabled={listDisabled}
+            onClear={() => onNegativeKeywordsChange([])}
+            clearAriaLabel="Clear all Walmart negative keywords"
+          />
           <div className="mt-0.5">
             <KeywordPills
               keywords={negativeKeywords}
@@ -69,7 +82,13 @@ export function WalmartChannelFiltersSection({
         </div>
 
         <div>
-          <h3 className="text-xs text-zinc-500">SKUs</h3>
+          <PillListSectionHeader
+            title="SKUs"
+            itemCount={walmartSkus.length}
+            disabled={listDisabled}
+            onClear={() => onWalmartSkusChange([])}
+            clearAriaLabel="Clear all Walmart SKUs"
+          />
           <div className="mt-0.5">
             <SkuPills
               skus={walmartSkus}

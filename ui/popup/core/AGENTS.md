@@ -28,7 +28,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 
 ### Shared components (`ui/shared/components/`)
 
-`EnableSlider`, `WatchStatusBadge`, `LinkHistory`, `CollapsiblePillList`, `DomainPills`, `DetectedLinkPills`, `KeywordPills`, `SkuPills`, `CompactNumberField`
+`EnableSlider`, `WatchStatusBadge`, `LinkHistory`, `CollapsiblePillList`, `DomainPills`, `DetectedLinkPills`, `KeywordPills`, `SkuPills`, `PillListSectionHeader`, `CompactNumberField`
 
 ## Layout
 
