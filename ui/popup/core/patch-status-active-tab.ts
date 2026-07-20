@@ -9,10 +9,12 @@ export function patchStatusActiveTabKind(
   const kind = resolveActiveTabKind(url);
   const retailerTabDetected = kind === "retailer";
   const walmartTabDetected = kind === "walmart";
+  const samsclubTabDetected = kind === "samsclub";
   if (
     kind === status.active_tab_kind &&
     retailerTabDetected === status.retailer_tab_detected &&
-    walmartTabDetected === status.walmart_tab_detected
+    walmartTabDetected === status.walmart_tab_detected &&
+    samsclubTabDetected === status.samsclub_tab_detected
   ) {
     return status;
   }
@@ -21,5 +23,6 @@ export function patchStatusActiveTabKind(
     active_tab_kind: kind,
     retailer_tab_detected: retailerTabDetected,
     walmart_tab_detected: walmartTabDetected,
+    samsclub_tab_detected: samsclubTabDetected,
   };
 }

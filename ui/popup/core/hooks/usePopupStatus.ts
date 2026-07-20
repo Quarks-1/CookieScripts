@@ -2,11 +2,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { resolveActiveTabKind } from "@ext/core/lib/active-tab.ts";
 import { STORAGE_KEYS } from "@ext/core/lib/constants.ts";
+import { patchSamsclubOpenTabActive } from "@ext/domains/samsclub/lib/index.ts";
 import { patchRetailerOpenTabActive } from "@ext/domains/target/lib/index.ts";
 import { patchWalmartOpenTabActive } from "@ext/domains/walmart/lib/index.ts";
 import { getExtensionStatus } from "@ext/core/lib/messages.ts";
 import type { ExtensionStatus } from "@ext/core/types/index.ts";
 import { patchStatusActiveTabKind } from "../patch-status-active-tab.ts";
+import { enrichSamsclubOpenTabHighlights } from "../../domains/samsclub/hooks/samsclub-open-tab-highlights.ts";
 import { enrichRetailerOpenTabHighlights } from "../../domains/target/hooks/retailer-open-tab-highlights.ts";
 import { enrichWalmartOpenTabHighlights } from "../../domains/walmart/hooks/walmart-open-tab-highlights.ts";
 
@@ -26,7 +28,9 @@ export function usePopupStatus() {
   const refresh = useCallback(async () => {
     try {
       const next = await enrichRetailerOpenTabHighlights(
-        await enrichWalmartOpenTabHighlights(await getExtensionStatus()),
+        await enrichWalmartOpenTabHighlights(
+          await enrichSamsclubOpenTabHighlights(await getExtensionStatus()),
+        ),
       );
       setStatus(next);
       setError(null);
@@ -93,6 +97,12 @@ export function usePopupStatus() {
           retailer_open_tabs: patchRetailerOpenTabActive(prev.retailer_open_tabs, activeTabId),
         };
       }
+      if (prev.samsclub_open_tabs.length > 0) {
+        next = {
+          ...next,
+          samsclub_open_tabs: patchSamsclubOpenTabActive(prev.samsclub_open_tabs, activeTabId),
+        };
+      }
       return next;
     }
 
@@ -133,11 +143,11 @@ export function usePopupStatus() {
       if (!url) {
         return false;
       }
-      return (
-        url.startsWith("https://discord.com/channels/") ||
-        resolveActiveTabKind(url) === "retailer" ||
-        resolveActiveTabKind(url) === "walmart"
-      );
+      if (url.startsWith("https://discord.com/channels/")) {
+        return true;
+      }
+      const kind = resolveActiveTabKind(url);
+      return kind === "retailer" || kind === "walmart" || kind === "samsclub";
     }
 
     function onTabUpdated(

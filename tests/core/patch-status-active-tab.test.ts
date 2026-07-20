@@ -7,6 +7,7 @@ function baseStatus(): Parameters<typeof patchStatusActiveTabKind>[0] {
     active_tab_kind: "retailer",
     retailer_tab_detected: true,
     walmart_tab_detected: false,
+    samsclub_tab_detected: false,
   } as Parameters<typeof patchStatusActiveTabKind>[0];
 }
 
@@ -23,5 +24,18 @@ describe("patchStatusActiveTabKind", () => {
     expect(next.active_tab_kind).toBe("walmart");
     expect(next.retailer_tab_detected).toBe(false);
     expect(next.walmart_tab_detected).toBe(true);
+    expect(next.samsclub_tab_detected).toBe(false);
+  });
+
+  it("patches samsclub tab-detected flag", () => {
+    const status = baseStatus();
+    const next = patchStatusActiveTabKind(
+      status,
+      "https://www.samsclub.com/ip/Vita-Coco-Coconut-Water/123",
+    );
+    expect(next.active_tab_kind).toBe("samsclub");
+    expect(next.samsclub_tab_detected).toBe(true);
+    expect(next.retailer_tab_detected).toBe(false);
+    expect(next.walmart_tab_detected).toBe(false);
   });
 });
