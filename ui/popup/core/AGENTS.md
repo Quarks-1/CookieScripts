@@ -47,7 +47,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 | Sam's Club | `SamsclubPanel` | Yes — ATC toggles, auto checkout/CVV, manual auto mode, recording |
 | Global | `GlobalPanel` | Open links in new window, SKU open mode, Show Walmart/Sam's Club recording |
 
-Inactive panels unmount; domain hooks run only on the selected tab. Target/Walmart panel hooks load settings regardless of whether a matching browser tab is focused. Start/Stop runtime controls on Target still require a focused Target tab (`showControls={retailer_tab_detected}`).
+Inactive panels unmount; domain hooks run only on the selected tab. Target/Walmart/Sam's Club panel hooks load settings regardless of whether a matching browser tab is focused. Start/Stop runtime controls on Target and Sam's Club still require a focused matching tab (`showControls={retailer_tab_detected}` / `showControls={samsclub_tab_detected}`).
 
 ## Section visibility (`isSectionVisible`)
 
@@ -58,10 +58,14 @@ Used inside domain panels for intra-panel gating:
 | `watchStatus`, `channelDomains`, `detectedLinks`, `linkHistory` | `active_tab_kind === "discord_channel"` |
 | `retailerAuto` | `enabled` and (`active_tab_kind === "retailer"` OR `any_retailer_tab_open`) |
 | `walmartResearch` | `enabled` and (`active_tab_kind === "walmart"` OR `walmart_recording_active` OR `any_walmart_tab_open`) |
+| `samsclubRecording` | `enabled` and (`active_tab_kind === "samsclub"` OR `samsclub_recording_active` OR `any_samsclub_tab_open`) |
+| `samsclubAuto` | `enabled` and (`active_tab_kind === "samsclub"` OR `any_samsclub_tab_open`) |
 
 **Exception:** `TargetAtcToggles` in `TargetPanel` renders when `status.retailer_tab_detected`, independent of `retailerAuto` gating. `RetailerAutoModeSection` shows tab pills when visible; Start/Stop controls render only when `retailer_tab_detected`.
 
 **Exception:** `WalmartAutoRefreshSection` in `WalmartPanel` renders when `status.walmart_tab_detected`.
+
+**Exception:** `SamsclubAtcToggles` in `SamsclubPanel` renders when `status.samsclub_tab_detected`, independent of `samsclubAuto` gating. `SamsclubAutoModeSection` shows tab pills when visible; Start/Stop controls render only when `samsclub_tab_detected`.
 
 **Exception:** **Channel filters** (`ChannelFiltersSection`) renders in `DiscordPanel` on `discord_channel` surface.
 

@@ -26,8 +26,8 @@ Chrome MV3 service worker hub — message router, link opening pipeline, shared 
 
 - `initPromise` gates `onMessage` handlers (no top-level await in MV3).
 - `onInstalled` → `seedDefaultsIfMissing` + `configureSidePanel`.
-- Startup → `configureSidePanel`, `loadWalmartRecordingState`.
-- Tab listeners: Walmart auto-refresh, core dedup flush, Target retailer cleanup, Walmart recording teardown.
+- Startup → `configureSidePanel`, `loadWalmartRecordingState`, `loadSamsclubRecordingState`.
+- Tab listeners: Walmart auto-refresh, core dedup flush, Target retailer cleanup, Walmart recording teardown, Sam's Club recording + automation teardown.
 - Window listener: Target retailer window cleanup.
 - `onSuspend` (when supported) → `flushRecentUrls()` before SW teardown.
 
@@ -43,6 +43,7 @@ flowchart LR
   processLinks --> openTab[open-product-link]
   retailer[RETAILER_*] --> domainTarget[target handlers]
   walmart[WALMART_*] --> domainWalmart[walmart handlers]
+  samsclub[SAMSCLUB_*] --> domainSamsclub[samsclub handlers]
   ui[UiToBackground] --> uiHandlers[ui-handlers]
 ```
 
@@ -50,7 +51,7 @@ flowchart LR
 
 Source of truth: `types/messages.ts`. How to add/change: `.cursor/rules/runtime-messages.mdc`.
 
-Routing: `background/handlers.ts` → domain `background/handlers*` (Walmart via `handlers/index.ts`). Background → content uses `chrome.tabs.sendMessage` and bypasses `handleMessage` (e.g. `SCAN_DETECTED_DOMAINS` from `ui-handlers.ts` on `GET_DETECTED_DOMAINS`).
+Routing: `background/handlers.ts` → domain `background/handlers*` (Walmart and Sam's Club via `handlers/index.ts`). Background → content uses `chrome.tabs.sendMessage` and bypasses `handleMessage` (e.g. `SCAN_DETECTED_DOMAINS` from `ui-handlers.ts` on `GET_DETECTED_DOMAINS`).
 
 ## Invariants
 
