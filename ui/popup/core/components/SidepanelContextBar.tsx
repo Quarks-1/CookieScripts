@@ -4,6 +4,7 @@ const SEGMENTS: { id: SidepanelTab; label: string }[] = [
   { id: "discord", label: "Discord" },
   { id: "target", label: "Target" },
   { id: "walmart", label: "Walmart" },
+  { id: "samsclub", label: "Sam's Club" },
   { id: "global", label: "Global" },
 ];
 

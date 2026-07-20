@@ -22,11 +22,13 @@ export function useRetailerLinkOpenCount(
   status: Pick<ExtensionStatus, "retailer_link_open_count"> | null,
   refresh: () => Promise<void>,
 ) {
-  const [draftCount, setDraftCount] = useState("1");
+  const [draftCount, setDraftCount] = useState(() =>
+    String(status?.retailer_link_open_count ?? 1),
+  );
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const focusedRef = useRef(false);
-  const lastSavedRef = useRef(1);
+  const lastSavedRef = useRef(status?.retailer_link_open_count ?? 1);
 
   useEffect(() => {
     if (status == null || focusedRef.current) {

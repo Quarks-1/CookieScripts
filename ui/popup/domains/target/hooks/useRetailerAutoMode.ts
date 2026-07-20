@@ -1,16 +1,26 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { getSidePanelWindowId, sendToBackground } from "@ext/core/lib/messages.ts";
-import type { BackgroundResponse } from "@ext/core/types/index.ts";
+import type { BackgroundResponse, ExtensionStatus } from "@ext/core/types/index.ts";
+
+type AutoModeStatus = Pick<
+  ExtensionStatus,
+  "retailer_refresh_interval_sec" | "retailer_manual_status" | "retailer_manual_running"
+>;
 
 export function useRetailerAutoMode(
   channelId: string | null,
   enabled: boolean,
   retailerTabDetected: boolean,
+  status: AutoModeStatus | null,
 ) {
-  const [refreshIntervalSec, setRefreshIntervalSec] = useState(0);
-  const [manualStatus, setManualStatus] = useState("");
-  const [manualRunning, setManualRunning] = useState(false);
+  const [refreshIntervalSec, setRefreshIntervalSec] = useState(
+    () => status?.retailer_refresh_interval_sec ?? 0,
+  );
+  const [manualStatus, setManualStatus] = useState(() => status?.retailer_manual_status ?? "");
+  const [manualRunning, setManualRunning] = useState(
+    () => status?.retailer_manual_running ?? false,
+  );
   const [savingRefresh, setSavingRefresh] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
   const [acting, setActing] = useState(false);
@@ -29,8 +39,15 @@ export function useRetailerAutoMode(
   }, []);
 
   useEffect(() => {
-    void refresh();
-  }, [channelId, enabled, retailerTabDetected, refresh]);
+    if (status == null) {
+      return;
+    }
+    if (!savingRefresh) {
+      setRefreshIntervalSec(status.retailer_refresh_interval_sec);
+    }
+    setManualStatus(status.retailer_manual_status);
+    setManualRunning(status.retailer_manual_running);
+  }, [status, savingRefresh]);
 
   useEffect(() => {
     if (!retailerTabDetected || !enabled) {

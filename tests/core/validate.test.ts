@@ -106,4 +106,22 @@ describe("validateGlobalWatchSettings", () => {
       }),
     ).toMatch(/retailer_auto_checkout_mode must be off, sku_only, or all/i);
   });
+
+  it("rejects invalid samsclub_checkout_cvv", () => {
+    expect(
+      validateGlobalWatchSettings({
+        ...DEFAULT_SETTINGS,
+        samsclub_checkout_cvv: "12",
+      }),
+    ).toMatch(/samsclub_checkout_cvv must be exactly 3 digits/i);
+  });
+
+  it("accepts valid samsclub_checkout_cvv", () => {
+    expect(
+      validateGlobalWatchSettings({
+        ...DEFAULT_SETTINGS,
+        samsclub_checkout_cvv: "123",
+      }),
+    ).toBeNull();
+  });
 });

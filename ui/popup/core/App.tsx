@@ -10,6 +10,7 @@ import { usePopupStatus } from "./hooks/usePopupStatus.ts";
 import { useUpdateCheck } from "./hooks/useUpdateCheck.ts";
 import { DiscordPanel } from "./panels/DiscordPanel.tsx";
 import { GlobalPanel } from "./panels/GlobalPanel.tsx";
+import { SamsclubPanel } from "./panels/SamsclubPanel.tsx";
 import { TargetPanel } from "./panels/TargetPanel.tsx";
 import { WalmartPanel } from "./panels/WalmartPanel.tsx";
 import {
@@ -108,6 +109,9 @@ export default function App() {
           )}
           {selectedTab === "walmart" && (
             <WalmartPanel status={status} disabled={panelDisabled} onRefresh={refresh} />
+          )}
+          {selectedTab === "samsclub" && (
+            <SamsclubPanel status={status} disabled={panelDisabled} onRefresh={refresh} />
           )}
           {selectedTab === "global" && (
             <GlobalPanel status={status} disabled={enabling} onRefresh={refresh} />

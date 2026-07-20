@@ -17,6 +17,8 @@ export {
   shouldWalmartHardRefresh,
 } from "@ext/domains/walmart/lib/auto-refresh.ts";
 
+export { WALMART_THROTTLE_DEFAULT_INTERVAL_SEC } from "@ext/domains/walmart/lib/constants.ts";
+
 export {
   buildWalmartProductUrlFromSku,
   isWalmartAuxiliaryLink,

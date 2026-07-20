@@ -17,7 +17,10 @@
     "https://target.com/*",
     "https://carts.target.com/*",
     "https://www.walmart.com/*",
-    "https://walmart.com/*"
+    "https://walmart.com/*",
+    "https://www.samsclub.com/*",
+    "https://samsclub.com/*",
+    "http://127.0.0.1:9876/*"
   ],
   "content_scripts": [
     {
@@ -68,6 +71,26 @@
         "extension/domains/walmart/content/entry.ts"
       ],
       "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://www.samsclub.com/*",
+        "https://samsclub.com/*"
+      ],
+      "js": [
+        "extension/domains/samsclub/content/entry-early.ts"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://www.samsclub.com/*",
+        "https://samsclub.com/*"
+      ],
+      "js": [
+        "extension/domains/samsclub/content/entry.ts"
+      ],
+      "run_at": "document_idle"
     }
   ],
   "background": {
@@ -94,6 +117,8 @@
       "resources": [
         "injected/cart-probe.js",
         "injected/walmart-research-probe.js",
+        "injected/samsclub-research-probe.js",
+        "injected/samsclub-cart-probe.js",
         "injected/queue-probe.js",
         "sounds/queue-pass.mp3"
       ],
@@ -101,7 +126,9 @@
         "https://www.target.com/*",
         "https://target.com/*",
         "https://www.walmart.com/*",
-        "https://walmart.com/*"
+        "https://walmart.com/*",
+        "https://www.samsclub.com/*",
+        "https://samsclub.com/*"
       ]
     }
   ]

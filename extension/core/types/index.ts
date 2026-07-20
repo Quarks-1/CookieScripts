@@ -4,6 +4,16 @@ export type {
   RetailerPageKind,
 } from "@ext/domains/target/types/retailer.ts";
 export type {
+  SamsclubLastExport,
+  SamsclubMarkedLabelsState,
+  SamsclubOpenTabSummary,
+  SamsclubPageKind,
+  SamsclubRecordingAction,
+  SamsclubRecordingEvent,
+  SamsclubRecordingMetrics,
+  SamsclubSessionMeta,
+} from "@ext/domains/samsclub/types/samsclub.ts";
+export type {
   DomButtonSummary,
   ElementDescriptor,
   EndpointCatalogEntry,
@@ -26,6 +36,7 @@ export type {
   HistoryItem,
   HistoryItemKind,
   RetailerAutoCheckoutMode,
+  SamsclubAutoCheckoutMode,
 } from "@ext/core/types/core.ts";
 export { DEFAULT_SETTINGS } from "@ext/core/types/core.ts";
 
@@ -38,6 +49,7 @@ export type {
   DetectedDomainsResponse,
   RetailerToBackground,
   RuntimeMessage,
+  SamsclubToBackground,
   UiToBackground,
   WalmartToBackground,
   WatchConfig,

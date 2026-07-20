@@ -12,7 +12,7 @@ Chrome MV3 extension with three capabilities:
 
 1. Types: `@ext/core/types/index.ts` for extension + UI-core; domain UI may deep-import own lib only
 2. Core service worker: [extension/core/AGENTS.md](extension/core/AGENTS.md)
-3. Domain code: [discord](extension/domains/discord/AGENTS.md) · [target](extension/domains/target/AGENTS.md) · [walmart](extension/domains/walmart/AGENTS.md) under `extension/domains/`
+3. Domain code: [discord](extension/domains/discord/AGENTS.md) · [target](extension/domains/target/AGENTS.md) · [walmart](extension/domains/walmart/AGENTS.md) · [samsclub](extension/domains/samsclub/AGENTS.md) under `extension/domains/`
 4. Side panel UI: [ui/popup/core/AGENTS.md](ui/popup/core/AGENTS.md) + `ui/popup/domains/{discord,target,walmart}/`
 
 ## Agent workflow
@@ -68,9 +68,10 @@ flowchart TB
 | Service worker / link pipeline / storage | [extension/core/AGENTS.md](extension/core/AGENTS.md) | `extension/core/background/*`, `extension/core/lib/*` |
 | Side panel shell / section visibility | [ui/popup/core/AGENTS.md](ui/popup/core/AGENTS.md) | `ui/popup/core/*`, `extension/core/background/ui-handlers.ts` |
 | Discord link detection / allowlists | [extension/domains/discord/AGENTS.md](extension/domains/discord/AGENTS.md) | `extension/domains/discord/background/handlers.ts`, `content/*` |
-| Side panel domain settings | Extension domain `AGENTS.md` § UI + `ui/popup/core/AGENTS.md` | `ui/popup/domains/*/hooks/*`, `components/*` |
+| Side panel domain settings | Extension domain `AGENTS.md` § UI + `ui/popup/core/AGENTS.md` | `ui/popup/domains/*/hooks/*`, `components/*` — seed hooks from `ExtensionStatus`; see `ui/popup/core/AGENTS.md` § Panel hook seeding |
 | Target automation / ATC | [extension/domains/target/AGENTS.md](extension/domains/target/AGENTS.md) | `extension/domains/target/content/session/*`, `lib/*` |
 | Walmart recording / auto-refresh / queue | [extension/domains/walmart/AGENTS.md](extension/domains/walmart/AGENTS.md) | `extension/domains/walmart/background/handlers/*`, `content/*`, `lib/queue-*` |
+| Sam's Club recording / manual automation | [extension/domains/samsclub/AGENTS.md](extension/domains/samsclub/AGENTS.md) | `extension/domains/samsclub/background/handlers/*`, `content/*`, `lib/*` |
 | New runtime message | [extension/core/AGENTS.md](extension/core/AGENTS.md) | `extension/core/types/messages.ts`, `extension/core/background/handlers.ts`, domain handlers, tests |
 | Manifest / permissions | This file § Critical invariants | `manifest.json` (no new sensitive permissions) |
 
@@ -163,7 +164,7 @@ npm run lint         # import boundary rules + TypeScript ESLint
 **Reload checklist** after service-worker or manifest changes:
 
 1. Reload extension on `chrome://extensions`
-2. Refresh open Discord, Target, and Walmart tabs
+2. Refresh open Discord, Target, Walmart, and Sam's Club tabs
 
 **Before committing:** run `npm test`, `npm run lint`, and `npm run build`.
 

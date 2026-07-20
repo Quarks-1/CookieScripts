@@ -12,6 +12,7 @@ globs:
 - Section visibility: `ui/popup/core/sidepanel-layout.ts` (`isSectionVisible` by `active_tab_kind`).
 - One hook per feature in `ui/popup/core/hooks/` or `ui/popup/domains/*/hooks/`.
 - `buildStatus` in `extension/core/background/status.ts` is the status contract — update types in `extension/core/types/status.ts`.
+- **Panel hooks seed from `status` on first paint** — no hardcoded defaults + mount `GET_STATUS`. Add missing fields to `buildStatus` first. See `ui/popup/core/AGENTS.md` § Panel hook seeding.
 - UI messages needing focused window pass optional `window_id`; hooks use `getSidePanelWindowId()`.
 - Target ATC toggles appear on any Target tab (exception to surface gating).
 

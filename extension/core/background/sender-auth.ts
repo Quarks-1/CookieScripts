@@ -30,6 +30,18 @@ export function isWalmartContentSender(sender: chrome.runtime.MessageSender): bo
   }
 }
 
+export function isSamsclubContentSender(sender: chrome.runtime.MessageSender): boolean {
+  if (sender.id !== chrome.runtime.id || sender.tab?.id == null || !sender.tab.url) {
+    return false;
+  }
+  try {
+    const host = new URL(sender.tab.url).hostname.toLowerCase();
+    return host === "samsclub.com" || host === "www.samsclub.com" || host.endsWith(".samsclub.com");
+  } catch {
+    return false;
+  }
+}
+
 export function isExtensionPageSender(sender: chrome.runtime.MessageSender): boolean {
   return (
     sender.id === chrome.runtime.id &&

@@ -1,10 +1,21 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { getSidePanelWindowId, sendToBackground } from "@ext/core/lib/messages.ts";
-import type { BackgroundResponse, RetailerAutoCheckoutMode } from "@ext/core/types/index.ts";
+import type {
+  BackgroundResponse,
+  ExtensionStatus,
+  RetailerAutoCheckoutMode,
+} from "@ext/core/types/index.ts";
 
-export function useRetailerAutoCheckout(retailerTabDetected: boolean) {
-  const [mode, setMode] = useState<RetailerAutoCheckoutMode>("off");
+type AutoCheckoutStatus = Pick<ExtensionStatus, "retailer_auto_checkout_mode">;
+
+export function useRetailerAutoCheckout(
+  retailerTabDetected: boolean,
+  status: AutoCheckoutStatus | null,
+) {
+  const [mode, setMode] = useState<RetailerAutoCheckoutMode>(
+    () => status?.retailer_auto_checkout_mode ?? "off",
+  );
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
@@ -17,10 +28,11 @@ export function useRetailerAutoCheckout(retailerTabDetected: boolean) {
   }, []);
 
   useEffect(() => {
-    if (retailerTabDetected) {
-      void refresh();
+    if (!retailerTabDetected || status == null || saving) {
+      return;
     }
-  }, [retailerTabDetected, refresh]);
+    setMode(status.retailer_auto_checkout_mode);
+  }, [retailerTabDetected, status, saving]);
 
   const saveMode = useCallback(
     async (next: RetailerAutoCheckoutMode) => {

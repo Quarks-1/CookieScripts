@@ -1,7 +1,8 @@
 import type { RetailerOpenTabSummary } from "@ext/domains/target/types/retailer.ts";
+import type { SamsclubOpenTabSummary } from "@ext/domains/samsclub/types/samsclub.ts";
 import type { WalmartOpenTabSummary } from "@ext/domains/walmart/types/walmart.ts";
 
-import type { ActiveTabKind, RetailerAutoCheckoutMode } from "@ext/core/types/core.ts";
+import type { ActiveTabKind, RetailerAutoCheckoutMode, SamsclubAutoCheckoutMode } from "@ext/core/types/core.ts";
 
 export interface ExtensionStatus {
   enabled: boolean;
@@ -43,6 +44,15 @@ export interface ExtensionStatus {
   retailer_auto_checkout_mode: RetailerAutoCheckoutMode;
   walmart_auto_refresh_enabled: boolean;
   walmart_refresh_interval_sec: number;
+  walmart_queue_pass_sound_enabled: boolean;
+  walmart_consolidate_queue_tabs_enabled: boolean;
+  walmart_throttle_refresh_interval_sec: number;
+  global_target_positive_keywords: string[];
+  global_target_negative_keywords: string[];
+  global_walmart_positive_keywords: string[];
+  global_walmart_negative_keywords: string[];
+  global_target_skus: string[];
+  global_walmart_skus: string[];
   /** Global preference: open passive auto-links in a new window (default true). */
   open_links_in_window: boolean;
   /** Target product links from Discord watch open this many times (default 1). */
@@ -51,4 +61,31 @@ export interface ExtensionStatus {
   sku_open_mode_enabled: boolean;
   /** When true, show Walmart research/recording controls in the side panel. */
   walmart_recording_ui_enabled: boolean;
+  /** Active tab is on samsclub.com. */
+  samsclub_tab_detected: boolean;
+  samsclub_recording_active: boolean;
+  samsclub_recording_tab_count: number;
+  any_samsclub_tab_open: boolean;
+  samsclub_recording_event_count: number;
+  samsclub_recording_bytes: number;
+  samsclub_recording_drop_date: string | null;
+  samsclub_last_export_path: string | null;
+  samsclub_last_export_download_id: number | null;
+  samsclub_open_tabs: SamsclubOpenTabSummary[];
+  /** When true, show Sam's Club research/recording controls in the side panel. */
+  samsclub_recording_ui_enabled: boolean;
+  samsclub_refresh_interval_sec: number;
+  samsclub_frontend_atc_enabled: boolean;
+  samsclub_backend_atc_enabled: boolean;
+  /** Live status from the active Sam's Club tab's automation session. */
+  samsclub_manual_status: string;
+  samsclub_manual_running: boolean;
+  samsclub_atc_quantity: number;
+  samsclub_use_max_quantity: boolean;
+  samsclub_purchase_limit: number | null;
+  samsclub_quantity_invalid: boolean;
+  samsclub_auto_start_blocked: boolean;
+  samsclub_auto_checkout_mode: SamsclubAutoCheckoutMode;
+  /** Saved CVV for Sam's Club checkout autofill; empty when unset. */
+  samsclub_checkout_cvv: string;
 }

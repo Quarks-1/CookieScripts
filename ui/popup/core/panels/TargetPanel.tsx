@@ -16,9 +16,14 @@ interface TargetPanelProps {
 
 export function TargetPanel({ status, disabled, onRefresh }: TargetPanelProps) {
   const panelActive = true;
-  const retailerAuto = useRetailerAutoMode(status.active_channel_id, status.enabled, panelActive);
-  const retailerAtc = useRetailerAtcMode(panelActive);
-  const retailerAutoCheckout = useRetailerAutoCheckout(panelActive);
+  const retailerAuto = useRetailerAutoMode(
+    status.active_channel_id,
+    status.enabled,
+    panelActive,
+    status,
+  );
+  const retailerAtc = useRetailerAtcMode(panelActive, status);
+  const retailerAutoCheckout = useRetailerAutoCheckout(panelActive, status);
   const retailerAtcQuantity = useRetailerAtcQuantity(panelActive, status);
 
   return (

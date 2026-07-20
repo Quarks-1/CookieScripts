@@ -21,8 +21,8 @@ export function DiscordPanel({ status, disabled }: DiscordPanelProps) {
   const channelActive = onDiscordChannel && status.enabled;
   const watchSettingsEnabled = status.enabled;
 
-  const discordSettings = useChannelDiscordSettings(channelId, channelActive);
-  const globalWatchSettings = useGlobalDiscordWatchSettings(watchSettingsEnabled);
+  const discordSettings = useChannelDiscordSettings(channelId, channelActive, status);
+  const globalWatchSettings = useGlobalDiscordWatchSettings(watchSettingsEnabled, status);
   const detectedLinks = useDetectedLinks(
     channelId,
     channelActive,

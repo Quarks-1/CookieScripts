@@ -19,7 +19,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 | Segment map | `sidepanel-tabs.ts` (`activeTabKindToSidepanelTab`) |
 | Section gating | `sidepanel-layout.ts` (`isSectionVisible`) |
 | Pinned shell | `components/SidepanelHeader.tsx`, `SidepanelContextBar.tsx` |
-| Panel bodies | `panels/DiscordPanel.tsx`, `TargetPanel.tsx`, `WalmartPanel.tsx`, `GlobalPanel.tsx` |
+| Panel bodies | `panels/DiscordPanel.tsx`, `TargetPanel.tsx`, `WalmartPanel.tsx`, `SamsclubPanel.tsx`, `GlobalPanel.tsx` |
 | Global hooks | `hooks/usePopupStatus.ts`, `hooks/useUpdateCheck.ts` |
 | Shared components | `components/VersionStatus.tsx`, `ui/shared/components/*` |
 | Background bridge | `@ext/core/lib/messages.ts` (`sendToBackground`, `getExtensionSettings`, `getSidePanelWindowId`) |
@@ -35,7 +35,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 **Pinned shell** (sticky, always visible):
 
 1. `SidepanelHeader` — title, version, Enable extension
-2. `SidepanelContextBar` — clickable domain tabs (Discord · Target · Walmart · Global). When the focused browser tab changes to a supported domain (`active_tab_kind` ≠ `other`), the side panel follows via `resolveSidepanelTabForActiveTabChange` in `sidepanel-tabs.ts`. Manual tab picks persist until `active_tab_kind` changes; unsupported tabs do not override the current selection.
+2. `SidepanelContextBar` — clickable domain tabs (Discord · Target · Walmart · Sam's Club · Global). When the focused browser tab changes to a supported domain (`active_tab_kind` ≠ `other`), the side panel follows via `resolveSidepanelTabForActiveTabChange` in `sidepanel-tabs.ts`. Manual tab picks persist until `active_tab_kind` changes; unsupported tabs do not override the current selection.
 
 **Scrollable panel body** — one panel mounted at a time (user-selected tab):
 
@@ -44,7 +44,8 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 | Discord | `DiscordPanel` | Yes — per-channel domains need a focused Discord channel tab; global keywords/SKUs always editable when extension is on |
 | Target | `TargetPanel` | Yes — link opens, Enable Auto ATC, ATC toggles, hard refresh interval, etc. |
 | Walmart | `WalmartPanel` | Yes — auto-refresh, queue helpers, recording |
-| Global | `GlobalPanel` | Open links in new window, SKU open mode, Show Walmart recording |
+| Sam's Club | `SamsclubPanel` | Yes — ATC toggles, auto checkout/CVV, manual auto mode, recording |
+| Global | `GlobalPanel` | Open links in new window, SKU open mode, Show Walmart/Sam's Club recording |
 
 Inactive panels unmount; domain hooks run only on the selected tab. Target/Walmart panel hooks load settings regardless of whether a matching browser tab is focused. Start/Stop runtime controls on Target still require a focused Target tab (`showControls={retailer_tab_detected}`).
 
@@ -75,6 +76,7 @@ Used inside domain panels for intra-panel gating:
 | Discord | `ui/popup/domains/discord/components/*`, `hooks/*` |
 | Target | `ui/popup/domains/target/components/*`, `hooks/*` |
 | Walmart | `ui/popup/domains/walmart/components/*`, `hooks/*` |
+| Sam's Club | `ui/popup/domains/samsclub/components/*`, `hooks/*` |
 
 ### Hooks (by domain)
 
@@ -84,6 +86,7 @@ Used inside domain panels for intra-panel gating:
 | Discord (`DiscordPanel`) | `useChannelDiscordSettings`, `useGlobalDiscordWatchSettings`, `useDetectedLinks`, `useLinkHistory` |
 | Target (`TargetPanel`) | `useRetailerLinkOpenCount`, `useRetailerAutoAtcEnabled`, `useRetailerAutoMode`, `useRetailerAtcMode`, `useRetailerAtcQuantity`, `useRetailerAutoCheckout` |
 | Walmart (`WalmartPanel`) | `useWalmartRecording`, `useWalmartAutoRefresh`, `useWalmartQueueSettings` |
+| Sam's Club (`SamsclubPanel`) | `useSamsclubAtcMode`, `useSamsclubAutoCheckout`, `useSamsclubCheckoutCvv`, `useSamsclubAtcQuantity`, `useSamsclubAutoMode`, `useSamsclubRecording` |
 
 `LinkHistory` component lives in `@shared/components/LinkHistory.tsx` (not under discord domain).
 
@@ -93,7 +96,21 @@ Source of truth: [extension/core/types/messages.ts](../../../extension/core/type
 
 Focused-window actions may pass optional `window_id`; hooks use `getSidePanelWindowId()`.
 
-Walmart queue settings (`walmart_queue_pass_sound_enabled`, `walmart_consolidate_queue_tabs_enabled`, `walmart_throttle_refresh_interval_sec` in `types/core.ts`) persist via `getExtensionSettings` / `saveExtensionSettings` — **not** separate `UiToBackground` messages.
+Walmart queue settings are exposed on `ExtensionStatus` (`walmart_queue_pass_sound_enabled`, `walmart_consolidate_queue_tabs_enabled`, `walmart_throttle_refresh_interval_sec`). Global Discord watch lists use `global_*_keywords` / `global_*_skus` on status. Persist via `getExtensionSettings` / `saveExtensionSettings` in hooks; add new panel fields to `buildStatus` + `types/status.ts` before wiring UI hooks.
+
+## Panel hook seeding (no settings flash)
+
+`App.tsx` loads `ExtensionStatus` once via `usePopupStatus` before rendering a panel. **Domain hooks must not paint hardcoded defaults and then `GET_STATUS` on mount.**
+
+When a hook displays persisted settings:
+
+1. Add fields to `ExtensionStatus` and `buildStatus` when missing (preferred — one load for the whole panel).
+2. Accept a `status` slice (or full `ExtensionStatus`) from the panel component.
+3. Initialize `useState` from that slice: `useState(() => status?.field ?? default)`.
+4. `useEffect`-sync when `status` changes, skipping while `saving` / focused / pending debounce.
+5. Reserve `GET_STATUS` / `getExtensionSettings` for post-save refresh and live runtime polling (e.g. manual auto status every 500ms).
+
+`GlobalPanel` and `useRetailerAutoAtcEnabled` already read directly from `status`. `useLinkHistory` / `useDetectedLinks` are runtime fetches — loading states are intentional there.
 
 ## Invariants
 

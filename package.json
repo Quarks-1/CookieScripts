@@ -13,8 +13,10 @@
     "test:discord": "vitest run tests/discord",
     "test:target": "vitest run tests/target",
     "test:walmart": "vitest run tests/walmart",
+    "test:samsclub": "vitest run tests/samsclub",
     "test:core": "vitest run tests/core",
-    "lint": "eslint extension ui tests"
+    "lint": "eslint extension ui tests",
+    "debug:samsclub-checkout": "node scripts/samsclub-checkout-debug-server.mjs"
   },
   "dependencies": {
     "fflate": "^0.8.3",

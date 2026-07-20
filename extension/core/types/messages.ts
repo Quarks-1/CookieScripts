@@ -2,11 +2,23 @@ import type {
   EndpointCatalogEntry,
   MarkerLabel,
   PageSnapshotRecord,
+  SamsclubRecordingAction,
+  SamsclubRecordingEvent,
+} from "@ext/domains/samsclub/types/samsclub.ts";
+import type {
+  EndpointCatalogEntry as WalmartEndpointCatalogEntry,
+  MarkerLabel as WalmartMarkerLabel,
+  PageSnapshotRecord as WalmartPageSnapshotRecord,
   WalmartRecordingAction,
   WalmartRecordingEvent,
 } from "@ext/domains/walmart/types/walmart.ts";
 
-import type { ExtensionSettings, HistoryItem, RetailerAutoCheckoutMode } from "@ext/core/types/core.ts";
+import type {
+  ExtensionSettings,
+  HistoryItem,
+  RetailerAutoCheckoutMode,
+  SamsclubAutoCheckoutMode,
+} from "@ext/core/types/core.ts";
 import type { ExtensionStatus } from "@ext/core/types/status.ts";
 
 export type ContentToBackground =
@@ -50,8 +62,8 @@ export type WalmartToBackground =
       type: "WALMART_RECORDING_APPEND";
       sessionId: string;
       events: WalmartRecordingEvent[];
-      pages?: PageSnapshotRecord[];
-      endpoints?: EndpointCatalogEntry[];
+      pages?: WalmartPageSnapshotRecord[];
+      endpoints?: WalmartEndpointCatalogEntry[];
       byteDelta?: number;
       droppedEvents?: number;
       truncated?: boolean;
@@ -105,13 +117,37 @@ export type BackgroundToContent =
       joinMode: "primary" | "late";
     }
   | { type: "WALMART_RECORDING_STOP" }
-  | { type: "WALMART_RECORDING_MARK"; label: MarkerLabel }
+  | { type: "WALMART_RECORDING_MARK"; label: WalmartMarkerLabel }
   | {
       type: "WALMART_AUTO_REFRESH_CONFIG";
       enabled: boolean;
       interval_sec: number;
       pause: boolean;
-    };
+    }
+  | { type: "SAMSCLUB_PING" }
+  | {
+      type: "SAMSCLUB_START_AUTO";
+      channel_id: string;
+      url: string;
+      source: "discord" | "manual";
+      refresh_interval_sec?: number;
+      frontend_atc_enabled?: boolean;
+      backend_atc_enabled?: boolean;
+      atc_quantity?: number;
+      use_max_quantity?: boolean;
+      auto_checkout_enabled?: boolean;
+    }
+  | { type: "SAMSCLUB_STOP_AUTO" }
+  | { type: "SAMSCLUB_START_MANUAL_AUTO" }
+  | { type: "SAMSCLUB_GET_PURCHASE_LIMIT" }
+  | {
+      type: "SAMSCLUB_RECORDING_START";
+      sessionId: string;
+      tabId: number;
+      joinMode: "primary" | "late";
+    }
+  | { type: "SAMSCLUB_RECORDING_STOP" }
+  | { type: "SAMSCLUB_RECORDING_MARK"; label: MarkerLabel };
 
 export type UiToBackground =
   | { type: "GET_STATUS"; window_id?: number }
@@ -134,15 +170,65 @@ export type UiToBackground =
   | {
       type: "WALMART_RECORDING";
       action: WalmartRecordingAction;
-      label?: MarkerLabel;
+      label?: WalmartMarkerLabel;
     }
   | { type: "SET_WALMART_AUTO_REFRESH_ENABLED"; enabled: boolean; window_id?: number }
-  | { type: "SET_WALMART_REFRESH_INTERVAL"; interval_sec: number; window_id?: number };
+  | { type: "SET_WALMART_REFRESH_INTERVAL"; interval_sec: number; window_id?: number }
+  | {
+      type: "SAMSCLUB_RECORDING";
+      action: SamsclubRecordingAction;
+      label?: MarkerLabel;
+    }
+  | { type: "SET_SAMSCLUB_REFRESH_INTERVAL"; interval_sec: number }
+  | { type: "SET_SAMSCLUB_ATC_MODES"; frontend_enabled: boolean; backend_enabled: boolean }
+  | {
+      type: "SET_SAMSCLUB_ATC_QUANTITY";
+      quantity: number;
+      use_max_quantity: boolean;
+    }
+  | { type: "SET_SAMSCLUB_AUTO_CHECKOUT_MODE"; mode: SamsclubAutoCheckoutMode }
+  | { type: "SET_SAMSCLUB_CHECKOUT_CVV"; cvv: string }
+  | { type: "SAMSCLUB_START_MANUAL_AUTO"; window_id?: number }
+  | { type: "SAMSCLUB_STOP_MANUAL_AUTO"; window_id?: number };
+
+export type SamsclubToBackground =
+  | {
+      type: "SAMSCLUB_RECORDING_APPEND";
+      sessionId: string;
+      events: SamsclubRecordingEvent[];
+      pages?: PageSnapshotRecord[];
+      endpoints?: EndpointCatalogEntry[];
+      byteDelta?: number;
+      droppedEvents?: number;
+      truncated?: boolean;
+    }
+  | { type: "SAMSCLUB_RECORDING_REATTACH"; sessionId: string }
+  | { type: "SAMSCLUB_PING" }
+  | {
+      type: "SAMSCLUB_AUTO_STATUS";
+      channel_id: string;
+      status: "success" | "failed";
+      url: string;
+      error?: string;
+    }
+  | { type: "SAMSCLUB_GET_AUTO_CONFIG"; channel_id: string }
+  | { type: "SAMSCLUB_SET_REFRESH_INTERVAL"; channel_id: string; interval_sec: number }
+  | { type: "SAMSCLUB_HARD_RELOAD" }
+  | { type: "SAMSCLUB_GET_TAB_AUTO_STATE" }
+  | { type: "SAMSCLUB_SYNC_MANUAL_STOP" }
+  | { type: "SAMSCLUB_SYNC_MANUAL_START" }
+  | {
+      type: "SAMSCLUB_UI_STATE";
+      status: string;
+      running: boolean;
+    }
+  | { type: "SAMSCLUB_PURCHASE_LIMIT_SNAPSHOT"; purchase_limit: number | null };
 
 export type RuntimeMessage =
   | ContentToBackground
   | RetailerToBackground
   | WalmartToBackground
+  | SamsclubToBackground
   | BackgroundToContent
   | UiToBackground;
 
@@ -166,6 +252,7 @@ export type BackgroundResponse =
       atc_quantity: number;
       use_max_quantity: boolean;
       auto_checkout_enabled: boolean;
+      checkout_cvv?: string | null;
     }
   | { ok: true; purchase_limit: number | null }
   | { ok: true; manual_auto_stopped: boolean; ui_status: string; ui_running: boolean }

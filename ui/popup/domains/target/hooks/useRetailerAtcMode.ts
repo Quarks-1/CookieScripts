@@ -1,11 +1,23 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { getSidePanelWindowId, sendToBackground } from "@ext/core/lib/messages.ts";
-import type { BackgroundResponse } from "@ext/core/types/index.ts";
+import type { BackgroundResponse, ExtensionStatus } from "@ext/core/types/index.ts";
 
-export function useRetailerAtcMode(retailerTabDetected: boolean) {
-  const [frontendEnabled, setFrontendEnabled] = useState(true);
-  const [backendEnabled, setBackendEnabled] = useState(false);
+type AtcModeStatus = Pick<
+  ExtensionStatus,
+  "retailer_frontend_atc_enabled" | "retailer_backend_atc_enabled"
+>;
+
+export function useRetailerAtcMode(
+  retailerTabDetected: boolean,
+  status: AtcModeStatus | null,
+) {
+  const [frontendEnabled, setFrontendEnabled] = useState(
+    () => status?.retailer_frontend_atc_enabled ?? true,
+  );
+  const [backendEnabled, setBackendEnabled] = useState(
+    () => status?.retailer_backend_atc_enabled ?? false,
+  );
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
@@ -19,10 +31,12 @@ export function useRetailerAtcMode(retailerTabDetected: boolean) {
   }, []);
 
   useEffect(() => {
-    if (retailerTabDetected) {
-      void refresh();
+    if (!retailerTabDetected || status == null || saving) {
+      return;
     }
-  }, [retailerTabDetected, refresh]);
+    setFrontendEnabled(status.retailer_frontend_atc_enabled);
+    setBackendEnabled(status.retailer_backend_atc_enabled);
+  }, [retailerTabDetected, status, saving]);
 
   const saveModes = useCallback(
     async (nextFrontend: boolean, nextBackend: boolean) => {

@@ -2,6 +2,7 @@
 .env
 .env.*
 *.log
+.debug/
 node_modules/
 dist/
 dist-dev-ui/

@@ -44,6 +44,10 @@ export default tseslint.config(
               regex: "^@ext/domains/walmart/lib/(?!index\\.ts$).+",
               message: "Import Walmart lib via @ext/domains/walmart/lib/index.ts",
             },
+            {
+              regex: "^@ext/domains/samsclub/lib/(?!index\\.ts$).+",
+              message: "Import Sam's Club lib via @ext/domains/samsclub/lib/index.ts",
+            },
           ],
         },
       ],
@@ -73,7 +77,7 @@ export default tseslint.config(
         {
           patterns: [
             {
-              group: ["@ext/domains/discord/**", "@ext/domains/walmart/**"],
+              group: ["@ext/domains/discord/**", "@ext/domains/walmart/**", "@ext/domains/samsclub/**"],
               message: "Target domain must not import other domains.",
             },
           ],
@@ -89,8 +93,24 @@ export default tseslint.config(
         {
           patterns: [
             {
-              group: ["@ext/domains/discord/**", "@ext/domains/target/**"],
+              group: ["@ext/domains/discord/**", "@ext/domains/target/**", "@ext/domains/samsclub/**"],
               message: "Walmart domain must not import other domains.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ["extension/domains/samsclub/**/*.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@ext/domains/discord/**", "@ext/domains/target/**", "@ext/domains/walmart/**"],
+              message: "Sam's Club domain must not import other domains.",
             },
           ],
         },

@@ -4,14 +4,31 @@ import {
   getExtensionSettings,
   saveExtensionSettings,
 } from "@ext/core/lib/messages.ts";
+import type { ExtensionStatus } from "@ext/core/types/index.ts";
 import { WALMART_THROTTLE_DEFAULT_INTERVAL_SEC } from "@ext/domains/walmart/lib/constants.ts";
 import { normalizeWalmartRefreshIntervalSec } from "@ext/domains/walmart/lib/auto-refresh.ts";
 
-export function useWalmartQueueSettings(walmartTabDetected: boolean, extensionEnabled: boolean) {
-  const [queuePassSoundEnabled, setQueuePassSoundEnabled] = useState(true);
-  const [consolidateQueueTabsEnabled, setConsolidateQueueTabsEnabled] = useState(true);
+type QueueSettingsStatus = Pick<
+  ExtensionStatus,
+  | "walmart_queue_pass_sound_enabled"
+  | "walmart_consolidate_queue_tabs_enabled"
+  | "walmart_throttle_refresh_interval_sec"
+>;
+
+export function useWalmartQueueSettings(
+  walmartTabDetected: boolean,
+  extensionEnabled: boolean,
+  status: QueueSettingsStatus | null,
+) {
+  const [queuePassSoundEnabled, setQueuePassSoundEnabled] = useState(
+    () => status?.walmart_queue_pass_sound_enabled ?? true,
+  );
+  const [consolidateQueueTabsEnabled, setConsolidateQueueTabsEnabled] = useState(
+    () => status?.walmart_consolidate_queue_tabs_enabled ?? true,
+  );
   const [throttleRefreshIntervalSec, setThrottleRefreshIntervalSec] = useState(
-    WALMART_THROTTLE_DEFAULT_INTERVAL_SEC,
+    () =>
+      status?.walmart_throttle_refresh_interval_sec ?? WALMART_THROTTLE_DEFAULT_INTERVAL_SEC,
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,8 +45,13 @@ export function useWalmartQueueSettings(walmartTabDetected: boolean, extensionEn
   }, []);
 
   useEffect(() => {
-    void refresh();
-  }, [walmartTabDetected, extensionEnabled, refresh]);
+    if (!walmartTabDetected || extensionEnabled === false || status == null || saving) {
+      return;
+    }
+    setQueuePassSoundEnabled(status.walmart_queue_pass_sound_enabled);
+    setConsolidateQueueTabsEnabled(status.walmart_consolidate_queue_tabs_enabled);
+    setThrottleRefreshIntervalSec(status.walmart_throttle_refresh_interval_sec);
+  }, [walmartTabDetected, extensionEnabled, status, saving]);
 
   const saveSettings = useCallback(
     async (patch: {

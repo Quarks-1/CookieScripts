@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { STORAGE_KEYS } from "@ext/core/lib/constants.ts";
 import {
   getGlobalKeywords,
   getGlobalWatchSkus,
   upsertGlobalWatchSettings,
 } from "@ext/core/lib/channel-targets.ts";
 import { getExtensionSettings, saveExtensionSettings } from "@ext/core/lib/messages.ts";
+import type { ExtensionStatus } from "@ext/core/types/index.ts";
 
 const SAVE_DEBOUNCE_MS = 400;
 
@@ -23,13 +23,47 @@ type ChangeOptions = {
   immediate?: boolean;
 };
 
-export function useGlobalDiscordWatchSettings(enabled: boolean) {
-  const [targetPositiveKeywords, setTargetPositiveKeywords] = useState<string[]>([]);
-  const [targetNegativeKeywords, setTargetNegativeKeywords] = useState<string[]>([]);
-  const [walmartPositiveKeywords, setWalmartPositiveKeywords] = useState<string[]>([]);
-  const [walmartNegativeKeywords, setWalmartNegativeKeywords] = useState<string[]>([]);
-  const [targetSkus, setTargetSkus] = useState<string[]>([]);
-  const [walmartSkus, setWalmartSkus] = useState<string[]>([]);
+type GlobalWatchStatus = Pick<
+  ExtensionStatus,
+  | "global_target_positive_keywords"
+  | "global_target_negative_keywords"
+  | "global_walmart_positive_keywords"
+  | "global_walmart_negative_keywords"
+  | "global_target_skus"
+  | "global_walmart_skus"
+>;
+
+function readGlobalWatchFromStatus(status: GlobalWatchStatus): PendingSettings {
+  return {
+    targetPositiveKeywords: status.global_target_positive_keywords,
+    targetNegativeKeywords: status.global_target_negative_keywords,
+    walmartPositiveKeywords: status.global_walmart_positive_keywords,
+    walmartNegativeKeywords: status.global_walmart_negative_keywords,
+    targetSkus: status.global_target_skus,
+    walmartSkus: status.global_walmart_skus,
+  };
+}
+
+export function useGlobalDiscordWatchSettings(
+  enabled: boolean,
+  status: GlobalWatchStatus | null,
+) {
+  const [targetPositiveKeywords, setTargetPositiveKeywords] = useState<string[]>(
+    () => status?.global_target_positive_keywords ?? [],
+  );
+  const [targetNegativeKeywords, setTargetNegativeKeywords] = useState<string[]>(
+    () => status?.global_target_negative_keywords ?? [],
+  );
+  const [walmartPositiveKeywords, setWalmartPositiveKeywords] = useState<string[]>(
+    () => status?.global_walmart_positive_keywords ?? [],
+  );
+  const [walmartNegativeKeywords, setWalmartNegativeKeywords] = useState<string[]>(
+    () => status?.global_walmart_negative_keywords ?? [],
+  );
+  const [targetSkus, setTargetSkus] = useState<string[]>(() => status?.global_target_skus ?? []);
+  const [walmartSkus, setWalmartSkus] = useState<string[]>(
+    () => status?.global_walmart_skus ?? [],
+  );
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -67,24 +101,17 @@ export function useGlobalDiscordWatchSettings(enabled: boolean) {
       setSaveError(null);
       return;
     }
-    void loadSettings();
-  }, [clearDebounce, enabled, loadSettings]);
-
-  useEffect(() => {
-    function onStorageChanged(
-      changes: Record<string, chrome.storage.StorageChange>,
-      area: string,
-    ) {
-      if (area !== "local" || !changes[STORAGE_KEYS.settings] || !enabled) {
-        return;
-      }
-      clearDebounce();
-      void loadSettings();
+    if (status == null || saving || pendingRef.current !== null) {
+      return;
     }
-
-    chrome.storage.onChanged.addListener(onStorageChanged);
-    return () => chrome.storage.onChanged.removeListener(onStorageChanged);
-  }, [clearDebounce, enabled, loadSettings]);
+    const next = readGlobalWatchFromStatus(status);
+    setTargetPositiveKeywords(next.targetPositiveKeywords);
+    setTargetNegativeKeywords(next.targetNegativeKeywords);
+    setWalmartPositiveKeywords(next.walmartPositiveKeywords);
+    setWalmartNegativeKeywords(next.walmartNegativeKeywords);
+    setTargetSkus(next.targetSkus);
+    setWalmartSkus(next.walmartSkus);
+  }, [clearDebounce, enabled, saving, status]);
 
   useEffect(() => {
     return () => {

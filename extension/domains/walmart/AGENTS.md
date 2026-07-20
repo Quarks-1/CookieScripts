@@ -101,4 +101,4 @@ Global invariants and import rules: [AGENTS.md](../../../AGENTS.md).
 
 ## UI
 
-Research section + tab pills: `WalmartResearchSection`. Auto-refresh and queue settings: `WalmartAutoRefreshSection` (with `useWalmartQueueSettings`). Shown when `status.walmart_tab_detected` — see [ui/popup/core/AGENTS.md](../../../ui/popup/core/AGENTS.md).
+Research section + tab pills: `WalmartResearchSection`. Auto-refresh and queue settings: `WalmartAutoRefreshSection` (with `useWalmartQueueSettings`). Queue settings are on `ExtensionStatus`; hooks seed from `status` — see `ui/popup/core/AGENTS.md` § Panel hook seeding.

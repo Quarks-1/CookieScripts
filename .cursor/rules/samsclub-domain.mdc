@@ -1,0 +1,15 @@
+---
+description: Sam's Club recording and manual automation invariants
+globs: extension/domains/samsclub/**/*
+alwaysApply: false
+---
+
+# Sam's Club domain
+
+- Manual research recorder + manual-start automation only — **no Discord** integration.
+- Recording UI gated by Global panel `samsclub_recording_ui_enabled`.
+- Backend ATC via `public/injected/samsclub-cart-probe.js` in page context.
+- Resume key: `cookiescripts:samsclubAutoResume` in tab sessionStorage.
+- Handlers split under `background/handlers/` — do not monolith.
+
+See `extension/domains/samsclub/AGENTS.md`.

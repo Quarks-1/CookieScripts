@@ -20,6 +20,8 @@ export function GlobalPanel({ status, disabled, onRefresh }: GlobalPanelProps) {
   const [skuOpenModeError, setSkuOpenModeError] = useState<string | null>(null);
   const [walmartRecordingUiSaving, setWalmartRecordingUiSaving] = useState(false);
   const [walmartRecordingUiError, setWalmartRecordingUiError] = useState<string | null>(null);
+  const [samsclubRecordingUiSaving, setSamsclubRecordingUiSaving] = useState(false);
+  const [samsclubRecordingUiError, setSamsclubRecordingUiError] = useState<string | null>(null);
 
   async function handleOpenLinksInWindowChange(next: boolean) {
     setOpenLinksInWindowSaving(true);
@@ -60,6 +62,20 @@ export function GlobalPanel({ status, disabled, onRefresh }: GlobalPanelProps) {
       setWalmartRecordingUiError(err instanceof Error ? err.message : "Failed to save");
     } finally {
       setWalmartRecordingUiSaving(false);
+    }
+  }
+
+  async function handleSamsclubRecordingUiChange(next: boolean) {
+    setSamsclubRecordingUiSaving(true);
+    setSamsclubRecordingUiError(null);
+    try {
+      const settings = await getExtensionSettings();
+      await saveExtensionSettings({ ...settings, samsclub_recording_ui_enabled: next });
+      await onRefresh();
+    } catch (err) {
+      setSamsclubRecordingUiError(err instanceof Error ? err.message : "Failed to save");
+    } finally {
+      setSamsclubRecordingUiSaving(false);
     }
   }
 
@@ -118,6 +134,25 @@ export function GlobalPanel({ status, disabled, onRefresh }: GlobalPanelProps) {
         {walmartRecordingUiError && (
           <p role="status" aria-live="polite" className="mt-1 text-xs text-red-300">
             {walmartRecordingUiError}
+          </p>
+        )}
+      </section>
+
+      <section aria-labelledby="global-samsclub-recording-ui-heading">
+        <h2 id="global-samsclub-recording-ui-heading" className="sr-only">
+          Sam&apos;s Club recording visibility
+        </h2>
+        <EnableSlider
+          id="popup-samsclub-recording-ui"
+          label="Show Sam's Club recording"
+          checked={status.samsclub_recording_ui_enabled}
+          disabled={disabled || samsclubRecordingUiSaving}
+          onChange={(next) => void handleSamsclubRecordingUiChange(next)}
+        />
+        {samsclubRecordingUiSaving && <p className="mt-1 text-xs text-zinc-500">Saving…</p>}
+        {samsclubRecordingUiError && (
+          <p role="status" aria-live="polite" className="mt-1 text-xs text-red-300">
+            {samsclubRecordingUiError}
           </p>
         )}
       </section>

@@ -1,5 +1,7 @@
 export type RetailerAutoCheckoutMode = "off" | "sku_only" | "all";
 
+export type SamsclubAutoCheckoutMode = "off" | "all";
+
 export interface ChannelTarget {
   channel_id: string;
   allowed_domains: string[];
@@ -53,6 +55,22 @@ export interface ExtensionSettings {
   sku_open_mode_enabled?: boolean;
   /** When true, show Walmart research/recording controls in the side panel. */
   walmart_recording_ui_enabled?: boolean;
+  /** When true, show Sam's Club research/recording controls in the side panel. */
+  samsclub_recording_ui_enabled?: boolean;
+  /** Global hard-refresh interval for Sam's Club automation; 0 = off. */
+  samsclub_refresh_interval_sec?: number;
+  /** Default true when undefined — DOM button click add-to-cart. */
+  samsclub_frontend_atc_enabled?: boolean;
+  /** Default false when undefined — cart API POST probe. */
+  samsclub_backend_atc_enabled?: boolean;
+  /** Units to add per Sam's Club ATC attempt; default 1 when omitted. */
+  samsclub_atc_quantity?: number;
+  /** When true, use page purchase_limit instead of samsclub_atc_quantity. */
+  samsclub_use_max_quantity?: boolean;
+  /** Auto checkout scope after Sam's Club ATC. */
+  samsclub_auto_checkout_mode?: SamsclubAutoCheckoutMode;
+  /** Saved card CVV for Sam's Club review-order checkout (3 digits). */
+  samsclub_checkout_cvv?: string;
 }
 
 export type HistoryItemKind =
@@ -63,7 +81,10 @@ export type HistoryItemKind =
   | "retailer_window_opened"
   | "retailer_auto_queued"
   | "retailer_auto_success"
-  | "retailer_auto_failed";
+  | "retailer_auto_failed"
+  | "samsclub_auto_queued"
+  | "samsclub_auto_success"
+  | "samsclub_auto_failed";
 
 export interface HistoryItem {
   kind: HistoryItemKind;
@@ -74,7 +95,7 @@ export interface HistoryItem {
   error?: string;
 }
 
-export type ActiveTabKind = "discord_channel" | "retailer" | "walmart" | "other";
+export type ActiveTabKind = "discord_channel" | "retailer" | "walmart" | "samsclub" | "other";
 
 export const DEFAULT_SETTINGS: ExtensionSettings = {
   channel_targets: [],

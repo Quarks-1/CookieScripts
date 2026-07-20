@@ -58,8 +58,8 @@ function WalmartRecordingSection({
 
 export function WalmartPanel({ status, disabled }: WalmartPanelProps) {
   const panelActive = true;
-  const walmartAutoRefresh = useWalmartAutoRefresh(panelActive, status.enabled);
-  const walmartQueueSettings = useWalmartQueueSettings(panelActive, status.enabled);
+  const walmartAutoRefresh = useWalmartAutoRefresh(panelActive, status.enabled, status);
+  const walmartQueueSettings = useWalmartQueueSettings(panelActive, status.enabled, status);
 
   return (
     <div className="space-y-3">

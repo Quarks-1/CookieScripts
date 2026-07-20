@@ -29,15 +29,19 @@ export function useRetailerAtcQuantity(
   retailerTabDetected: boolean,
   status: QuantityStatus | null,
 ) {
-  const [quantity, setQuantity] = useState(1);
-  const [useMaxQuantity, setUseMaxQuantity] = useState(false);
-  const [draftQuantity, setDraftQuantity] = useState("1");
+  const [quantity, setQuantity] = useState(() => status?.retailer_atc_quantity ?? 1);
+  const [useMaxQuantity, setUseMaxQuantity] = useState(
+    () => status?.retailer_use_max_quantity ?? false,
+  );
+  const [draftQuantity, setDraftQuantity] = useState(() =>
+    String(status?.retailer_atc_quantity ?? 1),
+  );
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const quantityFocusedRef = useRef(false);
-  const lastSavedQuantityRef = useRef(1);
-  const useMaxRef = useRef(false);
+  const lastSavedQuantityRef = useRef(status?.retailer_atc_quantity ?? 1);
+  const useMaxRef = useRef(status?.retailer_use_max_quantity ?? false);
 
   const purchaseLimit = status?.retailer_purchase_limit ?? null;
   const effectiveUseMax = isEffectiveUseMax(useMaxQuantity, purchaseLimit);

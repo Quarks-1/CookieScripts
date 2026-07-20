@@ -1,4 +1,4 @@
-import type { RetailerAutoCheckoutMode } from "@ext/core/types/index.ts";
+import type { RetailerAutoCheckoutMode, SamsclubAutoCheckoutMode } from "@ext/core/types/index.ts";
 import {
   buildStatus,
   setRetailerAtcModesForSettings,
@@ -6,9 +6,19 @@ import {
   setRetailerAutoAtcEnabledGlobal,
   setRetailerAutoCheckoutModeForSettings,
   setRetailerRefreshIntervalForChannel,
+  setSamsclubAtcModesForSettings,
+  setSamsclubAtcQuantityForSettings,
+  setSamsclubAutoCheckoutModeForSettings,
+  setSamsclubCheckoutCvvForSettings,
+  setSamsclubRefreshIntervalGlobal,
 } from "@ext/core/background/status.ts";
 import { RETAILER_AUTO_CHECKOUT_MODES } from "@ext/domains/target/lib/channel-config.ts";
+import {
+  normalizeSamsclubCheckoutCvv,
+  SAMSCLUB_AUTO_CHECKOUT_MODES,
+} from "@ext/domains/samsclub/lib/index.ts";
 import { getActiveRetailerTabInWindow } from "@ext/domains/target/background/tab-message.ts";
+import { getActiveSamsclubTabInWindow } from "@ext/domains/samsclub/background/tab-message.ts";
 import { getActiveTabInWindow } from "@ext/core/background/window-active-tab.ts";
 import {
   bindRetailerTab,
@@ -28,6 +38,16 @@ import {
   handleWalmartUiMessage,
   stopAllWalmartRecordingsForDisable,
 } from "@ext/domains/walmart/background/handlers/index.ts";
+import {
+  handleSamsclubUiMessage,
+  stopAllSamsclubRecordingsForDisable,
+} from "@ext/domains/samsclub/background/handlers/index.ts";
+import {
+  bindSamsclubTab,
+  clearSamsclubManualAutoStopped,
+  setSamsclubTabUiState,
+  stopSamsclubTabAuto,
+} from "@ext/domains/samsclub/background/automation-runtime-state.ts";
 import {
   handleSetWalmartAutoRefreshEnabled,
   handleSetWalmartRefreshInterval,
@@ -49,7 +69,8 @@ export async function handleUiMessage(
     }
     case "GET_SETTINGS": {
       const settings = await getSettings();
-      return { ok: true, settings };
+      const { samsclub_checkout_cvv: _cvv, ...safeSettings } = settings;
+      return { ok: true, settings: safeSettings };
     }
     case "SAVE_SETTINGS": {
       try {
@@ -58,6 +79,7 @@ export async function handleUiMessage(
         if (previous.enabled && !message.settings.enabled) {
           await stopAllWalmartRecordingsForDisable();
           await stopAllWalmartAutoRefreshForDisable();
+          await stopAllSamsclubRecordingsForDisable();
         }
         return { ok: true };
       } catch (error) {
@@ -171,5 +193,80 @@ export async function handleUiMessage(
       return handleSetWalmartAutoRefreshEnabled(message);
     case "SET_WALMART_REFRESH_INTERVAL":
       return handleSetWalmartRefreshInterval(message);
+    case "SAMSCLUB_RECORDING":
+      return handleSamsclubUiMessage(message);
+    case "SET_SAMSCLUB_REFRESH_INTERVAL": {
+      try {
+        await setSamsclubRefreshIntervalGlobal(message.interval_sec);
+        return { ok: true };
+      } catch (error) {
+        return { ok: false, error: error instanceof Error ? error.message : "Save failed" };
+      }
+    }
+    case "SET_SAMSCLUB_ATC_MODES": {
+      try {
+        await setSamsclubAtcModesForSettings(message.frontend_enabled, message.backend_enabled);
+        return { ok: true };
+      } catch (error) {
+        return { ok: false, error: error instanceof Error ? error.message : "Save failed" };
+      }
+    }
+    case "SET_SAMSCLUB_ATC_QUANTITY": {
+      try {
+        await setSamsclubAtcQuantityForSettings(message.quantity, message.use_max_quantity);
+        return { ok: true };
+      } catch (error) {
+        return { ok: false, error: error instanceof Error ? error.message : "Save failed" };
+      }
+    }
+    case "SET_SAMSCLUB_AUTO_CHECKOUT_MODE": {
+      if (!SAMSCLUB_AUTO_CHECKOUT_MODES.has(message.mode)) {
+        return { ok: false, error: "Invalid auto checkout mode" };
+      }
+      try {
+        await setSamsclubAutoCheckoutModeForSettings(message.mode as SamsclubAutoCheckoutMode);
+        return { ok: true };
+      } catch (error) {
+        return { ok: false, error: error instanceof Error ? error.message : "Save failed" };
+      }
+    }
+    case "SET_SAMSCLUB_CHECKOUT_CVV": {
+      const trimmed = message.cvv.trim();
+      if (trimmed !== "" && normalizeSamsclubCheckoutCvv(trimmed) == null) {
+        return { ok: false, error: "CVV must be exactly 3 digits" };
+      }
+      try {
+        await setSamsclubCheckoutCvvForSettings(trimmed);
+        return { ok: true };
+      } catch (error) {
+        return { ok: false, error: error instanceof Error ? error.message : "Save failed" };
+      }
+    }
+    case "SAMSCLUB_START_MANUAL_AUTO": {
+      const tab = await getActiveSamsclubTabInWindow(message.window_id);
+      if (!tab?.id) {
+        return { ok: false, error: "Open a Sam's Club tab in this window" };
+      }
+      bindSamsclubTab(tab.id, "manual");
+      clearSamsclubManualAutoStopped(tab.id);
+      setSamsclubTabUiState(tab.id, { status: "Starting auto mode…", running: true });
+      try {
+        await chrome.tabs.sendMessage(tab.id, { type: "SAMSCLUB_START_MANUAL_AUTO" });
+      } catch {
+        return {
+          ok: false,
+          error: "Sam's Club tab is not ready — refresh the page",
+        };
+      }
+      return { ok: true };
+    }
+    case "SAMSCLUB_STOP_MANUAL_AUTO": {
+      const tab = await getActiveSamsclubTabInWindow(message.window_id);
+      if (!tab?.id) {
+        return { ok: false, error: "Open a Sam's Club tab in this window" };
+      }
+      await stopSamsclubTabAuto(tab.id);
+      return { ok: true };
+    }
   }
 }

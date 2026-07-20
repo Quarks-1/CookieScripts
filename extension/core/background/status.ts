@@ -1,4 +1,8 @@
-import { getChannelDomains } from "@ext/core/lib/channel-targets.ts";
+import {
+  getChannelDomains,
+  getGlobalKeywords,
+  getGlobalWatchSkus,
+} from "@ext/core/lib/channel-targets.ts";
 import {
   getRetailerAtcQuantity,
   getRetailerAutoAtcEnabled,
@@ -14,14 +18,48 @@ import {
   setRetailerAutoCheckoutMode,
   setRetailerRefreshInterval,
 } from "@ext/domains/target/lib/channel-config.ts";
-import { buildQuantityStatusFields } from "@ext/domains/target/lib/quantity-limit.ts";
+import { buildQuantityStatusFields as buildRetailerQuantityStatusFields } from "@ext/domains/target/lib/quantity-limit.ts";
+import {
+  getSamsclubAtcQuantity,
+  getSamsclubAutoCheckoutMode,
+  getSamsclubBackendAtcEnabled,
+  getSamsclubCheckoutCvv,
+  getSamsclubFrontendAtcEnabled,
+  getSamsclubRefreshIntervalSec,
+  getSamsclubUseMaxQuantity,
+  setSamsclubAtcModes,
+  setSamsclubAtcQuantity,
+  setSamsclubAutoCheckoutMode,
+  setSamsclubCheckoutCvv,
+  setSamsclubRefreshInterval,
+  buildQuantityStatusFields as buildSamsclubQuantityStatusFields,
+} from "@ext/domains/samsclub/lib/index.ts";
 import { sleep } from "@ext/core/lib/sleep.ts";
 import { resolveActiveTabKind } from "@ext/core/lib/active-tab.ts";
-import { getOpenLinksInWindow, getSkuOpenModeEnabled, getWalmartRecordingUiEnabled } from "@ext/core/lib/watch.ts";
-import type { RetailerAutoCheckoutMode } from "@ext/core/types/index.ts";
+import {
+  getOpenLinksInWindow,
+  getSamsclubRecordingUiEnabled,
+  getSkuOpenModeEnabled,
+  getWalmartRecordingUiEnabled,
+} from "@ext/core/lib/watch.ts";
+import type { RetailerAutoCheckoutMode, SamsclubAutoCheckoutMode } from "@ext/core/types/index.ts";
 import { getSettings, saveSettings } from "@ext/core/lib/storage.ts";
 import { activeChannels } from "@ext/core/background/runtime-state.ts";
 import { listAllRetailerTabs } from "@ext/domains/target/background/tabs.ts";
+import {
+  getSamsclubTabPurchaseLimit,
+  getSamsclubTabUiState,
+  normalizeSamsclubTabUrl,
+  setSamsclubTabPurchaseLimit,
+} from "@ext/domains/samsclub/background/automation-runtime-state.ts";
+import { listAllSamsclubTabs } from "@ext/domains/samsclub/background/tabs.ts";
+import {
+  isAnySamsclubRecording,
+  isSamsclubTabRecording,
+  readLastExport as readSamsclubLastExport,
+  readMetrics as readSamsclubMetrics,
+  recordingTabCount as samsclubRecordingTabCount,
+} from "@ext/domains/samsclub/background/runtime-state.ts";
 import {
   getRetailerTabPurchaseLimit,
   getRetailerTabUiState,
@@ -41,11 +79,20 @@ import {
   recordingTabCount,
   getWalmartTabAutoRefresh,
 } from "@ext/domains/walmart/background/runtime-state.ts";
-import { WALMART_AUTO_REFRESH_DEFAULT_INTERVAL_SEC } from "@ext/domains/walmart/lib/index.ts";
+import {
+  normalizeWalmartRefreshIntervalSec,
+  WALMART_AUTO_REFRESH_DEFAULT_INTERVAL_SEC,
+  WALMART_THROTTLE_DEFAULT_INTERVAL_SEC,
+} from "@ext/domains/walmart/lib/index.ts";
 import { listAllWalmartTabs } from "@ext/domains/walmart/background/tabs.ts";
 import { parseChannelId } from "@ext/core/lib/channels.ts";
 import {
-  disambiguateOpenTabLabels,
+  disambiguateOpenTabLabels as disambiguateSamsclubOpenTabLabels,
+  isSamsclubOpenTabActive,
+  labelSamsclubTab,
+} from "@ext/domains/samsclub/lib/index.ts";
+import {
+  disambiguateOpenTabLabels as disambiguateWalmartOpenTabLabels,
   isWalmartOpenTabActive,
   labelWalmartTab,
 } from "@ext/domains/walmart/lib/index.ts";
@@ -53,8 +100,49 @@ import type {
   ExtensionSettings,
   ExtensionStatus,
   RetailerOpenTabSummary,
+  SamsclubOpenTabSummary,
   WalmartOpenTabSummary,
 } from "@ext/core/types/index.ts";
+
+async function buildSamsclubOpenTabs(
+  tabs: chrome.tabs.Tab[],
+  focusedActiveTabId?: number,
+): Promise<SamsclubOpenTabSummary[]> {
+  const summaries: SamsclubOpenTabSummary[] = [];
+
+  for (const tab of tabs) {
+    if (tab.id == null || tab.windowId == null) {
+      continue;
+    }
+    const url = tab.url ?? "";
+    const title = tab.title ?? "";
+    const { label, pageKind } = labelSamsclubTab(url, title);
+    summaries.push({
+      tabId: tab.id,
+      windowId: tab.windowId,
+      url,
+      title,
+      label,
+      pageKind,
+      isActive: isSamsclubOpenTabActive(tab.id, focusedActiveTabId),
+      isRecording: isSamsclubTabRecording(tab.id),
+    });
+  }
+
+  summaries.sort((a, b) => {
+    if (a.windowId !== b.windowId) {
+      return a.windowId - b.windowId;
+    }
+    return a.tabId - b.tabId;
+  });
+
+  const disambiguatedLabels = disambiguateSamsclubOpenTabLabels(summaries);
+  for (let i = 0; i < summaries.length; i += 1) {
+    summaries[i]!.label = disambiguatedLabels[i]!;
+  }
+
+  return summaries;
+}
 
 async function buildWalmartOpenTabs(
   tabs: chrome.tabs.Tab[],
@@ -88,7 +176,7 @@ async function buildWalmartOpenTabs(
     return a.tabId - b.tabId;
   });
 
-  const disambiguatedLabels = disambiguateOpenTabLabels(summaries);
+  const disambiguatedLabels = disambiguateWalmartOpenTabLabels(summaries);
   for (let i = 0; i < summaries.length; i += 1) {
     summaries[i]!.label = disambiguatedLabels[i]!;
   }
@@ -188,6 +276,46 @@ async function resolveRetailerPurchaseLimit(
   return readRetailerPurchaseLimit(tabId, tabUrl);
 }
 
+async function readSamsclubPurchaseLimit(
+  tabId: number,
+  tabUrl: string,
+): Promise<number | null> {
+  for (let attempt = 0; attempt < PURCHASE_LIMIT_QUERY_ATTEMPTS; attempt++) {
+    try {
+      const response = (await chrome.tabs.sendMessage(tabId, {
+        type: "SAMSCLUB_GET_PURCHASE_LIMIT",
+      })) as { ok?: boolean; purchase_limit?: number | null } | undefined;
+      if (response?.ok === true) {
+        const limit = normalizePurchaseLimit(response.purchase_limit);
+        setSamsclubTabPurchaseLimit(tabId, tabUrl, limit);
+        return limit;
+      }
+    } catch {
+      // Content script may not be injected yet.
+    }
+
+    if (attempt < PURCHASE_LIMIT_QUERY_ATTEMPTS - 1) {
+      await sleep(PURCHASE_LIMIT_QUERY_RETRY_MS);
+    }
+  }
+  return null;
+}
+
+async function resolveSamsclubPurchaseLimit(
+  tabId: number,
+  tabUrl: string | undefined,
+): Promise<number | null> {
+  if (!tabUrl) {
+    return null;
+  }
+  const normalizedUrl = normalizeSamsclubTabUrl(tabUrl);
+  const cached = getSamsclubTabPurchaseLimit(tabId, normalizedUrl);
+  if (cached !== undefined && cached !== null) {
+    return cached;
+  }
+  return readSamsclubPurchaseLimit(tabId, tabUrl);
+}
+
 export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<ExtensionStatus> {
   const settings = await getSettings();
 
@@ -218,14 +346,21 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
 
   const retailerTabDetected = activeTabKind === "retailer";
   const walmartTabDetected = activeTabKind === "walmart";
+  const samsclubTabDetected = activeTabKind === "samsclub";
   const walmartMetrics = await readMetrics();
   const lastExport = await readLastExport();
+  const samsclubMetrics = await readSamsclubMetrics();
+  const samsclubLastExport = await readSamsclubLastExport();
   const walmartTabs = await listAllWalmartTabs();
   const walmartOpenTabs = await buildWalmartOpenTabs(walmartTabs, activeTab?.id);
+  const samsclubTabs = await listAllSamsclubTabs();
+  const samsclubOpenTabs = await buildSamsclubOpenTabs(samsclubTabs, activeTab?.id);
   const retailerTabs = await listAllRetailerTabs();
   const retailerOpenTabs = await buildRetailerOpenTabs(retailerTabs, activeTab?.id);
   const recordingActive =
     walmartMetrics.recordingActive || isAnyWalmartRecording();
+  const samsclubRecordingActive =
+    samsclubMetrics.recordingActive || isAnySamsclubRecording();
 
   const allowedDomains =
     activeChannelId !== null ? getChannelDomains(settings, activeChannelId) : [];
@@ -241,16 +376,33 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
       ? getRetailerTabUiState(activeTab.id)
       : { status: "", running: false };
 
+  const samsclubTabUi =
+    activeTab?.id != null && samsclubTabDetected
+      ? getSamsclubTabUiState(activeTab.id)
+      : { status: "", running: false };
+
   const retailerAtcQuantity = getRetailerAtcQuantity(settings);
   const retailerUseMaxQuantity = getRetailerUseMaxQuantity(settings);
   const retailerPurchaseLimit =
     activeTab?.id != null && retailerTabDetected
       ? await resolveRetailerPurchaseLimit(activeTab.id, activeTab.url)
       : null;
-  const quantityStatus = buildQuantityStatusFields(
+  const quantityStatus = buildRetailerQuantityStatusFields(
     retailerAtcQuantity,
     retailerUseMaxQuantity,
     retailerPurchaseLimit,
+  );
+
+  const samsclubAtcQuantity = getSamsclubAtcQuantity(settings);
+  const samsclubUseMaxQuantity = getSamsclubUseMaxQuantity(settings);
+  const samsclubPurchaseLimit =
+    activeTab?.id != null && samsclubTabDetected
+      ? await resolveSamsclubPurchaseLimit(activeTab.id, activeTab.url)
+      : null;
+  const samsclubQuantityStatus = buildSamsclubQuantityStatusFields(
+    samsclubAtcQuantity,
+    samsclubUseMaxQuantity,
+    samsclubPurchaseLimit,
   );
 
   const walmartAutoRefresh =
@@ -278,6 +430,16 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     walmart_last_export_path: lastExport?.filename ?? null,
     walmart_last_export_download_id: lastExport?.downloadId ?? null,
     walmart_open_tabs: walmartOpenTabs,
+    samsclub_tab_detected: samsclubTabDetected,
+    samsclub_recording_active: samsclubRecordingActive,
+    samsclub_recording_tab_count: samsclubRecordingActive ? samsclubRecordingTabCount() : 0,
+    any_samsclub_tab_open: samsclubTabs.length > 0,
+    samsclub_recording_event_count: samsclubMetrics.eventCount,
+    samsclub_recording_bytes: samsclubMetrics.bytes,
+    samsclub_recording_drop_date: samsclubMetrics.dropDate,
+    samsclub_last_export_path: samsclubLastExport?.filename ?? null,
+    samsclub_last_export_download_id: samsclubLastExport?.downloadId ?? null,
+    samsclub_open_tabs: samsclubOpenTabs,
     active_channel_id: activeChannelId,
     is_active: isActive,
     has_allowed_domains: allowedDomains.length > 0,
@@ -296,10 +458,35 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     retailer_auto_checkout_mode: getRetailerAutoCheckoutMode(settings),
     walmart_auto_refresh_enabled: walmartAutoRefreshEnabled,
     walmart_refresh_interval_sec: walmartRefreshIntervalSec,
+    walmart_queue_pass_sound_enabled: settings.walmart_queue_pass_sound_enabled !== false,
+    walmart_consolidate_queue_tabs_enabled:
+      settings.walmart_consolidate_queue_tabs_enabled !== false,
+    walmart_throttle_refresh_interval_sec: normalizeWalmartRefreshIntervalSec(
+      settings.walmart_throttle_refresh_interval_sec ?? WALMART_THROTTLE_DEFAULT_INTERVAL_SEC,
+    ),
+    global_target_positive_keywords: getGlobalKeywords(settings, "target").positive,
+    global_target_negative_keywords: getGlobalKeywords(settings, "target").negative,
+    global_walmart_positive_keywords: getGlobalKeywords(settings, "walmart").positive,
+    global_walmart_negative_keywords: getGlobalKeywords(settings, "walmart").negative,
+    global_target_skus: getGlobalWatchSkus(settings, "target"),
+    global_walmart_skus: getGlobalWatchSkus(settings, "walmart"),
     open_links_in_window: getOpenLinksInWindow(settings),
     retailer_link_open_count: getRetailerLinkOpenCount(settings),
     sku_open_mode_enabled: getSkuOpenModeEnabled(settings),
     walmart_recording_ui_enabled: getWalmartRecordingUiEnabled(settings),
+    samsclub_recording_ui_enabled: getSamsclubRecordingUiEnabled(settings),
+    samsclub_refresh_interval_sec: getSamsclubRefreshIntervalSec(settings),
+    samsclub_frontend_atc_enabled: getSamsclubFrontendAtcEnabled(settings),
+    samsclub_backend_atc_enabled: getSamsclubBackendAtcEnabled(settings),
+    samsclub_manual_status: samsclubTabUi.status,
+    samsclub_manual_running: samsclubTabUi.running,
+    samsclub_atc_quantity: samsclubAtcQuantity,
+    samsclub_use_max_quantity: samsclubUseMaxQuantity,
+    samsclub_purchase_limit: samsclubPurchaseLimit,
+    samsclub_quantity_invalid: samsclubQuantityStatus.samsclub_quantity_invalid,
+    samsclub_auto_start_blocked: samsclubQuantityStatus.samsclub_auto_start_blocked,
+    samsclub_auto_checkout_mode: getSamsclubAutoCheckoutMode(settings),
+    samsclub_checkout_cvv: getSamsclubCheckoutCvv(settings) ?? "",
   };
 }
 
@@ -350,6 +537,64 @@ export async function setRetailerAutoCheckoutModeForSettings(
 ): Promise<ExtensionSettings> {
   const settings = await getSettings();
   const next = setRetailerAutoCheckoutMode(settings, mode);
+  await saveSettings(next);
+  return next;
+}
+
+export async function setSamsclubRefreshIntervalGlobal(
+  intervalSec: number,
+): Promise<ExtensionSettings> {
+  const settings = await getSettings();
+  const next = setSamsclubRefreshInterval(settings, intervalSec);
+  await saveSettings(next);
+  return next;
+}
+
+/** Global-only refresh interval; channel id is ignored for Sam's Club. */
+export async function setSamsclubRefreshIntervalForChannel(
+  _channelId: string,
+  intervalSec: number,
+): Promise<ExtensionSettings> {
+  return setSamsclubRefreshIntervalGlobal(intervalSec);
+}
+
+export async function setSamsclubAtcModesForSettings(
+  frontendEnabled: boolean,
+  backendEnabled: boolean,
+): Promise<ExtensionSettings> {
+  const settings = await getSettings();
+  const next = setSamsclubAtcModes(settings, {
+    frontend: frontendEnabled,
+    backend: backendEnabled,
+  });
+  await saveSettings(next);
+  return next;
+}
+
+export async function setSamsclubAtcQuantityForSettings(
+  quantity: number,
+  useMaxQuantity: boolean,
+): Promise<ExtensionSettings> {
+  const settings = await getSettings();
+  const next = setSamsclubAtcQuantity(settings, { quantity, useMaxQuantity });
+  await saveSettings(next);
+  return next;
+}
+
+export async function setSamsclubAutoCheckoutModeForSettings(
+  mode: SamsclubAutoCheckoutMode,
+): Promise<ExtensionSettings> {
+  const settings = await getSettings();
+  const next = setSamsclubAutoCheckoutMode(settings, mode);
+  await saveSettings(next);
+  return next;
+}
+
+export async function setSamsclubCheckoutCvvForSettings(
+  cvv: string,
+): Promise<ExtensionSettings> {
+  const settings = await getSettings();
+  const next = setSamsclubCheckoutCvv(settings, cvv);
   await saveSettings(next);
   return next;
 }

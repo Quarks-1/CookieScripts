@@ -22,3 +22,7 @@ export function getSkuOpenModeEnabled(settings: ExtensionSettings): boolean {
 export function getWalmartRecordingUiEnabled(settings: ExtensionSettings): boolean {
   return settings.walmart_recording_ui_enabled === true;
 }
+
+export function getSamsclubRecordingUiEnabled(settings: ExtensionSettings): boolean {
+  return settings.samsclub_recording_ui_enabled === true;
+}

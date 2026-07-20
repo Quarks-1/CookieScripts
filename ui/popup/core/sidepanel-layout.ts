@@ -6,6 +6,8 @@ export type SidepanelSection =
   | "detectedLinks"
   | "retailerAuto"
   | "walmartResearch"
+  | "samsclubRecording"
+  | "samsclubAuto"
   | "linkHistory";
 
 const VISIBILITY: Record<SidepanelSection, ActiveTabKind | "always"> = {
@@ -14,6 +16,8 @@ const VISIBILITY: Record<SidepanelSection, ActiveTabKind | "always"> = {
   detectedLinks: "discord_channel",
   retailerAuto: "retailer",
   walmartResearch: "walmart",
+  samsclubRecording: "samsclub",
+  samsclubAuto: "samsclub",
   linkHistory: "discord_channel",
 };
 
@@ -39,6 +43,27 @@ export function isSectionVisible(
     return (
       status.active_tab_kind === "retailer" ||
       status.any_retailer_tab_open
+    );
+  }
+
+  if (section === "samsclubRecording") {
+    if (!status.enabled) {
+      return false;
+    }
+    return (
+      status.active_tab_kind === "samsclub" ||
+      status.samsclub_recording_active ||
+      status.any_samsclub_tab_open
+    );
+  }
+
+  if (section === "samsclubAuto") {
+    if (!status.enabled) {
+      return false;
+    }
+    return (
+      status.active_tab_kind === "samsclub" ||
+      status.any_samsclub_tab_open
     );
   }
 

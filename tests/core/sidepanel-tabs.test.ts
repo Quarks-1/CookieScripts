@@ -11,15 +11,17 @@ describe("activeTabKindToSidepanelTab", () => {
     expect(activeTabKindToSidepanelTab("discord_channel")).toBe("discord");
     expect(activeTabKindToSidepanelTab("retailer")).toBe("target");
     expect(activeTabKindToSidepanelTab("walmart")).toBe("walmart");
+    expect(activeTabKindToSidepanelTab("samsclub")).toBe("samsclub");
     expect(activeTabKindToSidepanelTab("other")).toBe("global");
   });
 });
 
 describe("isSupportedActiveTabKind", () => {
-  it("treats discord, retailer, and walmart as supported", () => {
+  it("treats discord, retailer, walmart, and samsclub as supported", () => {
     expect(isSupportedActiveTabKind("discord_channel")).toBe(true);
     expect(isSupportedActiveTabKind("retailer")).toBe(true);
     expect(isSupportedActiveTabKind("walmart")).toBe(true);
+    expect(isSupportedActiveTabKind("samsclub")).toBe(true);
     expect(isSupportedActiveTabKind("other")).toBe(false);
   });
 });

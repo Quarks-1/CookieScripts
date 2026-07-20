@@ -26,6 +26,25 @@ vi.mock("@ext/domains/walmart/background/tabs.ts", () => ({
   listAllWalmartTabs: vi.fn().mockResolvedValue([]),
 }));
 
+vi.mock("@ext/domains/samsclub/background/runtime-state.ts", () => ({
+  readMetrics: vi.fn().mockResolvedValue({
+    sessionId: null,
+    eventCount: 0,
+    bytes: 0,
+    dropDate: null,
+    recordingActive: false,
+    startedAt: null,
+  }),
+  readLastExport: vi.fn().mockResolvedValue(null),
+  isAnySamsclubRecording: vi.fn().mockReturnValue(false),
+  isSamsclubTabRecording: vi.fn().mockReturnValue(false),
+  recordingTabCount: vi.fn().mockReturnValue(0),
+}));
+
+vi.mock("@ext/domains/samsclub/background/tabs.ts", () => ({
+  listAllSamsclubTabs: vi.fn().mockResolvedValue([]),
+}));
+
 describe("handleUiMessage GET_STATUS", () => {
   beforeEach(() => {
     vi.clearAllMocks();

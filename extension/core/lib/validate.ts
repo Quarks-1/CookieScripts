@@ -97,6 +97,71 @@ export function validateGlobalWatchSettings(settings: ExtensionSettings): string
     }
   }
 
+  if (settings.samsclub_auto_checkout_mode !== undefined) {
+    const mode = settings.samsclub_auto_checkout_mode;
+    if (mode !== "off" && mode !== "all") {
+      return "samsclub_auto_checkout_mode must be off or all";
+    }
+  }
+
+  if (settings.samsclub_refresh_interval_sec !== undefined) {
+    if (
+      typeof settings.samsclub_refresh_interval_sec !== "number" ||
+      !Number.isFinite(settings.samsclub_refresh_interval_sec) ||
+      settings.samsclub_refresh_interval_sec < 0 ||
+      settings.samsclub_refresh_interval_sec > 3600
+    ) {
+      return "samsclub_refresh_interval_sec must be between 0 and 3600";
+    }
+  }
+
+  if (
+    settings.samsclub_recording_ui_enabled !== undefined &&
+    typeof settings.samsclub_recording_ui_enabled !== "boolean"
+  ) {
+    return "samsclub_recording_ui_enabled must be a boolean";
+  }
+
+  if (
+    settings.samsclub_frontend_atc_enabled !== undefined &&
+    typeof settings.samsclub_frontend_atc_enabled !== "boolean"
+  ) {
+    return "samsclub_frontend_atc_enabled must be a boolean";
+  }
+
+  if (
+    settings.samsclub_backend_atc_enabled !== undefined &&
+    typeof settings.samsclub_backend_atc_enabled !== "boolean"
+  ) {
+    return "samsclub_backend_atc_enabled must be a boolean";
+  }
+
+  if (
+    settings.samsclub_use_max_quantity !== undefined &&
+    typeof settings.samsclub_use_max_quantity !== "boolean"
+  ) {
+    return "samsclub_use_max_quantity must be a boolean";
+  }
+
+  if (settings.samsclub_atc_quantity !== undefined) {
+    if (
+      typeof settings.samsclub_atc_quantity !== "number" ||
+      !Number.isFinite(settings.samsclub_atc_quantity) ||
+      settings.samsclub_atc_quantity < 1
+    ) {
+      return "samsclub_atc_quantity must be at least 1";
+    }
+  }
+
+  if (settings.samsclub_checkout_cvv !== undefined) {
+    if (
+      typeof settings.samsclub_checkout_cvv !== "string" ||
+      !/^\d{3}$/.test(settings.samsclub_checkout_cvv)
+    ) {
+      return "samsclub_checkout_cvv must be exactly 3 digits";
+    }
+  }
+
   const retailers = ["target", "walmart"] as const;
   for (const retailer of retailers) {
     const bucket = settings.watch_keywords?.[retailer];

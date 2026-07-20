@@ -39,10 +39,42 @@ function status(overrides: Partial<ExtensionStatus>): ExtensionStatus {
     retailer_auto_checkout_mode: "off",
     walmart_auto_refresh_enabled: false,
     walmart_refresh_interval_sec: 10,
+    walmart_queue_pass_sound_enabled: true,
+    walmart_consolidate_queue_tabs_enabled: true,
+    walmart_throttle_refresh_interval_sec: 10,
+    global_target_positive_keywords: [],
+    global_target_negative_keywords: [],
+    global_walmart_positive_keywords: [],
+    global_walmart_negative_keywords: [],
+    global_target_skus: [],
+    global_walmart_skus: [],
     open_links_in_window: true,
     retailer_link_open_count: 1,
     sku_open_mode_enabled: false,
     walmart_recording_ui_enabled: false,
+    samsclub_tab_detected: false,
+    any_samsclub_tab_open: false,
+    samsclub_recording_active: false,
+    samsclub_recording_tab_count: 0,
+    samsclub_recording_event_count: 0,
+    samsclub_recording_bytes: 0,
+    samsclub_recording_drop_date: null,
+    samsclub_last_export_path: null,
+    samsclub_last_export_download_id: null,
+    samsclub_open_tabs: [],
+    samsclub_recording_ui_enabled: false,
+    samsclub_refresh_interval_sec: 0,
+    samsclub_frontend_atc_enabled: true,
+    samsclub_backend_atc_enabled: false,
+    samsclub_manual_status: "",
+    samsclub_manual_running: false,
+    samsclub_atc_quantity: 1,
+    samsclub_use_max_quantity: false,
+    samsclub_purchase_limit: null,
+    samsclub_quantity_invalid: false,
+    samsclub_auto_start_blocked: false,
+    samsclub_auto_checkout_mode: "off",
+    samsclub_checkout_cvv: "",
     ...overrides,
   };
 }
@@ -113,5 +145,48 @@ describe("isSectionVisible", () => {
     expect(isSectionVisible("walmartResearch", status({ active_tab_kind: "other" }))).toBe(false);
     expect(isSectionVisible("walmartResearch", discordRecording)).toBe(true);
     expect(isSectionVisible("walmartResearch", discordWithWalmartTab)).toBe(true);
+  });
+
+  it("shows samsclub recording on samsclub surface, when recording, or when any samsclub tab is open", () => {
+    const samsclub = status({ active_tab_kind: "samsclub", samsclub_tab_detected: true });
+    const paused = status({
+      active_tab_kind: "samsclub",
+      samsclub_tab_detected: true,
+      enabled: false,
+    });
+    const discordRecording = status({
+      active_tab_kind: "discord_channel",
+      samsclub_recording_active: true,
+    });
+    const discordWithSamsclubTab = status({
+      active_tab_kind: "discord_channel",
+      any_samsclub_tab_open: true,
+    });
+
+    expect(isSectionVisible("samsclubRecording", samsclub)).toBe(true);
+    expect(isSectionVisible("samsclubRecording", paused)).toBe(false);
+    expect(isSectionVisible("samsclubRecording", status({ active_tab_kind: "other" }))).toBe(
+      false,
+    );
+    expect(isSectionVisible("samsclubRecording", discordRecording)).toBe(true);
+    expect(isSectionVisible("samsclubRecording", discordWithSamsclubTab)).toBe(true);
+  });
+
+  it("shows samsclub auto on samsclub surface or when any samsclub tab is open", () => {
+    const samsclub = status({ active_tab_kind: "samsclub", samsclub_tab_detected: true });
+    const paused = status({
+      active_tab_kind: "samsclub",
+      samsclub_tab_detected: true,
+      enabled: false,
+    });
+    const discordWithSamsclubTab = status({
+      active_tab_kind: "discord_channel",
+      any_samsclub_tab_open: true,
+    });
+
+    expect(isSectionVisible("samsclubAuto", samsclub)).toBe(true);
+    expect(isSectionVisible("samsclubAuto", paused)).toBe(false);
+    expect(isSectionVisible("samsclubAuto", status({ active_tab_kind: "other" }))).toBe(false);
+    expect(isSectionVisible("samsclubAuto", discordWithSamsclubTab)).toBe(true);
   });
 });

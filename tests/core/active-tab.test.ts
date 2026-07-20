@@ -11,6 +11,12 @@ describe("resolveActiveTabKind", () => {
     expect(resolveActiveTabKind("https://www.target.com/p/foo/-/A-1")).toBe("retailer");
   });
 
+  it("returns samsclub for samsclub.com URLs", () => {
+    expect(resolveActiveTabKind("https://www.samsclub.com/ip/Rattle/20186272756")).toBe(
+      "samsclub",
+    );
+  });
+
   it("prefers walmart over other kinds", () => {
     expect(resolveActiveTabKind("https://walmart.com/")).toBe("walmart");
   });

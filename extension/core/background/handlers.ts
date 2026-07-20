@@ -2,12 +2,17 @@ import { handleDiscordMessage } from "@ext/domains/discord/background/handlers.t
 import { handleRetailerMessage } from "@ext/domains/target/background/handlers.ts";
 import { handleUiMessage } from "@ext/core/background/ui-handlers.ts";
 import {
+  handleSamsclubAutomationMessage,
+  handleSamsclubContentMessage,
+} from "@ext/domains/samsclub/background/handlers/index.ts";
+import {
   handleWalmartContentMessage,
 } from "@ext/domains/walmart/background/handlers/index.ts";
 import {
   isDiscordContentSender,
   isExtensionPageSender,
   isRetailerContentSender,
+  isSamsclubContentSender,
   isWalmartContentSender,
 } from "@ext/core/background/sender-auth.ts";
 import type {
@@ -15,6 +20,7 @@ import type {
   ContentToBackground,
   RetailerToBackground,
   RuntimeMessage,
+  SamsclubToBackground,
   UiToBackground,
   WalmartToBackground,
 } from "@ext/core/types/index.ts";
@@ -59,6 +65,33 @@ function isWalmartContentMessage(message: RuntimeMessage): message is WalmartToB
   );
 }
 
+function isSamsclubRecordingMessage(
+  message: RuntimeMessage,
+): message is Extract<
+  SamsclubToBackground,
+  { type: "SAMSCLUB_RECORDING_APPEND" | "SAMSCLUB_RECORDING_REATTACH" }
+> {
+  return (
+    message.type === "SAMSCLUB_RECORDING_APPEND" ||
+    message.type === "SAMSCLUB_RECORDING_REATTACH"
+  );
+}
+
+function isSamsclubAutomationMessage(message: RuntimeMessage): message is SamsclubToBackground {
+  return (
+    message.type === "SAMSCLUB_PING" ||
+    message.type === "SAMSCLUB_AUTO_STATUS" ||
+    message.type === "SAMSCLUB_GET_AUTO_CONFIG" ||
+    message.type === "SAMSCLUB_SET_REFRESH_INTERVAL" ||
+    message.type === "SAMSCLUB_HARD_RELOAD" ||
+    message.type === "SAMSCLUB_GET_TAB_AUTO_STATE" ||
+    message.type === "SAMSCLUB_SYNC_MANUAL_STOP" ||
+    message.type === "SAMSCLUB_SYNC_MANUAL_START" ||
+    message.type === "SAMSCLUB_UI_STATE" ||
+    message.type === "SAMSCLUB_PURCHASE_LIMIT_SNAPSHOT"
+  );
+}
+
 function isUiMessage(message: RuntimeMessage): message is UiToBackground {
   return (
     message.type === "GET_STATUS" ||
@@ -76,7 +109,15 @@ function isUiMessage(message: RuntimeMessage): message is UiToBackground {
     message.type === "RETAILER_STOP_MANUAL_AUTO" ||
     message.type === "WALMART_RECORDING" ||
     message.type === "SET_WALMART_AUTO_REFRESH_ENABLED" ||
-    message.type === "SET_WALMART_REFRESH_INTERVAL"
+    message.type === "SET_WALMART_REFRESH_INTERVAL" ||
+    message.type === "SAMSCLUB_RECORDING" ||
+    message.type === "SET_SAMSCLUB_REFRESH_INTERVAL" ||
+    message.type === "SET_SAMSCLUB_ATC_MODES" ||
+    message.type === "SET_SAMSCLUB_ATC_QUANTITY" ||
+    message.type === "SET_SAMSCLUB_AUTO_CHECKOUT_MODE" ||
+    message.type === "SET_SAMSCLUB_CHECKOUT_CVV" ||
+    message.type === "SAMSCLUB_START_MANUAL_AUTO" ||
+    message.type === "SAMSCLUB_STOP_MANUAL_AUTO"
   );
 }
 
@@ -106,6 +147,16 @@ export async function handleMessage(
       return await handleWalmartContentMessage(message, sender);
     }
 
+    if (isSamsclubRecordingMessage(message) || isSamsclubAutomationMessage(message)) {
+      if (!isSamsclubContentSender(sender)) {
+        return { ok: false, error: "Unauthorized sender" };
+      }
+      if (isSamsclubAutomationMessage(message)) {
+        return await handleSamsclubAutomationMessage(message, sender);
+      }
+      return await handleSamsclubContentMessage(message, sender);
+    }
+
     if (isUiMessage(message)) {
       if (!isExtensionPageSender(sender)) {
         return { ok: false, error: "Unauthorized sender" };
@@ -124,7 +175,14 @@ export async function handleMessage(
       message.type === "WALMART_RECORDING_START" ||
       message.type === "WALMART_RECORDING_STOP" ||
       message.type === "WALMART_RECORDING_MARK" ||
-      message.type === "WALMART_AUTO_REFRESH_CONFIG"
+      message.type === "WALMART_AUTO_REFRESH_CONFIG" ||
+      message.type === "SAMSCLUB_RECORDING_START" ||
+      message.type === "SAMSCLUB_RECORDING_STOP" ||
+      message.type === "SAMSCLUB_RECORDING_MARK" ||
+      message.type === "SAMSCLUB_START_AUTO" ||
+      message.type === "SAMSCLUB_STOP_AUTO" ||
+      message.type === "SAMSCLUB_START_MANUAL_AUTO" ||
+      message.type === "SAMSCLUB_GET_PURCHASE_LIMIT"
     ) {
       return undefined;
     }
