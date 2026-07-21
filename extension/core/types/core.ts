@@ -71,6 +71,18 @@ export interface ExtensionSettings {
   samsclub_auto_checkout_mode?: SamsclubAutoCheckoutMode;
   /** Saved card CVV for Sam's Club review-order checkout (3 digits). */
   samsclub_checkout_cvv?: string;
+  /** Target scheduled auto mode start. */
+  retailer_schedule_enabled?: boolean;
+  retailer_schedule_start_time?: string;
+  retailer_schedule_end_time?: string;
+  retailer_schedule_stop_on_oos?: boolean;
+  /** Target-only: close product tab when OOS detected during PDP wait. */
+  retailer_close_tab_on_oos?: boolean;
+  /** Sam's Club scheduled auto mode start. */
+  samsclub_schedule_enabled?: boolean;
+  samsclub_schedule_start_time?: string;
+  samsclub_schedule_end_time?: string;
+  samsclub_schedule_stop_on_oos?: boolean;
 }
 
 export type HistoryItemKind =

@@ -35,6 +35,24 @@ import {
   buildQuantityStatusFields as buildSamsclubQuantityStatusFields,
 } from "@ext/domains/samsclub/lib/index.ts";
 import { sleep } from "@ext/core/lib/sleep.ts";
+import { getScheduleActionStatus } from "@ext/core/background/schedule-runtime-state.ts";
+import { readScheduleSession } from "@ext/core/lib/schedule-session.ts";
+import {
+  getSchedulePhase,
+  schedulePhaseStatusLine,
+  type SchedulePhase,
+} from "@ext/core/lib/schedule.ts";
+import {
+  getRetailerCloseTabOnOos,
+  getRetailerScheduleEnabled,
+  getRetailerScheduleEndTime,
+  getRetailerScheduleStartTime,
+  getRetailerScheduleStopOnOos,
+  getSamsclubScheduleEnabled,
+  getSamsclubScheduleEndTime,
+  getSamsclubScheduleStartTime,
+  getSamsclubScheduleStopOnOos,
+} from "@ext/core/lib/schedule-settings.ts";
 import { resolveActiveTabKind } from "@ext/core/lib/active-tab.ts";
 import {
   getOpenLinksInWindow,
@@ -316,6 +334,84 @@ async function resolveSamsclubPurchaseLimit(
   return readSamsclubPurchaseLimit(tabId, tabUrl);
 }
 
+async function buildRetailerScheduleStatus(
+  settings: ExtensionSettings,
+): Promise<{
+  retailer_schedule_enabled: boolean;
+  retailer_schedule_start_time: string | null;
+  retailer_schedule_end_time: string | null;
+  retailer_schedule_stop_on_oos: boolean;
+  retailer_close_tab_on_oos: boolean;
+  retailer_schedule_phase: SchedulePhase;
+  retailer_schedule_status: string;
+}> {
+  const enabled = getRetailerScheduleEnabled(settings);
+  const startTime = getRetailerScheduleStartTime(settings);
+  const endTime = getRetailerScheduleEndTime(settings);
+  const session = await readScheduleSession("target");
+  const now = new Date();
+  const phase = getSchedulePhase(
+    enabled,
+    startTime ?? undefined,
+    endTime ?? undefined,
+    now,
+    session.start_fired_date,
+    session.end_fired_date,
+  );
+  return {
+    retailer_schedule_enabled: enabled,
+    retailer_schedule_start_time: startTime,
+    retailer_schedule_end_time: endTime,
+    retailer_schedule_stop_on_oos: getRetailerScheduleStopOnOos(settings),
+    retailer_close_tab_on_oos: getRetailerCloseTabOnOos(settings),
+    retailer_schedule_phase: phase,
+    retailer_schedule_status: schedulePhaseStatusLine(
+      phase,
+      startTime,
+      now,
+      getScheduleActionStatus("target"),
+    ),
+  };
+}
+
+async function buildSamsclubScheduleStatus(
+  settings: ExtensionSettings,
+): Promise<{
+  samsclub_schedule_enabled: boolean;
+  samsclub_schedule_start_time: string | null;
+  samsclub_schedule_end_time: string | null;
+  samsclub_schedule_stop_on_oos: boolean;
+  samsclub_schedule_phase: SchedulePhase;
+  samsclub_schedule_status: string;
+}> {
+  const enabled = getSamsclubScheduleEnabled(settings);
+  const startTime = getSamsclubScheduleStartTime(settings);
+  const endTime = getSamsclubScheduleEndTime(settings);
+  const session = await readScheduleSession("samsclub");
+  const now = new Date();
+  const phase = getSchedulePhase(
+    enabled,
+    startTime ?? undefined,
+    endTime ?? undefined,
+    now,
+    session.start_fired_date,
+    session.end_fired_date,
+  );
+  return {
+    samsclub_schedule_enabled: enabled,
+    samsclub_schedule_start_time: startTime,
+    samsclub_schedule_end_time: endTime,
+    samsclub_schedule_stop_on_oos: getSamsclubScheduleStopOnOos(settings),
+    samsclub_schedule_phase: phase,
+    samsclub_schedule_status: schedulePhaseStatusLine(
+      phase,
+      startTime,
+      now,
+      getScheduleActionStatus("samsclub"),
+    ),
+  };
+}
+
 export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<ExtensionStatus> {
   const settings = await getSettings();
 
@@ -413,6 +509,9 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
   const walmartRefreshIntervalSec =
     walmartAutoRefresh?.interval_sec ?? WALMART_AUTO_REFRESH_DEFAULT_INTERVAL_SEC;
 
+  const retailerScheduleStatus = await buildRetailerScheduleStatus(settings);
+  const samsclubScheduleStatus = await buildSamsclubScheduleStatus(settings);
+
   return {
     enabled: settings.enabled,
     active_tab_kind: activeTabKind,
@@ -456,6 +555,7 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     retailer_quantity_invalid: quantityStatus.retailer_quantity_invalid,
     retailer_auto_start_blocked: quantityStatus.retailer_auto_start_blocked,
     retailer_auto_checkout_mode: getRetailerAutoCheckoutMode(settings),
+    ...retailerScheduleStatus,
     walmart_auto_refresh_enabled: walmartAutoRefreshEnabled,
     walmart_refresh_interval_sec: walmartRefreshIntervalSec,
     walmart_queue_pass_sound_enabled: settings.walmart_queue_pass_sound_enabled !== false,
@@ -487,6 +587,7 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     samsclub_auto_start_blocked: samsclubQuantityStatus.samsclub_auto_start_blocked,
     samsclub_auto_checkout_mode: getSamsclubAutoCheckoutMode(settings),
     samsclub_checkout_cvv: getSamsclubCheckoutCvv(settings) ?? "",
+    ...samsclubScheduleStatus,
   };
 }
 

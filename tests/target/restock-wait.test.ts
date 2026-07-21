@@ -4,6 +4,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  isOosSignal,
   isRestockWaitPage,
   waitingForAddToCartStatus,
 } from "@ext/domains/target/lib/restock-wait.ts";
@@ -57,5 +58,18 @@ describe("restock-wait", () => {
     `;
 
     expect(isRestockWaitPage(document, DROP_OOS_URL)).toBe(false);
+  });
+
+  it("isOosSignal is true for restock wait DOM", () => {
+    document.body.innerHTML = `
+      <div data-test="NonbuyableSection"></div>
+      <div data-test="@web/AddToCart/FulfillmentSection">
+        <button id="addToCartButtonOrTextIdFor1011209279" type="button" disabled>Add to cart</button>
+      </div>
+    `;
+
+    expect(isOosSignal(document, DROP_OOS_URL)).toBe(true);
+    expect(isOosSignal(document, DROP_OOS_URL, { kind: "out_of_stock" })).toBe(true);
+    expect(isOosSignal(document, IN_STOCK_URL, { kind: "blocked" })).toBe(false);
   });
 });

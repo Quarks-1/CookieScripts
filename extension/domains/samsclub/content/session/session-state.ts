@@ -28,6 +28,8 @@ export const state = {
   cachedUseMaxQuantity: false,
   cachedAutoCheckoutEnabled: false,
   cachedCheckoutCvv: null as string | null,
+  cachedStopOnOosEnabled: false,
+  stoppedDueToOos: false,
   trackedPurchaseLimitHref: location.href,
   unhookSamsclubNavigation: null as (() => void) | null,
   purchaseLimitWatchTeardown: null as (() => void) | null,
@@ -50,6 +52,7 @@ export function applyCachedAutoConfig(config: SamsclubAutoConfig): void {
   state.cachedUseMaxQuantity = config.useMaxQuantity;
   state.cachedAutoCheckoutEnabled = config.autoCheckoutEnabled;
   state.cachedCheckoutCvv = config.checkoutCvv;
+  state.cachedStopOnOosEnabled = config.stopOnOosEnabled;
 
   if (resume?.phase === "checkout" && resumeCheckout) {
     state.cachedAutoCheckoutEnabled = true;

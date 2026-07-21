@@ -23,6 +23,7 @@ describe("samsclub session-state", () => {
       useMaxQuantity: false,
       autoCheckoutEnabled: true,
       checkoutCvv: "123",
+      stopOnOosEnabled: false,
     });
 
     expect(state.cachedAutoCheckoutEnabled).toBe(true);
@@ -50,6 +51,7 @@ describe("samsclub session-state", () => {
       useMaxQuantity: false,
       autoCheckoutEnabled: true,
       checkoutCvv: null,
+      stopOnOosEnabled: false,
     });
 
     expect(state.cachedAutoCheckoutEnabled).toBe(true);

@@ -28,7 +28,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 
 ### Shared components (`ui/shared/components/`)
 
-`EnableSlider`, `WatchStatusBadge`, `LinkHistory`, `CollapsiblePillList`, `DomainPills`, `DetectedLinkPills`, `KeywordPills`, `SkuPills`, `PillListSectionHeader`, `CompactNumberField`
+`EnableSlider`, `WatchStatusBadge`, `LinkHistory`, `CollapsiblePillList`, `DomainPills`, `DetectedLinkPills`, `KeywordPills`, `SkuPills`, `PillListSectionHeader`, `CompactNumberField`, `ScheduleTimeField`
 
 ## Layout
 
@@ -86,7 +86,7 @@ Used inside domain panels for intra-panel gating:
 
 | Domain | Hooks |
 |---|---|
-| Core | `usePopupStatus`, `useUpdateCheck` |
+| Core | `usePopupStatus`, `useUpdateCheck`, `useLiveScheduleStatus` |
 | Discord (`DiscordPanel`) | `useChannelDiscordSettings`, `useGlobalDiscordWatchSettings`, `useDetectedLinks`, `useLinkHistory` |
 | Target (`TargetPanel`) | `useRetailerLinkOpenCount`, `useRetailerAutoAtcEnabled`, `useRetailerAutoMode`, `useRetailerAtcMode`, `useRetailerAtcQuantity`, `useRetailerAutoCheckout` |
 | Walmart (`WalmartPanel`) | `useWalmartRecording`, `useWalmartAutoRefresh`, `useWalmartQueueSettings` |
@@ -106,6 +106,8 @@ Walmart queue settings are exposed on `ExtensionStatus` (`walmart_queue_pass_sou
 
 `App.tsx` loads `ExtensionStatus` once via `usePopupStatus` before rendering a panel. **Domain hooks must not paint hardcoded defaults and then `GET_STATUS` on mount.**
 
+Schedule **pending** countdown (`Starts in …`) ticks every second in the panel via `useLiveScheduleStatus` — `GET_STATUS` alone is too infrequent for a live timer.
+
 When a hook displays persisted settings:
 
 1. Add fields to `ExtensionStatus` and `buildStatus` when missing (preferred — one load for the whole panel).
@@ -122,6 +124,8 @@ When a hook displays persisted settings:
 - `App.tsx` is the only consumer of `usePopupStatus`; panels receive `onRefresh` when needed.
 - Domain tabs auto-follow supported `active_tab_kind` changes; users can still pick another tab until the browser tab changes again. Do not gate panel settings on `active_tab_kind` (runtime actions may still require the matching browser tab).
 - `buildStatus` in `status.ts` is the status contract — update `extension/core/types/status.ts` when adding fields.
+- **No hint text** under toggles or inputs (e.g. “Applies when…”, “Independent of…”). Control labels must be self-explanatory; use `role="status"` only for live errors, saving state, and runtime status lines from `ExtensionStatus`.
+- **Draft on blur for typed inputs** — `ScheduleTimeField`, `CompactNumberField`, and similar controls must **not** persist on every `onChange`. Keep local draft state while focused (`useRef` focus flag + `useEffect` sync when unfocused); call the hook/save handler only on `onBlur`. Reference: `ScheduleTimeField`, `RetailerAutoModeSection`, `WalmartAutoRefreshSection`. Schedule times use 24-hour `HH:mm` text (not `<input type="time">`, which follows OS 12-hour locale).
 
 Global invariants and import rules: [AGENTS.md](../../../AGENTS.md).
 

@@ -1,3 +1,4 @@
+import type { CartApiProbeResult } from "@ext/domains/target/lib/cart-api.ts";
 import {
   mainAddToCartButtonId,
   parseTargetTcinFromUrl,
@@ -37,4 +38,15 @@ export function waitingForAddToCartStatus(doc: Document, pageUrl: string): strin
   return isRestockWaitPage(doc, pageUrl)
     ? "Waiting for restock…"
     : "Waiting for main Add to cart…";
+}
+
+export function isOosSignal(
+  doc: Document,
+  pageUrl: string,
+  cartProbeResult?: CartApiProbeResult,
+): boolean {
+  if (cartProbeResult?.kind === "out_of_stock") {
+    return true;
+  }
+  return isRestockWaitPage(doc, pageUrl);
 }

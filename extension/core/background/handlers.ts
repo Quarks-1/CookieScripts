@@ -48,7 +48,8 @@ function isRetailerContentMessage(message: RuntimeMessage): message is RetailerT
     message.type === "RETAILER_SYNC_MANUAL_STOP" ||
     message.type === "RETAILER_SYNC_MANUAL_START" ||
     message.type === "RETAILER_UI_STATE" ||
-    message.type === "RETAILER_PURCHASE_LIMIT_SNAPSHOT"
+    message.type === "RETAILER_PURCHASE_LIMIT_SNAPSHOT" ||
+    message.type === "RETAILER_CLOSE_TAB_ON_OOS"
   );
 }
 
@@ -117,7 +118,9 @@ function isUiMessage(message: RuntimeMessage): message is UiToBackground {
     message.type === "SET_SAMSCLUB_AUTO_CHECKOUT_MODE" ||
     message.type === "SET_SAMSCLUB_CHECKOUT_CVV" ||
     message.type === "SAMSCLUB_START_MANUAL_AUTO" ||
-    message.type === "SAMSCLUB_STOP_MANUAL_AUTO"
+    message.type === "SAMSCLUB_STOP_MANUAL_AUTO" ||
+    message.type === "SET_RETAILER_SCHEDULE" ||
+    message.type === "SET_SAMSCLUB_SCHEDULE"
   );
 }
 

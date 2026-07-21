@@ -15,6 +15,7 @@ Chrome MV3 service worker hub — message router, link opening pipeline, shared 
 | Side panel | `background/side-panel.ts` (`configureSidePanel`) |
 | Active tab | `background/window-active-tab.ts`, `lib/active-tab.ts` |
 | Open links | `background/open-product-link.ts` |
+| Schedule alarms | `background/schedule-alarms.ts`, `lib/schedule.ts`, `lib/schedule-settings.ts`, `lib/schedule-session.ts` |
 | Runtime dedup/state | `background/runtime-state.ts` |
 | Link pipeline | `lib/process-links.ts`, `lib/links.ts`, `lib/validate.ts`, `lib/affiliate-unwrap.ts`, `lib/keywords.ts`, `lib/retailer-url.ts`, `lib/sku-watch/*` |
 | Channel allowlists | `lib/channel-targets.ts`, `lib/storage.ts` |
@@ -26,7 +27,8 @@ Chrome MV3 service worker hub — message router, link opening pipeline, shared 
 
 - `initPromise` gates `onMessage` handlers (no top-level await in MV3).
 - `onInstalled` → `seedDefaultsIfMissing` + `configureSidePanel`.
-- Startup → `configureSidePanel`, `loadWalmartRecordingState`, `loadSamsclubRecordingState`.
+- Startup → `configureSidePanel`, `loadWalmartRecordingState`, `loadSamsclubRecordingState`, `syncScheduleAlarms`.
+- `chrome.alarms.onAlarm` → `handleScheduleAlarm` (Target + Sam's Club scheduled start/end).
 - Tab listeners: Walmart auto-refresh, core dedup flush, Target retailer cleanup, Walmart recording teardown, Sam's Club recording + automation teardown.
 - Window listener: Target retailer window cleanup.
 - `onSuspend` (when supported) → `flushRecentUrls()` before SW teardown.

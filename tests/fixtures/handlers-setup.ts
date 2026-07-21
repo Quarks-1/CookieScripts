@@ -48,6 +48,12 @@ export function setupChromeMocks() {
         }),
       },
     },
+    alarms: {
+      getAll: vi.fn(async () => []),
+      clear: vi.fn(async () => true),
+      create: vi.fn(async () => undefined),
+      onAlarm: { addListener: vi.fn() },
+    },
     tabs: {
       create: vi.fn(async () => ({ id: 99 })),
       query: vi.fn(async () => [{ id: 1, url: "https://discord.com/channels/111/222" }]),

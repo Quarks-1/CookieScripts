@@ -17,16 +17,23 @@ import {
   normalizeSamsclubCheckoutCvv,
   SAMSCLUB_AUTO_CHECKOUT_MODES,
 } from "@ext/domains/samsclub/lib/index.ts";
+import {
+  clearAllScheduleAlarms,
+  resetScheduleRuntimeForRetailer,
+  syncScheduleAlarms,
+} from "@ext/core/background/schedule-alarms.ts";
+import { notifyStatusChanged } from "@ext/core/background/status-notify.ts";
+import { clearAllScheduleActionStatus } from "@ext/core/background/schedule-runtime-state.ts";
+import { clearAllScheduleSession } from "@ext/core/lib/schedule-session.ts";
 import { getActiveRetailerTabInWindow } from "@ext/domains/target/background/tab-message.ts";
 import { getActiveSamsclubTabInWindow } from "@ext/domains/samsclub/background/tab-message.ts";
 import { getActiveTabInWindow } from "@ext/core/background/window-active-tab.ts";
 import {
-  bindRetailerTab,
   broadcastRetailerStopAuto,
-  clearRetailerManualAutoStopped,
-  setRetailerTabUiState,
   stopRetailerTabAuto,
 } from "@ext/domains/target/background/runtime-state.ts";
+import { startRetailerTabAuto } from "@ext/domains/target/background/scheduled-auto.ts";
+import { stopScheduledTargetAuto } from "@ext/domains/target/background/scheduled-auto.ts";
 import {
   clearHistory,
   getHistory,
@@ -43,11 +50,15 @@ import {
   stopAllSamsclubRecordingsForDisable,
 } from "@ext/domains/samsclub/background/handlers/index.ts";
 import {
-  bindSamsclubTab,
-  clearSamsclubManualAutoStopped,
-  setSamsclubTabUiState,
+  broadcastSamsclubStopAuto,
   stopSamsclubTabAuto,
 } from "@ext/domains/samsclub/background/automation-runtime-state.ts";
+import { startSamsclubTabAuto } from "@ext/domains/samsclub/background/scheduled-auto.ts";
+import { stopScheduledSamsclubAuto } from "@ext/domains/samsclub/background/scheduled-auto.ts";
+import {
+  mergeRetailerScheduleSettings,
+  mergeSamsclubScheduleSettings,
+} from "@ext/core/lib/schedule-settings.ts";
 import {
   handleSetWalmartAutoRefreshEnabled,
   handleSetWalmartRefreshInterval,
@@ -80,6 +91,14 @@ export async function handleUiMessage(
           await stopAllWalmartRecordingsForDisable();
           await stopAllWalmartAutoRefreshForDisable();
           await stopAllSamsclubRecordingsForDisable();
+          clearAllScheduleActionStatus();
+          await clearAllScheduleSession();
+          await clearAllScheduleAlarms();
+          await broadcastRetailerStopAuto();
+          await broadcastSamsclubStopAuto();
+          void notifyStatusChanged();
+        } else {
+          await syncScheduleAlarms(message.settings);
         }
         return { ok: true };
       } catch (error) {
@@ -166,16 +185,9 @@ export async function handleUiMessage(
       if (!tab?.id) {
         return { ok: false, error: "Open a Target tab in this window" };
       }
-      bindRetailerTab(tab.id, "manual");
-      clearRetailerManualAutoStopped(tab.id);
-      setRetailerTabUiState(tab.id, { status: "Starting auto mode…", running: true });
-      try {
-        await chrome.tabs.sendMessage(tab.id, { type: "RETAILER_START_MANUAL_AUTO" });
-      } catch {
-        return {
-          ok: false,
-          error: "Target tab is not ready — refresh the page",
-        };
+      const result = await startRetailerTabAuto(tab.id);
+      if (!result.ok) {
+        return { ok: false, error: result.error ?? "Failed to start auto mode" };
       }
       return { ok: true };
     }
@@ -247,16 +259,9 @@ export async function handleUiMessage(
       if (!tab?.id) {
         return { ok: false, error: "Open a Sam's Club tab in this window" };
       }
-      bindSamsclubTab(tab.id, "manual");
-      clearSamsclubManualAutoStopped(tab.id);
-      setSamsclubTabUiState(tab.id, { status: "Starting auto mode…", running: true });
-      try {
-        await chrome.tabs.sendMessage(tab.id, { type: "SAMSCLUB_START_MANUAL_AUTO" });
-      } catch {
-        return {
-          ok: false,
-          error: "Sam's Club tab is not ready — refresh the page",
-        };
+      const result = await startSamsclubTabAuto(tab.id);
+      if (!result.ok) {
+        return { ok: false, error: result.error ?? "Failed to start auto mode" };
       }
       return { ok: true };
     }
@@ -267,6 +272,44 @@ export async function handleUiMessage(
       }
       await stopSamsclubTabAuto(tab.id);
       return { ok: true };
+    }
+    case "SET_RETAILER_SCHEDULE": {
+      try {
+        const settings = await getSettings();
+        const next = mergeRetailerScheduleSettings(settings, message);
+        await saveSettings(next);
+        if (message.enabled === false) {
+          await stopScheduledTargetAuto();
+          await resetScheduleRuntimeForRetailer("target");
+        }
+        await syncScheduleAlarms(next);
+        void notifyStatusChanged();
+        return { ok: true };
+      } catch (error) {
+        return {
+          ok: false,
+          error: error instanceof Error ? error.message : "Save failed",
+        };
+      }
+    }
+    case "SET_SAMSCLUB_SCHEDULE": {
+      try {
+        const settings = await getSettings();
+        const next = mergeSamsclubScheduleSettings(settings, message);
+        await saveSettings(next);
+        if (message.enabled === false) {
+          await stopScheduledSamsclubAuto();
+          await resetScheduleRuntimeForRetailer("samsclub");
+        }
+        await syncScheduleAlarms(next);
+        void notifyStatusChanged();
+        return { ok: true };
+      } catch (error) {
+        return {
+          ok: false,
+          error: error instanceof Error ? error.message : "Save failed",
+        };
+      }
     }
   }
 }

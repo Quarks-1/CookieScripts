@@ -3,6 +3,9 @@ import type { SamsclubOpenTabSummary } from "@ext/domains/samsclub/types/samsclu
 import type { WalmartOpenTabSummary } from "@ext/domains/walmart/types/walmart.ts";
 
 import type { ActiveTabKind, RetailerAutoCheckoutMode, SamsclubAutoCheckoutMode } from "@ext/core/types/core.ts";
+import type { SchedulePhase } from "@ext/core/lib/schedule.ts";
+
+export type { SchedulePhase };
 
 export interface ExtensionStatus {
   enabled: boolean;
@@ -42,6 +45,13 @@ export interface ExtensionStatus {
   retailer_quantity_invalid: boolean;
   retailer_auto_start_blocked: boolean;
   retailer_auto_checkout_mode: RetailerAutoCheckoutMode;
+  retailer_schedule_enabled: boolean;
+  retailer_schedule_start_time: string | null;
+  retailer_schedule_end_time: string | null;
+  retailer_schedule_stop_on_oos: boolean;
+  retailer_close_tab_on_oos: boolean;
+  retailer_schedule_phase: SchedulePhase;
+  retailer_schedule_status: string;
   walmart_auto_refresh_enabled: boolean;
   walmart_refresh_interval_sec: number;
   walmart_queue_pass_sound_enabled: boolean;
@@ -86,6 +96,12 @@ export interface ExtensionStatus {
   samsclub_quantity_invalid: boolean;
   samsclub_auto_start_blocked: boolean;
   samsclub_auto_checkout_mode: SamsclubAutoCheckoutMode;
+  samsclub_schedule_enabled: boolean;
+  samsclub_schedule_start_time: string | null;
+  samsclub_schedule_end_time: string | null;
+  samsclub_schedule_stop_on_oos: boolean;
+  samsclub_schedule_phase: SchedulePhase;
+  samsclub_schedule_status: string;
   /** Saved CVV for Sam's Club checkout autofill; empty when unset. */
   samsclub_checkout_cvv: string;
 }

@@ -89,7 +89,7 @@ export function startRetailerSession(): void {
         handleStartAuto(message);
         return { ok: true };
       case "RETAILER_START_MANUAL_AUTO":
-        handleStartManualAuto();
+        handleStartManualAuto(message.hard_refresh === true);
         return { ok: true };
       case "RETAILER_STOP_AUTO":
         requestStopAutoMode();

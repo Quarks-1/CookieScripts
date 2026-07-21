@@ -89,7 +89,7 @@ export function startSamsclubSession(): void {
         handleStartAuto(message);
         return { ok: true };
       case "SAMSCLUB_START_MANUAL_AUTO":
-        handleStartManualAuto();
+        handleStartManualAuto(message.hard_refresh === true);
         return { ok: true };
       case "SAMSCLUB_STOP_AUTO":
         requestStopAutoMode();

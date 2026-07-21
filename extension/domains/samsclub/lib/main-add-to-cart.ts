@@ -2,6 +2,7 @@ import { unwrapAffiliateUrl } from "@ext/core/lib/affiliate-unwrap.ts";
 
 import { runWaitingDisabledTick } from "@ext/domains/samsclub/lib/waiting-disabled.ts";
 import { shouldUseBackendAtc } from "@ext/domains/samsclub/lib/atc-route.ts";
+import { isOosSignal } from "@ext/domains/samsclub/lib/restock-wait.ts";
 import { isElementActionable } from "./dom.ts";
 
 export const MAIN_ADD_TO_CART_SCOPES = [
@@ -226,6 +227,8 @@ export type WaitForMainAddToCartOptions = {
   frontendAtcEnabled?: boolean;
   backendAtcEnabled?: boolean;
   getEffectiveQuantity?: () => number;
+  stopOnOosEnabled?: boolean;
+  onOosConfirmed?: () => void;
 };
 
 export async function waitForMainAddToCartButton(
@@ -257,6 +260,8 @@ export async function waitForMainAddToCartButton(
     frontendAtcEnabled = true,
     backendAtcEnabled = false,
     getEffectiveQuantity,
+    stopOnOosEnabled = false,
+    onOosConfirmed,
   } = options;
 
   const resolveRefreshIntervalSec = (): number =>
@@ -265,6 +270,7 @@ export async function waitForMainAddToCartButton(
   const deadline = waitTimeoutMs === null ? null : Date.now() + waitTimeoutMs;
   let reportedWaiting = false;
   let lastCartApiProbeMs: number | null = null;
+  let consecutiveOosTicks = 0;
   const pageUrlForWait = resolvedPageUrl ?? "";
   const tcin = parseTargetTcinFromUrl(pageUrlForWait);
 
@@ -282,6 +288,8 @@ export async function waitForMainAddToCartButton(
       waitState.kind,
     );
 
+    let tickOutcome: "continue" | "reloading" | "aborted" | "cart_added" | "out_of_stock" | undefined;
+
     if (useBackendAtc) {
       const tick = await runWaitingDisabledTick({
         pageUrl: pageUrlForWait,
@@ -298,6 +306,7 @@ export async function waitForMainAddToCartButton(
       });
       lastCartApiProbeMs = tick.lastCartApiProbeMs;
       reportedWaiting = tick.reportedWaiting;
+      tickOutcome = tick.outcome;
 
       if (tick.outcome === "cart_added") {
         return { kind: "api_added" };
@@ -321,10 +330,24 @@ export async function waitForMainAddToCartButton(
       });
       lastCartApiProbeMs = tick.lastCartApiProbeMs;
       reportedWaiting = tick.reportedWaiting;
+      tickOutcome = tick.outcome;
 
       if (tick.outcome === "reloading" || tick.outcome === "aborted") {
         return null;
       }
+    }
+
+    const oosThisTick =
+      tickOutcome === "out_of_stock" || isOosSignal(document, pageUrlForWait);
+    if (oosThisTick) {
+      consecutiveOosTicks += 1;
+    } else {
+      consecutiveOosTicks = 0;
+    }
+
+    if (consecutiveOosTicks >= 2 && stopOnOosEnabled) {
+      onOosConfirmed?.();
+      return null;
     }
 
     if (waitState.kind === "ready" && frontendAtcEnabled) {

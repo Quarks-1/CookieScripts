@@ -20,7 +20,7 @@ export type WaitingDisabledTickOptions = {
 export type WaitingDisabledTickResult = {
   lastCartApiProbeMs: number | null;
   reportedWaiting: boolean;
-  outcome: "continue" | "reloading" | "aborted" | "cart_added";
+  outcome: "continue" | "reloading" | "aborted" | "cart_added" | "out_of_stock";
 };
 
 export async function runWaitingDisabledTick(
@@ -45,6 +45,9 @@ export async function runWaitingDisabledTick(
       );
       if (probeResult.kind === "added") {
         return { lastCartApiProbeMs, reportedWaiting, outcome: "cart_added" };
+      }
+      if (probeResult.kind === "out_of_stock") {
+        return { lastCartApiProbeMs, reportedWaiting, outcome: "out_of_stock" };
       }
     }
   }

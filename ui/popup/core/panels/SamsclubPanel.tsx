@@ -1,12 +1,14 @@
 import type { ExtensionStatus } from "@ext/core/types/index.ts";
 import { SamsclubAtcToggles } from "../../domains/samsclub/components/SamsclubAtcToggles.tsx";
 import { SamsclubAutoModeSection } from "../../domains/samsclub/components/SamsclubAutoModeSection.tsx";
+import { SamsclubScheduleSection } from "../../domains/samsclub/components/SamsclubScheduleSection.tsx";
 import { SamsclubResearchSection } from "../../domains/samsclub/components/SamsclubResearchSection.tsx";
 import { useSamsclubAtcMode } from "../../domains/samsclub/hooks/useSamsclubAtcMode.ts";
 import { useSamsclubAtcQuantity } from "../../domains/samsclub/hooks/useSamsclubAtcQuantity.ts";
 import { useSamsclubAutoCheckout } from "../../domains/samsclub/hooks/useSamsclubAutoCheckout.ts";
 import { useSamsclubCheckoutCvv } from "../../domains/samsclub/hooks/useSamsclubCheckoutCvv.ts";
 import { useSamsclubAutoMode } from "../../domains/samsclub/hooks/useSamsclubAutoMode.ts";
+import { useSamsclubSchedule } from "../../domains/samsclub/hooks/useSamsclubSchedule.ts";
 import { useSamsclubRecording } from "../../domains/samsclub/hooks/useSamsclubRecording.ts";
 
 interface SamsclubPanelProps {
@@ -60,7 +62,7 @@ function SamsclubRecordingSection({
   );
 }
 
-export function SamsclubPanel({ status, disabled }: SamsclubPanelProps) {
+export function SamsclubPanel({ status, disabled, onRefresh }: SamsclubPanelProps) {
   const panelActive = true;
   const samsclubAuto = useSamsclubAutoMode(status.enabled, panelActive, status);
   const samsclubAtc = useSamsclubAtcMode(panelActive, status);
@@ -71,6 +73,7 @@ export function SamsclubPanel({ status, disabled }: SamsclubPanelProps) {
     status,
   );
   const samsclubAtcQuantity = useSamsclubAtcQuantity(panelActive, status);
+  const samsclubSchedule = useSamsclubSchedule(panelActive, status, onRefresh);
 
   return (
     <div className="space-y-3">
@@ -129,6 +132,21 @@ export function SamsclubPanel({ status, disabled }: SamsclubPanelProps) {
             }
             onStartManual={() => void samsclubAuto.handleStartManual()}
             onStopManual={() => void samsclubAuto.handleStopManual()}
+          />
+
+          <SamsclubScheduleSection
+            enabled={samsclubSchedule.enabled}
+            startTime={samsclubSchedule.startTime}
+            endTime={samsclubSchedule.endTime}
+            stopOnOos={samsclubSchedule.stopOnOos}
+            scheduleStatus={samsclubSchedule.scheduleStatus}
+            disabled={disabled}
+            saving={samsclubSchedule.saving}
+            saveError={samsclubSchedule.saveError}
+            onEnabledChange={samsclubSchedule.handleEnabledChange}
+            onStartTimeCommit={samsclubSchedule.commitStartTime}
+            onEndTimeCommit={samsclubSchedule.commitEndTime}
+            onStopOnOosChange={samsclubSchedule.handleStopOnOosChange}
           />
         </>
       )}

@@ -88,6 +88,7 @@ export async function loadAutoConfig(channelId: string): Promise<SamsclubAutoCon
     useMaxQuantity: false,
     autoCheckoutEnabled: false,
     checkoutCvv: null,
+    stopOnOosEnabled: false,
   };
   if (!isExtensionContextValid()) {
     endSession();
@@ -106,6 +107,7 @@ export async function loadAutoConfig(channelId: string): Promise<SamsclubAutoCon
       use_max_quantity?: boolean;
       auto_checkout_enabled?: boolean;
       checkout_cvv?: string | null;
+      stop_on_oos_enabled?: boolean;
     };
     return {
       refreshIntervalSec:
@@ -125,6 +127,7 @@ export async function loadAutoConfig(channelId: string): Promise<SamsclubAutoCon
         response?.ok === true && typeof response.checkout_cvv === "string"
           ? response.checkout_cvv
           : null,
+      stopOnOosEnabled: response?.ok === true && response.stop_on_oos_enabled === true,
     };
   } catch (err) {
     if (isExtensionContextInvalidatedError(err)) {
@@ -235,8 +238,18 @@ export function autoModePlaybackOptions(
   };
 }
 
+function handleSamsclubOosConfirmed(): void {
+  if (!state.cachedStopOnOosEnabled) {
+    return;
+  }
+  state.stoppedDueToOos = true;
+  requestStopAutoMode();
+  publishUiState("Stopped — out of stock", false);
+}
+
 export async function runAutoMode(): Promise<void> {
   state.automationScheduled = false;
+  state.stoppedDueToOos = false;
   if (session.running || state.stopAutoRequested || isSamsclubAutoUserStopped()) {
     return;
   }
@@ -259,6 +272,7 @@ export async function runAutoMode(): Promise<void> {
         useMaxQuantity: state.cachedUseMaxQuantity,
         autoCheckoutEnabled: state.cachedAutoCheckoutEnabled,
         checkoutCvv: state.cachedCheckoutCvv,
+        stopOnOosEnabled: state.cachedStopOnOosEnabled,
       }
     : await loadAutoConfig(session.channelId);
   state.autoConfigPrefetched = false;
@@ -328,12 +342,16 @@ export async function runAutoMode(): Promise<void> {
         frontendAtcEnabled: state.cachedFrontendAtcEnabled,
         backendAtcEnabled: state.cachedBackendAtcEnabled,
         getEffectiveQuantity,
+        stopOnOosEnabled: state.cachedStopOnOosEnabled,
+        onOosConfirmed: handleSamsclubOosConfirmed,
       });
     }
     if (!waitResult) {
       if (state.stopAutoRequested) {
-        publishUiState("Stopped", false);
-        await reportAutoStatus("failed", "Stopped");
+        if (!state.stoppedDueToOos) {
+          publishUiState("Stopped", false);
+        }
+        await reportAutoStatus("failed", state.stoppedDueToOos ? "Out of stock" : "Stopped");
         skipReadyInFinally = true;
         return;
       }
@@ -417,10 +435,18 @@ export function handleStartAuto(message: StartAutoMessage): void {
   scheduleAutomationRun(runAutoMode);
 }
 
-export function handleStartManualAuto(): void {
+export function handleStartManualAuto(hardRefresh = false): void {
   allowAutoModeStart();
   armManualSession();
   session.running = false;
+
+  if (hardRefresh && isSamsclubProductUrl(location.href)) {
+    startSamsclubAutoResume(session.channelId!, location.href);
+    publishUiState("Scheduled start — hard refreshing…", true);
+    void requestHardReload();
+    return;
+  }
+
   publishUiState("Starting auto mode…", true);
 
   if (isCheckoutAutomationUrl(location.href) && !isOrderConfirmationUrl(location.href)) {

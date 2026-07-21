@@ -79,6 +79,8 @@ export async function loadAutoConfig(channelId: string): Promise<RetailerAutoCon
     atcQuantity: 1,
     useMaxQuantity: false,
     autoCheckoutEnabled: false,
+    stopOnOosEnabled: false,
+    closeTabOnOosEnabled: false,
   };
   if (!isExtensionContextValid()) {
     endSession();
@@ -96,6 +98,8 @@ export async function loadAutoConfig(channelId: string): Promise<RetailerAutoCon
       atc_quantity?: number;
       use_max_quantity?: boolean;
       auto_checkout_enabled?: boolean;
+      stop_on_oos_enabled?: boolean;
+      close_tab_on_oos_enabled?: boolean;
     };
     return {
       refreshIntervalSec:
@@ -111,6 +115,8 @@ export async function loadAutoConfig(channelId: string): Promise<RetailerAutoCon
           : 1,
       useMaxQuantity: response?.ok === true && response.use_max_quantity === true,
       autoCheckoutEnabled: response?.ok === true && response.auto_checkout_enabled === true,
+      stopOnOosEnabled: response?.ok === true && response.stop_on_oos_enabled === true,
+      closeTabOnOosEnabled: response?.ok === true && response.close_tab_on_oos_enabled === true,
     };
   } catch (err) {
     if (isExtensionContextInvalidatedError(err)) {
@@ -217,8 +223,38 @@ export function autoModePlaybackOptions(
   };
 }
 
+async function requestCloseTabOnOos(): Promise<void> {
+  if (!isExtensionContextValid()) {
+    endSession();
+    return;
+  }
+  try {
+    await sendToBackground({ type: "RETAILER_CLOSE_TAB_ON_OOS" });
+  } catch (err) {
+    if (isExtensionContextInvalidatedError(err)) {
+      endSession();
+    }
+  }
+}
+
+function handleTargetOosConfirmed(): void {
+  const stopOnOos = state.cachedStopOnOosEnabled;
+  const closeTab = state.cachedCloseTabOnOosEnabled;
+  if (stopOnOos) {
+    state.stoppedDueToOos = true;
+    requestStopAutoMode();
+    publishUiState("Stopped — out of stock", false);
+  }
+  if (closeTab) {
+    state.oosCloseTabRequested = true;
+    void requestCloseTabOnOos();
+  }
+}
+
 export async function runAutoMode(): Promise<void> {
   state.automationScheduled = false;
+  state.stoppedDueToOos = false;
+  state.oosCloseTabRequested = false;
   if (session.running || state.stopAutoRequested || isRetailerAutoUserStopped()) {
     return;
   }
@@ -255,6 +291,8 @@ export async function runAutoMode(): Promise<void> {
           atcQuantity: state.cachedAtcQuantity,
           useMaxQuantity: state.cachedUseMaxQuantity,
           autoCheckoutEnabled: state.cachedAutoCheckoutEnabled,
+          stopOnOosEnabled: state.cachedStopOnOosEnabled,
+          closeTabOnOosEnabled: state.cachedCloseTabOnOosEnabled,
         }
       : await loadAutoConfig(session.channelId);
     state.autoConfigPrefetched = false;
@@ -310,12 +348,21 @@ export async function runAutoMode(): Promise<void> {
         frontendAtcEnabled: state.cachedFrontendAtcEnabled,
         backendAtcEnabled: state.cachedBackendAtcEnabled,
         getEffectiveQuantity,
+        stopOnOosEnabled: state.cachedStopOnOosEnabled,
+        closeTabOnOosEnabled: state.cachedCloseTabOnOosEnabled,
+        onOosConfirmed: handleTargetOosConfirmed,
       });
     }
     if (!waitResult) {
+      if (state.oosCloseTabRequested) {
+        skipReadyInFinally = true;
+        return;
+      }
       if (state.stopAutoRequested) {
-        publishUiState("Stopped", false);
-        await reportAutoStatus("failed", "Stopped");
+        if (!state.stoppedDueToOos) {
+          publishUiState("Stopped", false);
+        }
+        await reportAutoStatus("failed", state.stoppedDueToOos ? "Out of stock" : "Stopped");
         skipReadyInFinally = true;
         return;
       }
@@ -411,9 +458,17 @@ export function handleStartAuto(message: StartAutoMessage): void {
   scheduleAutomationRun(runAutoMode);
 }
 
-export function handleStartManualAuto(): void {
+export function handleStartManualAuto(hardRefresh = false): void {
   allowAutoModeStart();
   armManualSession();
+
+  if (hardRefresh && isRetailerProductUrl(location.href)) {
+    startRetailerAutoResume(session.channelId!, location.href);
+    publishUiState("Scheduled start — hard refreshing…", true);
+    void requestHardReload();
+    return;
+  }
+
   publishUiState("Starting auto mode…", true);
   scheduleAutomationRun(runAutoMode);
 }

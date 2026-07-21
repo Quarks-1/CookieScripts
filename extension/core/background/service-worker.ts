@@ -1,5 +1,10 @@
 import { flushRecentUrls, initRuntimeState, onTabRemoved } from "@ext/core/background/runtime-state.ts";
 import { notifyStatusChanged } from "@ext/core/background/status-notify.ts";
+import {
+  handleScheduleAlarm,
+  syncScheduleAlarms,
+} from "@ext/core/background/schedule-alarms.ts";
+import { getSettings } from "@ext/core/lib/storage.ts";
 import { onRetailerTabRemoved, onRetailerWindowRemoved } from "@ext/domains/target/background/runtime-state.ts";
 import { onSamsclubTabRemoved as onSamsclubAutomationTabRemoved } from "@ext/domains/samsclub/background/automation-runtime-state.ts";
 import {
@@ -25,10 +30,16 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
-void initPromise.then(() => {
+void initPromise.then(async () => {
   void configureSidePanel();
   void loadWalmartRecordingState();
   void loadSamsclubRecordingState();
+  const settings = await getSettings();
+  await syncScheduleAlarms(settings);
+});
+
+chrome.alarms.onAlarm.addListener((alarm) => {
+  void initPromise.then(() => handleScheduleAlarm(alarm.name));
 });
 
 chrome.runtime.onMessage.addListener((message, sender) => {

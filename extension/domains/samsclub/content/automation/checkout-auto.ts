@@ -40,6 +40,7 @@ export type SamsclubAutoConfig = {
   useMaxQuantity: boolean;
   autoCheckoutEnabled: boolean;
   checkoutCvv: string | null;
+  stopOnOosEnabled: boolean;
 };
 
 export type CheckoutAutoRunOutcome =

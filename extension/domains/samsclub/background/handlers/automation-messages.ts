@@ -7,7 +7,16 @@ import {
   setSamsclubTabPurchaseLimit,
   setSamsclubTabUiState,
 } from "@ext/domains/samsclub/background/automation-runtime-state.ts";
-import { getSamsclubAtcQuantity, getSamsclubBackendAtcEnabled, getSamsclubCheckoutCvv, getSamsclubFrontendAtcEnabled, getSamsclubRefreshIntervalSec, getSamsclubUseMaxQuantity, shouldEnableSamsclubAutoCheckout } from "@ext/domains/samsclub/lib/channel-config.ts";
+import { getSamsclubScheduleStopOnOos } from "@ext/core/lib/schedule-settings.ts";
+import {
+  getSamsclubAtcQuantity,
+  getSamsclubBackendAtcEnabled,
+  getSamsclubCheckoutCvv,
+  getSamsclubFrontendAtcEnabled,
+  getSamsclubRefreshIntervalSec,
+  getSamsclubUseMaxQuantity,
+  shouldEnableSamsclubAutoCheckout,
+} from "@ext/domains/samsclub/lib/channel-config.ts";
 import { setSamsclubRefreshIntervalForChannel } from "@ext/core/background/status.ts";
 import { getSettings, prependHistory } from "@ext/core/lib/storage.ts";
 import type { BackgroundResponse, SamsclubToBackground } from "@ext/core/types/index.ts";
@@ -47,6 +56,7 @@ export async function handleSamsclubAutomationMessage(
         use_max_quantity: getSamsclubUseMaxQuantity(settings),
         auto_checkout_enabled: shouldEnableSamsclubAutoCheckout(settings),
         checkout_cvv: getSamsclubCheckoutCvv(settings),
+        stop_on_oos_enabled: getSamsclubScheduleStopOnOos(settings),
       };
     }
     case "SAMSCLUB_SET_REFRESH_INTERVAL": {

@@ -55,7 +55,8 @@ export type RetailerToBackground =
       status: string;
       running: boolean;
     }
-  | { type: "RETAILER_PURCHASE_LIMIT_SNAPSHOT"; purchase_limit: number | null };
+  | { type: "RETAILER_PURCHASE_LIMIT_SNAPSHOT"; purchase_limit: number | null }
+  | { type: "RETAILER_CLOSE_TAB_ON_OOS" };
 
 export type WalmartToBackground =
   | {
@@ -108,7 +109,7 @@ export type BackgroundToContent =
       auto_checkout_enabled?: boolean;
     }
   | { type: "RETAILER_STOP_AUTO" }
-  | { type: "RETAILER_START_MANUAL_AUTO" }
+  | { type: "RETAILER_START_MANUAL_AUTO"; hard_refresh?: boolean }
   | { type: "RETAILER_GET_PURCHASE_LIMIT" }
   | {
       type: "WALMART_RECORDING_START";
@@ -138,7 +139,7 @@ export type BackgroundToContent =
       auto_checkout_enabled?: boolean;
     }
   | { type: "SAMSCLUB_STOP_AUTO" }
-  | { type: "SAMSCLUB_START_MANUAL_AUTO" }
+  | { type: "SAMSCLUB_START_MANUAL_AUTO"; hard_refresh?: boolean }
   | { type: "SAMSCLUB_GET_PURCHASE_LIMIT" }
   | {
       type: "SAMSCLUB_RECORDING_START";
@@ -189,7 +190,22 @@ export type UiToBackground =
   | { type: "SET_SAMSCLUB_AUTO_CHECKOUT_MODE"; mode: SamsclubAutoCheckoutMode }
   | { type: "SET_SAMSCLUB_CHECKOUT_CVV"; cvv: string }
   | { type: "SAMSCLUB_START_MANUAL_AUTO"; window_id?: number }
-  | { type: "SAMSCLUB_STOP_MANUAL_AUTO"; window_id?: number };
+  | { type: "SAMSCLUB_STOP_MANUAL_AUTO"; window_id?: number }
+  | {
+      type: "SET_RETAILER_SCHEDULE";
+      enabled?: boolean;
+      start_time?: string;
+      end_time?: string;
+      stop_on_oos?: boolean;
+      close_tab_on_oos?: boolean;
+    }
+  | {
+      type: "SET_SAMSCLUB_SCHEDULE";
+      enabled?: boolean;
+      start_time?: string;
+      end_time?: string;
+      stop_on_oos?: boolean;
+    };
 
 export type SamsclubToBackground =
   | {
@@ -252,6 +268,8 @@ export type BackgroundResponse =
       atc_quantity: number;
       use_max_quantity: boolean;
       auto_checkout_enabled: boolean;
+      stop_on_oos_enabled?: boolean;
+      close_tab_on_oos_enabled?: boolean;
       checkout_cvv?: string | null;
     }
   | { ok: true; purchase_limit: number | null }

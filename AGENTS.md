@@ -27,7 +27,7 @@ Chrome MV3 extension with four capabilities:
 
 **Naming:** folders/docs use **target**; storage/messages keep **retailer** (`RETAILER_*`, `retailer_*`).
 
-**UI naming:** Chrome loads the side panel from `ui/sidepanel/` (`manifest.json` → `side_panel.default_path`). The React app lives under `ui/popup/` (historical folder name). `ui/popup/index.html` is a local Vite preview entry only — not shipped in the extension.
+**UI naming:** Chrome loads the side panel from `ui/sidepanel/` (`manifest.json` → `side_panel.default_path`). The React app lives under `ui/popup/` (historical folder name). `ui/popup/index.html` is a local Vite preview entry only — not shipped in the extension. Side panel UI rules (no hint text; draft-on-blur for time/number inputs): [ui/popup/core/AGENTS.md](ui/popup/core/AGENTS.md) § Invariants.
 
 ## Documentation layers
 

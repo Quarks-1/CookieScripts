@@ -10,7 +10,7 @@ Manual drop-day research recorder on `samsclub.com` tabs, plus Target-like manua
 | Recorder session | `content/session.ts`, `content/recorder/*` |
 | Automation session | `content/session/*`, `content/automation/*` |
 | Background handlers | `background/handlers/{index,shared,recording-lifecycle,tab-events,append,ui-messages,content-messages,automation-messages}.ts` |
-| Runtime state | `background/runtime-state.ts` (recording), `background/automation-runtime-state.ts` (automation tabs) |
+| Runtime state | `background/runtime-state.ts` (recording), `background/automation-runtime-state.ts` (automation tabs), `background/scheduled-auto.ts` |
 | IDB / export | `lib/idb/*`, `background/export.ts` |
 | Page probe | `lib/page-probe-bridge.ts` → `public/injected/samsclub-research-probe.js` |
 | Cart probe | `lib/page-cart-probe-bridge.ts` → `public/injected/samsclub-cart-probe.js` |
@@ -24,6 +24,8 @@ Same as Walmart: global session, IDB persistence, ZIP export. Toggle UI via **Gl
 ## Automation flow
 
 Manual Start from Sam's Club side panel on an open `/ip/` tab → `SAMSCLUB_START_MANUAL_AUTO` → ATC loop → navigate to checkout.
+
+Scheduled auto start/end mirrors Target via `samsclub_schedule_*` settings and `background/scheduled-auto.ts`. Stop-on-OOS applies during PDP wait only (no close-tab).
 
 ## Messages
 
@@ -46,4 +48,4 @@ Manifest: early (`document_start`) + main (`document_idle`) on `samsclub.com` / 
 
 ## UI
 
-`ui/popup/domains/samsclub/` — recording section + automation settings on **Sam's Club** side panel tab.
+`ui/popup/domains/samsclub/` — recording section + automation settings + **schedule** (`SamsclubScheduleSection`) on **Sam's Club** side panel tab.

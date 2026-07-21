@@ -1,6 +1,5 @@
-import {
-  parseSamsclubItemIdFromUrl,
-} from "@ext/domains/samsclub/lib/main-add-to-cart.ts";
+import type { CartApiProbeResult } from "@ext/domains/samsclub/lib/cart-api.ts";
+import { parseSamsclubItemIdFromUrl } from "@ext/domains/samsclub/lib/main-add-to-cart.ts";
 
 const MAIN_ATC_SELECTOR = 'button[data-automation-id="atc"]';
 
@@ -53,4 +52,15 @@ export function waitingForAddToCartStatus(doc: Document, pageUrl: string): strin
   return isRestockWaitPage(doc, pageUrl)
     ? "Waiting for restock…"
     : "Waiting for main Add to cart…";
+}
+
+export function isOosSignal(
+  doc: Document,
+  pageUrl: string,
+  cartProbeResult?: CartApiProbeResult,
+): boolean {
+  if (cartProbeResult?.kind === "out_of_stock") {
+    return true;
+  }
+  return isRestockWaitPage(doc, pageUrl);
 }

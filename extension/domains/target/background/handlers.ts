@@ -6,8 +6,21 @@ import {
   markRetailerManualAutoStopped,
   setRetailerTabPurchaseLimit,
   setRetailerTabUiState,
+  stopRetailerTabAuto,
 } from "@ext/domains/target/background/runtime-state.ts";
-import { getRetailerAtcQuantity, getRetailerBackendAtcEnabled, getRetailerFrontendAtcEnabled, getRetailerRefreshIntervalSec, getRetailerUseMaxQuantity, shouldEnableRetailerAutoCheckout } from "@ext/domains/target/lib/channel-config.ts";
+import {
+  getRetailerAtcQuantity,
+  getRetailerBackendAtcEnabled,
+  getRetailerFrontendAtcEnabled,
+  getRetailerRefreshIntervalSec,
+  getRetailerUseMaxQuantity,
+  shouldEnableRetailerAutoCheckout,
+} from "@ext/domains/target/lib/channel-config.ts";
+import {
+  getRetailerCloseTabOnOos,
+  getRetailerScheduleStopOnOos,
+} from "@ext/core/lib/schedule-settings.ts";
+import { isRetailerProductUrl } from "@ext/domains/target/lib/host.ts";
 import { setRetailerRefreshIntervalForChannel } from "@ext/core/background/status.ts";
 import { getSettings, prependHistory } from "@ext/core/lib/storage.ts";
 import type { BackgroundResponse, RetailerToBackground } from "@ext/core/types/index.ts";
@@ -48,6 +61,8 @@ export async function handleRetailerMessage(
         auto_checkout_enabled: shouldEnableRetailerAutoCheckout(settings, {
           openedViaSkuMatch: false,
         }),
+        stop_on_oos_enabled: getRetailerScheduleStopOnOos(settings),
+        close_tab_on_oos_enabled: getRetailerCloseTabOnOos(settings),
       };
     }
     case "RETAILER_SET_REFRESH_INTERVAL": {
@@ -107,6 +122,22 @@ export async function handleRetailerMessage(
         tabUrl,
         limit == null ? null : Math.floor(limit),
       );
+      return { ok: true };
+    }
+    case "RETAILER_CLOSE_TAB_ON_OOS": {
+      const tabUrl = sender.tab?.url;
+      if (!tabUrl || !isRetailerProductUrl(tabUrl)) {
+        return { ok: false, error: "Not a Target product tab" };
+      }
+      if (!getRetailerTabUiState(tabId).running) {
+        return { ok: false, error: "Tab not in auto mode" };
+      }
+      await stopRetailerTabAuto(tabId);
+      try {
+        await chrome.tabs.remove(tabId);
+      } catch {
+        // Tab may already be closing.
+      }
       return { ok: true };
     }
   }

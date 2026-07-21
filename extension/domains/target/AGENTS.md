@@ -12,7 +12,7 @@ Target.com product-page automation: add-to-cart, optional auto-checkout, hard re
 | Session (split) | `content/session/index.ts` + siblings (see below) |
 | Playback | `content/automation/playback.ts`, `checkout-auto.ts` |
 | Pure logic | `lib/*` — barrel `@ext/domains/target/lib/index.ts` from core |
-| Background | `background/handlers.ts`, `runtime-state.ts`, `tab-ready.ts`, `tab-message.ts`, `tabs.ts` |
+| Background | `background/handlers.ts`, `runtime-state.ts`, `scheduled-auto.ts`, `tab-ready.ts`, `tab-message.ts`, `tabs.ts` |
 | Types | `types/retailer.ts` (re-exported via `@ext/core/types/index.ts`) |
 | Research | `docs/TARGET_AUTOMATION.md`, `scripts/target-*.mjs` (local Playwright/API probes — not shipped) |
 
@@ -53,6 +53,7 @@ Content `RETAILER_SET_REFRESH_INTERVAL` and UI `SET_RETAILER_REFRESH_INTERVAL` a
 | ATC / cart | `cart-api.ts`, `cart-step.ts`, `cart-retry.ts`, `main-add-to-cart.ts`, `atc-route.ts`, `page-cart-probe-bridge.ts` |
 | Playback | `playback-engine.ts`, `pending-start-auto.ts`, `restock-wait.ts`, `waiting-disabled.ts` |
 | Refresh / resume | `page-refresh.ts`, `auto-resume.ts` |
+| Schedule / OOS | `extension/core/lib/schedule*.ts` (alarms + settings); PDP wait OOS via `restock-wait.ts` (`isOosSignal`), `waiting-disabled.ts`, `main-add-to-cart.ts`; Target-only `RETAILER_CLOSE_TAB_ON_OOS` |
 | Quantity | `quantity-limit.ts` (barrel export) |
 | Checkout | `lib/checkout/*` (`steps.ts`, `place-order.ts`, `checkout-state.ts`, `checkout-url.ts`, `waiting-checkout.ts`) |
 | DOM helpers | `dom.ts`, `selectors.ts` |
@@ -66,6 +67,8 @@ Core/UI-core import settings helpers via `@ext/domains/target/lib/index.ts` only
 - Discord-initiated Auto ATC has no per-channel concurrency cap; each unique detected Target `/p/` URL opens up to `retailer_link_open_count` times per message (default 1).
 - Backend ATC via `public/injected/cart-probe.js` (runtime path `injected/cart-probe.js`), not content script.
 - Hard refresh resume uses Target tab `sessionStorage` (`auto-resume.ts`).
+- Scheduled auto start/end: `background/scheduled-auto.ts` + core `schedule-alarms.ts` (`retailer_schedule_*` settings). Start alarm opens all idle `/p/` tabs; end/disable stops all running auto.
+- Stop-on-OOS and close-tab-on-OOS apply during PDP wait only (`retailer_schedule_stop_on_oos`, `retailer_close_tab_on_oos`); close tab via service worker.
 - Avoid re-monolithing `content/session/`.
 - Content scripts guard `chrome.runtime` messaging when extension context is invalidated (post-reload).
 
@@ -77,6 +80,6 @@ Global invariants and import rules: [AGENTS.md](../../../AGENTS.md).
 
 ## UI
 
-ATC toggles, auto mode, quantity, auto checkout, **tab pills**: `ui/popup/domains/target/`
+ATC toggles, auto mode, **schedule** (`RetailerScheduleSection`), quantity, auto checkout, **tab pills**: `ui/popup/domains/target/`
 
 Tab pills (`TargetTabPills` in `RetailerAutoModeSection`) list open Target tabs from `status.retailer_open_tabs`. When the focused tab is not Target, the section shows pills + hint only (controls hidden).

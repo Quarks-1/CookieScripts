@@ -22,6 +22,8 @@ export type RetailerAutoConfig = {
   atcQuantity: number;
   useMaxQuantity: boolean;
   autoCheckoutEnabled: boolean;
+  stopOnOosEnabled: boolean;
+  closeTabOnOosEnabled: boolean;
 };
 
 export type CheckoutAutoRunOutcome =

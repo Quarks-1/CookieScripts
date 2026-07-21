@@ -51,6 +51,12 @@ describe("handleUiMessage GET_STATUS", () => {
     activeChannels.clear();
 
     vi.stubGlobal("chrome", {
+      storage: {
+        session: {
+          get: vi.fn().mockResolvedValue({}),
+          set: vi.fn().mockResolvedValue(undefined),
+        },
+      },
       tabs: {
         query: vi.fn(async (query: { active?: boolean; windowId?: number }) => {
           if (query.windowId === 1) {

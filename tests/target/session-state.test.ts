@@ -28,6 +28,8 @@ describe("applyCachedAutoConfig", () => {
       atcQuantity: 1,
       useMaxQuantity: false,
       autoCheckoutEnabled: false,
+      stopOnOosEnabled: false,
+      closeTabOnOosEnabled: false,
     });
 
     expect(state.cachedAutoCheckoutEnabled).toBe(true);
@@ -53,6 +55,8 @@ describe("applyCachedAutoConfig", () => {
       atcQuantity: 1,
       useMaxQuantity: false,
       autoCheckoutEnabled: false,
+      stopOnOosEnabled: false,
+      closeTabOnOosEnabled: false,
     });
 
     expect(state.cachedAutoCheckoutEnabled).toBe(true);

@@ -52,7 +52,7 @@ describe("waiting-disabled", () => {
       expect.objectContaining({ document: expect.anything() }),
       1,
     );
-    expect(result.outcome).toBe("continue");
+    expect(result.outcome).toBe("out_of_stock");
   });
 
   it("returns cart_added when probe succeeds", async () => {

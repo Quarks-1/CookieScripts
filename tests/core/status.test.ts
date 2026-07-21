@@ -58,6 +58,12 @@ describe("buildStatus", () => {
   beforeEach(() => {
     clearRetailerRuntimeState();
     vi.stubGlobal("chrome", {
+      storage: {
+        session: {
+          get: vi.fn().mockResolvedValue({}),
+          set: vi.fn().mockResolvedValue(undefined),
+        },
+      },
       tabs: {
         sendMessage: vi.fn(),
       },
