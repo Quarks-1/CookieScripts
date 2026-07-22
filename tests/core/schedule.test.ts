@@ -73,6 +73,15 @@ describe("resolveScheduleWindow", () => {
     expect(window?.windowStartDate).toBe("2026-07-21");
     expect(window?.spansMidnight).toBe(true);
   });
+
+  it("resolves upcoming overnight window before start", () => {
+    const now = localDate(2026, 7, 21, 22, 0);
+    const window = resolveScheduleWindow("23:00", "01:00", now);
+    expect(window?.startAt).toEqual(localDate(2026, 7, 21, 23, 0));
+    expect(window?.endAt).toEqual(localDate(2026, 7, 22, 1, 0));
+    expect(window?.windowStartDate).toBe("2026-07-21");
+    expect(window?.spansMidnight).toBe(true);
+  });
 });
 
 describe("resolveNextScheduleStartAt", () => {
@@ -111,6 +120,12 @@ describe("getSchedulePhase", () => {
 
   it("returns pending for early-morning start configured in the evening", () => {
     expect(getSchedulePhase(true, "01:00", undefined, localDate(2026, 7, 21, 22, 0))).toBe(
+      "pending",
+    );
+  });
+
+  it("returns pending before overnight window start", () => {
+    expect(getSchedulePhase(true, "23:00", "01:00", localDate(2026, 7, 21, 22, 0))).toBe(
       "pending",
     );
   });

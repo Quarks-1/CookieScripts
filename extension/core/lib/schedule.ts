@@ -72,14 +72,12 @@ export function resolveScheduleWindow(
   }
 
   const nowMs = now.getTime();
-  if (
-    spansMidnight &&
-    endAt != null &&
-    nowMs < startAt.getTime() &&
-    nowMs < endAt.getTime()
-  ) {
-    startAt.setTime(startAt.getTime() - MS_PER_DAY);
-    endAt.setTime(endAt.getTime() - MS_PER_DAY);
+  if (spansMidnight && endAt != null && end != null && end.trim() !== "") {
+    const endOnToday = parseLocalTimeOnDate(end, now);
+    if (endOnToday && nowMs < endOnToday.getTime()) {
+      startAt.setTime(startAt.getTime() - MS_PER_DAY);
+      endAt.setTime(endAt.getTime() - MS_PER_DAY);
+    }
   }
 
   return {
