@@ -32,6 +32,7 @@ export function useSamsclubSchedule(
     enabled,
     phase: status?.samsclub_schedule_phase ?? "off",
     startTime: status?.samsclub_schedule_start_time ?? null,
+    endTime: status?.samsclub_schedule_end_time ?? null,
     serverStatus: status?.samsclub_schedule_status ?? "",
   });
 

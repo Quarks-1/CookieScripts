@@ -4,14 +4,17 @@ import {
   alarmName,
   formatLocalDate,
   getSchedulePhase,
+  isInWindowImmediateScheduleStart,
   msUntil,
   nextLocalMidnight,
   nextStartAlarmAt,
   parseLocalTimeOnDate,
   parseScheduleAlarmName,
+  resolveNextScheduleStartAt,
   resolveScheduleWindow,
   schedulePhaseStatusLine,
 } from "@ext/core/lib/schedule.ts";
+import { normalizeScheduleTime } from "@ext/core/lib/schedule-settings.ts";
 
 function localDate(
   year: number,
@@ -19,8 +22,9 @@ function localDate(
   day: number,
   hours: number,
   minutes: number,
+  seconds = 0,
 ): Date {
-  return new Date(year, month - 1, day, hours, minutes, 0, 0);
+  return new Date(year, month - 1, day, hours, minutes, seconds, 0);
 }
 
 describe("parseLocalTimeOnDate", () => {
@@ -30,9 +34,22 @@ describe("parseLocalTimeOnDate", () => {
     expect(parsed).toEqual(localDate(2026, 7, 21, 9, 0));
   });
 
+  it("parses HH:mm:ss with seconds", () => {
+    const now = localDate(2026, 7, 21, 14, 30);
+    const parsed = parseLocalTimeOnDate("09:00:30", now);
+    expect(parsed).toEqual(localDate(2026, 7, 21, 9, 0, 30));
+  });
+
   it("returns null for invalid input", () => {
     expect(parseLocalTimeOnDate("25:00", localDate(2026, 7, 21, 9, 0))).toBeNull();
     expect(parseLocalTimeOnDate("abc", localDate(2026, 7, 21, 9, 0))).toBeNull();
+  });
+});
+
+describe("normalizeScheduleTime", () => {
+  it("pads legacy HH:mm to HH:mm:ss", () => {
+    expect(normalizeScheduleTime("9:00")).toBe("09:00:00");
+    expect(normalizeScheduleTime("09:00:30")).toBe("09:00:30");
   });
 });
 
@@ -58,6 +75,21 @@ describe("resolveScheduleWindow", () => {
   });
 });
 
+describe("resolveNextScheduleStartAt", () => {
+  it("returns tomorrow start when evening setup targets early morning", () => {
+    const now = localDate(2026, 7, 21, 22, 0);
+    expect(resolveNextScheduleStartAt("01:00", undefined, now)).toEqual(
+      localDate(2026, 7, 22, 1, 0),
+    );
+  });
+
+  it("returns now when inside a bounded window", () => {
+    const now = localDate(2026, 7, 21, 9, 15);
+    const next = resolveNextScheduleStartAt("09:00", "10:00", now);
+    expect(next?.getTime()).toBe(now.getTime());
+  });
+});
+
 describe("getSchedulePhase", () => {
   it("returns off when disabled", () => {
     expect(getSchedulePhase(false, "09:00", undefined, localDate(2026, 7, 21, 8, 0))).toBe(
@@ -71,9 +103,15 @@ describe("getSchedulePhase", () => {
     );
   });
 
-  it("returns passed after start without fired date", () => {
+  it("returns pending inside window before start fired", () => {
     expect(getSchedulePhase(true, "09:00", "10:00", localDate(2026, 7, 21, 9, 15))).toBe(
-      "passed",
+      "pending",
+    );
+  });
+
+  it("returns pending for early-morning start configured in the evening", () => {
+    expect(getSchedulePhase(true, "01:00", undefined, localDate(2026, 7, 21, 22, 0))).toBe(
+      "pending",
     );
   });
 
@@ -93,6 +131,18 @@ describe("getSchedulePhase", () => {
     expect(
       getSchedulePhase(true, "23:50", "00:30", now, "2026-07-21", undefined),
     ).toBe("active");
+  });
+});
+
+describe("isInWindowImmediateScheduleStart", () => {
+  it("is true inside bounded window before start fired", () => {
+    const now = localDate(2026, 7, 21, 9, 15);
+    expect(isInWindowImmediateScheduleStart("09:00", "10:00", now)).toBe(true);
+  });
+
+  it("is false when no end time is configured", () => {
+    const now = localDate(2026, 7, 21, 22, 0);
+    expect(isInWindowImmediateScheduleStart("01:00", undefined, now)).toBe(false);
   });
 });
 
@@ -125,10 +175,16 @@ describe("alarm helpers", () => {
 });
 
 describe("schedulePhaseStatusLine", () => {
-  it("shows passed message", () => {
-    expect(
-      schedulePhaseStatusLine("passed", "09:00", localDate(2026, 7, 21, 9, 15)),
-    ).toContain("resumes tomorrow");
+  it("shows countdown to next occurrence for early-morning evening setup", () => {
+    const line = schedulePhaseStatusLine(
+      "pending",
+      "01:00",
+      localDate(2026, 7, 21, 22, 0),
+      undefined,
+      undefined,
+    );
+    expect(line).toMatch(/^Starts in /);
+    expect(line).not.toContain("resumes tomorrow");
   });
 
   it("prefers action status when set", () => {

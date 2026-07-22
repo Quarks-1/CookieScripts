@@ -115,7 +115,7 @@ export function setSamsclubAutoCheckoutMode(
   return next;
 }
 
-const SAMSCLUB_CHECKOUT_CVV_PATTERN = /^\d{3}$/;
+const SAMSCLUB_CHECKOUT_CVV_PATTERN = /^\d{3,4}$/;
 
 export function normalizeSamsclubCheckoutCvv(value: string): string | null {
   const trimmed = value.trim();

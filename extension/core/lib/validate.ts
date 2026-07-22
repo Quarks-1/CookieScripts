@@ -156,9 +156,9 @@ export function validateGlobalWatchSettings(settings: ExtensionSettings): string
   if (settings.samsclub_checkout_cvv !== undefined) {
     if (
       typeof settings.samsclub_checkout_cvv !== "string" ||
-      !/^\d{3}$/.test(settings.samsclub_checkout_cvv)
+      !/^\d{3,4}$/.test(settings.samsclub_checkout_cvv)
     ) {
-      return "samsclub_checkout_cvv must be exactly 3 digits";
+      return "samsclub_checkout_cvv must be 3 or 4 digits";
     }
   }
 

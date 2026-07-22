@@ -1,32 +1,37 @@
 import type { ExtensionSettings } from "@ext/core/types/index.ts";
 
-const HHMM_PATTERN = /^(\d{1,2}):(\d{2})$/;
+const HHMMSS_PATTERN = /^(\d{1,2}):(\d{2})(?::(\d{2}))?$/;
 
 export function isValidScheduleTime(value: string): boolean {
-  const match = HHMM_PATTERN.exec(value.trim());
+  const match = HHMMSS_PATTERN.exec(value.trim());
   if (!match) {
     return false;
   }
   const hours = Number(match[1]);
   const minutes = Number(match[2]);
+  const seconds = match[3] != null ? Number(match[3]) : 0;
   return (
     Number.isInteger(hours) &&
     Number.isInteger(minutes) &&
+    Number.isInteger(seconds) &&
     hours >= 0 &&
     hours <= 23 &&
     minutes >= 0 &&
-    minutes <= 59
+    minutes <= 59 &&
+    seconds >= 0 &&
+    seconds <= 59
   );
 }
 
 export function normalizeScheduleTime(value: string): string {
-  const match = HHMM_PATTERN.exec(value.trim());
+  const match = HHMMSS_PATTERN.exec(value.trim());
   if (!match || !isValidScheduleTime(value)) {
     throw new Error("Invalid schedule time");
   }
   const hours = String(Number(match[1])).padStart(2, "0");
   const minutes = String(Number(match[2])).padStart(2, "0");
-  return `${hours}:${minutes}`;
+  const seconds = String(match[3] != null ? Number(match[3]) : 0).padStart(2, "0");
+  return `${hours}:${minutes}:${seconds}`;
 }
 
 export function getRetailerScheduleEnabled(settings: ExtensionSettings): boolean {

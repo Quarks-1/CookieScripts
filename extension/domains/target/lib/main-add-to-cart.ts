@@ -298,7 +298,7 @@ export async function waitForMainAddToCartButton(
       if (tick.outcome === "reloading" || tick.outcome === "aborted") {
         return null;
       }
-    } else if (waitState.kind === "waiting_disabled") {
+    } else if (waitState.kind === "waiting_disabled" || waitState.kind === "not_found") {
       const tick = await runWaitingDisabledTick({
         pageUrl: pageUrlForWait,
         tcin,

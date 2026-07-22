@@ -113,7 +113,7 @@ describe("validateGlobalWatchSettings", () => {
         ...DEFAULT_SETTINGS,
         samsclub_checkout_cvv: "12",
       }),
-    ).toMatch(/samsclub_checkout_cvv must be exactly 3 digits/i);
+    ).toMatch(/samsclub_checkout_cvv must be 3 or 4 digits/i);
   });
 
   it("accepts valid samsclub_checkout_cvv", () => {
@@ -121,6 +121,12 @@ describe("validateGlobalWatchSettings", () => {
       validateGlobalWatchSettings({
         ...DEFAULT_SETTINGS,
         samsclub_checkout_cvv: "123",
+      }),
+    ).toBeNull();
+    expect(
+      validateGlobalWatchSettings({
+        ...DEFAULT_SETTINGS,
+        samsclub_checkout_cvv: "1234",
       }),
     ).toBeNull();
   });

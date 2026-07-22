@@ -36,12 +36,14 @@ describe("samsclub channel-config", () => {
 
   it("normalizes and stores checkout cvv", () => {
     expect(normalizeSamsclubCheckoutCvv("123")).toBe("123");
+    expect(normalizeSamsclubCheckoutCvv("1234")).toBe("1234");
     expect(normalizeSamsclubCheckoutCvv("12")).toBeNull();
+    expect(normalizeSamsclubCheckoutCvv("12345")).toBeNull();
     expect(normalizeSamsclubCheckoutCvv("")).toBeNull();
     expect(getSamsclubCheckoutCvv(DEFAULT_SETTINGS)).toBeNull();
 
-    const withCvv = setSamsclubCheckoutCvv(DEFAULT_SETTINGS, "456");
-    expect(getSamsclubCheckoutCvv(withCvv)).toBe("456");
+    const withCvv = setSamsclubCheckoutCvv(DEFAULT_SETTINGS, "4567");
+    expect(getSamsclubCheckoutCvv(withCvv)).toBe("4567");
 
     const cleared = setSamsclubCheckoutCvv(withCvv, "");
     expect(getSamsclubCheckoutCvv(cleared)).toBeNull();

@@ -1,5 +1,6 @@
 import {
   alarmName,
+  isInWindowImmediateScheduleStart,
   isScheduleAlarmName,
   nextLocalMidnight,
   nextStartAlarmAt,
@@ -96,6 +97,31 @@ async function syncRetailerAlarms(
   const session = await readScheduleSession(config.retailer);
   const window = resolveScheduleWindow(config.startTime, config.endTime ?? undefined, now);
   if (!window) {
+    return;
+  }
+
+  if (
+    isInWindowImmediateScheduleStart(
+      config.startTime,
+      config.endTime ?? undefined,
+      now,
+      session.start_fired_date,
+    )
+  ) {
+    if (config.retailer === "target") {
+      await startScheduledTargetAuto();
+    } else {
+      await startScheduledSamsclubAuto();
+    }
+    void notifyStatusChanged();
+    const sessionAfter = await readScheduleSession(config.retailer);
+    if (
+      window.endAt &&
+      now.getTime() < window.endAt.getTime() &&
+      sessionAfter.start_fired_date === window.windowStartDate
+    ) {
+      await armAlarmAt(endAlarm, window.endAt);
+    }
     return;
   }
 

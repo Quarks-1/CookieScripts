@@ -4,6 +4,7 @@ import { clearPageQuantityApplied, readPurchaseLimitForStatus } from "@ext/domai
 import { endSession } from "@ext/domains/samsclub/content/session/lifecycle.ts";
 import { sendToBackground } from "@ext/domains/samsclub/content/session/messaging.ts";
 import { maybeFailCheckoutAbandon } from "@ext/domains/samsclub/content/session/checkout-abandon.ts";
+import { syncTransitThrottleWatch } from "@ext/domains/samsclub/content/session/transit-wait.ts";
 import { clearCheckoutNavigationGrace } from "@ext/domains/samsclub/lib/auto-resume.ts";
 import { tryResumeAutomation } from "@ext/domains/samsclub/content/session/resume.ts";
 import { shouldResumeSamsclubCheckout } from "@ext/domains/samsclub/lib/auto-resume.ts";
@@ -133,6 +134,7 @@ export function handleSamsclubNavigation(): void {
     clearCheckoutNavigationGrace();
     tryResumeAutomation();
   }
+  syncTransitThrottleWatch(() => state.cachedRefreshIntervalSec);
 }
 
 export function hookPurchaseLimitPageShow(): void {

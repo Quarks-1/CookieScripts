@@ -9,6 +9,7 @@ type LiveScheduleStatusInput = {
   enabled: boolean;
   phase: SchedulePhase;
   startTime: string | null;
+  endTime?: string | null;
   serverStatus: string;
 };
 
@@ -20,6 +21,7 @@ export function useLiveScheduleStatus({
   enabled,
   phase,
   startTime,
+  endTime,
   serverStatus,
 }: LiveScheduleStatusInput): string {
   const [liveStatus, setLiveStatus] = useState(serverStatus);
@@ -38,13 +40,13 @@ export function useLiveScheduleStatus({
     }
 
     const tick = (): void => {
-      setLiveStatus(schedulePhaseStatusLine("pending", startTime, new Date()));
+      setLiveStatus(schedulePhaseStatusLine("pending", startTime, new Date(), undefined, endTime));
     };
 
     tick();
     const id = window.setInterval(tick, 1000);
     return () => window.clearInterval(id);
-  }, [enabled, phase, serverStatus, startTime]);
+  }, [enabled, endTime, phase, serverStatus, startTime]);
 
   return liveStatus;
 }

@@ -317,4 +317,13 @@ describe("samsclub checkout-state with cvv", () => {
       ),
     ).toBe("needs_cvv");
   });
+
+  it("accepts 4-digit cvv values", async () => {
+    document.body.innerHTML = `<input id="cvv-field" type="password" maxlength="4" value="" />`;
+    const input = findCheckoutCvvInput(document);
+    expect(input).not.toBeNull();
+    await fillCheckoutCvvInput(input!, "1234", 0);
+    expect(input!.value).toBe("1234");
+    expect(isCheckoutCvvSatisfied(document)).toBe(true);
+  });
 });

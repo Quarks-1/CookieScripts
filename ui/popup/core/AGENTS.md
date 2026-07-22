@@ -125,7 +125,7 @@ When a hook displays persisted settings:
 - Domain tabs auto-follow supported `active_tab_kind` changes; users can still pick another tab until the browser tab changes again. Do not gate panel settings on `active_tab_kind` (runtime actions may still require the matching browser tab).
 - `buildStatus` in `status.ts` is the status contract — update `extension/core/types/status.ts` when adding fields.
 - **No hint text** under toggles or inputs (e.g. “Applies when…”, “Independent of…”). Control labels must be self-explanatory; use `role="status"` only for live errors, saving state, and runtime status lines from `ExtensionStatus`.
-- **Draft on blur for typed inputs** — `ScheduleTimeField`, `CompactNumberField`, and similar controls must **not** persist on every `onChange`. Keep local draft state while focused (`useRef` focus flag + `useEffect` sync when unfocused); call the hook/save handler only on `onBlur`. Reference: `ScheduleTimeField`, `RetailerAutoModeSection`, `WalmartAutoRefreshSection`. Schedule times use 24-hour `HH:mm` text (not `<input type="time">`, which follows OS 12-hour locale).
+- **Draft on blur for typed inputs** — `ScheduleTimeField`, `CompactNumberField`, and similar controls must **not** persist on every `onChange`. Keep local draft state while focused (`useRef` focus flag + `useEffect` sync when unfocused); call the hook/save handler only on `onBlur`. Reference: `ScheduleTimeField`, `RetailerAutoModeSection`, `WalmartAutoRefreshSection`. Schedule times use 24-hour `HH:mm:ss` text (not `<input type="time">`, which follows OS 12-hour locale).
 
 Global invariants and import rules: [AGENTS.md](../../../AGENTS.md).
 

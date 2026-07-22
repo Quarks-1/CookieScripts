@@ -3,6 +3,7 @@
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { saveRetailerAutoResume } from "@ext/domains/target/lib/auto-resume.ts";
 import { waitForMainAddToCartButton } from "@ext/domains/target/lib/main-add-to-cart.ts";
 
 const DROP_OOS_URL = "https://www.target.com/p/-/A-1011209279";
@@ -69,5 +70,42 @@ describe("waitForMainAddToCartButton OOS debounce", () => {
 
     expect(result).toBeNull();
     expect(onOosConfirmed).not.toHaveBeenCalled();
+  });
+
+  it("hard refreshes when no buy-box ATC exists yet", async () => {
+    vi.useFakeTimers();
+
+    saveRetailerAutoResume({
+      channel_id: "manual",
+      product_path: "/p/-/A-1011209279",
+      phase: "pdp",
+      auto_checkout_enabled: false,
+      last_refresh_at: Date.now() - 5_000,
+      last_checkout_progress_at: Date.now() - 5_000,
+    });
+
+    document.body.innerHTML = `
+      <main>
+        <p>Product details loading</p>
+      </main>
+    `;
+
+    const requestHardReload = vi.fn(async () => {});
+
+    const waitPromise = waitForMainAddToCartButton({
+      selectors: ['[data-test="addToCartButton"]'],
+      timeoutMs: null,
+      shouldContinue: () => true,
+      pageUrl: DROP_OOS_URL,
+      refreshIntervalSec: 3,
+      requestHardReload,
+      frontendAtcEnabled: true,
+      backendAtcEnabled: false,
+    });
+
+    await vi.advanceTimersByTimeAsync(400);
+    await waitPromise;
+
+    expect(requestHardReload).toHaveBeenCalledTimes(1);
   });
 });

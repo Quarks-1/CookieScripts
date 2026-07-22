@@ -112,7 +112,7 @@ export function SamsclubAtcToggles({
               id="popup-samsclub-checkout-cvv"
               type="password"
               inputMode="numeric"
-              maxLength={3}
+              maxLength={4}
               autoComplete="off"
               value={checkoutCvvDraft}
               disabled={autoCheckoutDisabled || checkoutCvvSaving}
@@ -124,7 +124,7 @@ export function SamsclubAtcToggles({
                   event.currentTarget.blur();
                 }
               }}
-              className="w-16 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm text-zinc-100 disabled:opacity-50"
+              className="w-20 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm text-zinc-100 disabled:opacity-50"
             />
           </div>
           <p className="text-xs text-zinc-500">
@@ -141,7 +141,7 @@ export function SamsclubAtcToggles({
           {checkoutCvvSaving && <p className="text-xs text-zinc-500">Saving CVV…</p>}
           {checkoutCvvDraftInvalid && (
             <p role="status" aria-live="polite" className="text-xs text-red-300">
-              CVV must be exactly 3 digits
+              CVV must be 3 or 4 digits
             </p>
           )}
           {checkoutCvvSaveError && (

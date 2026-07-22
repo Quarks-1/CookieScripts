@@ -14,6 +14,21 @@ interface ScheduleTimeFieldProps {
   onCommit: (value: string) => void;
 }
 
+function displayScheduleTime(value: string): string {
+  const trimmed = value.trim();
+  if (trimmed === "") {
+    return "";
+  }
+  if (isValidScheduleTime(trimmed)) {
+    try {
+      return normalizeScheduleTime(trimmed);
+    } catch {
+      return trimmed;
+    }
+  }
+  return trimmed;
+}
+
 export function ScheduleTimeField({
   id,
   label,
@@ -22,12 +37,12 @@ export function ScheduleTimeField({
   optional = false,
   onCommit,
 }: ScheduleTimeFieldProps) {
-  const [draft, setDraft] = useState(value);
+  const [draft, setDraft] = useState(() => displayScheduleTime(value));
   const focusedRef = useRef(false);
 
   useEffect(() => {
     if (!focusedRef.current) {
-      setDraft(value);
+      setDraft(displayScheduleTime(value));
     }
   }, [value]);
 
@@ -42,13 +57,13 @@ export function ScheduleTimeField({
           onCommit("");
         }
       } else {
-        setDraft(value);
+        setDraft(displayScheduleTime(value));
       }
       return;
     }
 
     if (!isValidScheduleTime(trimmed)) {
-      setDraft(value);
+      setDraft(displayScheduleTime(value));
       return;
     }
 
@@ -68,10 +83,10 @@ export function ScheduleTimeField({
         id={id}
         type="text"
         inputMode="numeric"
-        placeholder="HH:mm"
+        placeholder="HH:mm:ss"
         autoComplete="off"
         spellCheck={false}
-        maxLength={5}
+        maxLength={8}
         value={draft}
         disabled={disabled}
         onFocus={() => {

@@ -1,5 +1,5 @@
-import { resolveCheckoutState } from "@ext/domains/samsclub/lib/checkout/checkout-state.ts";
 import { isOrderConfirmationUrl } from "@ext/domains/samsclub/lib/checkout/checkout-url.ts";
+import { resolveCheckoutState } from "@ext/domains/samsclub/lib/checkout/checkout-state.ts";
 import { samsclubCheckoutDebug } from "@ext/domains/samsclub/lib/checkout/debug-log.ts";
 import {
   canSafelyPlaceOrder,
@@ -8,6 +8,7 @@ import {
   isCheckoutCvvPromptVisible,
   isCheckoutCvvRequired,
   isCheckoutCvvSatisfied,
+  isValidCheckoutCvvLength,
   nudgeCheckoutCvvValidation,
   probeCheckoutCvvCandidates,
   readCheckoutCvvValue,
@@ -186,7 +187,7 @@ export async function runCheckoutAutoMode(
         options.publishUiState("CVV required — set in side panel", true);
       } else if (
         hasCheckoutFormErrors(document) &&
-        readCheckoutCvvValue(document).length === 3
+        isValidCheckoutCvvLength(readCheckoutCvvValue(document).length)
       ) {
         options.publishUiState("Waiting for CVV validation…", true);
         await nudgeCheckoutCvvValidation(document);
@@ -196,7 +197,7 @@ export async function runCheckoutAutoMode(
           formErrors: hasCheckoutFormErrors(document),
         });
       } else if (
-        readCheckoutCvvValue(document).length === 3 &&
+        isValidCheckoutCvvLength(readCheckoutCvvValue(document).length) &&
         !isCheckoutCvvSatisfied(document, location.href)
       ) {
         options.publishUiState("Waiting for CVV validation…", true);

@@ -23,7 +23,7 @@ Sam's Club runs on **Walmart Glass** (`tenant: SAMS_GLASS`). Automation uses the
 | Cart header count | `#cart-button-header` | aria `Cart contains N item…` |
 | Cart checkout | `button[data-automation-id="checkout"]` | Label `Check Out` |
 | Place order | `[data-automation-id="place-order-button"]` | Also `data-testid="place-order-button"` |
-| Review-order CVV | `#cvv-field`, `input[name="cvv"]` | `type="password"`, `maxlength="3"`; required every checkout |
+| Review-order CVV | `#cvv-field`, `input[name="cvv"]` | `type="password"`; 3–4 digits (Amex CID); required every checkout |
 | Post-ATC page | `/pac?id={usItemId}&oId={offerId}&…` | Confirmation + recommendations |
 
 **Item ID from URL:** `/ip/{slug}/{itemId}` → path segment is `usItemId` for cart API.

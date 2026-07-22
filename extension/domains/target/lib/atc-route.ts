@@ -20,6 +20,7 @@ export function shouldUseBackendAtc(
 
   return (
     waitStateKind === "waiting_disabled" ||
+    waitStateKind === "not_found" ||
     (waitStateKind === "ready" && !frontendAtcEnabled)
   );
 }

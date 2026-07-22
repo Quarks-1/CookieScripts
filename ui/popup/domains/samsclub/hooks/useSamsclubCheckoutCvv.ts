@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { getSidePanelWindowId, sendToBackground } from "@ext/core/lib/messages.ts";
 import type { BackgroundResponse, ExtensionStatus } from "@ext/core/types/index.ts";
 
-const CVV_PATTERN = /^\d{3}$/;
+const CVV_PATTERN = /^\d{3,4}$/;
 
 function isValidCvvDraft(value: string): boolean {
   return value === "" || CVV_PATTERN.test(value);
@@ -42,7 +42,7 @@ export function useSamsclubCheckoutCvv(
     async (next: string) => {
       const trimmed = next.trim();
       if (trimmed !== "" && !CVV_PATTERN.test(trimmed)) {
-        setSaveError("CVV must be exactly 3 digits");
+        setSaveError("CVV must be 3 or 4 digits");
         return;
       }
 
@@ -70,7 +70,7 @@ export function useSamsclubCheckoutCvv(
   );
 
   const handleChange = useCallback((next: string) => {
-    const digitsOnly = next.replace(/\D/g, "").slice(0, 3);
+    const digitsOnly = next.replace(/\D/g, "").slice(0, 4);
     setDraftCvv(digitsOnly);
     if (saveError) {
       setSaveError(null);
@@ -84,7 +84,7 @@ export function useSamsclubCheckoutCvv(
   const handleBlur = useCallback(() => {
     focusedRef.current = false;
     if (!isValidCvvDraft(draftCvv)) {
-      setSaveError("CVV must be exactly 3 digits");
+      setSaveError("CVV must be 3 or 4 digits");
       return;
     }
     void saveCvv(draftCvv);

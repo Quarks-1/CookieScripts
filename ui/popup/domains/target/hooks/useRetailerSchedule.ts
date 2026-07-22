@@ -36,6 +36,7 @@ export function useRetailerSchedule(
     enabled,
     phase: status?.retailer_schedule_phase ?? "off",
     startTime: status?.retailer_schedule_start_time ?? null,
+    endTime: status?.retailer_schedule_end_time ?? null,
     serverStatus: status?.retailer_schedule_status ?? "",
   });
 

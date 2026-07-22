@@ -39,6 +39,7 @@ import { isExtensionContextInvalidatedError, isExtensionContextValid } from "@ex
 import type { BackgroundToContent } from "@ext/core/types/index.ts";
 import { endSession } from "@ext/domains/samsclub/content/session/lifecycle.ts";
 import { scheduleCheckoutAutoModeRun } from "@ext/domains/samsclub/content/session/checkout-schedule.ts";
+import { syncTransitThrottleWatch } from "@ext/domains/samsclub/content/session/transit-wait.ts";
 import {
   publishUiState,
   reportAutoStatus,
@@ -233,6 +234,7 @@ export function autoModePlaybackOptions(
           location.href,
           state.cachedAutoCheckoutEnabled,
         );
+        syncTransitThrottleWatch(() => state.cachedRefreshIntervalSec);
       }
     },
   };

@@ -16,6 +16,10 @@ import {
   publishUiState,
 } from "@ext/domains/samsclub/content/session/messaging.ts";
 import { scheduleAutomationRun } from "@ext/domains/samsclub/content/session/schedule.ts";
+import {
+  stopTransitThrottleWatch,
+  syncTransitThrottleWatch,
+} from "@ext/domains/samsclub/content/session/transit-wait.ts";
 import { session, state } from "@ext/domains/samsclub/content/session/session-state.ts";
 
 export { scheduleAutomationRun } from "@ext/domains/samsclub/content/session/schedule.ts";
@@ -46,6 +50,7 @@ export function tryResumeAutomation(): void {
     });
 
     clearCheckoutNavigationGrace();
+    stopTransitThrottleWatch();
     publishUiState(
       checkoutResume.auto_checkout_enabled ? "Resuming checkout…" : "Arrived at checkout…",
       checkoutResume.auto_checkout_enabled,
@@ -87,4 +92,6 @@ export async function initSamsclubSession(): Promise<void> {
   } else if (!state.automationScheduled && !session.running) {
     publishUiState(readySamsclubAutoModeMessage(location.href), false);
   }
+
+  syncTransitThrottleWatch(() => state.cachedRefreshIntervalSec);
 }

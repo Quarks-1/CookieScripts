@@ -1,6 +1,15 @@
 import { probeAddToCartViaApi, shouldRunCartApiProbe } from "@ext/domains/samsclub/lib/cart-api.ts";
 import { maybeHardRefreshWhileWaiting } from "@ext/domains/samsclub/lib/page-refresh.ts";
 import { waitingForAddToCartStatus } from "@ext/domains/samsclub/lib/restock-wait.ts";
+import { isThrottlePage } from "@ext/domains/samsclub/lib/throttle-page.ts";
+
+function pathnameFromPageUrl(pageUrl: string): string {
+  try {
+    return new URL(pageUrl).pathname;
+  } catch {
+    return "";
+  }
+}
 
 export type WaitingDisabledTickOptions = {
   pageUrl: string;
@@ -28,6 +37,24 @@ export async function runWaitingDisabledTick(
 ): Promise<WaitingDisabledTickResult> {
   let { lastCartApiProbeMs, reportedWaiting } = options;
   const doc = options.document ?? document;
+  const bodyText = doc.body?.innerText ?? "";
+  const pathname = pathnameFromPageUrl(options.pageUrl);
+
+  if (isThrottlePage({ bodyText, pathname }) && options.requestHardReload) {
+    options.onStatus?.("Throttle page — hard refreshing…");
+    const refresh = await maybeHardRefreshWhileWaiting({
+      refreshIntervalSec: options.getRefreshIntervalSec?.() ?? options.refreshIntervalSec,
+      shouldContinue: options.shouldContinue,
+      onStatus: options.onStatus,
+      requestHardReload: options.requestHardReload,
+    });
+    if (refresh === "reloading") {
+      return { lastCartApiProbeMs, reportedWaiting, outcome: "reloading" };
+    }
+    if (refresh === "aborted") {
+      return { lastCartApiProbeMs, reportedWaiting, outcome: "aborted" };
+    }
+  }
 
   if (options.onStatus && !reportedWaiting) {
     options.onStatus(waitingForAddToCartStatus(doc, options.pageUrl));

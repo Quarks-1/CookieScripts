@@ -8,6 +8,10 @@ import { normalizeSamsclubCheckoutCvv } from "@ext/domains/samsclub/lib/channel-
 import { tryFillViaReactHandlers, findReactInputHandlers } from "@ext/domains/samsclub/lib/checkout/react-input.ts";
 import { sleep } from "@ext/core/lib/sleep.ts";
 
+export function isValidCheckoutCvvLength(length: number): boolean {
+  return length === 3 || length === 4;
+}
+
 export type FillCheckoutCvvResult =
   | "filled"
   | "already_set"
@@ -153,8 +157,8 @@ function isReactValueTrackerSynced(input: HTMLInputElement): boolean {
   if (tracked === current) {
     return true;
   }
-  // Living Design may lag tracker updates while DOM already shows 3 digits.
-  return current.trim().length === 3 && tracked.trim().length === 0;
+  // Living Design may lag tracker updates while DOM already shows a full CVV.
+  return isValidCheckoutCvvLength(current.trim().length) && tracked.trim().length === 0;
 }
 
 export function blurCheckoutCvvField(doc: Document = document): void {
@@ -244,7 +248,7 @@ export function isCheckoutCvvSatisfied(
   if (!isCheckoutCvvInputVisible(input)) {
     return false;
   }
-  if (input.value.trim().length !== 3) {
+  if (!isValidCheckoutCvvLength(input.value.trim().length)) {
     return false;
   }
   if (isReviewOrderCheckout(pageUrl) && !isReactValueTrackerSynced(input)) {
@@ -510,7 +514,7 @@ export async function nudgeCheckoutCvvValidation(
   doc: Document = document,
 ): Promise<void> {
   const input = findCheckoutCvvInput(doc);
-  if (!input || input.value.trim().length !== 3) {
+  if (!input || !isValidCheckoutCvvLength(input.value.trim().length)) {
     return;
   }
 
@@ -543,7 +547,7 @@ export async function waitForPostCvvCheckoutReady(
 
   while (Date.now() < deadline) {
     const cvvValue = readCheckoutCvvValue(doc);
-    if (cvvValue.length === 3 && !isCheckoutCvvBlurred(doc)) {
+    if (isValidCheckoutCvvLength(cvvValue.length) && !isCheckoutCvvBlurred(doc)) {
       blurCheckoutCvvField(doc);
       if (!nudgedBlur) {
         nudgedBlur = true;
@@ -559,7 +563,7 @@ export async function waitForPostCvvCheckoutReady(
       }
     } else {
       stablePolls = 0;
-      if (cvvValue.length === 3 && !nudgedBlur) {
+      if (isValidCheckoutCvvLength(cvvValue.length) && !nudgedBlur) {
         await nudgeCheckoutCvvValidation(doc);
         nudgedBlur = true;
         continue;

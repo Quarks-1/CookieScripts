@@ -245,7 +245,7 @@ export async function handleUiMessage(
     case "SET_SAMSCLUB_CHECKOUT_CVV": {
       const trimmed = message.cvv.trim();
       if (trimmed !== "" && normalizeSamsclubCheckoutCvv(trimmed) == null) {
-        return { ok: false, error: "CVV must be exactly 3 digits" };
+        return { ok: false, error: "CVV must be 3 or 4 digits" };
       }
       try {
         await setSamsclubCheckoutCvvForSettings(trimmed);

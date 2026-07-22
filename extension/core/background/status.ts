@@ -370,6 +370,8 @@ async function buildRetailerScheduleStatus(
       startTime,
       now,
       getScheduleActionStatus("target"),
+      endTime,
+      session.start_fired_date,
     ),
   };
 }
@@ -408,6 +410,8 @@ async function buildSamsclubScheduleStatus(
       startTime,
       now,
       getScheduleActionStatus("samsclub"),
+      endTime,
+      session.start_fired_date,
     ),
   };
 }

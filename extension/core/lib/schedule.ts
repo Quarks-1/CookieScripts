@@ -1,4 +1,4 @@
-export type SchedulePhase = "off" | "pending" | "active" | "ended" | "passed";
+export type SchedulePhase = "off" | "pending" | "active" | "ended";
 
 export type ScheduleRetailer = "target" | "samsclub";
 
@@ -11,7 +11,7 @@ export type ScheduleWindow = {
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
-const HHMM_PATTERN = /^(\d{1,2}):(\d{2})$/;
+const HHMMSS_PATTERN = /^(\d{1,2}):(\d{2})(?::(\d{2}))?$/;
 
 export function formatLocalDate(date: Date): string {
   const year = date.getFullYear();
@@ -20,25 +20,29 @@ export function formatLocalDate(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-export function parseLocalTimeOnDate(hhmm: string, now: Date): Date | null {
-  const match = HHMM_PATTERN.exec(hhmm.trim());
+export function parseLocalTimeOnDate(hhmmss: string, now: Date): Date | null {
+  const match = HHMMSS_PATTERN.exec(hhmmss.trim());
   if (!match) {
     return null;
   }
   const hours = Number(match[1]);
   const minutes = Number(match[2]);
+  const seconds = match[3] != null ? Number(match[3]) : 0;
   if (
     !Number.isInteger(hours) ||
     !Number.isInteger(minutes) ||
+    !Number.isInteger(seconds) ||
     hours < 0 ||
     hours > 23 ||
     minutes < 0 ||
-    minutes > 59
+    minutes > 59 ||
+    seconds < 0 ||
+    seconds > 59
   ) {
     return null;
   }
   const result = new Date(now);
-  result.setHours(hours, minutes, 0, 0);
+  result.setHours(hours, minutes, seconds, 0);
   return result;
 }
 
@@ -86,6 +90,53 @@ export function resolveScheduleWindow(
   };
 }
 
+export function resolveNextScheduleStartAt(
+  start: string,
+  end: string | undefined,
+  now: Date,
+  startFiredDate?: string,
+): Date | null {
+  const window = resolveScheduleWindow(start, end, now);
+  if (!window) {
+    return null;
+  }
+
+  const { startAt, endAt, windowStartDate } = window;
+  if (startFiredDate === windowStartDate) {
+    return null;
+  }
+
+  const nowMs = now.getTime();
+  if (nowMs < startAt.getTime()) {
+    return startAt;
+  }
+
+  if (endAt != null && nowMs >= startAt.getTime() && nowMs < endAt.getTime()) {
+    return now;
+  }
+
+  return new Date(startAt.getTime() + MS_PER_DAY);
+}
+
+export function isInWindowImmediateScheduleStart(
+  start: string,
+  end: string | undefined,
+  now: Date,
+  startFiredDate?: string,
+): boolean {
+  const window = resolveScheduleWindow(start, end, now);
+  if (!window || window.endAt == null) {
+    return false;
+  }
+
+  if (startFiredDate === window.windowStartDate) {
+    return false;
+  }
+
+  const nowMs = now.getTime();
+  return nowMs >= window.startAt.getTime() && nowMs < window.endAt.getTime();
+}
+
 export function getSchedulePhase(
   enabled: boolean,
   start: string | undefined,
@@ -115,11 +166,11 @@ export function getSchedulePhase(
     return "active";
   }
 
-  if (nowMs < startAt.getTime() && !startFiredForWindow) {
+  if (!startFiredForWindow && resolveNextScheduleStartAt(start, end, now, startFiredDate) != null) {
     return "pending";
   }
 
-  return "passed";
+  return "off";
 }
 
 export function nextStartAlarmAt(
@@ -128,21 +179,7 @@ export function nextStartAlarmAt(
   now: Date,
   startFiredDate?: string,
 ): Date | null {
-  const window = resolveScheduleWindow(start, end, now);
-  if (!window) {
-    return null;
-  }
-
-  const { startAt, windowStartDate } = window;
-  if (startFiredDate === windowStartDate) {
-    return null;
-  }
-
-  if (now.getTime() < startAt.getTime()) {
-    return startAt;
-  }
-
-  return new Date(startAt.getTime() + MS_PER_DAY);
+  return resolveNextScheduleStartAt(start, end, now, startFiredDate);
 }
 
 export function msUntil(when: Date, now: Date): number {
@@ -204,6 +241,8 @@ export function schedulePhaseStatusLine(
   startTime: string | null,
   now: Date,
   actionStatus?: string,
+  endTime?: string | null,
+  startFiredDate?: string,
 ): string {
   const trimmedAction = actionStatus?.trim() ?? "";
   if (trimmedAction !== "" && (phase === "pending" || phase === "active")) {
@@ -214,20 +253,19 @@ export function schedulePhaseStatusLine(
       if (!startTime) {
         return "Schedule pending";
       }
-      const startAt = parseLocalTimeOnDate(startTime, now);
-      if (!startAt) {
-        return "Invalid start time";
+      const nextStart = resolveNextScheduleStartAt(
+        startTime,
+        endTime ?? undefined,
+        now,
+        startFiredDate,
+      );
+      if (!nextStart) {
+        return "Schedule pending";
       }
-      if (now.getTime() >= startAt.getTime()) {
-        const tomorrow = new Date(startAt.getTime() + MS_PER_DAY);
-        return `Starts in ${formatScheduleCountdown(msUntil(tomorrow, now))}`;
-      }
-      return `Starts in ${formatScheduleCountdown(msUntil(startAt, now))}`;
+      return `Starts in ${formatScheduleCountdown(msUntil(nextStart, now))}`;
     }
     case "active":
       return "Schedule active";
-    case "passed":
-      return "Start time passed — resumes tomorrow";
     case "ended":
       return "Schedule ended for today";
     case "off":
