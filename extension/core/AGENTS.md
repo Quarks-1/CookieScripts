@@ -15,7 +15,7 @@ Chrome MV3 service worker hub — message router, link opening pipeline, shared 
 | Side panel | `background/side-panel.ts` (`configureSidePanel`) |
 | Active tab | `background/window-active-tab.ts`, `lib/active-tab.ts` |
 | Open links | `background/open-product-link.ts` |
-| Schedule alarms | `background/schedule-alarms.ts`, `lib/schedule.ts`, `lib/schedule-settings.ts`, `lib/schedule-session.ts` |
+| Schedule alarms | `background/schedule-alarms.ts`, `background/schedule-runtime-state.ts`, `lib/schedule.ts`, `lib/schedule-settings.ts`, `lib/schedule-session.ts` |
 | Runtime dedup/state | `background/runtime-state.ts` |
 | Link pipeline | `lib/process-links.ts`, `lib/links.ts`, `lib/validate.ts`, `lib/affiliate-unwrap.ts`, `lib/keywords.ts`, `lib/retailer-url.ts`, `lib/sku-watch/*` |
 | Channel allowlists | `lib/channel-targets.ts`, `lib/storage.ts` |

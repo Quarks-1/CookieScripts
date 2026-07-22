@@ -42,9 +42,9 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 | Tab | Panel | Settings always visible |
 |---|---|---|
 | Discord | `DiscordPanel` | Yes — per-channel domains need a focused Discord channel tab; global keywords/SKUs always editable when extension is on |
-| Target | `TargetPanel` | Yes — link opens, Enable Auto ATC, ATC toggles, hard refresh interval, etc. |
+| Target | `TargetPanel` | Yes — link opens, Enable Auto ATC, ATC toggles, schedule, hard refresh interval, etc. |
 | Walmart | `WalmartPanel` | Yes — auto-refresh, queue helpers, recording |
-| Sam's Club | `SamsclubPanel` | Yes — ATC toggles, auto checkout/CVV, manual auto mode, recording |
+| Sam's Club | `SamsclubPanel` | Yes — ATC toggles, auto checkout/CVV, schedule, manual auto mode, recording |
 | Global | `GlobalPanel` | Open links in new window, SKU open mode, Show Walmart/Sam's Club recording |
 
 Inactive panels unmount; domain hooks run only on the selected tab. Target/Walmart/Sam's Club panel hooks load settings regardless of whether a matching browser tab is focused. Start/Stop runtime controls on Target and Sam's Club still require a focused matching tab (`showControls={retailer_tab_detected}` / `showControls={samsclub_tab_detected}`).
@@ -88,9 +88,9 @@ Used inside domain panels for intra-panel gating:
 |---|---|
 | Core | `usePopupStatus`, `useUpdateCheck`, `useLiveScheduleStatus` |
 | Discord (`DiscordPanel`) | `useChannelDiscordSettings`, `useGlobalDiscordWatchSettings`, `useDetectedLinks`, `useLinkHistory` |
-| Target (`TargetPanel`) | `useRetailerLinkOpenCount`, `useRetailerAutoAtcEnabled`, `useRetailerAutoMode`, `useRetailerAtcMode`, `useRetailerAtcQuantity`, `useRetailerAutoCheckout` |
+| Target (`TargetPanel`) | `useRetailerLinkOpenCount`, `useRetailerAutoAtcEnabled`, `useRetailerAutoMode`, `useRetailerAtcMode`, `useRetailerAtcQuantity`, `useRetailerAutoCheckout`, `useRetailerSchedule` |
 | Walmart (`WalmartPanel`) | `useWalmartRecording`, `useWalmartAutoRefresh`, `useWalmartQueueSettings` |
-| Sam's Club (`SamsclubPanel`) | `useSamsclubAtcMode`, `useSamsclubAutoCheckout`, `useSamsclubCheckoutCvv`, `useSamsclubAtcQuantity`, `useSamsclubAutoMode`, `useSamsclubRecording` |
+| Sam's Club (`SamsclubPanel`) | `useSamsclubAtcMode`, `useSamsclubAutoCheckout`, `useSamsclubCheckoutCvv`, `useSamsclubAtcQuantity`, `useSamsclubAutoMode`, `useSamsclubRecording`, `useSamsclubSchedule` |
 
 `LinkHistory` component lives in `@shared/components/LinkHistory.tsx` (not under discord domain).
 

@@ -14,6 +14,7 @@ Manual drop-day research recorder on `samsclub.com` tabs, plus Target-like manua
 | IDB / export | `lib/idb/*`, `background/export.ts` |
 | Page probe | `lib/page-probe-bridge.ts` → `public/injected/samsclub-research-probe.js` |
 | Cart probe | `lib/page-cart-probe-bridge.ts` → `public/injected/samsclub-cart-probe.js` |
+| Throttle / transit | `lib/throttle-page.ts`, `content/session/transit-wait.ts` |
 | Types | `types/samsclub.ts` |
 | Docs | `docs/SAMSCLUB_RECORDING.md`, `docs/SAMSCLUB_AUTOMATION.md` |
 
@@ -25,7 +26,7 @@ Same as Walmart: global session, IDB persistence, ZIP export. Toggle UI via **Gl
 
 Manual Start from Sam's Club side panel on an open `/ip/` tab → `SAMSCLUB_START_MANUAL_AUTO` → ATC loop → navigate to checkout.
 
-Scheduled auto start/end mirrors Target via `samsclub_schedule_*` settings and `background/scheduled-auto.ts`. Stop-on-OOS applies during PDP wait only (no close-tab).
+Scheduled auto start/end mirrors Target via `samsclub_schedule_*` settings and `background/scheduled-auto.ts`. Stop-on-OOS applies during PDP wait only (no close-tab). Throttle/high-traffic pages hard-refresh during PDP wait (`waiting-disabled.ts`) and checkout transit (`transit-wait.ts`).
 
 ## Messages
 
@@ -37,6 +38,7 @@ Source of truth: [extension/core/types/messages.ts](../../core/types/messages.ts
 - Content never writes IndexedDB — background handlers persist.
 - Inject research probe only while recording.
 - Backend ATC runs in page context via `samsclub-cart-probe.js`.
+- Checkout CVV accepts 3 or 4 digits (`lib/checkout/cvv.ts`).
 - Hard refresh resume via tab `sessionStorage` (`cookiescripts:samsclubAutoResume`).
 - Domain isolation — no cross-import with target/walmart/discord.
 
