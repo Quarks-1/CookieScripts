@@ -60,6 +60,7 @@ Routing: `background/handlers.ts` → domain `background/handlers*` (Walmart and
 - Content scripts never open tabs — service worker does.
 - Never bypass `background/sender-auth.ts`.
 - Production types via `@ext/core/types/index.ts` only.
+- Overnight schedule windows (`end` ≤ `start`): `resolveScheduleWindow` in `lib/schedule.ts` binds the upcoming window when `now` is before start — not the post-midnight tail of yesterday's window.
 
 Global invariants and import rules: [AGENTS.md](../../AGENTS.md).
 
