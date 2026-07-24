@@ -23,7 +23,8 @@
     "baseUrl": ".",
     "paths": {
       "@ext/*": ["extension/*"],
-      "@shared/*": ["ui/shared/*"]
+      "@shared/*": ["ui/shared/*"],
+      "@catalog-liveness/*": ["scripts/catalog-liveness/lib/*"]
     }
   },
   "include": ["extension", "ui", "tests", "vite-env.d.ts"]

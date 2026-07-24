@@ -9,6 +9,7 @@ export default defineConfig({
     alias: {
       "@ext": path.resolve(__dirname, "extension"),
       "@shared": path.resolve(__dirname, "ui/shared"),
+      "@catalog-liveness": path.resolve(__dirname, "scripts/catalog-liveness/lib"),
     },
   },
   test: {

@@ -77,6 +77,7 @@ flowchart TB
 | New runtime message | [extension/core/AGENTS.md](extension/core/AGENTS.md) | `extension/core/types/messages.ts`, `extension/core/background/handlers.ts`, domain handlers, tests |
 | Manifest / permissions | This file § Critical invariants | `manifest.json` (no new sensitive permissions) |
 | SKU catalog page / bundled catalog data | [ui/catalog/AGENTS.md](ui/catalog/AGENTS.md) | `ui/catalog/*`, `extension/core/lib/catalog/*`, `extension/core/data/catalog.json` |
+| Catalog liveness / prune pipeline | [scripts/catalog-liveness/README.md](scripts/catalog-liveness/README.md) | `scripts/catalog-liveness/*`, `.github/workflows/catalog-liveness.yml` |
 
 ## Repository layout
 
@@ -90,6 +91,7 @@ flowchart TB
 | `ui/sidepanel/` | Production Chrome entry: `index.html` → `main.tsx` → `ui/popup/core/App.tsx` |
 | `ui/catalog/` | SKU catalog options page: `index.html` → `main.tsx` (sole `catalog.json` import) |
 | `extension/core/data/catalog.json` | Bundled Pokémon TCG catalog (authored from gitignored `research/discord/catalog-draft.json`) |
+| `scripts/catalog-liveness/` | Weekly Target/Walmart liveness check + prune CLI; report at `research/catalog-liveness-report.json` (gitignored) |
 | `scripts/discord-catalog-harvest.mjs` | Discord harvest CLI → local `research/discord/catalog-candidates.json` |
 | `research/discord/scripts/` | Catalog authoring pipeline (`author-catalog.mjs`, curate/reconcile/normalize); outputs stay gitignored |
 | `ui/popup/core/` | App shell, layout, global hooks |
@@ -114,10 +116,14 @@ node scripts/discord-catalog-harvest.mjs --aggregate
 # 2. Curate, normalize, reconcile (see research/discord/scripts/)
 node research/discord/scripts/curate-target-catalog.mjs
 node research/discord/scripts/curate-walmart-catalog.mjs
-# …normalize.mjs, normalize-names.mjs, reconcile.mjs, check-liveness.mjs, check-walmart.mjs
+# …normalize.mjs, normalize-names.mjs, reconcile.mjs
 
 # 3. Ship bundled catalog.json (reads catalog-draft.json + curated hits)
 node research/discord/scripts/author-catalog.mjs
+
+# 4. Liveness check + optional prune (see scripts/catalog-liveness/README.md)
+npm run catalog:liveness
+npm run catalog:prune -- --dry-run
 ```
 
 ## Path aliases

@@ -1,0 +1,143 @@
+name: Catalog Liveness
+
+on:
+  schedule:
+    - cron: "0 14 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: catalog-liveness
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    outputs:
+      changes: ${{ steps.prune_summary.outputs.changes }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run liveness check
+        run: |
+          set +e
+          node scripts/catalog-liveness/check.mjs
+          echo "CHECK_EXIT=$?" >> $GITHUB_ENV
+          set -e
+
+      - name: Upload liveness report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: catalog-liveness-report
+          path: research/catalog-liveness-report.json
+          if-no-files-found: warn
+
+      - name: Fail on control block
+        if: env.CHECK_EXIT == '2'
+        run: |
+          echo "::error::Control TCIN soft-block detected"
+          exit 1
+
+      - name: Prune dry-run summary
+        id: prune_summary
+        if: env.CHECK_EXIT != '2'
+        run: |
+          node scripts/catalog-liveness/prune.mjs --dry-run --json > prune-summary.json
+          echo "changes=$(jq -r .changes prune-summary.json)" >> $GITHUB_OUTPUT
+
+      - name: Log prunable listings
+        if: env.CHECK_EXIT != '2' && steps.prune_summary.outputs.changes == 'true'
+        run: node scripts/catalog-liveness/prune.mjs --dry-run
+
+  cleanup-pr:
+    needs: check
+    if: needs.check.result == 'success' && needs.check.outputs.changes == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: catalog-liveness-report
+
+      - name: Skip if open liveness PR exists
+        id: skip_guard
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          COUNT=$(gh pr list --state open --json headRefName --jq '[.[] | select(.headRefName | startswith("catalog/liveness-"))] | length')
+          echo "count=$COUNT" >> $GITHUB_OUTPUT
+          if [ "$COUNT" -gt 0 ]; then
+            echo "Open catalog/liveness-* PR exists; skipping cleanup PR"
+          fi
+
+      - name: Exit early when PR exists
+        if: steps.skip_guard.outputs.count != '0'
+        run: exit 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Build prune summary for PR body
+        if: steps.skip_guard.outputs.count == '0'
+        run: node scripts/catalog-liveness/prune.mjs --dry-run --json > prune-summary.json
+
+      - name: Apply prune and validate
+        if: steps.skip_guard.outputs.count == '0'
+        id: apply
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -B "catalog/liveness-$(date -u +%Y-%m-%d)"
+          node scripts/catalog-liveness/prune.mjs --apply
+          if npm ci && npm test; then
+            echo "skip_pr=false" >> $GITHUB_OUTPUT
+          else
+            echo "tests failed after prune; skipping PR"
+            echo "skip_pr=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push
+        if: steps.skip_guard.outputs.count == '0' && steps.apply.outputs.skip_pr != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git add extension/core/data/catalog.json
+          if git diff --cached --quiet; then
+            echo "No catalog changes after apply; skipping PR"
+            exit 0
+          fi
+          git commit -m "chore(catalog): prune dead listings [skip ci]"
+          git push -u origin HEAD
+          REMOVED_LISTINGS=$(jq -r '.removed_listings[] | "- [\(.retailer)] \(.sku) (\(.product_name)) — \(.status)"' prune-summary.json)
+          REMOVED_PRODUCTS=$(jq -r '.removed_products[] | "- \(.id) (\(.name))"' prune-summary.json)
+          gh pr create --base main \
+            --title "chore(catalog): prune dead listings" \
+            --body "$(cat <<EOF
+          ## Summary
+
+          Weekly catalog liveness check found prunable dead/invalid listings.
+
+          ### Removed listings
+
+          ${REMOVED_LISTINGS:-_none_}
+
+          ### Removed products
+
+          ${REMOVED_PRODUCTS:-_none_}
+
+          EOF
+          )"

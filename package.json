@@ -16,6 +16,8 @@
     "test:samsclub": "vitest run tests/samsclub",
     "test:core": "vitest run tests/core",
     "lint": "eslint extension ui tests",
+    "catalog:liveness": "node scripts/catalog-liveness/check.mjs",
+    "catalog:prune": "node scripts/catalog-liveness/prune.mjs",
     "debug:samsclub-checkout": "node scripts/samsclub-checkout-debug-server.mjs"
   },
   "dependencies": {

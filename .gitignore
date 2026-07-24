@@ -8,6 +8,7 @@ dist/
 dist-dev-ui/
 cookiescripts-*.zip
 *.tsbuildinfo
+research/catalog-liveness-report.json
 research/discord/**
 !research/discord/scripts/
 !research/discord/scripts/**
