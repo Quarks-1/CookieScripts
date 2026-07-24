@@ -29,3 +29,11 @@ export function shouldWalmartHardRefresh(
   const elapsed = now - (lastRefreshAt ?? 0);
   return elapsed >= intervalSec * 1000;
 }
+
+export function getWalmartFallbackIntervalSec(settings: {
+  walmart_refresh_interval_sec?: number;
+}): number {
+  return normalizeWalmartRefreshIntervalSec(
+    settings.walmart_refresh_interval_sec ?? WALMART_AUTO_REFRESH_DEFAULT_INTERVAL_SEC,
+  );
+}

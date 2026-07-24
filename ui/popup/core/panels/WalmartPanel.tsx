@@ -1,9 +1,11 @@
 import type { ExtensionStatus } from "@ext/core/types/index.ts";
 import { WalmartResearchSection } from "../../domains/walmart/components/WalmartResearchSection.tsx";
 import { WalmartAutoRefreshSection } from "../../domains/walmart/components/WalmartAutoRefreshSection.tsx";
+import { WalmartScheduleSection } from "../../domains/walmart/components/WalmartScheduleSection.tsx";
 import { useWalmartRecording } from "../../domains/walmart/hooks/useWalmartRecording.ts";
 import { useWalmartAutoRefresh } from "../../domains/walmart/hooks/useWalmartAutoRefresh.ts";
 import { useWalmartQueueSettings } from "../../domains/walmart/hooks/useWalmartQueueSettings.ts";
+import { useWalmartSchedule } from "../../domains/walmart/hooks/useWalmartSchedule.ts";
 
 interface WalmartPanelProps {
   status: ExtensionStatus;
@@ -56,13 +58,27 @@ function WalmartRecordingSection({
   );
 }
 
-export function WalmartPanel({ status, disabled }: WalmartPanelProps) {
+export function WalmartPanel({ status, disabled, onRefresh }: WalmartPanelProps) {
   const panelActive = true;
+  const walmartSchedule = useWalmartSchedule(panelActive, status, onRefresh);
   const walmartAutoRefresh = useWalmartAutoRefresh(panelActive, status.enabled, status);
   const walmartQueueSettings = useWalmartQueueSettings(panelActive, status.enabled, status);
 
   return (
     <div className="space-y-3">
+      <WalmartScheduleSection
+        enabled={walmartSchedule.enabled}
+        startTime={walmartSchedule.startTime}
+        endTime={walmartSchedule.endTime}
+        scheduleStatus={walmartSchedule.scheduleStatus}
+        disabled={disabled}
+        saving={walmartSchedule.saving}
+        saveError={walmartSchedule.saveError}
+        onEnabledChange={walmartSchedule.handleEnabledChange}
+        onStartTimeCommit={walmartSchedule.commitStartTime}
+        onEndTimeCommit={walmartSchedule.commitEndTime}
+      />
+
       <WalmartAutoRefreshSection
         enabled={walmartAutoRefresh.autoRefreshEnabled}
         refreshIntervalSec={walmartAutoRefresh.refreshIntervalSec}

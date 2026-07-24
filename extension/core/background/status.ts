@@ -52,6 +52,9 @@ import {
   getSamsclubScheduleEndTime,
   getSamsclubScheduleStartTime,
   getSamsclubScheduleStopOnOos,
+  getWalmartScheduleEnabled,
+  getWalmartScheduleEndTime,
+  getWalmartScheduleStartTime,
 } from "@ext/core/lib/schedule-settings.ts";
 import { resolveActiveTabKind } from "@ext/core/lib/active-tab.ts";
 import {
@@ -98,8 +101,8 @@ import {
   getWalmartTabAutoRefresh,
 } from "@ext/domains/walmart/background/runtime-state.ts";
 import {
+  getWalmartFallbackIntervalSec,
   normalizeWalmartRefreshIntervalSec,
-  WALMART_AUTO_REFRESH_DEFAULT_INTERVAL_SEC,
   WALMART_THROTTLE_DEFAULT_INTERVAL_SEC,
 } from "@ext/domains/walmart/lib/index.ts";
 import { listAllWalmartTabs } from "@ext/domains/walmart/background/tabs.ts";
@@ -416,6 +419,44 @@ async function buildSamsclubScheduleStatus(
   };
 }
 
+async function buildWalmartScheduleStatus(
+  settings: ExtensionSettings,
+): Promise<{
+  walmart_schedule_enabled: boolean;
+  walmart_schedule_start_time: string | null;
+  walmart_schedule_end_time: string | null;
+  walmart_schedule_phase: SchedulePhase;
+  walmart_schedule_status: string;
+}> {
+  const enabled = getWalmartScheduleEnabled(settings);
+  const startTime = getWalmartScheduleStartTime(settings);
+  const endTime = getWalmartScheduleEndTime(settings);
+  const session = await readScheduleSession("walmart");
+  const now = new Date();
+  const phase = getSchedulePhase(
+    enabled,
+    startTime ?? undefined,
+    endTime ?? undefined,
+    now,
+    session.start_fired_date,
+    session.end_fired_date,
+  );
+  return {
+    walmart_schedule_enabled: enabled,
+    walmart_schedule_start_time: startTime,
+    walmart_schedule_end_time: endTime,
+    walmart_schedule_phase: phase,
+    walmart_schedule_status: schedulePhaseStatusLine(
+      phase,
+      startTime,
+      now,
+      getScheduleActionStatus("walmart"),
+      endTime,
+      session.start_fired_date,
+    ),
+  };
+}
+
 export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<ExtensionStatus> {
   const settings = await getSettings();
 
@@ -505,16 +546,18 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     samsclubPurchaseLimit,
   );
 
+  const walmartFallbackIntervalSec = getWalmartFallbackIntervalSec(settings);
   const walmartAutoRefresh =
     activeTab?.id != null && walmartTabDetected
       ? getWalmartTabAutoRefresh(activeTab.id)
       : undefined;
   const walmartAutoRefreshEnabled = walmartAutoRefresh?.enabled ?? false;
   const walmartRefreshIntervalSec =
-    walmartAutoRefresh?.interval_sec ?? WALMART_AUTO_REFRESH_DEFAULT_INTERVAL_SEC;
+    walmartAutoRefresh?.interval_sec ?? walmartFallbackIntervalSec;
 
   const retailerScheduleStatus = await buildRetailerScheduleStatus(settings);
   const samsclubScheduleStatus = await buildSamsclubScheduleStatus(settings);
+  const walmartScheduleStatus = await buildWalmartScheduleStatus(settings);
 
   return {
     enabled: settings.enabled,
@@ -568,6 +611,7 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     walmart_throttle_refresh_interval_sec: normalizeWalmartRefreshIntervalSec(
       settings.walmart_throttle_refresh_interval_sec ?? WALMART_THROTTLE_DEFAULT_INTERVAL_SEC,
     ),
+    ...walmartScheduleStatus,
     global_target_positive_keywords: getGlobalKeywords(settings, "target").positive,
     global_target_negative_keywords: getGlobalKeywords(settings, "target").negative,
     global_walmart_positive_keywords: getGlobalKeywords(settings, "walmart").positive,

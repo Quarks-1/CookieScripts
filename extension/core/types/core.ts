@@ -83,6 +83,12 @@ export interface ExtensionSettings {
   samsclub_schedule_start_time?: string;
   samsclub_schedule_end_time?: string;
   samsclub_schedule_stop_on_oos?: boolean;
+  /** Walmart scheduled auto-refresh start. */
+  walmart_schedule_enabled?: boolean;
+  walmart_schedule_start_time?: string;
+  walmart_schedule_end_time?: string;
+  /** Global fallback hard-refresh interval for Walmart tabs; default 10 when omitted. */
+  walmart_refresh_interval_sec?: number;
 }
 
 export type HistoryItemKind =

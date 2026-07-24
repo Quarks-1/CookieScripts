@@ -14,7 +14,7 @@ Also provides optional Walmart tab helpers (separate from recording):
 | Content entry | `content/entry-early.ts` (`document_start` — injects queue probe), `content/entry.ts` (`document_idle`) |
 | Session attach | `content/session.ts` |
 | Queue (content) | `content/queue-alert.ts`, `content/tab-consolidation.ts`, `content/throttle-refresh.ts` |
-| Auto refresh | `content/auto-refresh.ts`, `background/handlers/auto-refresh.ts`, `background/auto-refresh-tab-events.ts` |
+| Auto refresh | `content/auto-refresh.ts`, `background/handlers/auto-refresh.ts`, `background/auto-refresh-tab-events.ts`, `background/scheduled-refresh.ts` |
 | Recorder | `content/recorder/*` |
 | Background handlers | `background/handlers/{index,shared,recording-lifecycle,tab-events,append,ui-messages,content-messages,auto-refresh,queue-handlers}.ts` |
 | Background support | `background/runtime-state.ts` (`tryAcquireExport`, recording metrics), `background/tabs.ts`, `background/tab-message.ts` |
@@ -85,6 +85,7 @@ Source of truth: [extension/core/types/messages.ts](../../core/types/messages.ts
 - Inject research probe only while recording (`lib/page-probe-bridge.ts`); queue probe loads on every Walmart tab via `entry-early.ts`.
 - Queue pass dedup uses tab `sessionStorage` (`WALMART_QUEUE_PASS_SEEN_KEY`); optional sound via `sounds/queue-pass.mp3`.
 - Export mutex (`tryAcquireExport`); extend existing handler modules, do not merge into monolith.
+- Scheduled auto-refresh mirrors Target/Sam's Club via `walmart_schedule_*` settings and `background/scheduled-refresh.ts`. Scheduled start hard-refreshes every open Walmart tab immediately, then leaves interval auto-refresh on until end time or disable. No page-kind filtering.
 
 Manifest: Walmart early (`document_start`) + main (`document_idle`) on `walmart.com` / `www.walmart.com`.
 
@@ -101,4 +102,4 @@ Global invariants and import rules: [AGENTS.md](../../../AGENTS.md).
 
 ## UI
 
-Research section + tab pills: `WalmartResearchSection`. Auto-refresh and queue settings: `WalmartAutoRefreshSection` (with `useWalmartQueueSettings`). Queue settings are on `ExtensionStatus`; hooks seed from `status` — see `ui/popup/core/AGENTS.md` § Panel hook seeding.
+Research section + tab pills: `WalmartResearchSection`. Schedule: `WalmartScheduleSection` (with `useWalmartSchedule`). Auto-refresh and queue settings: `WalmartAutoRefreshSection` (with `useWalmartQueueSettings`). Queue settings are on `ExtensionStatus`; hooks seed from `status` — see `ui/popup/core/AGENTS.md` § Panel hook seeding.

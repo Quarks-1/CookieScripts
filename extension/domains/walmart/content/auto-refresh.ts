@@ -105,14 +105,20 @@ function handleConfigMessage(message: Extract<BackgroundToContent, { type: "WALM
   const previous = activeConfig;
   const enabledChanged = previous.enabled !== message.enabled;
   const intervalChanged = previous.interval_sec !== message.interval_sec;
+  const lastRefreshAt =
+    message.last_refresh_at != null
+      ? message.last_refresh_at
+      : enabledChanged || intervalChanged
+        ? Date.now()
+        : previous.last_refresh_at;
   applyConfig(
     {
       enabled: message.enabled,
       interval_sec: message.interval_sec,
       pause: message.pause,
-      last_refresh_at: previous.last_refresh_at,
+      last_refresh_at: lastRefreshAt,
     },
-    enabledChanged || intervalChanged,
+    false,
   );
   startTick();
 }
@@ -129,7 +135,7 @@ async function bootstrap(): Promise<void> {
         enabled: remote.enabled,
         interval_sec: remote.interval_sec,
         pause: remote.pause,
-        last_refresh_at: local?.last_refresh_at,
+        last_refresh_at: remote.last_refresh_at ?? local?.last_refresh_at,
       },
       false,
     );
@@ -155,7 +161,7 @@ async function bootstrap(): Promise<void> {
         enabled: remote.enabled,
         interval_sec: remote.interval_sec,
         pause: remote.pause,
-        last_refresh_at: local?.last_refresh_at,
+        last_refresh_at: remote.last_refresh_at ?? local?.last_refresh_at,
       },
       false,
     );

@@ -28,11 +28,19 @@ import {
   getSamsclubScheduleEnabled,
   getSamsclubScheduleEndTime,
   getSamsclubScheduleStartTime,
+  getWalmartScheduleEnabled,
+  getWalmartScheduleEndTime,
+  getWalmartScheduleStartTime,
 } from "@ext/core/lib/schedule-settings.ts";
 import {
   startScheduledSamsclubAuto,
   stopScheduledSamsclubAuto,
 } from "@ext/domains/samsclub/background/scheduled-auto.ts";
+import {
+  resumeScheduledWalmartRefresh,
+  startScheduledWalmartRefresh,
+  stopScheduledWalmartRefresh,
+} from "@ext/domains/walmart/background/scheduled-refresh.ts";
 import {
   startScheduledTargetAuto,
   stopScheduledTargetAuto,
@@ -43,6 +51,19 @@ type RetailerScheduleConfig = {
   enabled: boolean;
   startTime: string | null;
   endTime: string | null;
+};
+
+const SCHEDULE_ACTIONS: Record<
+  ScheduleRetailer,
+  { start(): Promise<void>; stop(): Promise<void>; resume?(): Promise<void> }
+> = {
+  target: { start: startScheduledTargetAuto, stop: stopScheduledTargetAuto },
+  samsclub: { start: startScheduledSamsclubAuto, stop: stopScheduledSamsclubAuto },
+  walmart: {
+    start: startScheduledWalmartRefresh,
+    stop: stopScheduledWalmartRefresh,
+    resume: resumeScheduledWalmartRefresh,
+  },
 };
 
 function getRetailerScheduleConfig(settings: ExtensionSettings): RetailerScheduleConfig {
@@ -61,6 +82,29 @@ function getSamsclubScheduleConfig(settings: ExtensionSettings): RetailerSchedul
     startTime: getSamsclubScheduleStartTime(settings),
     endTime: getSamsclubScheduleEndTime(settings),
   };
+}
+
+function getWalmartScheduleConfig(settings: ExtensionSettings): RetailerScheduleConfig {
+  return {
+    retailer: "walmart",
+    enabled: getWalmartScheduleEnabled(settings),
+    startTime: getWalmartScheduleStartTime(settings),
+    endTime: getWalmartScheduleEndTime(settings),
+  };
+}
+
+function getScheduleConfigForRetailer(
+  settings: ExtensionSettings,
+  retailer: ScheduleRetailer,
+): RetailerScheduleConfig {
+  switch (retailer) {
+    case "target":
+      return getRetailerScheduleConfig(settings);
+    case "samsclub":
+      return getSamsclubScheduleConfig(settings);
+    case "walmart":
+      return getWalmartScheduleConfig(settings);
+  }
 }
 
 export async function clearAllScheduleAlarms(): Promise<void> {
@@ -85,6 +129,7 @@ async function syncRetailerAlarms(
   config: RetailerScheduleConfig,
   now: Date,
 ): Promise<void> {
+  const actions = SCHEDULE_ACTIONS[config.retailer];
   const startAlarm = alarmName(config.retailer, "start");
   const endAlarm = alarmName(config.retailer, "end");
   await chrome.alarms.clear(startAlarm);
@@ -106,13 +151,10 @@ async function syncRetailerAlarms(
       config.endTime ?? undefined,
       now,
       session.start_fired_date,
+      { treatMissingEndAsUnbounded: config.retailer === "walmart" },
     )
   ) {
-    if (config.retailer === "target") {
-      await startScheduledTargetAuto();
-    } else {
-      await startScheduledSamsclubAuto();
-    }
+    await actions.start();
     void notifyStatusChanged();
     const sessionAfter = await readScheduleSession(config.retailer);
     if (
@@ -139,6 +181,13 @@ async function syncRetailerAlarms(
   if (window.endAt && now.getTime() < window.endAt.getTime() && startFiredForWindow) {
     await armAlarmAt(endAlarm, window.endAt);
   }
+
+  if (
+    startFiredForWindow &&
+    (window.endAt == null || now.getTime() < window.endAt.getTime())
+  ) {
+    await actions.resume?.();
+  }
 }
 
 export async function resetScheduleRuntimeForRetailer(
@@ -153,11 +202,13 @@ export async function syncScheduleAlarms(settings?: ExtensionSettings): Promise<
   const now = new Date();
   await syncRetailerAlarms(resolvedSettings, getRetailerScheduleConfig(resolvedSettings), now);
   await syncRetailerAlarms(resolvedSettings, getSamsclubScheduleConfig(resolvedSettings), now);
+  await syncRetailerAlarms(resolvedSettings, getWalmartScheduleConfig(resolvedSettings), now);
 
   const anyScheduleEnabled =
     resolvedSettings.enabled &&
     (getRetailerScheduleConfig(resolvedSettings).enabled ||
-      getSamsclubScheduleConfig(resolvedSettings).enabled);
+      getSamsclubScheduleConfig(resolvedSettings).enabled ||
+      getWalmartScheduleConfig(resolvedSettings).enabled);
 
   await chrome.alarms.clear(alarmName("target", "rollover"));
   if (anyScheduleEnabled) {
@@ -184,10 +235,8 @@ export async function handleScheduleAlarm(name: string): Promise<void> {
     return;
   }
 
-  const config =
-    parsed.retailer === "target"
-      ? getRetailerScheduleConfig(settings)
-      : getSamsclubScheduleConfig(settings);
+  const config = getScheduleConfigForRetailer(settings, parsed.retailer);
+  const actions = SCHEDULE_ACTIONS[parsed.retailer];
 
   if (!config.enabled || !config.startTime) {
     return;
@@ -200,11 +249,7 @@ export async function handleScheduleAlarm(name: string): Promise<void> {
   }
 
   if (parsed.kind === "start") {
-    if (parsed.retailer === "target") {
-      await startScheduledTargetAuto();
-    } else {
-      await startScheduledSamsclubAuto();
-    }
+    await actions.start();
     void notifyStatusChanged();
     await syncScheduleAlarms(settings);
     return;
@@ -212,11 +257,7 @@ export async function handleScheduleAlarm(name: string): Promise<void> {
 
   await setScheduleEndFiredDate(parsed.retailer, window.windowStartDate);
   clearScheduleActionStatus(parsed.retailer);
-  if (parsed.retailer === "target") {
-    await stopScheduledTargetAuto();
-  } else {
-    await stopScheduledSamsclubAuto();
-  }
+  await actions.stop();
   void notifyStatusChanged();
   await syncScheduleAlarms(settings);
 }

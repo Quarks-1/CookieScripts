@@ -8,6 +8,7 @@ export type ScheduleSessionState = {
 const SESSION_KEYS: Record<ScheduleRetailer, string> = {
   target: "cookiescripts:schedule:target",
   samsclub: "cookiescripts:schedule:samsclub",
+  walmart: "cookiescripts:schedule:walmart",
 };
 
 export async function readScheduleSession(

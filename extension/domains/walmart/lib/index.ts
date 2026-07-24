@@ -13,6 +13,7 @@ export {
 
 export {
   WALMART_AUTO_REFRESH_DEFAULT_INTERVAL_SEC,
+  getWalmartFallbackIntervalSec,
   normalizeWalmartRefreshIntervalSec,
   shouldWalmartHardRefresh,
 } from "@ext/domains/walmart/lib/auto-refresh.ts";

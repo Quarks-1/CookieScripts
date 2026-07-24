@@ -10,6 +10,7 @@ import type { BackgroundResponse, WalmartToBackground } from "@ext/core/types/in
 import { tabUrlById } from "@ext/domains/walmart/background/handlers/shared.ts";
 import { handleWalmartAppend } from "@ext/domains/walmart/background/handlers/append.ts";
 import { handleWalmartAutoRefreshContentMessage } from "@ext/domains/walmart/background/handlers/auto-refresh.ts";
+import { seedScheduledWalmartRefreshForTab } from "@ext/domains/walmart/background/scheduled-refresh.ts";
 import {
   handleWalmartQueuePass,
   handleWalmartQueueTabConsolidateRequest,
@@ -59,7 +60,10 @@ export async function handleWalmartContentMessage(
     }
     case "WALMART_PING":
       return { ok: true };
-    case "WALMART_GET_AUTO_REFRESH_CONFIG":
+    case "WALMART_GET_AUTO_REFRESH_CONFIG": {
+      await seedScheduledWalmartRefreshForTab(tabId);
+      return handleWalmartAutoRefreshContentMessage(message, sender);
+    }
     case "WALMART_SYNC_AUTO_REFRESH":
     case "WALMART_HARD_RELOAD":
       return handleWalmartAutoRefreshContentMessage(message, sender);

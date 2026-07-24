@@ -2,8 +2,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   handleSetWalmartAutoRefreshEnabled,
+  handleSetWalmartRefreshInterval,
   handleWalmartAutoRefreshContentMessage,
 } from "@ext/domains/walmart/background/handlers/auto-refresh.ts";
+import { saveSettings } from "@ext/core/lib/storage.ts";
 import {
   clearWalmartRuntimeState,
   getWalmartTabAutoRefresh,
@@ -12,6 +14,7 @@ import {
 
 vi.mock("@ext/core/lib/storage.ts", () => ({
   getSettings: vi.fn().mockResolvedValue({ enabled: true, channel_targets: [] }),
+  saveSettings: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock("@ext/domains/walmart/background/tab-message.ts", () => ({
@@ -60,5 +63,18 @@ describe("walmart auto-refresh handlers", () => {
     );
 
     expect(result).toEqual({ ok: true, enabled: false, interval_sec: 10, pause: false });
+  });
+
+  it("persists global refresh interval when changed from the panel", async () => {
+    const result = await handleSetWalmartRefreshInterval({
+      type: "SET_WALMART_REFRESH_INTERVAL",
+      interval_sec: 25,
+    });
+
+    expect(result).toEqual({ ok: true });
+    expect(saveSettings).toHaveBeenCalledWith(
+      expect.objectContaining({ walmart_refresh_interval_sec: 25 }),
+    );
+    expect(getWalmartTabAutoRefresh(7)?.interval_sec).toBe(25);
   });
 });

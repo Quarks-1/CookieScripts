@@ -1,6 +1,6 @@
 export type SchedulePhase = "off" | "pending" | "active" | "ended";
 
-export type ScheduleRetailer = "target" | "samsclub";
+export type ScheduleRetailer = "target" | "samsclub" | "walmart";
 
 export type ScheduleWindow = {
   startAt: Date;
@@ -121,9 +121,10 @@ export function isInWindowImmediateScheduleStart(
   end: string | undefined,
   now: Date,
   startFiredDate?: string,
+  opts?: { treatMissingEndAsUnbounded?: boolean },
 ): boolean {
   const window = resolveScheduleWindow(start, end, now);
-  if (!window || window.endAt == null) {
+  if (!window) {
     return false;
   }
 
@@ -132,6 +133,13 @@ export function isInWindowImmediateScheduleStart(
   }
 
   const nowMs = now.getTime();
+  if (window.endAt == null) {
+    if (opts?.treatMissingEndAsUnbounded) {
+      return nowMs >= window.startAt.getTime();
+    }
+    return false;
+  }
+
   return nowMs >= window.startAt.getTime() && nowMs < window.endAt.getTime();
 }
 
@@ -210,7 +218,7 @@ export function parseScheduleAlarmName(
   if (name === "schedule:rollover") {
     return { kind: "rollover" };
   }
-  const match = /^schedule:(target|samsclub):(start|end)$/.exec(name);
+  const match = /^schedule:(target|samsclub|walmart):(start|end)$/.exec(name);
   if (!match) {
     return null;
   }

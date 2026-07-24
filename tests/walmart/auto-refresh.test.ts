@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   WALMART_AUTO_REFRESH_DEFAULT_INTERVAL_SEC,
+  getWalmartFallbackIntervalSec,
   normalizeWalmartRefreshIntervalSec,
   shouldWalmartHardRefresh,
 } from "@ext/domains/walmart/lib/auto-refresh.ts";
@@ -24,5 +25,11 @@ describe("walmart auto-refresh lib", () => {
     expect(shouldWalmartHardRefresh(now, 0, 10, true, true)).toBe(false);
     expect(shouldWalmartHardRefresh(now, now - 5_000, 10, true, false)).toBe(false);
     expect(shouldWalmartHardRefresh(now, now - 10_000, 10, true, false)).toBe(true);
+  });
+
+  it("getWalmartFallbackIntervalSec uses persisted setting with default fallback", () => {
+    expect(getWalmartFallbackIntervalSec({})).toBe(10);
+    expect(getWalmartFallbackIntervalSec({ walmart_refresh_interval_sec: 25 })).toBe(25);
+    expect(getWalmartFallbackIntervalSec({ walmart_refresh_interval_sec: 0 })).toBe(1);
   });
 });

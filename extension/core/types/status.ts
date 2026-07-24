@@ -57,6 +57,11 @@ export interface ExtensionStatus {
   walmart_queue_pass_sound_enabled: boolean;
   walmart_consolidate_queue_tabs_enabled: boolean;
   walmart_throttle_refresh_interval_sec: number;
+  walmart_schedule_enabled: boolean;
+  walmart_schedule_start_time: string | null;
+  walmart_schedule_end_time: string | null;
+  walmart_schedule_phase: SchedulePhase;
+  walmart_schedule_status: string;
   global_target_positive_keywords: string[];
   global_target_negative_keywords: string[];
   global_walmart_positive_keywords: string[];

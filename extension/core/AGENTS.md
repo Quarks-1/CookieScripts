@@ -28,7 +28,7 @@ Chrome MV3 service worker hub — message router, link opening pipeline, shared 
 - `initPromise` gates `onMessage` handlers (no top-level await in MV3).
 - `onInstalled` → `seedDefaultsIfMissing` + `configureSidePanel`.
 - Startup → `configureSidePanel`, `loadWalmartRecordingState`, `loadSamsclubRecordingState`, `syncScheduleAlarms`.
-- `chrome.alarms.onAlarm` → `handleScheduleAlarm` (Target + Sam's Club scheduled start/end).
+- `chrome.alarms.onAlarm` → `handleScheduleAlarm` (Target, Sam's Club, and Walmart scheduled start/end). Walmart opts into unbounded windows when no end time is set (`treatMissingEndAsUnbounded`).
 - Tab listeners: Walmart auto-refresh, core dedup flush, Target retailer cleanup, Walmart recording teardown, Sam's Club recording + automation teardown.
 - Window listener: Target retailer window cleanup.
 - `onSuspend` (when supported) → `flushRecentUrls()` before SW teardown.

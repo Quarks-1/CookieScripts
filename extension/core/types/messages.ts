@@ -124,6 +124,7 @@ export type BackgroundToContent =
       enabled: boolean;
       interval_sec: number;
       pause: boolean;
+      last_refresh_at?: number;
     }
   | { type: "SAMSCLUB_PING" }
   | {
@@ -205,6 +206,12 @@ export type UiToBackground =
       start_time?: string;
       end_time?: string;
       stop_on_oos?: boolean;
+    }
+  | {
+      type: "SET_WALMART_SCHEDULE";
+      enabled?: boolean;
+      start_time?: string;
+      end_time?: string;
     };
 
 export type SamsclubToBackground =
@@ -277,7 +284,7 @@ export type BackgroundResponse =
   | { ok: true; export: { downloadId: number; filename: string } }
   | { ok: true; ack: true; dropped?: boolean }
   | { ok: true; tabId: number }
-  | { ok: true; enabled: boolean; interval_sec: number; pause: boolean }
+  | { ok: true; enabled: boolean; interval_sec: number; pause: boolean; last_refresh_at?: number }
   | { ok: true }
   | { ok: false; error: string }
   | WatchConfig;

@@ -43,7 +43,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 |---|---|---|
 | Discord | `DiscordPanel` | Yes — per-channel domains need a focused Discord channel tab; global keywords/SKUs always editable when extension is on |
 | Target | `TargetPanel` | Yes — link opens, Enable Auto ATC, ATC toggles, schedule, hard refresh interval, etc. |
-| Walmart | `WalmartPanel` | Yes — auto-refresh, queue helpers, recording |
+| Walmart | `WalmartPanel` | Yes — schedule, auto-refresh, queue helpers, recording |
 | Sam's Club | `SamsclubPanel` | Yes — ATC toggles, auto checkout/CVV, schedule, manual auto mode, recording |
 | Global | `GlobalPanel` | Open links in new window, SKU open mode, Show Walmart/Sam's Club recording |
 
@@ -89,7 +89,7 @@ Used inside domain panels for intra-panel gating:
 | Core | `usePopupStatus`, `useUpdateCheck`, `useLiveScheduleStatus` |
 | Discord (`DiscordPanel`) | `useChannelDiscordSettings`, `useGlobalDiscordWatchSettings`, `useDetectedLinks`, `useLinkHistory` |
 | Target (`TargetPanel`) | `useRetailerLinkOpenCount`, `useRetailerAutoAtcEnabled`, `useRetailerAutoMode`, `useRetailerAtcMode`, `useRetailerAtcQuantity`, `useRetailerAutoCheckout`, `useRetailerSchedule` |
-| Walmart (`WalmartPanel`) | `useWalmartRecording`, `useWalmartAutoRefresh`, `useWalmartQueueSettings` |
+| Walmart (`WalmartPanel`) | `useWalmartSchedule`, `useWalmartRecording`, `useWalmartAutoRefresh`, `useWalmartQueueSettings` |
 | Sam's Club (`SamsclubPanel`) | `useSamsclubAtcMode`, `useSamsclubAutoCheckout`, `useSamsclubCheckoutCvv`, `useSamsclubAtcQuantity`, `useSamsclubAutoMode`, `useSamsclubRecording`, `useSamsclubSchedule` |
 
 `LinkHistory` component lives in `@shared/components/LinkHistory.tsx` (not under discord domain).

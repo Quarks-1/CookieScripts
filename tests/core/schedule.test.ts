@@ -14,7 +14,7 @@ import {
   resolveScheduleWindow,
   schedulePhaseStatusLine,
 } from "@ext/core/lib/schedule.ts";
-import { normalizeScheduleTime } from "@ext/core/lib/schedule-settings.ts";
+import { normalizeScheduleTime, mergeWalmartScheduleSettings } from "@ext/core/lib/schedule-settings.ts";
 
 function localDate(
   year: number,
@@ -159,6 +159,20 @@ describe("isInWindowImmediateScheduleStart", () => {
     const now = localDate(2026, 7, 21, 22, 0);
     expect(isInWindowImmediateScheduleStart("01:00", undefined, now)).toBe(false);
   });
+
+  it("can treat missing end time as unbounded for Walmart", () => {
+    const now = localDate(2026, 7, 21, 10, 0);
+    expect(
+      isInWindowImmediateScheduleStart("09:00", undefined, now, undefined, {
+        treatMissingEndAsUnbounded: true,
+      }),
+    ).toBe(true);
+    expect(
+      isInWindowImmediateScheduleStart("09:00", undefined, now, "2026-07-21", {
+        treatMissingEndAsUnbounded: true,
+      }),
+    ).toBe(false);
+  });
 });
 
 describe("nextStartAlarmAt", () => {
@@ -185,7 +199,28 @@ describe("alarm helpers", () => {
       retailer: "samsclub",
       kind: "end",
     });
+    expect(parseScheduleAlarmName("schedule:walmart:start")).toEqual({
+      retailer: "walmart",
+      kind: "start",
+    });
     expect(parseScheduleAlarmName("schedule:rollover")).toEqual({ kind: "rollover" });
+  });
+});
+
+describe("mergeWalmartScheduleSettings", () => {
+  it("requires start time when enabling", () => {
+    expect(() => mergeWalmartScheduleSettings({ channel_targets: [], enabled: true }, { enabled: true }))
+      .toThrow("Start time is required when schedule is enabled");
+  });
+
+  it("normalizes start and end times", () => {
+    const next = mergeWalmartScheduleSettings(
+      { channel_targets: [], enabled: true },
+      { enabled: true, start_time: "9:00", end_time: "10:30" },
+    );
+    expect(next.walmart_schedule_enabled).toBe(true);
+    expect(next.walmart_schedule_start_time).toBe("09:00:00");
+    expect(next.walmart_schedule_end_time).toBe("10:30:00");
   });
 });
 

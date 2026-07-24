@@ -120,7 +120,8 @@ function isUiMessage(message: RuntimeMessage): message is UiToBackground {
     message.type === "SAMSCLUB_START_MANUAL_AUTO" ||
     message.type === "SAMSCLUB_STOP_MANUAL_AUTO" ||
     message.type === "SET_RETAILER_SCHEDULE" ||
-    message.type === "SET_SAMSCLUB_SCHEDULE"
+    message.type === "SET_SAMSCLUB_SCHEDULE" ||
+    message.type === "SET_WALMART_SCHEDULE"
   );
 }
 

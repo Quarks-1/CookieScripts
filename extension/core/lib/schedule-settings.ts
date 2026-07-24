@@ -74,6 +74,20 @@ export function getSamsclubScheduleStopOnOos(settings: ExtensionSettings): boole
   return settings.samsclub_schedule_stop_on_oos === true;
 }
 
+export function getWalmartScheduleEnabled(settings: ExtensionSettings): boolean {
+  return settings.walmart_schedule_enabled === true;
+}
+
+export function getWalmartScheduleStartTime(settings: ExtensionSettings): string | null {
+  const value = settings.walmart_schedule_start_time;
+  return typeof value === "string" && value.trim() !== "" ? value : null;
+}
+
+export function getWalmartScheduleEndTime(settings: ExtensionSettings): string | null {
+  const value = settings.walmart_schedule_end_time;
+  return typeof value === "string" && value.trim() !== "" ? value : null;
+}
+
 export type RetailerSchedulePatch = {
   enabled?: boolean;
   start_time?: string;
@@ -87,6 +101,12 @@ export type SamsclubSchedulePatch = {
   start_time?: string;
   end_time?: string;
   stop_on_oos?: boolean;
+};
+
+export type WalmartSchedulePatch = {
+  enabled?: boolean;
+  start_time?: string;
+  end_time?: string;
 };
 
 function applyOptionalBoolean(
@@ -179,6 +199,37 @@ export function mergeSamsclubScheduleSettings(
 
   const start = getSamsclubScheduleStartTime(next);
   const end = getSamsclubScheduleEndTime(next);
+  if (start && end && start === end) {
+    throw new Error("End time must differ from start time");
+  }
+
+  return next;
+}
+
+export function mergeWalmartScheduleSettings(
+  settings: ExtensionSettings,
+  patch: WalmartSchedulePatch,
+): ExtensionSettings {
+  const next = { ...settings };
+  if (patch.enabled !== undefined) {
+    if (patch.enabled) {
+      next.walmart_schedule_enabled = true;
+    } else {
+      delete next.walmart_schedule_enabled;
+    }
+  }
+
+  const enabling = patch.enabled === true;
+  const willBeEnabled = patch.enabled ?? getWalmartScheduleEnabled(settings);
+  applyOptionalTime(next, "walmart_schedule_start_time", patch.start_time);
+  applyOptionalTime(next, "walmart_schedule_end_time", patch.end_time);
+
+  if ((enabling || willBeEnabled) && !getWalmartScheduleStartTime(next)) {
+    throw new Error("Start time is required when schedule is enabled");
+  }
+
+  const start = getWalmartScheduleStartTime(next);
+  const end = getWalmartScheduleEndTime(next);
   if (start && end && start === end) {
     throw new Error("End time must differ from start time");
   }

@@ -58,12 +58,16 @@ import { stopScheduledSamsclubAuto } from "@ext/domains/samsclub/background/sche
 import {
   mergeRetailerScheduleSettings,
   mergeSamsclubScheduleSettings,
+  mergeWalmartScheduleSettings,
 } from "@ext/core/lib/schedule-settings.ts";
 import {
   handleSetWalmartAutoRefreshEnabled,
   handleSetWalmartRefreshInterval,
   stopAllWalmartAutoRefreshForDisable,
 } from "@ext/domains/walmart/background/handlers/auto-refresh.ts";
+import {
+  stopScheduledWalmartRefresh,
+} from "@ext/domains/walmart/background/scheduled-refresh.ts";
 import type { BackgroundResponse, UiToBackground } from "@ext/core/types/index.ts";
 
 export async function handleUiMessage(
@@ -300,6 +304,25 @@ export async function handleUiMessage(
         if (message.enabled === false) {
           await stopScheduledSamsclubAuto();
           await resetScheduleRuntimeForRetailer("samsclub");
+        }
+        await syncScheduleAlarms(next);
+        void notifyStatusChanged();
+        return { ok: true };
+      } catch (error) {
+        return {
+          ok: false,
+          error: error instanceof Error ? error.message : "Save failed",
+        };
+      }
+    }
+    case "SET_WALMART_SCHEDULE": {
+      try {
+        const settings = await getSettings();
+        const next = mergeWalmartScheduleSettings(settings, message);
+        await saveSettings(next);
+        if (message.enabled === false) {
+          await stopScheduledWalmartRefresh();
+          await resetScheduleRuntimeForRetailer("walmart");
         }
         await syncScheduleAlarms(next);
         void notifyStatusChanged();

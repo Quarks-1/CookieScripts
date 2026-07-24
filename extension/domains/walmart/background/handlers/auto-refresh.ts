@@ -1,4 +1,4 @@
-import { getSettings } from "@ext/core/lib/storage.ts";
+import { getSettings, saveSettings } from "@ext/core/lib/storage.ts";
 import {
   clearAllWalmartTabAutoRefresh,
   getWalmartTabAutoRefresh,
@@ -9,31 +9,36 @@ import {
 } from "@ext/domains/walmart/background/runtime-state.ts";
 import { getActiveWalmartTabInWindow } from "@ext/domains/walmart/background/tab-message.ts";
 import {
-  WALMART_AUTO_REFRESH_DEFAULT_INTERVAL_SEC,
+  getWalmartFallbackIntervalSec,
   normalizeWalmartRefreshIntervalSec,
 } from "@ext/domains/walmart/lib/auto-refresh.ts";
 import type {
   BackgroundResponse,
   BackgroundToContent,
+  ExtensionSettings,
   UiToBackground,
   WalmartToBackground,
 } from "@ext/core/types/index.ts";
 
-export function defaultWalmartAutoRefreshState(): WalmartTabAutoRefreshState {
+export function defaultWalmartAutoRefreshState(
+  intervalSec: number,
+): WalmartTabAutoRefreshState {
   return {
     enabled: false,
-    interval_sec: WALMART_AUTO_REFRESH_DEFAULT_INTERVAL_SEC,
+    interval_sec: intervalSec,
   };
 }
 
 export function resolveWalmartAutoRefreshForTab(
   tabId: number,
   extensionEnabled: boolean,
-): { enabled: boolean; interval_sec: number; pause: boolean } {
+  settings: ExtensionSettings,
+): { enabled: boolean; interval_sec: number; pause: boolean; last_refresh_at?: number } {
+  const fallbackInterval = getWalmartFallbackIntervalSec(settings);
   if (!extensionEnabled) {
     return {
       enabled: false,
-      interval_sec: WALMART_AUTO_REFRESH_DEFAULT_INTERVAL_SEC,
+      interval_sec: fallbackInterval,
       pause: false,
     };
   }
@@ -41,24 +46,26 @@ export function resolveWalmartAutoRefreshForTab(
   if (!entry) {
     return {
       enabled: false,
-      interval_sec: WALMART_AUTO_REFRESH_DEFAULT_INTERVAL_SEC,
+      interval_sec: fallbackInterval,
       pause: false,
     };
   }
   return {
     enabled: entry.enabled,
     interval_sec: entry.interval_sec,
-    // Recording reattaches after hard reload via WALMART_RECORDING_REATTACH.
     pause: false,
+    last_refresh_at: entry.last_refresh_at,
   };
 }
 
 export async function stopAllWalmartAutoRefreshForDisable(): Promise<void> {
+  const settings = await getSettings();
+  const fallbackInterval = getWalmartFallbackIntervalSec(settings);
   const tabIds = listWalmartTabAutoRefreshTabIds();
   for (const tabId of tabIds) {
     await pushWalmartAutoRefreshConfigToTab(tabId, {
       enabled: false,
-      interval_sec: WALMART_AUTO_REFRESH_DEFAULT_INTERVAL_SEC,
+      interval_sec: fallbackInterval,
       pause: false,
     });
   }
@@ -67,7 +74,7 @@ export async function stopAllWalmartAutoRefreshForDisable(): Promise<void> {
 
 export async function pushWalmartAutoRefreshConfigToTab(
   tabId: number,
-  config: { enabled: boolean; interval_sec: number; pause: boolean },
+  config: { enabled: boolean; interval_sec: number; pause: boolean; last_refresh_at?: number },
 ): Promise<void> {
   try {
     await chrome.tabs.sendMessage(tabId, {
@@ -93,10 +100,11 @@ export async function handleWalmartAutoRefreshContentMessage(
     return { ok: false, error: "Unauthorized sender" };
   }
 
+  const settings = await getSettings();
+
   switch (message.type) {
     case "WALMART_GET_AUTO_REFRESH_CONFIG": {
-      const settings = await getSettings();
-      const config = resolveWalmartAutoRefreshForTab(tabId, settings.enabled);
+      const config = resolveWalmartAutoRefreshForTab(tabId, settings.enabled, settings);
       return { ok: true, ...config };
     }
     case "WALMART_SYNC_AUTO_REFRESH": {
@@ -145,7 +153,8 @@ export async function handleSetWalmartAutoRefreshEnabled(
   }
 
   const tabId = tab.id;
-  const existing = getWalmartTabAutoRefresh(tabId) ?? defaultWalmartAutoRefreshState();
+  const fallbackInterval = getWalmartFallbackIntervalSec(settings);
+  const existing = getWalmartTabAutoRefresh(tabId) ?? defaultWalmartAutoRefreshState(fallbackInterval);
 
   if (message.enabled && existing.interval_sec < 1) {
     return { ok: false, error: "Set interval to at least 1 second" };
@@ -158,7 +167,7 @@ export async function handleSetWalmartAutoRefreshEnabled(
   };
   setWalmartTabAutoRefresh(tabId, next);
 
-  const config = resolveWalmartAutoRefreshForTab(tabId, settings.enabled);
+  const config = resolveWalmartAutoRefreshForTab(tabId, settings.enabled, settings);
   await pushWalmartAutoRefreshConfigToTab(tabId, config);
   return { ok: true };
 }
@@ -178,16 +187,23 @@ export async function handleSetWalmartRefreshInterval(
 
   const tabId = tab.id;
   const intervalSec = normalizeWalmartRefreshIntervalSec(message.interval_sec);
+  const fallbackInterval = getWalmartFallbackIntervalSec(settings);
   const existing = getWalmartTabAutoRefresh(tabId);
   const intervalChanged = existing?.interval_sec !== intervalSec;
   const next: WalmartTabAutoRefreshState = {
-    ...(existing ?? defaultWalmartAutoRefreshState()),
+    ...(existing ?? defaultWalmartAutoRefreshState(fallbackInterval)),
     interval_sec: intervalSec,
     last_refresh_at: intervalChanged ? Date.now() : existing?.last_refresh_at,
   };
   setWalmartTabAutoRefresh(tabId, next);
 
-  const config = resolveWalmartAutoRefreshForTab(tabId, settings.enabled);
+  const nextSettings: ExtensionSettings = {
+    ...settings,
+    walmart_refresh_interval_sec: intervalSec,
+  };
+  await saveSettings(nextSettings);
+
+  const config = resolveWalmartAutoRefreshForTab(tabId, settings.enabled, nextSettings);
   await pushWalmartAutoRefreshConfigToTab(tabId, config);
   return { ok: true };
 }
