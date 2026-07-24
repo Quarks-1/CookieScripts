@@ -1,6 +1,8 @@
 # Catalog Liveness
 
-Weekly Target/Walmart liveness checks against shipped `extension/core/data/catalog.json`, with optional cleanup PRs for dead/invalid listings.
+Weekly Target liveness checks against shipped `extension/core/data/catalog.json`, with optional cleanup PRs for dead listings.
+
+Walmart checks are **not run yet** — Walmart listings are never auto-pruned until liveness probing is enabled.
 
 ## Signals
 
@@ -17,19 +19,11 @@ Fetches `https://www.target.com/p/-/A-<tcin>` and classifies server-rendered HTM
 
 Network/HTTP errors → `unclear` (never auto-pruned).
 
-**Control abort:** Three known-live TCINs (`95230445`, `95230447`, `94681785`) are checked at start, every 20 listings, and end. If any control reads `dead`, the run is soft-blocked: Walmart is skipped, the report is written with `blocked: true`, and prune refuses to modify the catalog.
+**Control abort:** Three known-live TCINs (`95230445`, `95230447`, `94681785`) are checked at start, every 20 listings, and end. If any control reads `dead`, the run is soft-blocked: the report is written with `blocked: true`, and prune refuses to modify the catalog.
 
-### Walmart
+### Walmart (deferred)
 
-`GET https://www.walmart.com/ip/<id>` with `redirect: manual`. Reads `x-usgm-validitemid` and `x-usgm-item-seo-url` (fallback `location`):
-
-| Status | Signal |
-|---|---|
-| `valid` | Header `"true"` |
-| `invalid` | Header `"false"` |
-| `unclear` | Missing/other header |
-
-Identity is compared via slug token overlap; `identity_mismatch` when valid but similarity &lt; 0.34 (kept for human review).
+`check-walmart.mjs` and classify helpers exist but are not invoked by `check.mjs`. Re-enable when ready to probe Walmart headers.
 
 ## Prune policy
 
@@ -38,15 +32,14 @@ Identity is compared via slug token overlap; `identity_mismatch` when valid but 
 | Target `dead` | Yes |
 | Target `live_marketplace` | No (yes with `--drop-marketplace`) |
 | Target `unclear` | No |
-| Walmart `invalid` | Yes |
-| Walmart `valid` + `identity_mismatch` | No |
+| Walmart (any) | No — not checked yet |
 | Report `blocked: true` | Refuse (exit 1) |
 | SKU missing from report | No |
 
 ## Manual commands
 
 ```bash
-# Full liveness scan → research/catalog-liveness-report.json
+# Full Target liveness scan → research/catalog-liveness-report.json
 npm run catalog:liveness
 
 # Preview prunable listings (default)
@@ -68,5 +61,5 @@ Workflow: **Catalog Liveness** (`.github/workflows/catalog-liveness.yml`)
 
 - Runs Mondays 14:00 UTC and on `workflow_dispatch`
 - `check` job uploads `catalog-liveness-report` artifact; fails only on control soft-block
-- `cleanup-pr` job opens a PR when prunable listings exist and no open `catalog/liveness-*` PR is present
+- `cleanup-pr` job opens a PR when prunable Target listings exist and no open `catalog/liveness-*` PR is present
 - Post-apply `npm test` gates PR creation (skipped, not failed, on test failure)

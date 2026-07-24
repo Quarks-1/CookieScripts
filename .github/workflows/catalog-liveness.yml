@@ -129,7 +129,7 @@ jobs:
             --body "$(cat <<EOF
           ## Summary
 
-          Weekly catalog liveness check found prunable dead/invalid listings.
+          Weekly catalog liveness check found prunable dead Target listings.
 
           ### Removed listings
 

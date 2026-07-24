@@ -91,7 +91,7 @@ flowchart TB
 | `ui/sidepanel/` | Production Chrome entry: `index.html` → `main.tsx` → `ui/popup/core/App.tsx` |
 | `ui/catalog/` | SKU catalog options page: `index.html` → `main.tsx` (sole `catalog.json` import) |
 | `extension/core/data/catalog.json` | Bundled Pokémon TCG catalog (authored from gitignored `research/discord/catalog-draft.json`) |
-| `scripts/catalog-liveness/` | Weekly Target/Walmart liveness check + prune CLI; report at `research/catalog-liveness-report.json` (gitignored) |
+| `scripts/catalog-liveness/` | Weekly Target liveness check + prune CLI (Walmart deferred); report at `research/catalog-liveness-report.json` (gitignored) |
 | `scripts/discord-catalog-harvest.mjs` | Discord harvest CLI → local `research/discord/catalog-candidates.json` |
 | `research/discord/scripts/` | Catalog authoring pipeline (`author-catalog.mjs`, curate/reconcile/normalize); outputs stay gitignored |
 | `ui/popup/core/` | App shell, layout, global hooks |

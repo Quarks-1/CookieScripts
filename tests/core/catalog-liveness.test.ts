@@ -185,12 +185,26 @@ describe("catalog-liveness", () => {
       },
     };
 
-    it("prunes dead target and invalid walmart listings", () => {
+    it("prunes dead target listings when present in report", () => {
       const plan = computePrunePlan(baseCatalog, report);
       expect(plan.removed_listings).toHaveLength(2);
       expect(plan.removed_listings.map((l) => l.sku).sort()).toEqual(["111", "222"]);
       expect(plan.removed_products).toEqual([{ id: "dead-product", name: "Dead Product" }]);
       expect(plan.prunedCatalog.products).toHaveLength(3);
+    });
+
+    it("does not prune walmart when walmart is omitted from report", () => {
+      const targetOnlyReport = {
+        blocked: false,
+        target: report.target,
+        walmart: { listings: [] },
+      };
+      const plan = computePrunePlan(baseCatalog, targetOnlyReport);
+      expect(plan.removed_listings).toEqual([
+        expect.objectContaining({ retailer: "target", sku: "111", status: "dead" }),
+      ]);
+      const deadProduct = plan.prunedCatalog.products.find((p) => p.id === "dead-product");
+      expect(deadProduct?.listings).toEqual([{ retailer: "walmart", sku: "222" }]);
     });
 
     it("keeps unclear, identity_mismatch, and marketplace by default", () => {
