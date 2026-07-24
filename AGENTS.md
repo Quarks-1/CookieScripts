@@ -90,6 +90,8 @@ flowchart TB
 | `ui/sidepanel/` | Production Chrome entry: `index.html` → `main.tsx` → `ui/popup/core/App.tsx` |
 | `ui/catalog/` | SKU catalog options page: `index.html` → `main.tsx` (sole `catalog.json` import) |
 | `extension/core/data/catalog.json` | Bundled Pokémon TCG catalog (authored from gitignored `research/discord/catalog-draft.json`) |
+| `scripts/discord-catalog-harvest.mjs` | Discord harvest CLI → local `research/discord/catalog-candidates.json` |
+| `research/discord/scripts/` | Catalog authoring pipeline (`author-catalog.mjs`, curate/reconcile/normalize); outputs stay gitignored |
 | `ui/popup/core/` | App shell, layout, global hooks |
 | `ui/popup/domains/*/` | Domain-specific side panel components/hooks |
 | `ui/shared/` | Cross-domain React components + Tailwind entry (`@shared`) |
@@ -99,6 +101,24 @@ flowchart TB
 | `icons/` | Extension toolbar / store icons |
 | `manifest.json` | MV3 manifest (content scripts, permissions, side panel path) |
 | `vite.config.ts` | CRXJS + React build; path aliases `@ext`, `@shared` |
+
+## Catalog authoring
+
+Scripts are tracked in git; harvest/curation outputs under `research/discord/` stay local (gitignored).
+
+```bash
+# 1. Harvest Discord monitor channels (requires DISCORD_TOKEN)
+node scripts/discord-catalog-harvest.mjs --scan --channels <id>,<id> --since 2024-11-01
+node scripts/discord-catalog-harvest.mjs --aggregate
+
+# 2. Curate, normalize, reconcile (see research/discord/scripts/)
+node research/discord/scripts/curate-target-catalog.mjs
+node research/discord/scripts/curate-walmart-catalog.mjs
+# …normalize.mjs, normalize-names.mjs, reconcile.mjs, check-liveness.mjs, check-walmart.mjs
+
+# 3. Ship bundled catalog.json (reads catalog-draft.json + curated hits)
+node research/discord/scripts/author-catalog.mjs
+```
 
 ## Path aliases
 

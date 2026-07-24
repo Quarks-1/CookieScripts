@@ -8,4 +8,6 @@ dist/
 dist-dev-ui/
 cookiescripts-*.zip
 *.tsbuildinfo
-research/discord/
+research/discord/**
+!research/discord/scripts/
+!research/discord/scripts/**
