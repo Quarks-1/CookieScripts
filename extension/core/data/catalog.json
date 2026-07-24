@@ -1,0 +1,5278 @@
+{
+  "schema_version": 1,
+  "product_types": [
+    "booster_pack",
+    "sleeved_booster_pack",
+    "single_pack_blister",
+    "three_pack_blister",
+    "checklane_blister",
+    "premium_checklane_blister",
+    "booster_bundle",
+    "elite_trainer_box",
+    "build_battle_box",
+    "tin",
+    "collection_box",
+    "premium_collection",
+    "special_box",
+    "booster_box"
+  ],
+  "sets": [
+    {
+      "id": "pitch-black",
+      "name": "Pitch Black",
+      "released_on": "2026-07-17"
+    },
+    {
+      "id": "chaos-rising",
+      "name": "Chaos Rising",
+      "released_on": "2026-05-22"
+    },
+    {
+      "id": "perfect-order",
+      "name": "Perfect Order",
+      "released_on": "2026-03-27"
+    },
+    {
+      "id": "ascended-heroes",
+      "name": "Ascended Heroes",
+      "released_on": "2026-01-30"
+    },
+    {
+      "id": "phantasmal-flames",
+      "name": "Phantasmal Flames",
+      "released_on": "2025-11-14"
+    },
+    {
+      "id": "mega-evolution",
+      "name": "Mega Evolution",
+      "released_on": "2025-09-26"
+    },
+    {
+      "id": "black-bolt",
+      "name": "Black Bolt",
+      "released_on": "2025-07-18"
+    },
+    {
+      "id": "white-flare",
+      "name": "White Flare",
+      "released_on": "2025-07-18"
+    },
+    {
+      "id": "destined-rivals",
+      "name": "Destined Rivals",
+      "released_on": "2025-05-30"
+    },
+    {
+      "id": "journey-together",
+      "name": "Journey Together",
+      "released_on": "2025-03-28"
+    },
+    {
+      "id": "prismatic-evolutions",
+      "name": "Prismatic Evolutions",
+      "released_on": "2025-01-17"
+    },
+    {
+      "id": "surging-sparks",
+      "name": "Surging Sparks",
+      "released_on": "2024-11-08"
+    },
+    {
+      "id": "stellar-crown",
+      "name": "Stellar Crown",
+      "released_on": "2024-09-13"
+    },
+    {
+      "id": "shrouded-fable",
+      "name": "Shrouded Fable",
+      "released_on": "2024-08-02"
+    },
+    {
+      "id": "twilight-masquerade",
+      "name": "Twilight Masquerade",
+      "released_on": "2024-05-24"
+    },
+    {
+      "id": "temporal-forces",
+      "name": "Temporal Forces",
+      "released_on": "2024-03-22"
+    },
+    {
+      "id": "paldean-fates",
+      "name": "Paldean Fates",
+      "released_on": "2024-01-26"
+    },
+    {
+      "id": "paradox-rift",
+      "name": "Paradox Rift",
+      "released_on": "2023-11-03"
+    },
+    {
+      "id": "151",
+      "name": "151",
+      "released_on": "2023-09-22"
+    },
+    {
+      "id": "obsidian-flames",
+      "name": "Obsidian Flames",
+      "released_on": "2023-08-11"
+    },
+    {
+      "id": "paldea-evolved",
+      "name": "Paldea Evolved",
+      "released_on": "2023-06-09"
+    },
+    {
+      "id": "crown-zenith",
+      "name": "Crown Zenith",
+      "released_on": "2023-01-20"
+    },
+    {
+      "id": "silver-tempest",
+      "name": "Silver Tempest",
+      "released_on": "2022-11-11"
+    },
+    {
+      "id": "lost-origin",
+      "name": "Lost Origin",
+      "released_on": "2022-09-09"
+    },
+    {
+      "id": "astral-radiance",
+      "name": "Astral Radiance",
+      "released_on": "2022-05-27"
+    },
+    {
+      "id": "shining-fates",
+      "name": "Shining Fates",
+      "released_on": "2021-02-19"
+    },
+    {
+      "id": "shining-legends",
+      "name": "Shining Legends",
+      "released_on": "2017-10-06"
+    },
+    {
+      "id": "scarlet-violet",
+      "name": "Scarlet & Violet",
+      "released_on": "2023-03-31"
+    },
+    {
+      "id": "evolving-skies",
+      "name": "Evolving Skies",
+      "released_on": "2021-08-27"
+    },
+    {
+      "id": "assorted",
+      "name": "Assorted Packs",
+      "kind": "assorted"
+    }
+  ],
+  "products": [
+    {
+      "name": "Perfect Order Elite Trainer Box",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "perfect-order"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "95230445"
+        },
+        {
+          "retailer": "target",
+          "sku": "1010873274"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "19402160990"
+        }
+      ],
+      "id": "perfect-order-elite-trainer-box-elite-trainer-box"
+    },
+    {
+      "name": "Perfect Order Booster Bundle",
+      "type": "booster_bundle",
+      "msrp_cents": 2699,
+      "contents": [
+        {
+          "set_id": "perfect-order"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "95230447"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "19380764160"
+        }
+      ],
+      "id": "perfect-order-booster-bundle-booster-bundle"
+    },
+    {
+      "name": "White Flare Booster Bundle",
+      "type": "booster_bundle",
+      "msrp_cents": 2699,
+      "contents": [
+        {
+          "set_id": "white-flare"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94681785"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "16516160047"
+        }
+      ],
+      "id": "white-flare-booster-bundle-booster-bundle"
+    },
+    {
+      "name": "Black Bolt Booster Bundle",
+      "type": "booster_bundle",
+      "msrp_cents": 2699,
+      "contents": [
+        {
+          "set_id": "black-bolt"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94681770"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "16484003729"
+        }
+      ],
+      "id": "black-bolt-booster-bundle-booster-bundle"
+    },
+    {
+      "name": "Mega Kangaskhan ex Box",
+      "type": "collection_box",
+      "msrp_cents": 2199,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94882727"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "17895522613"
+        }
+      ],
+      "id": "mega-kangaskhan-ex-box-collection-box"
+    },
+    {
+      "name": "Mega Venusaur ex Premium Collection",
+      "type": "premium_collection",
+      "msrp_cents": 4499,
+      "contents": [
+        {
+          "set_id": "journey-together",
+          "packs": 3
+        },
+        {
+          "set_id": "destined-rivals",
+          "packs": 3
+        },
+        {
+          "set_id": "mega-evolution",
+          "packs": 2
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94882721"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "17921600867"
+        }
+      ],
+      "id": "mega-venusaur-ex-premium-collection-premium-collection"
+    },
+    {
+      "name": "Collector Chest (Fall 2025)",
+      "type": "tin",
+      "msrp_cents": 3499,
+      "contents": [
+        {
+          "set_id": "mega-evolution",
+          "packs": 2
+        },
+        {
+          "set_id": "destined-rivals",
+          "packs": 2
+        },
+        {
+          "set_id": "journey-together",
+          "packs": 2
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94882718"
+        }
+      ],
+      "id": "collector-chest-fall-2025-tin"
+    },
+    {
+      "name": "Unova Poster Collection",
+      "type": "collection_box",
+      "msrp_cents": 2199,
+      "contents": [
+        {
+          "set_id": "black-bolt",
+          "packs": 2
+        },
+        {
+          "set_id": "white-flare",
+          "packs": 2
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94636854"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "16517213276"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "18631107477"
+        }
+      ],
+      "id": "unova-poster-collection-collection-box"
+    },
+    {
+      "name": "Perfect Order 3-Pack Blister",
+      "type": "three_pack_blister",
+      "msrp_cents": 1499,
+      "contents": [
+        {
+          "set_id": "perfect-order"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "95230446"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "19385368696"
+        }
+      ],
+      "id": "perfect-order-3-pack-blister-three-pack-blister"
+    },
+    {
+      "name": "White Flare Tech Sticker Collection",
+      "type": "collection_box",
+      "msrp_cents": 1899,
+      "contents": [
+        {
+          "set_id": "white-flare",
+          "packs": 3
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94681780"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "16448166186"
+        }
+      ],
+      "id": "white-flare-tech-sticker-collection-collection-box"
+    },
+    {
+      "name": "Black Bolt Elite Trainer Box",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "black-bolt"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94636862"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "16498668973"
+        }
+      ],
+      "id": "black-bolt-elite-trainer-box-elite-trainer-box"
+    },
+    {
+      "name": "Iono's Bellibolt ex Premium Collection",
+      "type": "premium_collection",
+      "msrp_cents": 3999,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94411701"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "15382923523"
+        }
+      ],
+      "id": "iono-s-bellibolt-ex-premium-collection-premium-collection"
+    },
+    {
+      "name": "Pokemon Day 2026 Collection",
+      "type": "collection_box",
+      "msrp_cents": 1799,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "95082138"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "18981958891"
+        }
+      ],
+      "id": "pokemon-day-2026-collection-collection-box"
+    },
+    {
+      "name": "Lugia ex & Latias ex Premium Collection",
+      "type": "premium_collection",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "destined-rivals",
+          "packs": 5
+        },
+        {
+          "set_id": "mega-evolution",
+          "packs": 5
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94681773"
+        }
+      ],
+      "id": "lugia-ex-latias-ex-premium-collection-premium-collection"
+    },
+    {
+      "name": "White Flare Elite Trainer Box",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "white-flare"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94636860"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "16446322202"
+        }
+      ],
+      "id": "white-flare-elite-trainer-box-elite-trainer-box"
+    },
+    {
+      "name": "Charizard X ex Ultra-Premium Collection",
+      "type": "premium_collection",
+      "msrp_cents": 12999,
+      "contents": [
+        {
+          "set_id": "destined-rivals",
+          "packs": 4
+        },
+        {
+          "set_id": "phantasmal-flames",
+          "packs": 4
+        },
+        {
+          "set_id": "mega-evolution",
+          "packs": 4
+        },
+        {
+          "set_id": "journey-together",
+          "packs": 4
+        },
+        {
+          "set_id": "surging-sparks",
+          "packs": 2
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94681790"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "17823811037"
+        }
+      ],
+      "id": "charizard-x-ex-ultra-premium-collection-premium-collection"
+    },
+    {
+      "name": "Black Bolt Binder Collection",
+      "type": "collection_box",
+      "msrp_cents": 2999,
+      "contents": [
+        {
+          "set_id": "black-bolt",
+          "packs": 5
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94636856"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "16454374284"
+        }
+      ],
+      "id": "black-bolt-binder-collection-collection-box"
+    },
+    {
+      "name": "Charizard ex Special Collection",
+      "type": "collection_box",
+      "msrp_cents": 2499,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94411686"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "15424553284"
+        }
+      ],
+      "id": "charizard-ex-special-collection-collection-box"
+    },
+    {
+      "name": "151 Booster Bundle",
+      "type": "booster_bundle",
+      "msrp_cents": 2699,
+      "contents": [
+        {
+          "set_id": "151"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "88897904"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "1160437186"
+        }
+      ],
+      "id": "151-booster-bundle-booster-bundle"
+    },
+    {
+      "name": "Perfect Order Booster Box",
+      "type": "booster_box",
+      "msrp_cents": 17999,
+      "contents": [
+        {
+          "set_id": "perfect-order"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "95252674"
+        }
+      ],
+      "id": "perfect-order-booster-box-booster-box"
+    },
+    {
+      "name": "Prismatic Evolutions Poster Collection",
+      "type": "collection_box",
+      "msrp_cents": 1999,
+      "contents": [
+        {
+          "set_id": "prismatic-evolutions",
+          "packs": 3
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "93803457"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "14091452016"
+        }
+      ],
+      "id": "prismatic-evolutions-poster-collection-collection-box"
+    },
+    {
+      "name": "Mimikyu ex & Alcremie ex Premium Collection",
+      "type": "premium_collection",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "journey-together",
+          "packs": 2
+        },
+        {
+          "set_id": "destined-rivals",
+          "packs": 2
+        },
+        {
+          "set_id": "mega-evolution",
+          "packs": 2
+        },
+        {
+          "set_id": "surging-sparks",
+          "packs": 2
+        },
+        {
+          "set_id": "twilight-masquerade",
+          "packs": 2
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94681777"
+        }
+      ],
+      "id": "mimikyu-ex-alcremie-ex-premium-collection-premium-collection"
+    },
+    {
+      "name": "White Flare Binder Collection",
+      "type": "collection_box",
+      "msrp_cents": 2999,
+      "contents": [
+        {
+          "set_id": "white-flare",
+          "packs": 5
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94636851"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "16516160046"
+        }
+      ],
+      "id": "white-flare-binder-collection-collection-box"
+    },
+    {
+      "name": "Black Bolt Tech Sticker Collection",
+      "type": "collection_box",
+      "msrp_cents": 1899,
+      "contents": [
+        {
+          "set_id": "black-bolt",
+          "packs": 3
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94681767"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "16448166601"
+        }
+      ],
+      "id": "black-bolt-tech-sticker-collection-collection-box"
+    },
+    {
+      "name": "Prismatic Evolutions Binder Collection",
+      "type": "collection_box",
+      "msrp_cents": 2999,
+      "contents": [
+        {
+          "set_id": "prismatic-evolutions",
+          "packs": 5
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94300066"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "14078321300"
+        }
+      ],
+      "id": "prismatic-evolutions-binder-collection-collection-box"
+    },
+    {
+      "name": "Prismatic Evolutions Booster Bundle",
+      "type": "booster_bundle",
+      "msrp_cents": 2699,
+      "contents": [
+        {
+          "set_id": "prismatic-evolutions"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "93954446"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "14803962651"
+        }
+      ],
+      "id": "prismatic-evolutions-booster-bundle-booster-bundle"
+    },
+    {
+      "name": "Team Rocket Tin - Persian",
+      "type": "tin",
+      "msrp_cents": 2699,
+      "contents": [
+        {
+          "set_id": "destined-rivals",
+          "packs": 3
+        },
+        {
+          "set_id": "journey-together",
+          "packs": 2
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94687409"
+        }
+      ],
+      "id": "team-rocket-tin-persian-tin"
+    },
+    {
+      "name": "Prismatic Evolutions Accessory Pouch Special Collection",
+      "type": "special_box",
+      "msrp_cents": 2999,
+      "contents": [
+        {
+          "set_id": "prismatic-evolutions"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94300053"
+        }
+      ],
+      "id": "prismatic-evolutions-accessory-pouch-special-collection-special-box"
+    },
+    {
+      "name": "Prismatic Evolutions Surprise Box",
+      "type": "special_box",
+      "msrp_cents": 2299,
+      "contents": [
+        {
+          "set_id": "prismatic-evolutions",
+          "packs": 4
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94336414"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "14148473268"
+        }
+      ],
+      "id": "prismatic-evolutions-surprise-box-special-box"
+    },
+    {
+      "name": "Unova Victini Illustration Collection",
+      "type": "collection_box",
+      "msrp_cents": 2199,
+      "contents": [
+        {
+          "set_id": "black-bolt",
+          "packs": 2
+        },
+        {
+          "set_id": "white-flare",
+          "packs": 2
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94636866"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "16454274271"
+        }
+      ],
+      "id": "unova-victini-illustration-collection-collection-box"
+    },
+    {
+      "name": "Journey Together Booster Bundle",
+      "type": "booster_bundle",
+      "msrp_cents": 2699,
+      "contents": [
+        {
+          "set_id": "journey-together"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94300074"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "15042474261"
+        }
+      ],
+      "id": "journey-together-booster-bundle-booster-bundle"
+    },
+    {
+      "name": "Team Rocket Tin - Nidoking",
+      "type": "tin",
+      "msrp_cents": 2699,
+      "contents": [
+        {
+          "set_id": "destined-rivals",
+          "packs": 3
+        },
+        {
+          "set_id": "journey-together",
+          "packs": 2
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94687407"
+        }
+      ],
+      "id": "team-rocket-tin-nidoking-tin"
+    },
+    {
+      "name": "Surging Sparks Booster Bundle",
+      "type": "booster_bundle",
+      "msrp_cents": 2699,
+      "contents": [
+        {
+          "set_id": "surging-sparks"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "91619929"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "10692754252"
+        }
+      ],
+      "id": "surging-sparks-booster-bundle-booster-bundle"
+    },
+    {
+      "name": "Team Rocket Tin - Mewtwo",
+      "type": "tin",
+      "msrp_cents": 2699,
+      "contents": [
+        {
+          "set_id": "destined-rivals"
+        },
+        {
+          "set_id": "journey-together"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94687408"
+        }
+      ],
+      "id": "team-rocket-tin-mewtwo-tin"
+    },
+    {
+      "name": "Prismatic Evolutions Elite Trainer Box",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "prismatic-evolutions"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1011206804"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "13816151308"
+        }
+      ],
+      "id": "prismatic-evolutions-elite-trainer-box-elite-trainer-box"
+    },
+    {
+      "name": "Phantasmal Flames Booster Bundle",
+      "type": "booster_bundle",
+      "msrp_cents": 2699,
+      "contents": [
+        {
+          "set_id": "phantasmal-flames"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94884496"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "17785924366"
+        }
+      ],
+      "id": "phantasmal-flames-booster-bundle-booster-bundle"
+    },
+    {
+      "name": "Prismatic Evolutions Tech Sticker Collection Sylveon",
+      "type": "collection_box",
+      "msrp_cents": 1699,
+      "contents": [
+        {
+          "set_id": "prismatic-evolutions",
+          "packs": 3
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94300058"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "14862473632"
+        }
+      ],
+      "id": "prismatic-evolutions-tech-sticker-collection-sylveon-collection-box"
+    },
+    {
+      "name": "Black Kyurem ex & Melmetal ex Box",
+      "type": "collection_box",
+      "msrp_cents": 3499,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94827546"
+        }
+      ],
+      "id": "black-kyurem-ex-melmetal-ex-box-collection-box"
+    },
+    {
+      "name": "Mega Latias ex Box",
+      "type": "collection_box",
+      "msrp_cents": 2199,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94681763"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "17530753411"
+        }
+      ],
+      "id": "mega-latias-ex-box-collection-box"
+    },
+    {
+      "name": "Destined Rivals Booster Bundle",
+      "type": "booster_bundle",
+      "msrp_cents": 2699,
+      "contents": [
+        {
+          "set_id": "destined-rivals"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94300067"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "16019713971"
+        }
+      ],
+      "id": "destined-rivals-booster-bundle-booster-bundle"
+    },
+    {
+      "name": "Mega Evolution Booster Bundle",
+      "type": "booster_bundle",
+      "msrp_cents": 2699,
+      "contents": [
+        {
+          "set_id": "mega-evolution"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94681782"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "17344505131"
+        }
+      ],
+      "id": "mega-evolution-booster-bundle-booster-bundle"
+    },
+    {
+      "name": "Elite Trainer Box- Gardevoir",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "mega-evolution"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94681784"
+        }
+      ],
+      "id": "elite-trainer-box-gardevoir-elite-trainer-box"
+    },
+    {
+      "name": "Phantasmal Flames Elite Trainer Box",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "phantasmal-flames"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94860231"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "17780209250"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "20011509005"
+        }
+      ],
+      "id": "phantasmal-flames-elite-trainer-box-elite-trainer-box"
+    },
+    {
+      "name": "Elite Trainer Box- Lucario",
+      "type": "elite_trainer_box",
+      "msrp_cents": 5499,
+      "contents": [
+        {
+          "set_id": "mega-evolution"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94681776"
+        }
+      ],
+      "id": "elite-trainer-box-lucario-elite-trainer-box"
+    },
+    {
+      "name": "Team Rocket's Mewtwo ex Box",
+      "type": "collection_box",
+      "msrp_cents": 2199,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94411681"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "15992924968"
+        }
+      ],
+      "id": "team-rocket-s-mewtwo-ex-box-collection-box"
+    },
+    {
+      "name": "Journey Together Elite Trainer Box",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "journey-together"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "93803439"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "15156564532"
+        }
+      ],
+      "id": "journey-together-elite-trainer-box-elite-trainer-box"
+    },
+    {
+      "name": "First Partner Illustration Collection - Series 1",
+      "type": "collection_box",
+      "msrp_cents": 1799,
+      "contents": [
+        {
+          "set_id": "ascended-heroes",
+          "packs": 2
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "95225595"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "19283656289"
+        }
+      ],
+      "id": "first-partner-illustration-collection-series-1-collection-box"
+    },
+    {
+      "name": "Archaludon ex & Reshiram ex Box",
+      "type": "collection_box",
+      "msrp_cents": 3499,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94827540"
+        }
+      ],
+      "id": "archaludon-ex-reshiram-ex-box-collection-box"
+    },
+    {
+      "name": "Blooming Waters Premium Collection",
+      "type": "premium_collection",
+      "msrp_cents": 6999,
+      "contents": [
+        {
+          "set_id": "151",
+          "packs": 12
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94724987"
+        }
+      ],
+      "id": "blooming-waters-premium-collection-premium-collection"
+    },
+    {
+      "name": "Prismatic Evolutions Tech Sticker Collection Glaceon",
+      "type": "collection_box",
+      "msrp_cents": 1699,
+      "contents": [
+        {
+          "set_id": "prismatic-evolutions",
+          "packs": 3
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94300080"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "14885471059"
+        }
+      ],
+      "id": "prismatic-evolutions-tech-sticker-collection-glaceon-collection-box"
+    },
+    {
+      "name": "Slashing Legends Tin (Zacian)",
+      "type": "tin",
+      "msrp_cents": 1999,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94411680"
+        }
+      ],
+      "id": "slashing-legends-tin-zacian-tin"
+    },
+    {
+      "name": "Ascended Heroes First Partners Deluxe Pin Collection",
+      "type": "collection_box",
+      "msrp_cents": 2999,
+      "contents": [
+        {
+          "set_id": "ascended-heroes",
+          "packs": 5
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "95093989"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "19012610850"
+        }
+      ],
+      "id": "ascended-heroes-first-partners-deluxe-pin-collection-collection-box"
+    },
+    {
+      "name": "Paldean Fates Tin",
+      "type": "tin",
+      "msrp_cents": 2499,
+      "contents": [
+        {
+          "set_id": "paldean-fates"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "93970337",
+          "marketplace": true
+        },
+        {
+          "retailer": "target",
+          "sku": "93970334",
+          "marketplace": true
+        }
+      ],
+      "id": "paldean-fates-tin-tin"
+    },
+    {
+      "name": "Mega Lucario ex Figure Collection",
+      "type": "premium_collection",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "mega-evolution"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "95000353"
+        }
+      ],
+      "id": "mega-lucario-ex-figure-collection-premium-collection"
+    },
+    {
+      "name": "Destined Rivals Three-Booster Blister Kangaskhan",
+      "type": "three_pack_blister",
+      "msrp_cents": 1499,
+      "contents": [
+        {
+          "set_id": "destined-rivals"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94300082"
+        }
+      ],
+      "id": "destined-rivals-three-booster-blister-kangaskhan-three-pack-blister"
+    },
+    {
+      "name": "Destined Rivals Three-Booster Blister Zebstrika",
+      "type": "three_pack_blister",
+      "msrp_cents": 1499,
+      "contents": [
+        {
+          "set_id": "destined-rivals"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94300073"
+        }
+      ],
+      "id": "destined-rivals-three-booster-blister-zebstrika-three-pack-blister"
+    },
+    {
+      "name": "Twilight Masquerade Elite Trainer Box",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "twilight-masquerade"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "91619960"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "5558569421"
+        }
+      ],
+      "id": "twilight-masquerade-elite-trainer-box-elite-trainer-box"
+    },
+    {
+      "name": "Ascended Heroes Premium Poster Collection Mega Lucario",
+      "type": "premium_collection",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "ascended-heroes",
+          "packs": 10
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "95093981"
+        }
+      ],
+      "id": "ascended-heroes-premium-poster-collection-mega-lucario-premium-collection"
+    },
+    {
+      "name": "Mega Charizard Y Tin",
+      "type": "tin",
+      "msrp_cents": 2499,
+      "contents": [
+        {
+          "set_id": "phantasmal-flames",
+          "packs": 2
+        },
+        {
+          "set_id": "mega-evolution",
+          "packs": 1
+        },
+        {
+          "set_id": "destined-rivals",
+          "packs": 1
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "95138474"
+        }
+      ],
+      "id": "mega-charizard-y-tin-tin"
+    },
+    {
+      "name": "151 Poster Collection",
+      "type": "collection_box",
+      "msrp_cents": 1999,
+      "contents": [
+        {
+          "set_id": "151",
+          "packs": 3
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "89444928"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "2121361619"
+        }
+      ],
+      "id": "151-poster-collection-collection-box"
+    },
+    {
+      "name": "Charizard ex Super-Premium Collection",
+      "type": "premium_collection",
+      "msrp_cents": 5100,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "91670547"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "8177053453"
+        }
+      ],
+      "id": "charizard-ex-super-premium-collection-premium-collection"
+    },
+    {
+      "name": "Paldean Fates Booster Bundle",
+      "type": "booster_bundle",
+      "msrp_cents": 2699,
+      "contents": [
+        {
+          "set_id": "paldean-fates"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "89432660"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "5226743077"
+        }
+      ],
+      "id": "paldean-fates-booster-bundle-booster-bundle"
+    },
+    {
+      "name": "Hidden Potential Tin (Rotom V)",
+      "type": "tin",
+      "msrp_cents": 2199,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "5852217260"
+        }
+      ],
+      "id": "hidden-potential-tin-rotom-v-tin"
+    },
+    {
+      "name": "Prismatic Evolutions Tech Sticker Collection Leafeon",
+      "type": "collection_box",
+      "msrp_cents": 1699,
+      "contents": [
+        {
+          "set_id": "prismatic-evolutions",
+          "packs": 3
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94300075"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "14904152274"
+        }
+      ],
+      "id": "prismatic-evolutions-tech-sticker-collection-leafeon-collection-box"
+    },
+    {
+      "name": "Phantasmal Flames Three-Booster Blister - Sneasel",
+      "type": "three_pack_blister",
+      "msrp_cents": 1499,
+      "contents": [
+        {
+          "set_id": "phantasmal-flames"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94884511"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "17818262325"
+        }
+      ],
+      "id": "phantasmal-flames-three-booster-blister-sneasel-three-pack-blister"
+    },
+    {
+      "name": "Ascended Heroes Collection Erika",
+      "type": "collection_box",
+      "msrp_cents": 999,
+      "contents": [
+        {
+          "set_id": "ascended-heroes"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "95173527"
+        }
+      ],
+      "id": "ascended-heroes-collection-erika-collection-box"
+    },
+    {
+      "name": "Ascended Heroes Premium Poster Collection Mega Gardevoir",
+      "type": "premium_collection",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "ascended-heroes",
+          "packs": 10
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "95093982"
+        }
+      ],
+      "id": "ascended-heroes-premium-poster-collection-mega-gardevoir-premium-collection"
+    },
+    {
+      "name": "Paldean Fates Tech Sticker Collection Shiny Greavard",
+      "type": "collection_box",
+      "msrp_cents": 2499,
+      "contents": [
+        {
+          "set_id": "paldean-fates",
+          "packs": 3
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "90593717"
+        }
+      ],
+      "id": "paldean-fates-tech-sticker-collection-shiny-greavard-collection-box"
+    },
+    {
+      "name": "Prismatic Evolutions Premium Figure Collection",
+      "type": "premium_collection",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "prismatic-evolutions",
+          "packs": 11
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94864079"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "17497369978"
+        }
+      ],
+      "id": "prismatic-evolutions-premium-figure-collection-premium-collection"
+    },
+    {
+      "name": "Cynthia's Garchomp ex Premium Collection",
+      "type": "premium_collection",
+      "msrp_cents": 4499,
+      "contents": [
+        {
+          "set_id": "destined-rivals",
+          "packs": 2
+        },
+        {
+          "set_id": "journey-together",
+          "packs": 4
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94411712"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "16036963618"
+        }
+      ],
+      "id": "cynthia-s-garchomp-ex-premium-collection-premium-collection"
+    },
+    {
+      "name": "Mega Charizard X Tin",
+      "type": "tin",
+      "msrp_cents": 2499,
+      "contents": [
+        {
+          "set_id": "phantasmal-flames",
+          "packs": 2
+        },
+        {
+          "set_id": "mega-evolution",
+          "packs": 1
+        },
+        {
+          "set_id": "destined-rivals",
+          "packs": 1
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "95138464"
+        }
+      ],
+      "id": "mega-charizard-x-tin-tin"
+    },
+    {
+      "name": "Paldean Fates Tech Sticker Collection Shiny Maschiff",
+      "type": "collection_box",
+      "msrp_cents": 2499,
+      "contents": [
+        {
+          "set_id": "paldean-fates",
+          "packs": 3
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "90593716"
+        }
+      ],
+      "id": "paldean-fates-tech-sticker-collection-shiny-maschiff-collection-box"
+    },
+    {
+      "name": "151 Collection - Zapdos ex",
+      "type": "collection_box",
+      "msrp_cents": 2199,
+      "contents": [
+        {
+          "set_id": "151"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "88897898"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "3534446787"
+        }
+      ],
+      "id": "151-collection-zapdos-ex-collection-box"
+    },
+    {
+      "name": "Hidden Potential Tin (Gallade V)",
+      "type": "tin",
+      "msrp_cents": 2199,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "5869318812"
+        }
+      ],
+      "id": "hidden-potential-tin-gallade-v-tin"
+    },
+    {
+      "name": "Silver Tempest Elite Trainer Box",
+      "type": "elite_trainer_box",
+      "msrp_cents": 3799,
+      "contents": [
+        {
+          "set_id": "silver-tempest"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "86933412"
+        }
+      ],
+      "id": "silver-tempest-elite-trainer-box-elite-trainer-box"
+    },
+    {
+      "name": "Ascended Heroes Tech Sticker Collection Gastly",
+      "type": "collection_box",
+      "msrp_cents": 1899,
+      "contents": [
+        {
+          "set_id": "ascended-heroes",
+          "packs": 3
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "95120822"
+        },
+        {
+          "retailer": "target",
+          "sku": "1009212264"
+        }
+      ],
+      "id": "ascended-heroes-tech-sticker-collection-gastly-collection-box"
+    },
+    {
+      "name": "Journey Together Three-Booster Blister (Yanmega)",
+      "type": "three_pack_blister",
+      "msrp_cents": 1499,
+      "contents": [
+        {
+          "set_id": "journey-together"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "93859727"
+        }
+      ],
+      "id": "journey-together-three-booster-blister-yanmega-three-pack-blister"
+    },
+    {
+      "name": "Three-Booster Blister- Psyduck",
+      "type": "three_pack_blister",
+      "msrp_cents": 1499,
+      "contents": [
+        {
+          "set_id": "mega-evolution"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94681766"
+        }
+      ],
+      "id": "three-booster-blister-psyduck-three-pack-blister"
+    },
+    {
+      "name": "Ascended Heroes Elite Trainer Box",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "ascended-heroes"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "95082118"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "18710966734"
+        }
+      ],
+      "id": "ascended-heroes-elite-trainer-box-elite-trainer-box"
+    },
+    {
+      "name": "Journey Together Three-Booster Blister (Scrafty)",
+      "type": "three_pack_blister",
+      "msrp_cents": 1499,
+      "contents": [
+        {
+          "set_id": "journey-together"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "93859728"
+        }
+      ],
+      "id": "journey-together-three-booster-blister-scrafty-three-pack-blister"
+    },
+    {
+      "name": "Phantasmal Flames Booster Display",
+      "type": "booster_box",
+      "msrp_cents": 17999,
+      "contents": [
+        {
+          "set_id": "phantasmal-flames"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "95040142"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "17823513616"
+        }
+      ],
+      "id": "phantasmal-flames-booster-display-booster-box"
+    },
+    {
+      "name": "Ascended Heroes Booster Bundle",
+      "type": "booster_bundle",
+      "msrp_cents": 2699,
+      "contents": [
+        {
+          "set_id": "ascended-heroes"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "95120834"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "18728422476"
+        }
+      ],
+      "id": "ascended-heroes-booster-bundle-booster-bundle"
+    },
+    {
+      "name": "Booster Display",
+      "type": "booster_box",
+      "msrp_cents": 17999,
+      "contents": [
+        {
+          "set_id": "mega-evolution"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94886127"
+        }
+      ],
+      "id": "booster-display-booster-box"
+    },
+    {
+      "name": "Hop's Zacian ex Box",
+      "type": "collection_box",
+      "msrp_cents": 2199,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1011385025"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "15186456025"
+        }
+      ],
+      "id": "hop-s-zacian-ex-box-collection-box"
+    },
+    {
+      "name": "Stacking Tin (2025)",
+      "type": "tin",
+      "msrp_cents": 1599,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "15113272854"
+        }
+      ],
+      "id": "stacking-tin-2025-tin"
+    },
+    {
+      "name": "Phantasmal Flames Three-Booster Blister - Weavile",
+      "type": "three_pack_blister",
+      "msrp_cents": 1499,
+      "contents": [
+        {
+          "set_id": "phantasmal-flames"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94884505"
+        }
+      ],
+      "id": "phantasmal-flames-three-booster-blister-weavile-three-pack-blister"
+    },
+    {
+      "name": "Slashing Legends Tin",
+      "type": "tin",
+      "msrp_cents": 2499,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "15840514011"
+        }
+      ],
+      "id": "slashing-legends-tin-tin"
+    },
+    {
+      "name": "Hidden Potential Tin (Giratina V)",
+      "type": "tin",
+      "msrp_cents": 2199,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "5858660093"
+        }
+      ],
+      "id": "hidden-potential-tin-giratina-v-tin"
+    },
+    {
+      "name": "Ascended Heroes Tech Sticker - Charmander",
+      "type": "collection_box",
+      "msrp_cents": 1899,
+      "contents": [
+        {
+          "set_id": "ascended-heroes",
+          "packs": 3
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1007935778"
+        }
+      ],
+      "id": "ascended-heroes-tech-sticker-charmander-collection-box"
+    },
+    {
+      "name": "Holiday Calendar 2025",
+      "type": "collection_box",
+      "msrp_cents": 2499,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94636863"
+        }
+      ],
+      "id": "holiday-calendar-2025-collection-box"
+    },
+    {
+      "name": "Surging Sparks Three-Booster Blister Zapados",
+      "type": "three_pack_blister",
+      "msrp_cents": 1499,
+      "contents": [
+        {
+          "set_id": "surging-sparks"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "91619928"
+        }
+      ],
+      "id": "surging-sparks-three-booster-blister-zapados-three-pack-blister"
+    },
+    {
+      "name": "Surging Sparks Three-Booster Blister Quagsire",
+      "type": "three_pack_blister",
+      "msrp_cents": 1499,
+      "contents": [
+        {
+          "set_id": "surging-sparks"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "91619945"
+        }
+      ],
+      "id": "surging-sparks-three-booster-blister-quagsire-three-pack-blister"
+    },
+    {
+      "name": "Surging Sparks Elite Trainer Box",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "surging-sparks"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "91619922"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "10692607747"
+        }
+      ],
+      "id": "surging-sparks-elite-trainer-box-elite-trainer-box"
+    },
+    {
+      "name": "Crown Zenith Booster Bundle Box",
+      "type": "booster_bundle",
+      "msrp_cents": 2799,
+      "contents": [
+        {
+          "set_id": "crown-zenith"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94091405"
+        }
+      ],
+      "id": "crown-zenith-booster-bundle-box-booster-bundle"
+    },
+    {
+      "name": "Ascended Heroes Collection Larry",
+      "type": "collection_box",
+      "msrp_cents": 999,
+      "contents": [
+        {
+          "set_id": "ascended-heroes"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "95173525"
+        }
+      ],
+      "id": "ascended-heroes-collection-larry-collection-box"
+    },
+    {
+      "name": "Chaos Rising Elite Trainer Box",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "chaos-rising"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "95267143"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "19988614228"
+        }
+      ],
+      "id": "chaos-rising-elite-trainer-box-elite-trainer-box"
+    },
+    {
+      "name": "Mega Zygarde ex Premium Collection",
+      "type": "premium_collection",
+      "msrp_cents": 4499,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "95280894"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "19607974314"
+        }
+      ],
+      "id": "mega-zygarde-ex-premium-collection-premium-collection"
+    },
+    {
+      "name": "Chaos Rising Booster Bundle",
+      "type": "booster_bundle",
+      "msrp_cents": 2699,
+      "contents": [
+        {
+          "set_id": "chaos-rising"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "95298172"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "19986002628"
+        }
+      ],
+      "id": "chaos-rising-booster-bundle-booster-bundle"
+    },
+    {
+      "name": "151 Ultra-Premium Collection",
+      "type": "premium_collection",
+      "msrp_cents": 12999,
+      "contents": [
+        {
+          "set_id": "151",
+          "packs": 16
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "88897906"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "3100716488"
+        }
+      ],
+      "id": "151-ultra-premium-collection-premium-collection"
+    },
+    {
+      "name": "Chaos Rising 3-Pack Blister",
+      "type": "three_pack_blister",
+      "msrp_cents": 1499,
+      "contents": [
+        {
+          "set_id": "chaos-rising"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "95298174"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "19939024730"
+        }
+      ],
+      "id": "chaos-rising-3-pack-blister-three-pack-blister"
+    },
+    {
+      "name": "Paldea Evolved Booster Bundle",
+      "type": "booster_bundle",
+      "msrp_cents": 2799,
+      "contents": [
+        {
+          "set_id": "paldea-evolved"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "88164376"
+        }
+      ],
+      "id": "paldea-evolved-booster-bundle-booster-bundle"
+    },
+    {
+      "name": "Azure Legends Tin",
+      "type": "tin",
+      "msrp_cents": 2499,
+      "contents": [
+        {
+          "set_id": "surging-sparks",
+          "packs": 2
+        },
+        {
+          "set_id": "stellar-crown",
+          "packs": 1
+        },
+        {
+          "set_id": "temporal-forces",
+          "packs": 1
+        },
+        {
+          "set_id": "obsidian-flames",
+          "packs": 1
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "15024524281"
+        }
+      ],
+      "id": "azure-legends-tin-tin"
+    },
+    {
+      "name": "Crown Zenith Regidrago V Collection",
+      "type": "collection_box",
+      "msrp_cents": 3499,
+      "contents": [
+        {
+          "set_id": "crown-zenith"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "2515603190"
+        }
+      ],
+      "id": "crown-zenith-regidrago-v-collection-collection-box"
+    },
+    {
+      "name": "Legendary Warriors Premium Collection",
+      "type": "premium_collection",
+      "msrp_cents": 4499,
+      "contents": [
+        {
+          "set_id": "silver-tempest",
+          "packs": 6
+        },
+        {
+          "set_id": "astral-radiance",
+          "packs": 6
+        },
+        {
+          "set_id": "lost-origin",
+          "packs": 2
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "13190955834"
+        }
+      ],
+      "id": "legendary-warriors-premium-collection-premium-collection"
+    },
+    {
+      "name": "Temporal Forces Elite Trainer Box Walking Wake",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "temporal-forces"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "91255505"
+        },
+        {
+          "retailer": "target",
+          "sku": "1011701039"
+        }
+      ],
+      "id": "temporal-forces-elite-trainer-box-walking-wake-elite-trainer-box"
+    },
+    {
+      "name": "Crown Zenith Premium Treasures Morpeko V-UNION Box",
+      "type": "collection_box",
+      "msrp_cents": 2499,
+      "contents": [
+        {
+          "set_id": "crown-zenith"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94681703"
+        }
+      ],
+      "id": "crown-zenith-premium-treasures-morpeko-v-union-box-collection-box"
+    },
+    {
+      "name": "Charizard ex Premium Collection",
+      "type": "premium_collection",
+      "msrp_cents": 3999,
+      "contents": [
+        {
+          "set_id": "scarlet-violet",
+          "packs": 2
+        },
+        {
+          "set_id": "paldea-evolved",
+          "packs": 2
+        },
+        {
+          "set_id": "obsidian-flames",
+          "packs": 2
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "88897908",
+          "marketplace": true
+        }
+      ],
+      "id": "charizard-ex-premium-collection-premium-collection"
+    },
+    {
+      "name": "Bloodmoon Ursaluna ex Box",
+      "type": "collection_box",
+      "msrp_cents": 2199,
+      "contents": [
+        {
+          "set_id": "journey-together",
+          "packs": 2
+        },
+        {
+          "set_id": "surging-sparks",
+          "packs": 1
+        },
+        {
+          "set_id": "obsidian-flames",
+          "packs": 1
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "91670543"
+        }
+      ],
+      "id": "bloodmoon-ursaluna-ex-box-collection-box"
+    },
+    {
+      "name": "Paldean Fates Tech Sticker Collection Shiny Fidough",
+      "type": "collection_box",
+      "msrp_cents": 1899,
+      "contents": [
+        {
+          "set_id": "paldean-fates",
+          "packs": 3
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "90593734"
+        }
+      ],
+      "id": "paldean-fates-tech-sticker-collection-shiny-fidough-collection-box"
+    },
+    {
+      "name": "Surging Sparks Booster Pack",
+      "type": "booster_pack",
+      "msrp_cents": 449,
+      "contents": [
+        {
+          "set_id": "surging-sparks"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "93486336"
+        }
+      ],
+      "id": "surging-sparks-booster-pack-booster-pack"
+    },
+    {
+      "name": "2025 Holiday Calendar",
+      "type": "collection_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "destined-rivals",
+          "packs": 2
+        },
+        {
+          "set_id": "journey-together",
+          "packs": 2
+        },
+        {
+          "set_id": "twilight-masquerade",
+          "packs": 1
+        },
+        {
+          "set_id": "surging-sparks",
+          "packs": 1
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "17558653385"
+        }
+      ],
+      "id": "2025-holiday-calendar-collection-box"
+    },
+    {
+      "name": "Collector Chest",
+      "type": "tin",
+      "msrp_cents": 2999,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "92059070"
+        }
+      ],
+      "id": "collector-chest-tin"
+    },
+    {
+      "name": "Temporal Forces Elite Trainer Box Iron Leaves",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "temporal-forces"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "91255507"
+        }
+      ],
+      "id": "temporal-forces-elite-trainer-box-iron-leaves-elite-trainer-box"
+    },
+    {
+      "name": "Shrouded Fable Kingambit Illustration Collection",
+      "type": "collection_box",
+      "msrp_cents": 2199,
+      "contents": [
+        {
+          "set_id": "shrouded-fable",
+          "packs": 4
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "91619936"
+        }
+      ],
+      "id": "shrouded-fable-kingambit-illustration-collection-collection-box"
+    },
+    {
+      "name": "V Strikers Tin (Empoleon V)",
+      "type": "tin",
+      "msrp_cents": 2199,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "5642776198"
+        }
+      ],
+      "id": "v-strikers-tin-empoleon-v-tin"
+    },
+    {
+      "name": "Mega Moonlit Tin- Mega Clefable",
+      "type": "tin",
+      "msrp_cents": 2499,
+      "contents": [
+        {
+          "set_id": "chaos-rising",
+          "packs": 2
+        },
+        {
+          "set_id": "perfect-order",
+          "packs": 1
+        },
+        {
+          "set_id": "phantasmal-flames",
+          "packs": 1
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1010892073"
+        }
+      ],
+      "id": "mega-moonlit-tin-mega-clefable-tin"
+    },
+    {
+      "name": "Ascended Heroes Premium Poster Collection",
+      "type": "premium_collection",
+      "msrp_cents": 5999,
+      "contents": [
+        {
+          "set_id": "ascended-heroes",
+          "packs": 10
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "19009204107"
+        }
+      ],
+      "id": "ascended-heroes-premium-poster-collection-premium-collection"
+    },
+    {
+      "name": "Paldean Fates Elite Trainer Box",
+      "type": "elite_trainer_box",
+      "msrp_cents": 5499,
+      "contents": [
+        {
+          "set_id": "paldean-fates"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "89432659"
+        }
+      ],
+      "id": "paldean-fates-elite-trainer-box-elite-trainer-box"
+    },
+    {
+      "name": "Stellar Crown Elite Trainer Box",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "stellar-crown"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "91619912"
+        }
+      ],
+      "id": "stellar-crown-elite-trainer-box-elite-trainer-box"
+    },
+    {
+      "name": "Paldean Fates Tin Shiny Charizard ex",
+      "type": "tin",
+      "msrp_cents": 2899,
+      "contents": [
+        {
+          "set_id": "paldean-fates"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "90593713"
+        }
+      ],
+      "id": "paldean-fates-tin-shiny-charizard-ex-tin"
+    },
+    {
+      "name": "Destined Rivals Elite Trainer Box",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "destined-rivals"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "19965460207"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "15718673510"
+        }
+      ],
+      "id": "destined-rivals-elite-trainer-box-elite-trainer-box"
+    },
+    {
+      "name": "Prismatic Evolutions Mini Tin",
+      "type": "tin",
+      "msrp_cents": 999,
+      "contents": [
+        {
+          "set_id": "prismatic-evolutions",
+          "packs": 2
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1002162998",
+          "marketplace": true
+        },
+        {
+          "retailer": "target",
+          "sku": "1002159033",
+          "marketplace": true
+        },
+        {
+          "retailer": "target",
+          "sku": "1002159036",
+          "marketplace": true
+        },
+        {
+          "retailer": "walmart",
+          "sku": "17962266411"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "20040323781"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "17984318061"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "11255406228"
+        }
+      ],
+      "id": "prismatic-evolutions-mini-tin-tin"
+    },
+    {
+      "name": "Paldea Partners Tin - Skeledirge",
+      "type": "tin",
+      "msrp_cents": 2699,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "89542108"
+        }
+      ],
+      "id": "paldea-partners-tin-skeledirge-tin"
+    },
+    {
+      "name": "Mega Greninja ex Premium Collection",
+      "type": "premium_collection",
+      "msrp_cents": 4499,
+      "contents": [
+        {
+          "set_id": "chaos-rising",
+          "packs": 6
+        },
+        {
+          "set_id": "perfect-order",
+          "packs": 2
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1011209273"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "20110774429"
+        }
+      ],
+      "id": "mega-greninja-ex-premium-collection-premium-collection"
+    },
+    {
+      "name": "V Strikers Tin (Tyranitar V)",
+      "type": "tin",
+      "msrp_cents": 2199,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "5858371608"
+        }
+      ],
+      "id": "v-strikers-tin-tyranitar-v-tin"
+    },
+    {
+      "name": "Destined Rivals Booster Box",
+      "type": "booster_box",
+      "msrp_cents": 17999,
+      "contents": [
+        {
+          "set_id": "destined-rivals"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94681760"
+        }
+      ],
+      "id": "destined-rivals-booster-box-booster-box"
+    },
+    {
+      "name": "Stacking Tin- Treasures",
+      "type": "tin",
+      "msrp_cents": 2499,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94411690"
+        }
+      ],
+      "id": "stacking-tin-treasures-tin"
+    },
+    {
+      "name": "Three-Booster Blister- Golduck",
+      "type": "three_pack_blister",
+      "msrp_cents": 1499,
+      "contents": [
+        {
+          "set_id": "mega-evolution"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94681786"
+        }
+      ],
+      "id": "three-booster-blister-golduck-three-pack-blister"
+    },
+    {
+      "name": "Ascended Heroes Mega ex Box",
+      "type": "collection_box",
+      "msrp_cents": 2699,
+      "contents": [
+        {
+          "set_id": "ascended-heroes",
+          "packs": 4
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "19620004893"
+        }
+      ],
+      "id": "ascended-heroes-mega-ex-box-collection-box"
+    },
+    {
+      "name": "Paldea Adventure Chest",
+      "type": "collection_box",
+      "msrp_cents": 2999,
+      "contents": [
+        {
+          "set_id": "paldea-evolved",
+          "packs": 1
+        },
+        {
+          "set_id": "obsidian-flames",
+          "packs": 2
+        },
+        {
+          "set_id": "paradox-rift",
+          "packs": 2
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "89952654"
+        }
+      ],
+      "id": "paldea-adventure-chest-collection-box"
+    },
+    {
+      "name": "First Partner Illustration Collection - Series 2",
+      "type": "collection_box",
+      "msrp_cents": 1799,
+      "contents": [
+        {
+          "set_id": "perfect-order",
+          "packs": 1
+        },
+        {
+          "set_id": "chaos-rising",
+          "packs": 1
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1011209279"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "19952559023"
+        }
+      ],
+      "id": "first-partner-illustration-collection-series-2-collection-box"
+    },
+    {
+      "name": "Mega Evolution 3-Pack Blister",
+      "type": "three_pack_blister",
+      "msrp_cents": 1599,
+      "contents": [
+        {
+          "set_id": "mega-evolution"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "17515901587"
+        }
+      ],
+      "id": "mega-evolution-3-pack-blister-three-pack-blister"
+    },
+    {
+      "name": "Greninja ex & Kingdra ex Special Collection",
+      "type": "collection_box",
+      "msrp_cents": 2499,
+      "contents": [
+        {
+          "set_id": "destined-rivals"
+        },
+        {
+          "set_id": "journey-together"
+        },
+        {
+          "set_id": "surging-sparks"
+        },
+        {
+          "set_id": "twilight-masquerade"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "16128011034"
+        }
+      ],
+      "id": "greninja-ex-kingdra-ex-special-collection-collection-box"
+    },
+    {
+      "name": "Ascended Heroes Mega Meganium ex Box",
+      "type": "collection_box",
+      "msrp_cents": 2499,
+      "contents": [
+        {
+          "set_id": "ascended-heroes",
+          "packs": 4
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "95163305"
+        }
+      ],
+      "id": "ascended-heroes-mega-meganium-ex-box-collection-box"
+    },
+    {
+      "name": "Journey Together 3-Pack Blister",
+      "type": "three_pack_blister",
+      "msrp_cents": 1499,
+      "contents": [
+        {
+          "set_id": "journey-together"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "15118973121"
+        }
+      ],
+      "id": "journey-together-3-pack-blister-three-pack-blister"
+    },
+    {
+      "name": "151 Elite Trainer Box",
+      "type": "elite_trainer_box",
+      "msrp_cents": 5499,
+      "contents": [
+        {
+          "set_id": "151"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "88897899"
+        }
+      ],
+      "id": "151-elite-trainer-box-elite-trainer-box"
+    },
+    {
+      "name": "Paldea Partners Tin - Meowscarada",
+      "type": "tin",
+      "msrp_cents": 2699,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "89542111"
+        }
+      ],
+      "id": "paldea-partners-tin-meowscarada-tin"
+    },
+    {
+      "name": "Snorlax ex & Blissey ex Special Collection",
+      "type": "collection_box",
+      "msrp_cents": 2499,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "16097971464"
+        }
+      ],
+      "id": "snorlax-ex-blissey-ex-special-collection-collection-box"
+    },
+    {
+      "name": "Ascended Heroes Mega Emboar ex Box",
+      "type": "collection_box",
+      "msrp_cents": 2499,
+      "contents": [
+        {
+          "set_id": "ascended-heroes",
+          "packs": 4
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1008581387"
+        }
+      ],
+      "id": "ascended-heroes-mega-emboar-ex-box-collection-box"
+    },
+    {
+      "name": "Mega Moonlit Tin- Mega Gengar",
+      "type": "tin",
+      "msrp_cents": 2499,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1010892077"
+        }
+      ],
+      "id": "mega-moonlit-tin-mega-gengar-tin"
+    },
+    {
+      "name": "Stacking Tin- Paradox",
+      "type": "tin",
+      "msrp_cents": 2499,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94411684"
+        }
+      ],
+      "id": "stacking-tin-paradox-tin"
+    },
+    {
+      "name": "Heroes Tin - Umbreon",
+      "type": "tin",
+      "msrp_cents": 1999,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "91121945"
+        }
+      ],
+      "id": "heroes-tin-umbreon-tin"
+    },
+    {
+      "name": "Paradox Clash Tin - Iron Leaves ex",
+      "type": "tin",
+      "msrp_cents": 2699,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "91619959"
+        }
+      ],
+      "id": "paradox-clash-tin-iron-leaves-ex-tin"
+    },
+    {
+      "name": "Destined Rivals 3-Pack Blister",
+      "type": "three_pack_blister",
+      "msrp_cents": 1499,
+      "contents": [
+        {
+          "set_id": "destined-rivals"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "16060605120"
+        }
+      ],
+      "id": "destined-rivals-3-pack-blister-three-pack-blister"
+    },
+    {
+      "name": "Ascended Heroes Mega Feraligatr ex Box",
+      "type": "collection_box",
+      "msrp_cents": 2499,
+      "contents": [
+        {
+          "set_id": "ascended-heroes",
+          "packs": 4
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "95163306"
+        }
+      ],
+      "id": "ascended-heroes-mega-feraligatr-ex-box-collection-box"
+    },
+    {
+      "name": "Paradox Clash Tin - Walking Wake",
+      "type": "tin",
+      "msrp_cents": 2699,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "91619962"
+        }
+      ],
+      "id": "paradox-clash-tin-walking-wake-tin"
+    },
+    {
+      "name": "Prismatic Evolutions Super-Premium Collection",
+      "type": "premium_collection",
+      "msrp_cents": 11999,
+      "contents": [
+        {
+          "set_id": "prismatic-evolutions",
+          "packs": 15
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1012055696"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "15494520186"
+        }
+      ],
+      "id": "prismatic-evolutions-super-premium-collection-premium-collection"
+    },
+    {
+      "name": "Paradox Destinies Tin (Iron Crown ex)",
+      "type": "tin",
+      "msrp_cents": 2499,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "16686610559"
+        }
+      ],
+      "id": "paradox-destinies-tin-iron-crown-ex-tin"
+    },
+    {
+      "name": "Ascended Heroes 2-Pack Booster Bundle",
+      "type": "booster_bundle",
+      "msrp_cents": 799,
+      "contents": [
+        {
+          "set_id": "ascended-heroes"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "20286450229"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "20265770323"
+        }
+      ],
+      "id": "ascended-heroes-2-pack-booster-bundle-booster-bundle"
+    },
+    {
+      "name": "Pitch Black Elite Trainer Box",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "pitch-black"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1011483406"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "20161351456"
+        }
+      ],
+      "id": "pitch-black-elite-trainer-box-elite-trainer-box"
+    },
+    {
+      "name": "Spring Charizard ex Special Collection",
+      "type": "collection_box",
+      "msrp_cents": 2499,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "19594412970"
+        }
+      ],
+      "id": "spring-charizard-ex-special-collection-collection-box"
+    },
+    {
+      "name": "Mega Charizard Tin",
+      "type": "tin",
+      "msrp_cents": 2499,
+      "contents": [
+        {
+          "set_id": "mega-evolution"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "19000507508"
+        }
+      ],
+      "id": "mega-charizard-tin-tin"
+    },
+    {
+      "name": "Great Tusk & Iron Threads ex Premium Collection",
+      "type": "premium_collection",
+      "msrp_cents": 4499,
+      "contents": [
+        {
+          "set_id": "paldean-fates",
+          "packs": 11
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "17738119614"
+        }
+      ],
+      "id": "great-tusk-iron-threads-ex-premium-collection-premium-collection"
+    },
+    {
+      "name": "Pitch Black 3-Pack Blister",
+      "type": "three_pack_blister",
+      "msrp_cents": 1499,
+      "contents": [
+        {
+          "set_id": "pitch-black"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1011483408"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "20195672958"
+        }
+      ],
+      "id": "pitch-black-3-pack-blister-three-pack-blister"
+    },
+    {
+      "name": "Tera Team Premium Collection",
+      "type": "premium_collection",
+      "msrp_cents": 6999,
+      "contents": [
+        {
+          "set_id": "twilight-masquerade",
+          "packs": 2
+        },
+        {
+          "set_id": "temporal-forces",
+          "packs": 2
+        },
+        {
+          "set_id": "paldea-evolved",
+          "packs": 2
+        },
+        {
+          "set_id": "paradox-rift",
+          "packs": 2
+        },
+        {
+          "set_id": "obsidian-flames",
+          "packs": 1
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "91670546"
+        }
+      ],
+      "id": "tera-team-premium-collection-premium-collection"
+    },
+    {
+      "name": "Pitch Black Booster Bundle",
+      "type": "booster_bundle",
+      "msrp_cents": 2699,
+      "contents": [
+        {
+          "set_id": "pitch-black"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1011483414"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "20243261734"
+        }
+      ],
+      "id": "pitch-black-booster-bundle-booster-bundle"
+    },
+    {
+      "name": "Heroes Tin - Espeon",
+      "type": "tin",
+      "msrp_cents": 1999,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "91121944"
+        }
+      ],
+      "id": "heroes-tin-espeon-tin"
+    },
+    {
+      "name": "Phantasmal Flames Booster Pack",
+      "type": "booster_pack",
+      "msrp_cents": 449,
+      "contents": [
+        {
+          "set_id": "phantasmal-flames"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1007155454",
+          "marketplace": true
+        },
+        {
+          "retailer": "target",
+          "sku": "1007155452",
+          "marketplace": true
+        },
+        {
+          "retailer": "target",
+          "sku": "1007155451",
+          "marketplace": true
+        },
+        {
+          "retailer": "target",
+          "sku": "1007155453",
+          "marketplace": true
+        }
+      ],
+      "id": "phantasmal-flames-booster-pack-booster-pack"
+    },
+    {
+      "name": "Paradox Destinies Tin (Iron Leaves ex)",
+      "type": "tin",
+      "msrp_cents": 2499,
+      "contents": [
+        {
+          "set_id": "twilight-masquerade",
+          "packs": 2
+        },
+        {
+          "set_id": "temporal-forces",
+          "packs": 1
+        },
+        {
+          "set_id": "obsidian-flames",
+          "packs": 2
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "16682256375"
+        }
+      ],
+      "id": "paradox-destinies-tin-iron-leaves-ex-tin"
+    },
+    {
+      "name": "Unova Mini Tin",
+      "type": "tin",
+      "msrp_cents": 1299,
+      "contents": [
+        {
+          "set_id": "black-bolt",
+          "packs": 1
+        },
+        {
+          "set_id": "white-flare",
+          "packs": 1
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "16800072727"
+        }
+      ],
+      "id": "unova-mini-tin-tin"
+    },
+    {
+      "name": "Prismatic Evolutions Tech Sticker Collection",
+      "type": "collection_box",
+      "msrp_cents": 1699,
+      "contents": [
+        {
+          "set_id": "prismatic-evolutions",
+          "packs": 3
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "14191660941"
+        }
+      ],
+      "id": "prismatic-evolutions-tech-sticker-collection-collection-box"
+    },
+    {
+      "name": "Roaring Moon ex Box",
+      "type": "collection_box",
+      "msrp_cents": 2199,
+      "contents": [
+        {
+          "set_id": "paradox-rift",
+          "packs": 2
+        },
+        {
+          "set_id": "obsidian-flames",
+          "packs": 1
+        },
+        {
+          "set_id": "paldea-evolved",
+          "packs": 1
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "90206494"
+        }
+      ],
+      "id": "roaring-moon-ex-box-collection-box"
+    },
+    {
+      "name": "Paldea Partners Tin - Quaquaval",
+      "type": "tin",
+      "msrp_cents": 2699,
+      "contents": [
+        {
+          "set_id": "astral-radiance",
+          "packs": 1
+        },
+        {
+          "set_id": "obsidian-flames",
+          "packs": 2
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "89542110"
+        }
+      ],
+      "id": "paldea-partners-tin-quaquaval-tin"
+    },
+    {
+      "name": "Evolving Skies Sleeved Booster",
+      "type": "sleeved_booster_pack",
+      "msrp_cents": 459,
+      "contents": [
+        {
+          "set_id": "evolving-skies"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "93050244",
+          "marketplace": true
+        },
+        {
+          "retailer": "target",
+          "sku": "93050245",
+          "marketplace": true
+        },
+        {
+          "retailer": "target",
+          "sku": "93050243",
+          "marketplace": true
+        }
+      ],
+      "id": "evolving-skies-sleeved-booster-sleeved-booster-pack"
+    },
+    {
+      "name": "Paradox Destinies Tin (Gouging Fire ex)",
+      "type": "tin",
+      "msrp_cents": 2499,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "16682256374"
+        }
+      ],
+      "id": "paradox-destinies-tin-gouging-fire-ex-tin"
+    },
+    {
+      "name": "Paldean Fates Tin (Great Tusk)",
+      "type": "tin",
+      "msrp_cents": 2499,
+      "contents": [
+        {
+          "set_id": "paldean-fates"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "5385006262"
+        }
+      ],
+      "id": "paldean-fates-tin-great-tusk-tin"
+    },
+    {
+      "name": "Chaos Rising Booster Display",
+      "type": "booster_box",
+      "msrp_cents": 17999,
+      "contents": [
+        {
+          "set_id": "chaos-rising"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1010679865"
+        }
+      ],
+      "id": "chaos-rising-booster-display-booster-box"
+    },
+    {
+      "name": "2023 Trick or Trade Mimikyu & Pikachu",
+      "type": "special_box",
+      "msrp_cents": 999,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1005019724",
+          "marketplace": true
+        }
+      ],
+      "id": "2023-trick-or-trade-mimikyu-pikachu-special-box"
+    },
+    {
+      "name": "Phantasmal Flames Sleeved Booster Pack",
+      "type": "sleeved_booster_pack",
+      "msrp_cents": 459,
+      "contents": [
+        {
+          "set_id": "phantasmal-flames"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1007155477",
+          "marketplace": true
+        },
+        {
+          "retailer": "target",
+          "sku": "1007155474",
+          "marketplace": true
+        },
+        {
+          "retailer": "target",
+          "sku": "1007155475",
+          "marketplace": true
+        },
+        {
+          "retailer": "target",
+          "sku": "1007155471",
+          "marketplace": true
+        }
+      ],
+      "id": "phantasmal-flames-sleeved-booster-pack-sleeved-booster-pack"
+    },
+    {
+      "name": "Ascended Heroes Tech Sticker Collection",
+      "type": "collection_box",
+      "msrp_cents": 1699,
+      "contents": [
+        {
+          "set_id": "ascended-heroes",
+          "packs": 3
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "18970611755"
+        }
+      ],
+      "id": "ascended-heroes-tech-sticker-collection-collection-box"
+    },
+    {
+      "name": "Mega Evolution Elite Trainer Box",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "mega-evolution"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "17328862239"
+        }
+      ],
+      "id": "mega-evolution-elite-trainer-box-elite-trainer-box"
+    },
+    {
+      "name": "Paradox Destinies Tin (Raging Bolt ex)",
+      "type": "tin",
+      "msrp_cents": 2499,
+      "contents": [
+        {
+          "set_id": "twilight-masquerade",
+          "packs": 2
+        },
+        {
+          "set_id": "temporal-forces",
+          "packs": 1
+        },
+        {
+          "set_id": "paradox-rift",
+          "packs": 1
+        },
+        {
+          "set_id": "obsidian-flames",
+          "packs": 1
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "16633651843"
+        }
+      ],
+      "id": "paradox-destinies-tin-raging-bolt-ex-tin"
+    },
+    {
+      "name": "Mega Evolution Elite Trainer Box (Gardevoir ex)",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "mega-evolution"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "17525309434"
+        }
+      ],
+      "id": "mega-evolution-elite-trainer-box-gardevoir-ex-elite-trainer-box"
+    },
+    {
+      "name": "Pitch Black Booster Display Box",
+      "type": "booster_box",
+      "msrp_cents": 17999,
+      "contents": [
+        {
+          "set_id": "pitch-black"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1011483413"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "20140716298"
+        }
+      ],
+      "id": "pitch-black-booster-display-box-booster-box"
+    },
+    {
+      "name": "Prismatic Evolutions 2-Pack Booster Bundle",
+      "type": "booster_bundle",
+      "msrp_cents": 799,
+      "contents": [
+        {
+          "set_id": "prismatic-evolutions"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "20288667355"
+        }
+      ],
+      "id": "prismatic-evolutions-2-pack-booster-bundle-booster-bundle"
+    },
+    {
+      "name": "Mega Lucario ex Figure Collection",
+      "type": "collection_box",
+      "msrp_cents": 3499,
+      "contents": [
+        {
+          "set_id": "mega-evolution"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "17918917897"
+        }
+      ],
+      "id": "mega-lucario-ex-figure-collection-collection-box"
+    },
+    {
+      "name": "Incineroar ex & Torterra ex Special Collection",
+      "type": "collection_box",
+      "msrp_cents": 2499,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "16088674228"
+        }
+      ],
+      "id": "incineroar-ex-torterra-ex-special-collection-collection-box"
+    },
+    {
+      "name": "Mega Evolution Elite Trainer Box (Lucario ex)",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "mega-evolution"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "17576818418"
+        }
+      ],
+      "id": "mega-evolution-elite-trainer-box-lucario-ex-elite-trainer-box"
+    },
+    {
+      "name": "Prismatic Evolutions Booster Pack",
+      "type": "booster_pack",
+      "msrp_cents": 449,
+      "contents": [
+        {
+          "set_id": "prismatic-evolutions"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1001632611",
+          "marketplace": true
+        },
+        {
+          "retailer": "target",
+          "sku": "1001632618",
+          "marketplace": true
+        },
+        {
+          "retailer": "target",
+          "sku": "1001632610",
+          "marketplace": true
+        },
+        {
+          "retailer": "target",
+          "sku": "1001632615",
+          "marketplace": true
+        }
+      ],
+      "id": "prismatic-evolutions-booster-pack-booster-pack"
+    },
+    {
+      "name": "Paradox Destinies Tin (Walking Wake ex)",
+      "type": "tin",
+      "msrp_cents": 2499,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "16633259376"
+        }
+      ],
+      "id": "paradox-destinies-tin-walking-wake-ex-tin"
+    },
+    {
+      "name": "2024 Trick or Trade Booster Bundle",
+      "type": "booster_bundle",
+      "msrp_cents": 1599,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "8470874908"
+        }
+      ],
+      "id": "2024-trick-or-trade-booster-bundle-booster-bundle"
+    },
+    {
+      "name": "Kleavor VSTAR Special Collection",
+      "type": "collection_box",
+      "msrp_cents": 2499,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94091371"
+        }
+      ],
+      "id": "kleavor-vstar-special-collection-collection-box"
+    },
+    {
+      "name": "Booster Bundle",
+      "type": "booster_bundle",
+      "msrp_cents": 2799,
+      "contents": [
+        {
+          "set_id": "scarlet-violet"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "88275197"
+        }
+      ],
+      "id": "booster-bundle-booster-bundle"
+    },
+    {
+      "name": "Ultra-Premium Collection-Charizard",
+      "type": "premium_collection",
+      "msrp_cents": 12999,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "93504915",
+          "marketplace": true
+        }
+      ],
+      "id": "ultra-premium-collection-charizard-premium-collection"
+    },
+    {
+      "name": "Mega Moonlit Tin",
+      "type": "tin",
+      "msrp_cents": 2499,
+      "contents": [
+        {
+          "set_id": "mega-evolution"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "19999900284"
+        }
+      ],
+      "id": "mega-moonlit-tin-tin"
+    },
+    {
+      "name": "2025 Fall Collector Chest",
+      "type": "collection_box",
+      "msrp_cents": 3499,
+      "contents": [
+        {
+          "set_id": "mega-evolution",
+          "packs": 2
+        },
+        {
+          "set_id": "destined-rivals",
+          "packs": 2
+        },
+        {
+          "set_id": "journey-together",
+          "packs": 2
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "17909423419"
+        }
+      ],
+      "id": "2025-fall-collector-chest-collection-box"
+    },
+    {
+      "name": "Elite Trainer Box - Miraidon",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "scarlet-violet"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "88404840"
+        }
+      ],
+      "id": "elite-trainer-box-miraidon-elite-trainer-box"
+    },
+    {
+      "name": "Elite Trainer Box - Koraidon",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "scarlet-violet"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "88404846"
+        }
+      ],
+      "id": "elite-trainer-box-koraidon-elite-trainer-box"
+    },
+    {
+      "name": "151 Collection - Alakazam ex",
+      "type": "collection_box",
+      "msrp_cents": 2199,
+      "contents": [
+        {
+          "set_id": "151"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "89444931"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "5387810558"
+        }
+      ],
+      "id": "151-collection-alakazam-ex-collection-box"
+    },
+    {
+      "name": "Prismatic Evolutions Accessory Pouch",
+      "type": "special_box",
+      "msrp_cents": 2999,
+      "contents": [
+        {
+          "set_id": "prismatic-evolutions"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "14169661774"
+        }
+      ],
+      "id": "prismatic-evolutions-accessory-pouch-special-box"
+    },
+    {
+      "name": "Mega Heroes Mini Tin (Lucario)",
+      "type": "tin",
+      "msrp_cents": 1299,
+      "contents": [
+        {
+          "set_id": "destined-rivals",
+          "packs": 1
+        },
+        {
+          "set_id": "mega-evolution",
+          "packs": 1
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "16820023857"
+        }
+      ],
+      "id": "mega-heroes-mini-tin-lucario-tin"
+    },
+    {
+      "name": "2025 Poke Ball Tin",
+      "type": "tin",
+      "msrp_cents": 2199,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "17925121459"
+        }
+      ],
+      "id": "2025-poke-ball-tin-tin"
+    },
+    {
+      "name": "Obsidian Flames Booster Bundle",
+      "type": "booster_bundle",
+      "msrp_cents": 2699,
+      "contents": [
+        {
+          "set_id": "obsidian-flames"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "1722511419"
+        }
+      ],
+      "id": "obsidian-flames-booster-bundle-booster-bundle"
+    },
+    {
+      "name": "151 Binder Collection",
+      "type": "collection_box",
+      "msrp_cents": 2499,
+      "contents": [
+        {
+          "set_id": "151",
+          "packs": 4
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "89444929"
+        }
+      ],
+      "id": "151-binder-collection-collection-box"
+    },
+    {
+      "name": "Heroes Tin - Sylveon",
+      "type": "tin",
+      "msrp_cents": 1999,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "91121943"
+        }
+      ],
+      "id": "heroes-tin-sylveon-tin"
+    },
+    {
+      "name": "Mega Evolution Sleeved Booster Pack",
+      "type": "sleeved_booster_pack",
+      "msrp_cents": 459,
+      "contents": [
+        {
+          "set_id": "mega-evolution"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1006188693",
+          "marketplace": true
+        },
+        {
+          "retailer": "walmart",
+          "sku": "17344605257"
+        }
+      ],
+      "id": "mega-evolution-sleeved-booster-pack-sleeved-booster-pack"
+    },
+    {
+      "name": "151 2-Pack Booster Bundle",
+      "type": "booster_bundle",
+      "msrp_cents": 799,
+      "contents": [
+        {
+          "set_id": "151"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "15375908353"
+        }
+      ],
+      "id": "151-2-pack-booster-bundle-booster-bundle"
+    },
+    {
+      "name": "Fall Team Rocket Tin",
+      "type": "tin",
+      "msrp_cents": 2499,
+      "contents": [
+        {
+          "set_id": "destined-rivals",
+          "packs": 3
+        },
+        {
+          "set_id": "journey-together",
+          "packs": 2
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "17577710710"
+        }
+      ],
+      "id": "fall-team-rocket-tin-tin"
+    },
+    {
+      "name": "Trick or Trade BOOster Bundle",
+      "type": "special_box",
+      "msrp_cents": 2299,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "87266074"
+        }
+      ],
+      "id": "trick-or-trade-booster-bundle-special-box"
+    },
+    {
+      "name": "Journey Together Booster Box",
+      "type": "booster_box",
+      "msrp_cents": 17999,
+      "contents": [
+        {
+          "set_id": "journey-together"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94583140"
+        },
+        {
+          "retailer": "walmart",
+          "sku": "15053563608"
+        }
+      ],
+      "id": "journey-together-booster-box-booster-box"
+    },
+    {
+      "name": "Crown Zenith Collection - Regieleki V",
+      "type": "collection_box",
+      "msrp_cents": 1999,
+      "contents": [
+        {
+          "set_id": "crown-zenith"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "88063465"
+        }
+      ],
+      "id": "crown-zenith-collection-regieleki-v-collection-box"
+    },
+    {
+      "name": "Crown Zenith Collection - Regidrago V",
+      "type": "collection_box",
+      "msrp_cents": 1999,
+      "contents": [
+        {
+          "set_id": "crown-zenith"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "88063479"
+        }
+      ],
+      "id": "crown-zenith-collection-regidrago-v-collection-box"
+    },
+    {
+      "name": "Destined Rivals Booster Pack",
+      "type": "booster_pack",
+      "msrp_cents": 449,
+      "contents": [
+        {
+          "set_id": "destined-rivals"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1004021922",
+          "marketplace": true
+        },
+        {
+          "retailer": "target",
+          "sku": "1004021919",
+          "marketplace": true
+        }
+      ],
+      "id": "destined-rivals-booster-pack-booster-pack"
+    },
+    {
+      "name": "Mega Heroes Mini Tin (Gardevoir)",
+      "type": "tin",
+      "msrp_cents": 1299,
+      "contents": [
+        {
+          "set_id": "destined-rivals",
+          "packs": 1
+        },
+        {
+          "set_id": "mega-evolution",
+          "packs": 1
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "16884660459"
+        }
+      ],
+      "id": "mega-heroes-mini-tin-gardevoir-tin"
+    },
+    {
+      "name": "Mega Heroes Tin (Kangaskhan)",
+      "type": "tin",
+      "msrp_cents": 1299,
+      "contents": [
+        {
+          "set_id": "mega-evolution"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "16820023858"
+        }
+      ],
+      "id": "mega-heroes-tin-kangaskhan-tin"
+    },
+    {
+      "name": "Mega Heroes Tin (Latias)",
+      "type": "tin",
+      "msrp_cents": 1299,
+      "contents": [
+        {
+          "set_id": "mega-evolution"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "16879414234"
+        }
+      ],
+      "id": "mega-heroes-tin-latias-tin"
+    },
+    {
+      "name": "Mega Heroes Mini Tin (Venusaur)",
+      "type": "tin",
+      "msrp_cents": 1299,
+      "contents": [
+        {
+          "set_id": "destined-rivals",
+          "packs": 1
+        },
+        {
+          "set_id": "mega-evolution",
+          "packs": 1
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "16860108548"
+        }
+      ],
+      "id": "mega-heroes-mini-tin-venusaur-tin"
+    },
+    {
+      "name": "Fall Collector's Chest",
+      "type": "collection_box",
+      "msrp_cents": 3499,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "449370193"
+        }
+      ],
+      "id": "fall-collector-s-chest-collection-box"
+    },
+    {
+      "name": "Grand Adventure Collection",
+      "type": "collection_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "surging-sparks",
+          "packs": 2
+        },
+        {
+          "set_id": "stellar-crown",
+          "packs": 1
+        },
+        {
+          "set_id": "obsidian-flames",
+          "packs": 1
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "10681771578"
+        }
+      ],
+      "id": "grand-adventure-collection-collection-box"
+    },
+    {
+      "name": "Morpeko V-UNION Special Collection",
+      "type": "collection_box",
+      "msrp_cents": 2999,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "85973978"
+        }
+      ],
+      "id": "morpeko-v-union-special-collection-collection-box"
+    },
+    {
+      "name": "Paldean Fates Tech Sticker Collection (Fidough)",
+      "type": "collection_box",
+      "msrp_cents": 1699,
+      "contents": [
+        {
+          "set_id": "paldean-fates",
+          "packs": 3
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "5265533505"
+        }
+      ],
+      "id": "paldean-fates-tech-sticker-collection-fidough-collection-box"
+    },
+    {
+      "name": "Fall Poke Ball Tin",
+      "type": "tin",
+      "msrp_cents": 2199,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "3359464242"
+        }
+      ],
+      "id": "fall-poke-ball-tin-tin"
+    },
+    {
+      "name": "Kingambit Illustration Collection",
+      "type": "collection_box",
+      "msrp_cents": 1499,
+      "contents": [
+        {
+          "set_id": "shrouded-fable",
+          "packs": 4
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "6424917168"
+        }
+      ],
+      "id": "kingambit-illustration-collection-collection-box"
+    },
+    {
+      "name": "VMAX Battle Box (Zeraora)",
+      "type": "collection_box",
+      "msrp_cents": 2499,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "1684331206"
+        }
+      ],
+      "id": "vmax-battle-box-zeraora-collection-box"
+    },
+    {
+      "name": "Mega Evolution: Ascended Heroes Booster Pack - 10 Cards",
+      "type": "booster_pack",
+      "msrp_cents": 449,
+      "contents": [
+        {
+          "set_id": "ascended-heroes"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1011207063",
+          "marketplace": true
+        }
+      ],
+      "id": "mega-evolution-ascended-heroes-booster-pack-10-cards-booster-pack"
+    },
+    {
+      "name": "Chaos Rising Build & Battle Box",
+      "type": "build_battle_box",
+      "msrp_cents": 2199,
+      "contents": [
+        {
+          "set_id": "chaos-rising"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1011662523",
+          "marketplace": true
+        }
+      ],
+      "id": "chaos-rising-build-battle-box-build-battle-box"
+    },
+    {
+      "name": "Trading Card Game Triple Whammy Tin with 3 Booster Packs and 3 Promo Cards (Slaking)",
+      "type": "tin",
+      "msrp_cents": 2499,
+      "contents": [
+        {
+          "set_id": "destined-rivals",
+          "packs": 2
+        },
+        {
+          "set_id": "journey-together",
+          "packs": 1
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1010967084",
+          "marketplace": true
+        }
+      ],
+      "id": "trading-card-game-triple-whammy-tin-with-3-booster-packs-and-3-promo-cards-slaking-tin"
+    },
+    {
+      "name": "Lumiose City Mini Tin (Emboar & Inkay)",
+      "type": "tin",
+      "msrp_cents": 2999,
+      "contents": [
+        {
+          "set_id": "perfect-order",
+          "packs": 1
+        },
+        {
+          "set_id": "chaos-rising",
+          "packs": 1
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1011308966",
+          "marketplace": true
+        }
+      ],
+      "id": "lumiose-city-mini-tin-emboar-inkay-tin"
+    },
+    {
+      "name": "Blastoise VMAX Battle Box",
+      "type": "collection_box",
+      "msrp_cents": 2499,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1001561897"
+        }
+      ],
+      "id": "blastoise-vmax-battle-box-collection-box"
+    },
+    {
+      "name": "Twilight Masquerade Checklane Blister",
+      "type": "checklane_blister",
+      "msrp_cents": 499,
+      "contents": [
+        {
+          "set_id": "twilight-masquerade"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1012053278",
+          "marketplace": true
+        }
+      ],
+      "id": "twilight-masquerade-checklane-blister-checklane-blister"
+    },
+    {
+      "name": "Gyarados ex Premium Collection Box",
+      "type": "premium_collection",
+      "msrp_cents": 4999,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1011326903"
+        }
+      ],
+      "id": "gyarados-ex-premium-collection-box-premium-collection"
+    },
+    {
+      "name": "Card Game MEGA Expansion Pack Abyss Eye Booster Box",
+      "type": "booster_box",
+      "msrp_cents": 17999,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1011800956",
+          "marketplace": true
+        }
+      ],
+      "id": "card-game-mega-expansion-pack-abyss-eye-booster-box-booster-box"
+    },
+    {
+      "name": "151 Mini Tin - Electabuzz and Magnemite (2 Booster Packs, 1 Coin & 1 Art Card)",
+      "type": "tin",
+      "msrp_cents": 2499,
+      "contents": [
+        {
+          "set_id": "151",
+          "packs": 2
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1011937034",
+          "marketplace": true
+        }
+      ],
+      "id": "151-mini-tin-electabuzz-and-magnemite-2-booster-packs-1-coin-1-art-card-tin"
+    },
+    {
+      "name": "Combined Power Premium Collection",
+      "type": "premium_collection",
+      "msrp_cents": 3999,
+      "contents": [
+        {
+          "set_id": "scarlet-violet",
+          "packs": 3
+        },
+        {
+          "set_id": "obsidian-flames",
+          "packs": 4
+        },
+        {
+          "set_id": "paradox-rift",
+          "packs": 4
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "89952653"
+        }
+      ],
+      "id": "combined-power-premium-collection-premium-collection"
+    },
+    {
+      "name": "Armarouge ex Premium Collection",
+      "type": "premium_collection",
+      "msrp_cents": 3999,
+      "contents": [
+        {
+          "set_id": "paradox-rift",
+          "packs": 2
+        },
+        {
+          "set_id": "temporal-forces",
+          "packs": 2
+        },
+        {
+          "set_id": "obsidian-flames",
+          "packs": 2
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "91258287"
+        }
+      ],
+      "id": "armarouge-ex-premium-collection-premium-collection"
+    },
+    {
+      "name": "Paldean Fates Meowscarada ex Premium Collection",
+      "type": "premium_collection",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "paldean-fates",
+          "packs": 8
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "90593729"
+        }
+      ],
+      "id": "paldean-fates-meowscarada-ex-premium-collection-premium-collection"
+    },
+    {
+      "name": "Ogerpon ex Premium Collection",
+      "type": "premium_collection",
+      "msrp_cents": 3999,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "91670541"
+        }
+      ],
+      "id": "ogerpon-ex-premium-collection-premium-collection"
+    },
+    {
+      "name": "Terapagos ex Ultra-Premium Collection - Limited Offer",
+      "type": "premium_collection",
+      "msrp_cents": 12999,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "91670545"
+        }
+      ],
+      "id": "terapagos-ex-ultra-premium-collection-limited-offer-premium-collection"
+    },
+    {
+      "name": "Paldean Fates Skeledirge ex Premium Collection",
+      "type": "premium_collection",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "paldean-fates",
+          "packs": 8
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "90593721"
+        }
+      ],
+      "id": "paldean-fates-skeledirge-ex-premium-collection-premium-collection"
+    },
+    {
+      "name": "Paldean Fates Quaquaval ex Premium Collection",
+      "type": "premium_collection",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "paldean-fates",
+          "packs": 8
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "90593732"
+        }
+      ],
+      "id": "paldean-fates-quaquaval-ex-premium-collection-premium-collection"
+    },
+    {
+      "name": "Shrouded Fable Elite Trainer Box",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "shrouded-fable"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "91600215"
+        }
+      ],
+      "id": "shrouded-fable-elite-trainer-box-elite-trainer-box"
+    },
+    {
+      "name": "Paradox Rift Elite Trainer Box - Roaring Moon",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "paradox-rift"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "89603249"
+        }
+      ],
+      "id": "paradox-rift-elite-trainer-box-roaring-moon-elite-trainer-box"
+    },
+    {
+      "name": "Paradox Rift Elite Trainer Box - Iron Valiant",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "paradox-rift"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "89603261"
+        }
+      ],
+      "id": "paradox-rift-elite-trainer-box-iron-valiant-elite-trainer-box"
+    },
+    {
+      "name": "Crown Zenith Tin - Galarian Articuno",
+      "type": "tin",
+      "msrp_cents": 2499,
+      "contents": [
+        {
+          "set_id": "crown-zenith"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "88706346"
+        }
+      ],
+      "id": "crown-zenith-tin-galarian-articuno-tin"
+    },
+    {
+      "name": "Crown Zenith Tin - Galarian Zapdos - 4 Booster Packs",
+      "type": "tin",
+      "msrp_cents": 1999,
+      "contents": [
+        {
+          "set_id": "crown-zenith"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "88706348"
+        }
+      ],
+      "id": "crown-zenith-tin-galarian-zapdos-4-booster-packs-tin"
+    },
+    {
+      "name": "Crown Zenith Tin - Galarian Zapdos",
+      "type": "tin",
+      "msrp_cents": 2499,
+      "contents": [
+        {
+          "set_id": "crown-zenith"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "88706359"
+        }
+      ],
+      "id": "crown-zenith-tin-galarian-zapdos-tin"
+    },
+    {
+      "name": "Crown Zenith Tin - Galarian Moltres - 4 Booster Packs",
+      "type": "tin",
+      "msrp_cents": 1999,
+      "contents": [
+        {
+          "set_id": "crown-zenith"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "88706360"
+        }
+      ],
+      "id": "crown-zenith-tin-galarian-moltres-4-booster-packs-tin"
+    },
+    {
+      "name": "Crown Zenith Tin - Galarian Articuno - 4 Booster Packs",
+      "type": "tin",
+      "msrp_cents": 1999,
+      "contents": [
+        {
+          "set_id": "crown-zenith"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "88706371"
+        }
+      ],
+      "id": "crown-zenith-tin-galarian-articuno-4-booster-packs-tin"
+    },
+    {
+      "name": "Shining Fates Elite Trainer Box",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "shining-fates"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1011202516",
+          "marketplace": true
+        }
+      ],
+      "id": "shining-fates-elite-trainer-box-elite-trainer-box"
+    },
+    {
+      "name": "Paldean Fates Great Tusk ex & Iron Threads ex Premium Collection",
+      "type": "premium_collection",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "paldean-fates",
+          "packs": 11
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1010781938",
+          "marketplace": true
+        }
+      ],
+      "id": "paldean-fates-great-tusk-ex-iron-threads-ex-premium-collection-premium-collection"
+    },
+    {
+      "name": "White Flare Booster Pack",
+      "type": "booster_pack",
+      "msrp_cents": 449,
+      "contents": [
+        {
+          "set_id": "white-flare"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1004842211",
+          "marketplace": true
+        }
+      ],
+      "id": "white-flare-booster-pack-booster-pack"
+    },
+    {
+      "name": "Mega Evolution Booster Pack",
+      "type": "booster_pack",
+      "msrp_cents": 449,
+      "contents": [
+        {
+          "set_id": "mega-evolution"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1006188660",
+          "marketplace": true
+        }
+      ],
+      "id": "mega-evolution-booster-pack-booster-pack"
+    },
+    {
+      "name": "151",
+      "type": "booster_pack",
+      "msrp_cents": 449,
+      "contents": [
+        {
+          "set_id": "151"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1001304528",
+          "marketplace": true
+        }
+      ],
+      "id": "151-booster-pack"
+    },
+    {
+      "name": "Ascended Heroes Mini Tin",
+      "type": "tin",
+      "msrp_cents": 1299,
+      "contents": [
+        {
+          "set_id": "ascended-heroes",
+          "packs": 2
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "18933850466"
+        }
+      ],
+      "id": "ascended-heroes-mini-tin-tin"
+    },
+    {
+      "name": "Phantasmal Flames Checklane Blister",
+      "type": "checklane_blister",
+      "msrp_cents": 649,
+      "contents": [
+        {
+          "set_id": "phantasmal-flames"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "18171020795"
+        }
+      ],
+      "id": "phantasmal-flames-checklane-blister-checklane-blister"
+    },
+    {
+      "name": "Phantasmal Flames Single-Pack Blister",
+      "type": "single_pack_blister",
+      "msrp_cents": 499,
+      "contents": [
+        {
+          "set_id": "phantasmal-flames"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "17765616595"
+        }
+      ],
+      "id": "phantasmal-flames-single-pack-blister-single-pack-blister"
+    },
+    {
+      "name": "Prismatic Evolutions 2-Pack Blister",
+      "type": "single_pack_blister",
+      "msrp_cents": 1199,
+      "contents": [
+        {
+          "set_id": "prismatic-evolutions"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "14764973846"
+        }
+      ],
+      "id": "prismatic-evolutions-2-pack-blister-single-pack-blister"
+    },
+    {
+      "name": "Journey Together Checklane Blister",
+      "type": "checklane_blister",
+      "msrp_cents": 649,
+      "contents": [
+        {
+          "set_id": "journey-together"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "18172253838"
+        }
+      ],
+      "id": "journey-together-checklane-blister-checklane-blister"
+    },
+    {
+      "name": "Shrouded Fable Booster Bundle",
+      "type": "booster_bundle",
+      "msrp_cents": 2699,
+      "contents": [
+        {
+          "set_id": "shrouded-fable"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "5988933729"
+        }
+      ],
+      "id": "shrouded-fable-booster-bundle-booster-bundle"
+    },
+    {
+      "name": "Elemental Power Tin (Flareon)",
+      "type": "tin",
+      "msrp_cents": 2499,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "694066564"
+        }
+      ],
+      "id": "elemental-power-tin-flareon-tin"
+    },
+    {
+      "name": "Mega Evolution Checklane Blister",
+      "type": "checklane_blister",
+      "msrp_cents": 649,
+      "contents": [
+        {
+          "set_id": "mega-evolution"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "17801622787"
+        }
+      ],
+      "id": "mega-evolution-checklane-blister-checklane-blister"
+    },
+    {
+      "name": "Kleavor VSTAR Collection",
+      "type": "collection_box",
+      "msrp_cents": 3499,
+      "contents": [
+        {
+          "set_id": "astral-radiance"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "2455050132"
+        }
+      ],
+      "id": "kleavor-vstar-collection-collection-box"
+    },
+    {
+      "name": "Shining Legends Elite Trainer Box",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "shining-legends"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "308355843"
+        }
+      ],
+      "id": "shining-legends-elite-trainer-box-elite-trainer-box"
+    },
+    {
+      "name": "Journey Together Booster Pack",
+      "type": "booster_pack",
+      "msrp_cents": 499,
+      "contents": [
+        {
+          "set_id": "journey-together"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "15153417617"
+        }
+      ],
+      "id": "journey-together-booster-pack-booster-pack"
+    },
+    {
+      "name": "Journey Together Single-Pack Blister",
+      "type": "single_pack_blister",
+      "msrp_cents": 499,
+      "contents": [
+        {
+          "set_id": "journey-together"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "15127073643"
+        }
+      ],
+      "id": "journey-together-single-pack-blister-single-pack-blister"
+    },
+    {
+      "name": "First Partner Illustration Collection - Series 3",
+      "type": "collection_box",
+      "msrp_cents": 2499,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1011960739"
+        }
+      ],
+      "id": "first-partner-illustration-collection-series-3-collection-box"
+    },
+    {
+      "name": "Iron Valiant ex Box",
+      "type": "collection_box",
+      "msrp_cents": 2499,
+      "contents": [
+        {
+          "set_id": "paradox-rift",
+          "packs": 2
+        },
+        {
+          "set_id": "obsidian-flames",
+          "packs": 1
+        },
+        {
+          "set_id": "paldea-evolved",
+          "packs": 1
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "90206501"
+        }
+      ],
+      "id": "iron-valiant-ex-box-collection-box"
+    },
+    {
+      "name": "Mega Kangaskhan Mini Tin",
+      "type": "tin",
+      "msrp_cents": 1299,
+      "contents": [
+        {
+          "set_id": "destined-rivals",
+          "packs": 1
+        },
+        {
+          "set_id": "mega-evolution",
+          "packs": 1
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "18013461860"
+        }
+      ],
+      "id": "mega-kangaskhan-mini-tin-tin"
+    },
+    {
+      "name": "Mega Lucario Mini Tin",
+      "type": "tin",
+      "msrp_cents": 1299,
+      "contents": [
+        {
+          "set_id": "destined-rivals",
+          "packs": 1
+        },
+        {
+          "set_id": "mega-evolution",
+          "packs": 1
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "18031804185"
+        }
+      ],
+      "id": "mega-lucario-mini-tin-tin"
+    },
+    {
+      "name": "Mega Latios Mini Tin",
+      "type": "tin",
+      "msrp_cents": 1299,
+      "contents": [
+        {
+          "set_id": "mega-evolution",
+          "packs": 1
+        },
+        {
+          "set_id": "destined-rivals",
+          "packs": 1
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "17971024350"
+        }
+      ],
+      "id": "mega-latios-mini-tin-tin"
+    },
+    {
+      "name": "Mega Venusaur Mini Tin",
+      "type": "tin",
+      "msrp_cents": 1299,
+      "contents": [
+        {
+          "set_id": "destined-rivals",
+          "packs": 1
+        },
+        {
+          "set_id": "mega-evolution",
+          "packs": 1
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "18043010698"
+        }
+      ],
+      "id": "mega-venusaur-mini-tin-tin"
+    },
+    {
+      "name": "Mega Gardevoir Mini Tin",
+      "type": "tin",
+      "msrp_cents": 1299,
+      "contents": [
+        {
+          "set_id": "destined-rivals",
+          "packs": 1
+        },
+        {
+          "set_id": "mega-evolution",
+          "packs": 1
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "18026568722"
+        }
+      ],
+      "id": "mega-gardevoir-mini-tin-tin"
+    },
+    {
+      "name": "Astral Radiance 3-Pack Blister",
+      "type": "three_pack_blister",
+      "msrp_cents": 1499,
+      "contents": [
+        {
+          "set_id": "astral-radiance"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "536356326"
+        }
+      ],
+      "id": "astral-radiance-3-pack-blister-three-pack-blister"
+    },
+    {
+      "name": "Tyranitar ex Premium Collection",
+      "type": "premium_collection",
+      "msrp_cents": 4499,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "walmart",
+          "sku": "5301432142"
+        }
+      ],
+      "id": "tyranitar-ex-premium-collection-premium-collection"
+    },
+    {
+      "name": "Stacking Tin - Ogerpon",
+      "type": "tin",
+      "msrp_cents": 1499,
+      "contents": [],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94411709"
+        }
+      ],
+      "id": "stacking-tin-ogerpon-tin"
+    },
+    {
+      "name": "Reshiram ex Box",
+      "type": "collection_box",
+      "msrp_cents": 1999,
+      "contents": [
+        {
+          "set_id": "destined-rivals"
+        },
+        {
+          "set_id": "journey-together"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "94827556"
+        }
+      ],
+      "id": "reshiram-ex-box-collection-box"
+    }
+  ]
+}

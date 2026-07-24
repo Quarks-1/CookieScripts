@@ -1,4 +1,5 @@
 import { KeywordPills } from "@shared/components/KeywordPills.tsx";
+import { CatalogLaunchButton } from "@shared/components/CatalogLaunchButton.tsx";
 import { PillListSectionHeader } from "@shared/components/PillListSectionHeader.tsx";
 import { SkuPills } from "@shared/components/SkuPills.tsx";
 import { normalizeWalmartSku } from "@ext/domains/walmart/lib/index.ts";
@@ -82,13 +83,16 @@ export function WalmartChannelFiltersSection({
         </div>
 
         <div>
-          <PillListSectionHeader
-            title="SKUs"
-            itemCount={walmartSkus.length}
-            disabled={listDisabled}
-            onClear={() => onWalmartSkusChange([])}
-            clearAriaLabel="Clear all Walmart SKUs"
-          />
+          <div className="flex items-center justify-between gap-2">
+            <PillListSectionHeader
+              title="SKUs"
+              itemCount={walmartSkus.length}
+              disabled={listDisabled}
+              onClear={() => onWalmartSkusChange([])}
+              clearAriaLabel="Clear all Walmart SKUs"
+            />
+            <CatalogLaunchButton disabled={listDisabled} />
+          </div>
           <div className="mt-0.5">
             <SkuPills
               skus={walmartSkus}

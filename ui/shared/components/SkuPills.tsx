@@ -31,6 +31,7 @@ export function SkuPills({
       normalize={normalizeSku}
       blurBehavior="clear"
       maxItems={MAX_SKUS_PER_LIST}
+      collapseAfter={15}
       pillClassName="border-sky-700 bg-sky-950/80 text-sky-200"
       removeButtonClassName="text-sky-400 hover:bg-sky-900/60 hover:text-sky-100"
       sanitize={(raw) => raw.replace(/\D/g, "")}

@@ -7,6 +7,7 @@ React shell for the Chrome side panel — pinned header and domain tabs, scrolla
 | Entry | Path | Role |
 |---|---|---|
 | Production | `ui/sidepanel/index.html` → `main.tsx` → `ui/popup/core/App.tsx` | Loaded by Chrome `side_panel.default_path` |
+| SKU catalog | `ui/catalog/index.html` → `main.tsx` → `App.tsx` | Loaded by Chrome `options_ui` (`open_in_tab`); launch via `CatalogLaunchButton` / `chrome.runtime.openOptionsPage()` |
 | Local preview | `ui/popup/core/main.tsx` via `ui/popup/index.html` | Vite dev only; not in extension package |
 
 Shared styles: `@shared/index.css` (`ui/shared/`).
@@ -28,7 +29,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 
 ### Shared components (`ui/shared/components/`)
 
-`EnableSlider`, `WatchStatusBadge`, `LinkHistory`, `CollapsiblePillList`, `DomainPills`, `DetectedLinkPills`, `KeywordPills`, `SkuPills`, `PillListSectionHeader`, `CompactNumberField`, `ScheduleTimeField`
+`EnableSlider`, `WatchStatusBadge`, `LinkHistory`, `CollapsiblePillList`, `CatalogLaunchButton`, `DomainPills`, `DetectedLinkPills`, `KeywordPills`, `SkuPills`, `PillListSectionHeader`, `CompactNumberField`, `ScheduleTimeField`
 
 ## Layout
 
@@ -45,7 +46,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 | Target | `TargetPanel` | Yes — link opens, Enable Auto ATC, ATC toggles, schedule, hard refresh interval, etc. |
 | Walmart | `WalmartPanel` | Yes — schedule, auto-refresh, queue helpers, recording |
 | Sam's Club | `SamsclubPanel` | Yes — ATC toggles, auto checkout/CVV, schedule, manual auto mode, recording |
-| Global | `GlobalPanel` | Open links in new window, SKU open mode, Show Walmart/Sam's Club recording |
+| Global | `GlobalPanel` | Open links in new window, SKU open mode, SKU catalog launch, Show Walmart/Sam's Club recording |
 
 Inactive panels unmount; domain hooks run only on the selected tab. Target/Walmart/Sam's Club panel hooks load settings regardless of whether a matching browser tab is focused. Start/Stop runtime controls on Target and Sam's Club still require a focused matching tab (`showControls={retailer_tab_detected}` / `showControls={samsclub_tab_detected}`).
 
@@ -71,7 +72,7 @@ Used inside domain panels for intra-panel gating:
 
 **Note:** **Enable Auto ATC** (`retailer_auto_atc_enabled`, global) UI lives in `TargetAutoAtcSection` on the Target tab. Always toggleable when the extension is enabled.
 
-**Note:** `sku_open_mode_enabled` UI lives in `GlobalPanel`. `retailer_link_open_count` UI lives in `TargetLinkSettingsSection` (Target tab). SKU mode applies to Target and Walmart configured SKU lists on the Discord tab.
+**Note:** `sku_open_mode_enabled` UI lives in `GlobalPanel` and the SKU catalog page. `CatalogLaunchButton` (`openOptionsPage`) lives in `GlobalPanel` and beside Target/Walmart SKU list headers on the Discord tab. `retailer_link_open_count` UI lives in `TargetLinkSettingsSection` (Target tab). SKU mode applies to Target and Walmart configured SKU lists on the Discord tab.
 
 ## Domain UI map
 

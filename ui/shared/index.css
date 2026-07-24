@@ -37,3 +37,13 @@ body {
   -webkit-appearance: none;
   margin: 0;
 }
+
+.catalog-product-table {
+  table-layout: fixed;
+}
+
+.catalog-product-table col:nth-child(2),
+.catalog-product-table col:nth-child(3),
+.catalog-product-table .catalog-retailer-col {
+  width: 10rem;
+}

@@ -26,6 +26,8 @@ export default tseslint.config(
       "extension/core/**/*.ts",
       "ui/popup/core/**/*.ts",
       "ui/popup/core/**/*.tsx",
+      "ui/catalog/**/*.ts",
+      "ui/catalog/**/*.tsx",
       "ui/shared/**/*.ts",
       "ui/shared/**/*.tsx",
     ],

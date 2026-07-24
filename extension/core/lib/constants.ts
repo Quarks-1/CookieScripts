@@ -3,7 +3,7 @@ export const HISTORY_LIMIT = 200;
 export const MAX_URLS_PER_MESSAGE = 20;
 export const MAX_KEYWORDS_PER_LIST = 50;
 export const MAX_KEYWORD_LENGTH = 64;
-export const MAX_SKUS_PER_LIST = 50;
+export const MAX_SKUS_PER_LIST = 250;
 export const MAX_SKU_LENGTH = 16;
 export const MAX_MESSAGE_TEXT_LENGTH = 8_000;
 export const RECENT_URLS_DEBOUNCE_MS = 1000;
@@ -28,4 +28,5 @@ export const STORAGE_KEYS = {
   samsclubMarkedLabels: "cookiescripts:samsclubMarkedLabels",
   samsclubActiveSession: "cookiescripts:samsclubActiveSession",
   statusRevision: "cookiescripts:statusRevision",
+  catalogView: "cookiescripts:catalogView",
 } as const;

@@ -43,6 +43,24 @@ export { DEFAULT_SETTINGS } from "@ext/core/types/core.ts";
 export type { ExtensionStatus } from "@ext/core/types/status.ts";
 
 export type {
+  CatalogCell,
+  CatalogData,
+  CatalogGroup,
+  CatalogListing,
+  CatalogListingState,
+  CatalogPickerRetailer,
+  CatalogProduct,
+  CatalogProductContent,
+  CatalogProductType,
+  CatalogRetailer,
+  CatalogRow,
+  CatalogSet,
+  CatalogSubgroup,
+  CatalogView,
+  CatalogViewPersisted,
+} from "@ext/core/types/catalog.ts";
+
+export type {
   BackgroundResponse,
   BackgroundToContent,
   ContentToBackground,

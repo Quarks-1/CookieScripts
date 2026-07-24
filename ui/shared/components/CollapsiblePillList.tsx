@@ -4,12 +4,29 @@ import { mergePastedPillItems } from "../lib/merge-pasted-pill-items.ts";
 
 type BlurBehavior = "clear" | "commit";
 
+export function getCollapsedPillSlice(
+  items: string[],
+  collapseAfter?: number,
+  listExpanded = false,
+): { visibleItems: string[]; hiddenCount: number } {
+  const shouldCollapse =
+    collapseAfter !== undefined && items.length > collapseAfter && !listExpanded;
+  if (!shouldCollapse) {
+    return { visibleItems: items, hiddenCount: 0 };
+  }
+  return {
+    visibleItems: items.slice(0, collapseAfter),
+    hiddenCount: items.length - collapseAfter,
+  };
+}
+
 interface CollapsiblePillListProps {
   items: string[];
   onChange: (items: string[]) => void;
   normalize: (raw: string) => string | null;
   blurBehavior: BlurBehavior;
   maxItems?: number;
+  collapseAfter?: number;
   pillClassName: string;
   removeButtonClassName?: string;
   sanitize?: (raw: string) => string;
@@ -38,14 +55,17 @@ export function CollapsiblePillList({
   disabled,
   inputDisabled,
   splitPasteOnSeparators,
+  collapseAfter,
 }: CollapsiblePillListProps) {
   const [expanded, setExpanded] = useState(false);
+  const [listExpanded, setListExpanded] = useState(false);
   const [draft, setDraft] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   const addBlocked = inputDisabled ?? disabled;
   const atMax = maxItems !== undefined && items.length >= maxItems;
   const showAddChip = !expanded && !addBlocked && !disabled && !atMax;
+  const { visibleItems, hiddenCount } = getCollapsedPillSlice(items, collapseAfter, listExpanded);
 
   function removeItem(item: string) {
     onChange(items.filter((entry) => entry !== item));
@@ -135,7 +155,7 @@ export function CollapsiblePillList({
 
   return (
     <ul className="flex flex-wrap items-center gap-1.5">
-      {items.map((item) => (
+      {visibleItems.map((item) => (
         <li key={item}>
           <span
             className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium ${pillClassName}`}
@@ -153,6 +173,28 @@ export function CollapsiblePillList({
           </span>
         </li>
       ))}
+
+      {hiddenCount > 0 ? (
+        <li>
+          <button
+            type="button"
+            onClick={() => setListExpanded(true)}
+            className="rounded-full border border-zinc-700 px-2 py-0.5 text-xs text-zinc-400 hover:border-zinc-600 hover:text-zinc-300"
+          >
+            Show {hiddenCount} more
+          </button>
+        </li>
+      ) : collapseAfter !== undefined && listExpanded && items.length > collapseAfter ? (
+        <li>
+          <button
+            type="button"
+            onClick={() => setListExpanded(false)}
+            className="rounded-full border border-zinc-700 px-2 py-0.5 text-xs text-zinc-400 hover:border-zinc-600 hover:text-zinc-300"
+          >
+            Show less
+          </button>
+        </li>
+      ) : null}
 
       {expanded ? (
         <li>

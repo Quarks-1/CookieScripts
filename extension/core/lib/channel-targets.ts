@@ -179,6 +179,20 @@ export function getGlobalWatchSkus(
   return settings.watch_skus?.[retailer] ?? [];
 }
 
+export function upsertGlobalWatchSkus(
+  settings: ExtensionSettings,
+  patch: { target?: string[]; walmart?: string[] },
+): ExtensionSettings {
+  const watch_skus = buildGlobalWatchSkus(settings.watch_skus, patch);
+  const next: ExtensionSettings = { ...settings };
+  if (watch_skus) {
+    next.watch_skus = watch_skus;
+  } else {
+    delete next.watch_skus;
+  }
+  return next;
+}
+
 export function upsertGlobalWatchSettings(
   settings: ExtensionSettings,
   patch: {

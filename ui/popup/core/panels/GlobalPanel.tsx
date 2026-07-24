@@ -6,6 +6,7 @@ import {
 } from "@ext/core/lib/messages.ts";
 import type { ExtensionStatus } from "@ext/core/types/index.ts";
 import { EnableSlider } from "@shared/components/EnableSlider.tsx";
+import { CatalogLaunchButton } from "@shared/components/CatalogLaunchButton.tsx";
 
 interface GlobalPanelProps {
   status: ExtensionStatus;
@@ -81,6 +82,15 @@ export function GlobalPanel({ status, disabled, onRefresh }: GlobalPanelProps) {
 
   return (
     <div className="space-y-3">
+      <section aria-labelledby="global-sku-catalog-heading">
+        <div className="flex items-center justify-between gap-2">
+          <h2 id="global-sku-catalog-heading" className="text-sm font-medium text-zinc-400">
+            SKU catalog
+          </h2>
+          <CatalogLaunchButton disabled={disabled} />
+        </div>
+      </section>
+
       <section aria-labelledby="global-open-links-in-window-heading">
         <h2 id="global-open-links-in-window-heading" className="sr-only">
           Open links in new window

@@ -1,4 +1,5 @@
 import { KeywordPills } from "@shared/components/KeywordPills.tsx";
+import { CatalogLaunchButton } from "@shared/components/CatalogLaunchButton.tsx";
 import { PillListSectionHeader } from "@shared/components/PillListSectionHeader.tsx";
 import { SkuPills } from "@shared/components/SkuPills.tsx";
 
@@ -81,13 +82,16 @@ export function TargetChannelFiltersSection({
         </div>
 
         <div>
-          <PillListSectionHeader
-            title="SKUs"
-            itemCount={targetSkus.length}
-            disabled={listDisabled}
-            onClear={() => onTargetSkusChange([])}
-            clearAriaLabel="Clear all Target SKUs"
-          />
+          <div className="flex items-center justify-between gap-2">
+            <PillListSectionHeader
+              title="SKUs"
+              itemCount={targetSkus.length}
+              disabled={listDisabled}
+              onClear={() => onTargetSkusChange([])}
+              clearAriaLabel="Clear all Target SKUs"
+            />
+            <CatalogLaunchButton disabled={listDisabled} />
+          </div>
           <div className="mt-0.5">
             <SkuPills
               skus={targetSkus}

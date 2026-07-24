@@ -15,6 +15,7 @@ Chrome MV3 extension with four capabilities:
 2. Core service worker: [extension/core/AGENTS.md](extension/core/AGENTS.md)
 3. Domain code: [discord](extension/domains/discord/AGENTS.md) · [target](extension/domains/target/AGENTS.md) · [walmart](extension/domains/walmart/AGENTS.md) · [samsclub](extension/domains/samsclub/AGENTS.md) under `extension/domains/`
 4. Side panel UI: [ui/popup/core/AGENTS.md](ui/popup/core/AGENTS.md) + `ui/popup/domains/{discord,target,walmart,samsclub}/`
+5. SKU catalog page: [ui/catalog/AGENTS.md](ui/catalog/AGENTS.md) — full-tab picker via `manifest.json` `options_ui`
 
 ## Agent workflow
 
@@ -75,6 +76,7 @@ flowchart TB
 | Sam's Club recording / manual automation | [extension/domains/samsclub/AGENTS.md](extension/domains/samsclub/AGENTS.md) | `extension/domains/samsclub/background/handlers/*`, `content/*`, `lib/*` |
 | New runtime message | [extension/core/AGENTS.md](extension/core/AGENTS.md) | `extension/core/types/messages.ts`, `extension/core/background/handlers.ts`, domain handlers, tests |
 | Manifest / permissions | This file § Critical invariants | `manifest.json` (no new sensitive permissions) |
+| SKU catalog page / bundled catalog data | [ui/catalog/AGENTS.md](ui/catalog/AGENTS.md) | `ui/catalog/*`, `extension/core/lib/catalog/*`, `extension/core/data/catalog.json` |
 
 ## Repository layout
 
@@ -86,6 +88,8 @@ flowchart TB
 | `extension/domains/walmart/` | Walmart research recorder (content, lib, IDB, background) |
 | `extension/domains/samsclub/` | Sam's Club recorder + manual automation (content, lib, IDB, background) |
 | `ui/sidepanel/` | Production Chrome entry: `index.html` → `main.tsx` → `ui/popup/core/App.tsx` |
+| `ui/catalog/` | SKU catalog options page: `index.html` → `main.tsx` (sole `catalog.json` import) |
+| `extension/core/data/catalog.json` | Bundled Pokémon TCG catalog (authored from gitignored `research/discord/catalog-draft.json`) |
 | `ui/popup/core/` | App shell, layout, global hooks |
 | `ui/popup/domains/*/` | Domain-specific side panel components/hooks |
 | `ui/shared/` | Cross-domain React components + Tailwind entry (`@shared`) |
@@ -142,6 +146,7 @@ Current `manifest.json` (do not add `cookies`, `webRequest`, or `<all_urls>`):
 | `permissions` | `storage`, `tabs`, `windows`, `sidePanel`, `downloads`, `alarms` |
 | `host_permissions` | `discord.com`, `target.com` (+ `www`), `carts.target.com`, `walmart.com` (+ `www`), `samsclub.com` (+ `www`), `api.github.com`, `http://127.0.0.1:9876/*` |
 | `side_panel.default_path` | `ui/sidepanel/index.html` |
+| `options_ui.page` | `ui/catalog/index.html` (`open_in_tab: true`) |
 | `web_accessible_resources` | `injected/cart-probe.js`, `injected/walmart-research-probe.js`, `injected/samsclub-research-probe.js`, `injected/samsclub-cart-probe.js`, `injected/queue-probe.js`, `sounds/queue-pass.mp3` (Target, Walmart, and Sam's Club origins) |
 
 Content scripts: Discord (`document_idle`); Target early (`document_start`) + main (`document_end`); Walmart early (`document_start`, queue probe) + main (`document_idle`); Sam's Club early (`document_start`) + main (`document_idle`).

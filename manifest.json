@@ -108,6 +108,10 @@
   "side_panel": {
     "default_path": "ui/sidepanel/index.html"
   },
+  "options_ui": {
+    "page": "ui/catalog/index.html",
+    "open_in_tab": true
+  },
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
