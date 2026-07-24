@@ -1,4 +1,5 @@
 import { resolveCheckoutState } from "@ext/domains/target/lib/checkout/checkout-state.ts";
+import { hasCheckoutErrorModal } from "@ext/domains/target/lib/checkout/checkout-error-modal.ts";
 import { isOrderConfirmationUrl } from "@ext/domains/target/lib/checkout/checkout-url.ts";
 import {
   clickPlaceOrderOnce,
@@ -106,6 +107,17 @@ export async function runCheckoutAutoMode(
     }
 
     progressSnapshot = waitResult.progressSnapshot;
+
+    if (hasCheckoutErrorModal(document)) {
+      const status =
+        options.getRefreshIntervalSec() > 0
+          ? "Checkout blocked — retrying…"
+          : "Waiting for checkout…";
+      options.publishUiState(status, true);
+      await sleep(CHECKOUT_LOOP_SLEEP_MS);
+      continue;
+    }
+
     const checkoutState = resolveCheckoutState(location.href, document);
 
     if (checkoutState === "mid_step") {

@@ -13,6 +13,7 @@ import {
   isPlaceOrderEnabled,
   readActiveStepHeading,
 } from "@ext/domains/target/lib/checkout/checkout-state.ts";
+import { hasCheckoutErrorModal } from "@ext/domains/target/lib/checkout/checkout-error-modal.ts";
 import { maybeHardRefreshWhileWaiting } from "@ext/domains/target/lib/page-refresh.ts";
 
 export type CheckoutProgressSnapshot = {
@@ -83,20 +84,22 @@ export async function runCheckoutWaitingTick(
   const doc = document;
   const current = readCheckoutProgressSnapshot(doc);
   let snapshot = options.progressSnapshot;
+  const checkoutErrorModal = hasCheckoutErrorModal(doc);
 
-  if (hasCheckoutProgress(snapshot, current)) {
+  if (hasCheckoutProgress(snapshot, current) && !checkoutErrorModal) {
     markCheckoutProgress();
     snapshot = current;
   }
 
   const hydrationGraceMs = options.hydrationGraceMs ?? 3_000;
   const pastHydration = Date.now() - options.checkoutEnteredAtMs >= hydrationGraceMs;
+  const errorModal = pastHydration && checkoutErrorModal;
 
   if (pastHydration && isCheckoutAuthRequiredPage(doc)) {
     return { kind: "auth_required", progressSnapshot: snapshot };
   }
 
-  const hardError = pastHydration && isCheckoutHardErrorPage(doc);
+  const hardError = pastHydration && (isCheckoutHardErrorPage(doc) || errorModal);
   const resume = readRetailerAutoResume();
   const stall =
     resume !== null && shouldRefreshForCheckoutStall(resume, options.refreshIntervalSec);

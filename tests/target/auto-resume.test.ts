@@ -1,15 +1,17 @@
 /**
  * @vitest-environment happy-dom
  */
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   clearRetailerAutoUserStopped,
   ensureRetailerAutoResume,
   isRetailerAutoUserStopped,
+  markRetailerAutoRefreshed,
   markRetailerAutoUserStopped,
   productPathFromUrl,
   readRetailerAutoResume,
+  saveRetailerAutoResume,
   shouldResumeRetailerAuto,
   shouldResumeRetailerCheckout,
   startRetailerAutoResume,
@@ -74,5 +76,28 @@ describe("auto-resume", () => {
     const resume = readRetailerAutoResume();
     expect(resume?.phase).toBe("pdp");
     expect(resume?.auto_checkout_enabled).toBe(false);
+  });
+
+  it("resets checkout progress timestamp when refreshing on checkout phase", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-01-01T00:00:00Z"));
+
+    saveRetailerAutoResume({
+      channel_id: "manual",
+      product_path: "/p/foo/-/A-1",
+      phase: "checkout",
+      auto_checkout_enabled: true,
+      last_refresh_at: 1,
+      last_checkout_progress_at: 1,
+    });
+
+    markRetailerAutoRefreshed();
+
+    expect(readRetailerAutoResume()).toMatchObject({
+      last_refresh_at: Date.parse("2024-01-01T00:00:00Z"),
+      last_checkout_progress_at: Date.parse("2024-01-01T00:00:00Z"),
+    });
+
+    vi.useRealTimers();
   });
 });

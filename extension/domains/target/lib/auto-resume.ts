@@ -148,9 +148,11 @@ export function markRetailerAutoRefreshed(): void {
   if (!resume) {
     return;
   }
+  const now = Date.now();
   saveRetailerAutoResume({
     ...resume,
-    last_refresh_at: Date.now(),
+    last_refresh_at: now,
+    ...(resume.phase === "checkout" ? { last_checkout_progress_at: now } : {}),
   });
 }
 

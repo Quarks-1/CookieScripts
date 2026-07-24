@@ -7,6 +7,8 @@ import { resolve } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
+  readRetailerAutoResume,
+  saveRetailerAutoResume,
   startRetailerAutoResume,
   transitionRetailerAutoResumeToCheckout,
 } from "@ext/domains/target/lib/auto-resume.ts";
@@ -113,5 +115,69 @@ describe("waiting-checkout", () => {
     });
 
     expect(result.kind).toBe("auth_required");
+  });
+
+  it("hard refreshes when high-demand modal is visible and interval elapsed", async () => {
+    const base = new Date("2024-01-01T00:00:00Z");
+    vi.setSystemTime(base);
+    startRetailerAutoResume("222", "https://www.target.com/p/foo/-/A-1");
+    transitionRetailerAutoResumeToCheckout(
+      "222",
+      "https://www.target.com/checkout/start",
+    );
+    const resume = readRetailerAutoResume();
+    expect(resume).not.toBeNull();
+    saveRetailerAutoResume({
+      ...resume!,
+      last_checkout_progress_at: base.getTime() - 5_000,
+    });
+
+    mountFixture("target-checkout-high-demand-modal.html");
+    vi.setSystemTime(new Date(base.getTime() + 3_500));
+
+    const requestHardReload = vi.fn(async () => {});
+    const result = await runCheckoutWaitingTick({
+      refreshIntervalSec: 3,
+      shouldContinue: () => true,
+      requestHardReload,
+      progressSnapshot: readCheckoutProgressSnapshot(document),
+      checkoutEnteredAtMs: base.getTime(),
+    });
+
+    expect(requestHardReload).toHaveBeenCalledOnce();
+    expect(result.kind).toBe("reloading");
+  });
+
+  it("does not mark checkout progress when shell loads behind error modal", async () => {
+    const base = new Date("2024-01-01T00:00:00Z");
+    vi.setSystemTime(base);
+    startRetailerAutoResume("222", "https://www.target.com/p/foo/-/A-1");
+    transitionRetailerAutoResumeToCheckout(
+      "222",
+      "https://www.target.com/checkout/start",
+    );
+    saveRetailerAutoResume({
+      ...readRetailerAutoResume()!,
+      last_checkout_progress_at: base.getTime(),
+    });
+
+    mountFixture("target-checkout-high-demand-modal.html");
+    const beforeSnapshot = readCheckoutProgressSnapshot(document);
+    expect(beforeSnapshot.shellLoaded).toBe(true);
+
+    await runCheckoutWaitingTick({
+      refreshIntervalSec: 60,
+      shouldContinue: () => true,
+      requestHardReload: async () => {},
+      progressSnapshot: {
+        saveAndContinueCount: 0,
+        activeStepHeading: null,
+        placeOrderEnabled: false,
+        shellLoaded: false,
+      },
+      checkoutEnteredAtMs: base.getTime(),
+    });
+
+    expect(readRetailerAutoResume()?.last_checkout_progress_at).toBe(base.getTime());
   });
 });
