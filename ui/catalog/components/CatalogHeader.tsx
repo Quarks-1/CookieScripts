@@ -4,6 +4,8 @@ import {
   saveExtensionSettings,
 } from "@ext/core/lib/messages.ts";
 import { EnableSlider } from "@shared/components/EnableSlider.tsx";
+import { CatalogStatusPill } from "./CatalogStatusPill.tsx";
+import type { CatalogLoadSource } from "@ext/core/lib/catalog/fetch-catalog.ts";
 import type { CatalogView } from "@ext/core/types/index.ts";
 
 import { SegmentedToggle } from "./SegmentedToggle.tsx";
@@ -16,6 +18,9 @@ type CatalogHeaderProps = {
   saving: boolean;
   saveError: string | null;
   overflowMessage: string | null;
+  catalogLoading: boolean;
+  catalogError: string | null;
+  catalogSource: CatalogLoadSource | null;
   onGroupByChange: (groupBy: CatalogView["groupBy"]) => void;
   onRetailerFilterChange: (filter: CatalogView["retailerFilter"]) => void;
   onSkuOpenModeChange: (enabled: boolean) => void;
@@ -30,6 +35,9 @@ export function CatalogHeader({
   saving,
   saveError,
   overflowMessage,
+  catalogLoading,
+  catalogError,
+  catalogSource,
   onGroupByChange,
   onRetailerFilterChange,
   onSkuOpenModeChange,
@@ -45,16 +53,27 @@ export function CatalogHeader({
     <header className="space-y-3 border-b border-zinc-800 pb-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-lg font-semibold text-zinc-100">SKU catalog</h1>
-        <button
-          type="button"
-          disabled={saving}
-          onClick={onClearAll}
-          className="rounded border border-zinc-700 px-2 py-1 text-xs text-zinc-400 disabled:opacity-50"
-        >
-          Clear all
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <CatalogStatusPill
+            loading={catalogLoading}
+            error={catalogError}
+            source={catalogSource}
+          />
+          {!catalogLoading && (
+            <button
+              type="button"
+              disabled={saving}
+              onClick={onClearAll}
+              className="rounded border border-zinc-700 px-2 py-1 text-xs text-zinc-400 disabled:opacity-50"
+            >
+              Clear all
+            </button>
+          )}
+        </div>
       </div>
 
+      {!catalogLoading && (
+        <>
       <div className="flex flex-wrap items-center gap-4">
         <SegmentedToggle
           id="catalog-group-by"
@@ -108,6 +127,8 @@ export function CatalogHeader({
         <p role="status" aria-live="polite" className="text-xs text-amber-300">
           {overflowMessage}
         </p>
+      )}
+        </>
       )}
     </header>
   );

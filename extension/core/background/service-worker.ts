@@ -18,6 +18,7 @@ import {
 } from "@ext/domains/walmart/background/auto-refresh-tab-events.ts";
 import { handleMessage } from "@ext/core/background/handlers.ts";
 import { configureSidePanel } from "@ext/core/background/side-panel.ts";
+import { clearCatalogCache } from "@ext/core/lib/catalog/fetch-catalog.ts";
 import { seedDefaultsIfMissing } from "@ext/core/lib/storage.ts";
 
 // Chrome disallows top-level await in MV3 service workers — gate handlers on initPromise instead.
@@ -26,6 +27,7 @@ const initPromise = initRuntimeState();
 chrome.runtime.onInstalled.addListener(() => {
   void initPromise.then(async () => {
     await seedDefaultsIfMissing();
+    await clearCatalogCache();
     await configureSidePanel();
   });
 });

@@ -12,6 +12,8 @@ export const GITHUB_OWNER = "Quarks-1";
 export const GITHUB_REPO = "CookieScripts";
 export const GITHUB_RELEASES_LATEST_URL =
   `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/releases/latest`;
+export const CATALOG_RAW_URL =
+  `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/extension/core/data/catalog.json`;
 
 export const STORAGE_KEYS = {
   settings: "cookiescripts:settings",
@@ -29,4 +31,5 @@ export const STORAGE_KEYS = {
   samsclubActiveSession: "cookiescripts:samsclubActiveSession",
   statusRevision: "cookiescripts:statusRevision",
   catalogView: "cookiescripts:catalogView",
+  catalogCache: "cookiescripts:catalogCache",
 } as const;

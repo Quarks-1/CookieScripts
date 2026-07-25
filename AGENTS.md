@@ -120,6 +120,8 @@ node research/discord/scripts/curate-walmart-catalog.mjs
 
 # 3. Ship bundled catalog.json (reads catalog-draft.json + curated hits)
 node research/discord/scripts/author-catalog.mjs
+# Pushing catalog.json to main updates the live SKU catalog for users without an extension release
+# (catalog page fetches from raw.githubusercontent.com on open).
 
 # 4. Liveness check + optional prune (see scripts/catalog-liveness/README.md)
 npm run catalog:liveness
@@ -170,7 +172,7 @@ Current `manifest.json` (do not add `cookies`, `webRequest`, or `<all_urls>`):
 | Kind | Values |
 |---|---|
 | `permissions` | `storage`, `tabs`, `windows`, `sidePanel`, `downloads`, `alarms` |
-| `host_permissions` | `discord.com`, `target.com` (+ `www`), `carts.target.com`, `walmart.com` (+ `www`), `samsclub.com` (+ `www`), `api.github.com`, `http://127.0.0.1:9876/*` |
+| `host_permissions` | `discord.com`, `target.com` (+ `www`), `carts.target.com`, `walmart.com` (+ `www`), `samsclub.com` (+ `www`), `api.github.com`, `raw.githubusercontent.com`, `http://127.0.0.1:9876/*` |
 | `side_panel.default_path` | `ui/sidepanel/index.html` |
 | `options_ui.page` | `ui/catalog/index.html` (`open_in_tab: true`) |
 | `web_accessible_resources` | `injected/cart-probe.js`, `injected/walmart-research-probe.js`, `injected/samsclub-research-probe.js`, `injected/samsclub-cart-probe.js`, `injected/queue-probe.js`, `sounds/queue-pass.mp3` (Target, Walmart, and Sam's Club origins) |

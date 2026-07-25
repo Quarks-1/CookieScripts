@@ -7,7 +7,8 @@ Full-tab Pokémon TCG SKU picker opened via `manifest.json` `options_ui` (`ui/ca
 | Entry | Path | Role |
 |---|---|---|
 | Production | `ui/catalog/index.html` → `main.tsx` → `App.tsx` | Chrome `options_ui`; launched from side panel via `CatalogLaunchButton` |
-| Data | `extension/core/data/catalog.json` | Bundled catalog — **import only in `main.tsx`** |
+| Data | `extension/core/data/catalog.json` | Bundled fallback — **import only in `main.tsx`** |
+| Live fetch | `extension/core/lib/catalog/fetch-catalog.ts` | Fetches `catalog.json` from `main` on page open; deep-import from `useCatalogData` only (not in catalog barrel) |
 
 Authoring (not shipped): `research/discord/scripts/author-catalog.mjs` reads gitignored `research/discord/catalog-draft.json` + curated hits files.
 
@@ -16,6 +17,7 @@ Authoring (not shipped): `research/discord/scripts/author-catalog.mjs` reads git
 | Area | Path |
 |---|---|
 | Page shell | `App.tsx`, `components/*`, `hooks/*` |
+| Bootstrap | `hooks/useCatalogData.ts` — blocking `resolveCatalog` on mount; empty shell while loading |
 | Catalog lib | `extension/core/lib/catalog/{parse,group,selection,index}.ts` — barrel must **not** import JSON |
 | Types | `extension/core/types/catalog.ts` (re-exported from `@ext/core/types/index.ts`) |
 | Settings helper | `upsertGlobalWatchSkus` in `extension/core/lib/channel-targets.ts` |
@@ -24,7 +26,8 @@ Authoring (not shipped): `research/discord/scripts/author-catalog.mjs` reads git
 
 ## Invariants
 
-- **JSON bundling:** only `ui/catalog/main.tsx` imports `catalog.json` (keeps service worker chunk clean).
+- **JSON bundling:** only `ui/catalog/main.tsx` imports `catalog.json` (keeps service worker chunk clean). Bundled copy is offline/first-install fallback only.
+- **Live catalog:** on open, `useCatalogData` → `resolveCatalog` fetches `CATALOG_RAW_URL` (`raw.githubusercontent.com`), validates with `parseCatalog`, caches in `chrome.storage.local` under `STORAGE_KEYS.catalogCache` with ETag. Fallback chain: remote → cache → bundled. Cache cleared on extension install/update (`clearCatalogCache` in service worker `onInstalled`).
 - **No hint text** — same rule as side panel UI.
 - **First-party vs marketplace:** main retailer checkbox toggles all first-party SKUs for that product; Target Plus marketplace listings appear inline below the Marketplace badge when no first-party SKU exists for that retailer on the row. `parseCatalog` and `author-catalog.mjs` strip marketplace listings when first-party exists for the same retailer. Marketplace listings are excluded from Select all / None.
 - **Indeterminate:** partial first-party selection; click completes remaining; click when fully selected clears all first-party for that retailer on the row.
@@ -41,6 +44,6 @@ Authoring (not shipped): `research/discord/scripts/author-catalog.mjs` reads git
 
 ## Tests
 
-`tests/core/catalog-{data,group,selection}.test.ts`, `tests/shared/pill-list-collapse.test.ts`
+`tests/core/catalog-{data,group,selection,fetch-catalog}.test.ts`, `tests/shared/pill-list-collapse.test.ts`
 
 Global invariants and import rules: [AGENTS.md](../../AGENTS.md).

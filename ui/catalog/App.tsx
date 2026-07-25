@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { buildSetIndexFromCatalog, groupCatalog } from "@ext/core/lib/catalog/index.ts";
 import { getExtensionSettings } from "@ext/core/lib/messages.ts";
+import type { CatalogLoadSource } from "@ext/core/lib/catalog/fetch-catalog.ts";
 import type { CatalogData } from "@ext/core/types/index.ts";
 
 import { CatalogFilters } from "./components/CatalogFilters.tsx";
@@ -12,9 +13,17 @@ import { useCatalogView } from "./hooks/useCatalogView.ts";
 
 type CatalogAppProps = {
   catalog: CatalogData;
+  catalogLoading: boolean;
+  catalogError: string | null;
+  catalogSource: CatalogLoadSource | null;
 };
 
-export default function App({ catalog }: CatalogAppProps) {
+export default function App({
+  catalog,
+  catalogLoading,
+  catalogError,
+  catalogSource,
+}: CatalogAppProps) {
   const { view, loaded, setGroupBy, setRetailerFilter, setQuery, setSelectedOnly } =
     useCatalogView();
   const {
@@ -48,7 +57,7 @@ export default function App({ catalog }: CatalogAppProps) {
   }, [catalog, loaded, selectedSets, view]);
 
   return (
-    <main className="mx-auto max-w-5xl space-y-4 p-4">
+    <div className="space-y-4">
       <CatalogHeader
         view={view}
         targetCount={targetSkus.length}
@@ -57,6 +66,9 @@ export default function App({ catalog }: CatalogAppProps) {
         saving={saving}
         saveError={saveError}
         overflowMessage={overflowMessage}
+        catalogLoading={catalogLoading}
+        catalogError={catalogError}
+        catalogSource={catalogSource}
         onGroupByChange={setGroupBy}
         onRetailerFilterChange={setRetailerFilter}
         onSkuOpenModeChange={setSkuOpenModeEnabled}
@@ -93,6 +105,6 @@ export default function App({ catalog }: CatalogAppProps) {
           ))}
         </div>
       )}
-    </main>
+    </div>
   );
 }

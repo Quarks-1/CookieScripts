@@ -21,12 +21,13 @@ Chrome MV3 service worker hub — message router, link opening pipeline, shared 
 | Channel allowlists | `lib/channel-targets.ts`, `lib/storage.ts` |
 | UI bridge | `lib/messages.ts` — side panel and Discord content helpers |
 | Update check | `lib/check-for-update.ts`, `lib/version.ts` |
+| Catalog fetch | `lib/catalog/fetch-catalog.ts` — live catalog cache (catalog page only; not in catalog barrel) |
 | Types | `types/messages.ts`, `types/core.ts`, `types/index.ts` |
 
 ### Service worker lifecycle (`service-worker.ts`)
 
 - `initPromise` gates `onMessage` handlers (no top-level await in MV3).
-- `onInstalled` → `seedDefaultsIfMissing` + `configureSidePanel`.
+- `onInstalled` → `seedDefaultsIfMissing` + `clearCatalogCache` + `configureSidePanel`.
 - Startup → `configureSidePanel`, `loadWalmartRecordingState`, `loadSamsclubRecordingState`, `syncScheduleAlarms`.
 - `chrome.alarms.onAlarm` → `handleScheduleAlarm` (Target, Sam's Club, and Walmart scheduled start/end). Walmart opts into unbounded windows when no end time is set (`treatMissingEndAsUnbounded`).
 - Tab listeners: Walmart auto-refresh, core dedup flush, Target retailer cleanup, Walmart recording teardown, Sam's Club recording + automation teardown.

@@ -60,6 +60,7 @@ Releases are created automatically on every push to `main` (patch version bump).
 | `host_permissions: discord.com` | Inject the content script on Discord channel pages to scan messages |
 | `host_permissions: target.com` | Inject the retailer content script for Target Auto Mode (add-to-cart automation and manual record mode) |
 | `host_permissions: api.github.com` | Check the public GitHub Releases API for newer versions (anonymous GET; no Discord or settings data sent) |
+| `host_permissions: raw.githubusercontent.com` | Fetch the live SKU catalog from `main` when you open the catalog page (anonymous GET; cached locally with ETag) |
 
 ## Known limitations
 
@@ -73,8 +74,9 @@ Releases are created automatically on every push to `main` (patch version bump).
 
 - Data stays on your device; no Discord user token is collected or stored
 - When the extension is enabled, open Discord channel tabs are scanned for links in new messages (link opening is still gated by your per-channel domain allowlist in the popup)
-- `chrome.storage.local` holds per-channel domain allowlists, link history (last 200), recent dedup keys (last 500), and cached update-check metadata
+- `chrome.storage.local` holds per-channel domain allowlists, link history (last 200), recent dedup keys (last 500), cached update-check metadata, and cached SKU catalog data (raw JSON + ETag from `raw.githubusercontent.com`)
 - The popup may send an anonymous GET to `api.github.com` to compare your installed version with the latest GitHub release; no Discord messages, settings, or history are transmitted
+- The SKU catalog page may send an anonymous GET to `raw.githubusercontent.com` for `catalog.json` on `main`; selections still sync via `watch_skus` in `chrome.storage.local`
 - Extension packages are distributed via GitHub Releases over HTTPS; trust model is the Quarks-1 org and your browser’s download of the release zip
 
 ## Discord Terms of Service
