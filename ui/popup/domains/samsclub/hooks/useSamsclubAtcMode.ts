@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 
+import {
+  atcModeFromBooleans,
+  booleansFromAtcMode,
+  type AtcMode,
+} from "@ext/core/lib/atc-mode.ts";
 import { getSidePanelWindowId, sendToBackground } from "@ext/core/lib/messages.ts";
 import type { BackgroundResponse, ExtensionStatus } from "@ext/core/types/index.ts";
 
@@ -12,11 +17,11 @@ export function useSamsclubAtcMode(
   samsclubTabDetected: boolean,
   status: AtcModeStatus | null,
 ) {
-  const [frontendEnabled, setFrontendEnabled] = useState(
-    () => status?.samsclub_frontend_atc_enabled ?? true,
-  );
-  const [backendEnabled, setBackendEnabled] = useState(
-    () => status?.samsclub_backend_atc_enabled ?? false,
+  const [mode, setMode] = useState<AtcMode>(() =>
+    atcModeFromBooleans(
+      status?.samsclub_frontend_atc_enabled ?? false,
+      status?.samsclub_backend_atc_enabled ?? false,
+    ),
   );
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -25,8 +30,12 @@ export function useSamsclubAtcMode(
     const window_id = await getSidePanelWindowId();
     const response = await sendToBackground<BackgroundResponse>({ type: "GET_STATUS", window_id });
     if ("status" in response && response.ok) {
-      setFrontendEnabled(response.status.samsclub_frontend_atc_enabled);
-      setBackendEnabled(response.status.samsclub_backend_atc_enabled);
+      setMode(
+        atcModeFromBooleans(
+          response.status.samsclub_frontend_atc_enabled,
+          response.status.samsclub_backend_atc_enabled,
+        ),
+      );
     }
   }, []);
 
@@ -34,23 +43,21 @@ export function useSamsclubAtcMode(
     if (!samsclubTabDetected || status == null || saving) {
       return;
     }
-    setFrontendEnabled(status.samsclub_frontend_atc_enabled);
-    setBackendEnabled(status.samsclub_backend_atc_enabled);
+    setMode(
+      atcModeFromBooleans(
+        status.samsclub_frontend_atc_enabled,
+        status.samsclub_backend_atc_enabled,
+      ),
+    );
   }, [samsclubTabDetected, status, saving]);
 
-  const saveModes = useCallback(
-    async (nextFrontend: boolean, nextBackend: boolean) => {
-      if (!nextFrontend && !nextBackend) {
-        setSaveError("Enable at least one ATC method");
-        return;
-      }
-
-      const prevFrontend = frontendEnabled;
-      const prevBackend = backendEnabled;
+  const handleModeChange = useCallback(
+    async (nextMode: AtcMode) => {
+      const { frontend: nextFrontend, backend: nextBackend } = booleansFromAtcMode(nextMode);
+      const prevMode = mode;
       setSaving(true);
       setSaveError(null);
-      setFrontendEnabled(nextFrontend);
-      setBackendEnabled(nextBackend);
+      setMode(nextMode);
 
       try {
         const response = await sendToBackground<BackgroundResponse>({
@@ -63,22 +70,19 @@ export function useSamsclubAtcMode(
         }
         await refresh();
       } catch (err) {
-        setFrontendEnabled(prevFrontend);
-        setBackendEnabled(prevBackend);
+        setMode(prevMode);
         setSaveError(err instanceof Error ? err.message : "Save failed");
       } finally {
         setSaving(false);
       }
     },
-    [frontendEnabled, backendEnabled, refresh],
+    [mode, refresh],
   );
 
   return {
-    frontendEnabled,
-    backendEnabled,
+    mode,
     saving,
     saveError,
-    handleFrontendChange: (next: boolean) => void saveModes(next, backendEnabled),
-    handleBackendChange: (next: boolean) => void saveModes(frontendEnabled, next),
+    handleModeChange,
   };
 }

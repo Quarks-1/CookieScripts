@@ -198,7 +198,6 @@ describe("stripChannelWatchFields", () => {
         target: { positive: ["global-kw"], negative: [] },
       },
       watch_skus: { target: ["95120834"] },
-      retailer_auto_atc_enabled: true,
       channel_targets: [
         {
           channel_id: "111",
@@ -230,7 +229,6 @@ describe("stripChannelWatchFields", () => {
       target: { positive: ["global-kw"], negative: [] },
     });
     expect(stripped.watch_skus).toEqual({ target: ["95120834"] });
-    expect(stripped.retailer_auto_atc_enabled).toBe(true);
   });
 
   it("returns unchanged when no legacy fields exist", () => {

@@ -62,7 +62,6 @@ describe("validateGlobalWatchSettings", () => {
           target: { positive: ["pokemon"], negative: [] },
         },
         watch_skus: { target: ["95120834"], walmart: ["19965460207"] },
-        retailer_auto_atc_enabled: true,
       }),
     ).toBeNull();
   });
@@ -87,15 +86,6 @@ describe("validateGlobalWatchSettings", () => {
         },
       }),
     ).toMatch(/overlap/i);
-  });
-
-  it("rejects non-boolean retailer_auto_atc_enabled", () => {
-    expect(
-      validateGlobalWatchSettings({
-        ...DEFAULT_SETTINGS,
-        retailer_auto_atc_enabled: "yes" as unknown as boolean,
-      }),
-    ).toMatch(/retailer_auto_atc_enabled must be a boolean/i);
   });
 
   it("rejects invalid retailer_auto_checkout_mode", () => {

@@ -5,7 +5,6 @@ import {
 } from "@ext/core/lib/channel-targets.ts";
 import {
   getRetailerAtcQuantity,
-  getRetailerAutoAtcEnabled,
   getRetailerAutoCheckoutMode,
   getRetailerBackendAtcEnabled,
   getRetailerFrontendAtcEnabled,
@@ -15,7 +14,6 @@ import {
   getRetailerUseMaxQuantity,
   setRetailerAtcModes,
   setRetailerAtcQuantity,
-  setRetailerAutoAtcEnabled,
   setRetailerAutoCheckoutMode,
   setRetailerPriceGateEnabled,
   setRetailerRefreshInterval,
@@ -508,7 +506,6 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
   const allowedDomains =
     activeChannelId !== null ? getChannelDomains(settings, activeChannelId) : [];
   const isActive = settings.enabled && activeChannelId !== null;
-  const retailerAutoAtcEnabled = getRetailerAutoAtcEnabled(settings);
   const retailerRefreshIntervalSec =
     activeChannelId !== null
       ? getRetailerRefreshIntervalSec(settings, activeChannelId)
@@ -592,7 +589,6 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     is_active: isActive,
     has_allowed_domains: allowedDomains.length > 0,
     allowed_domains: allowedDomains,
-    retailer_auto_atc_enabled: retailerAutoAtcEnabled,
     retailer_refresh_interval_sec: retailerRefreshIntervalSec,
     retailer_frontend_atc_enabled: getRetailerFrontendAtcEnabled(settings),
     retailer_backend_atc_enabled: getRetailerBackendAtcEnabled(settings),
@@ -640,15 +636,6 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     samsclub_checkout_cvv: getSamsclubCheckoutCvv(settings) ?? "",
     ...samsclubScheduleStatus,
   };
-}
-
-export async function setRetailerAutoAtcEnabledGlobal(
-  enabled: boolean,
-): Promise<ExtensionSettings> {
-  const settings = await getSettings();
-  const next = setRetailerAutoAtcEnabled(settings, enabled);
-  await saveSettings(next);
-  return next;
 }
 
 export async function setRetailerRefreshIntervalForChannel(

@@ -14,8 +14,8 @@ import {
 import { DEFAULT_SETTINGS } from "@ext/core/types/index.ts";
 
 describe("retailer ATC config", () => {
-  it("defaults frontend on and backend off", () => {
-    expect(getRetailerFrontendAtcEnabled(DEFAULT_SETTINGS)).toBe(true);
+  it("defaults to off when using DEFAULT_SETTINGS", () => {
+    expect(getRetailerFrontendAtcEnabled(DEFAULT_SETTINGS)).toBe(false);
     expect(getRetailerBackendAtcEnabled(DEFAULT_SETTINGS)).toBe(false);
   });
 
@@ -25,10 +25,12 @@ describe("retailer ATC config", () => {
     expect(getRetailerFrontendAtcEnabled(next)).toBe(true);
   });
 
-  it("rejects disabling both ATC modes", () => {
-    expect(() =>
-      setRetailerAtcModes(DEFAULT_SETTINGS, { frontend: false, backend: false }),
-    ).toThrow("Enable at least one ATC method");
+  it("persists off when both ATC modes are disabled", () => {
+    const next = setRetailerAtcModes(DEFAULT_SETTINGS, { frontend: false, backend: false });
+    expect(getRetailerFrontendAtcEnabled(next)).toBe(false);
+    expect(getRetailerBackendAtcEnabled(next)).toBe(false);
+    expect(next.retailer_frontend_atc_enabled).toBe(false);
+    expect(next.retailer_backend_atc_enabled).toBeUndefined();
   });
 
   it("defaults quantity to 1 and max override off", () => {

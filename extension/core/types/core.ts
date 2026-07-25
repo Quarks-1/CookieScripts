@@ -22,14 +22,12 @@ export interface ExtensionSettings {
     target?: string[];
     walmart?: string[];
   };
-  /** When true, Discord-initiated Target links start auto ATC. */
-  retailer_auto_atc_enabled?: boolean;
-  /** Used when auto mode runs with channel_id "manual". */
-  retailer_refresh_interval_sec?: number;
   /** Default true when undefined — DOM button click add-to-cart. */
   retailer_frontend_atc_enabled?: boolean;
   /** Default false when undefined — cart API POST probe. */
   retailer_backend_atc_enabled?: boolean;
+  /** Used when auto mode runs with channel_id "manual". */
+  retailer_refresh_interval_sec?: number;
   /** Units to add per ATC attempt; default 1 when omitted. */
   retailer_atc_quantity?: number;
   /** When true, use page purchase_limit instead of retailer_atc_quantity. */
@@ -91,6 +89,8 @@ export interface ExtensionSettings {
   walmart_schedule_end_time?: string;
   /** Global fallback hard-refresh interval for Walmart tabs; default 10 when omitted. */
   walmart_refresh_interval_sec?: number;
+  /** One-time settings migrations applied by getSettings(). */
+  _migrations?: { atc_pill_v1?: boolean };
 }
 
 export type HistoryItemKind =
@@ -120,4 +120,6 @@ export type ActiveTabKind = "discord_channel" | "retailer" | "walmart" | "samscl
 export const DEFAULT_SETTINGS: ExtensionSettings = {
   channel_targets: [],
   enabled: true,
+  retailer_frontend_atc_enabled: false,
+  samsclub_frontend_atc_enabled: false,
 };

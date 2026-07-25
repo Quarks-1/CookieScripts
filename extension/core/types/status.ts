@@ -32,7 +32,6 @@ export interface ExtensionStatus {
   is_active: boolean;
   has_allowed_domains: boolean;
   allowed_domains: string[];
-  retailer_auto_atc_enabled: boolean;
   retailer_refresh_interval_sec: number;
   retailer_frontend_atc_enabled: boolean;
   retailer_backend_atc_enabled: boolean;

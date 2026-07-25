@@ -1,7 +1,10 @@
+import type { AtcMode } from "@ext/core/lib/atc-mode.ts";
+import { ATC_MODE_OPTIONS } from "@ext/core/lib/atc-mode.ts";
 import type { RetailerAutoCheckoutMode } from "@ext/core/types/index.ts";
-import { EnableSlider } from "@shared/components/EnableSlider.tsx";
 import { QuantitySegmentedField } from "@shared/components/QuantitySegmentedField.tsx";
+import { SegmentedPillToggle } from "@shared/components/SegmentedPillToggle.tsx";
 import { ThreeWayToggle } from "@shared/components/ThreeWayToggle.tsx";
+import { EnableSlider } from "@shared/components/EnableSlider.tsx";
 
 const AUTO_CHECKOUT_OPTIONS = [
   { value: "off", label: "Off" },
@@ -14,10 +17,8 @@ const AUTO_CHECKOUT_OPTIONS = [
 ];
 
 type TargetAtcTogglesProps = {
-  frontendEnabled: boolean;
-  backendEnabled: boolean;
+  atcMode: AtcMode;
   autoCheckoutMode: RetailerAutoCheckoutMode;
-  autoAtcEnabled: boolean;
   disabled: boolean;
   saving: boolean;
   saveError: string | null;
@@ -26,8 +27,7 @@ type TargetAtcTogglesProps = {
   priceGateEnabled: boolean;
   priceGateSaving: boolean;
   priceGateSaveError: string | null;
-  onFrontendChange: (next: boolean) => void;
-  onBackendChange: (next: boolean) => void;
+  onAtcModeChange: (next: AtcMode) => void;
   onAutoCheckoutModeChange: (next: RetailerAutoCheckoutMode) => void;
   onPriceGateChange: (next: boolean) => void;
   quantityDraft: string;
@@ -45,10 +45,8 @@ type TargetAtcTogglesProps = {
 };
 
 export function TargetAtcToggles({
-  frontendEnabled,
-  backendEnabled,
+  atcMode,
   autoCheckoutMode,
-  autoAtcEnabled,
   disabled,
   saving,
   saveError,
@@ -57,8 +55,7 @@ export function TargetAtcToggles({
   priceGateEnabled,
   priceGateSaving,
   priceGateSaveError,
-  onFrontendChange,
-  onBackendChange,
+  onAtcModeChange,
   onAutoCheckoutModeChange,
   onPriceGateChange,
   quantityDraft,
@@ -75,9 +72,8 @@ export function TargetAtcToggles({
   onUseMaxChange,
 }: TargetAtcTogglesProps) {
   const controlsDisabled = disabled || saving;
-  const autoCheckoutDisabled = disabled || autoCheckoutSaving || !autoAtcEnabled;
-  const priceGateDisabled =
-    disabled || priceGateSaving || !autoAtcEnabled || autoCheckoutMode === "off";
+  const autoCheckoutDisabled = disabled || autoCheckoutSaving;
+  const priceGateDisabled = disabled || priceGateSaving || autoCheckoutMode === "off";
   const quantityInputDisabled = disabled || quantitySaving || effectiveUseMax;
   const maxToggleDisabled = disabled;
 
@@ -86,19 +82,14 @@ export function TargetAtcToggles({
       <h2 id="target-atc-heading" className="text-sm font-medium text-zinc-400">
         Add to cart
       </h2>
-      <EnableSlider
-        id="popup-frontend-atc"
-        label="Frontend ATC"
-        checked={frontendEnabled}
+      <SegmentedPillToggle
+        id="popup-atc-mode"
+        label="ATC"
+        value={atcMode}
+        options={ATC_MODE_OPTIONS}
+        trackClassName="w-[16rem]"
         disabled={controlsDisabled}
-        onChange={onFrontendChange}
-      />
-      <EnableSlider
-        id="popup-backend-atc"
-        label="Backend ATC"
-        checked={backendEnabled}
-        disabled={controlsDisabled}
-        onChange={onBackendChange}
+        onChange={onAtcModeChange}
       />
       <ThreeWayToggle
         id="popup-auto-checkout"
@@ -131,7 +122,7 @@ export function TargetAtcToggles({
       />
       {priceGateSaving && <p className="text-xs text-zinc-500">Saving price gate…</p>}
       {autoCheckoutSaving && <p className="text-xs text-zinc-500">Saving auto checkout…</p>}
-      {saving && <p className="text-xs text-zinc-500">Saving ATC modes…</p>}
+      {saving && <p className="text-xs text-zinc-500">Saving ATC…</p>}
       {showInvalidError && purchaseLimit != null && (
         <p role="status" aria-live="polite" className="text-xs text-red-300">
           Quantity cannot exceed max ({purchaseLimit})

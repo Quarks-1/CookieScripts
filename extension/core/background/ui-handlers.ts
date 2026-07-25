@@ -3,7 +3,6 @@ import {
   buildStatus,
   setRetailerAtcModesForSettings,
   setRetailerAtcQuantityForSettings,
-  setRetailerAutoAtcEnabledGlobal,
   setRetailerAutoCheckoutModeForSettings,
   setRetailerPriceGateEnabledForSettings,
   setRetailerRefreshIntervalForChannel,
@@ -104,17 +103,6 @@ export async function handleUiMessage(
           void notifyStatusChanged();
         } else {
           await syncScheduleAlarms(message.settings);
-        }
-        return { ok: true };
-      } catch (error) {
-        return { ok: false, error: error instanceof Error ? error.message : "Save failed" };
-      }
-    }
-    case "SET_RETAILER_AUTO_ATC_ENABLED": {
-      try {
-        await setRetailerAutoAtcEnabledGlobal(message.enabled);
-        if (!message.enabled) {
-          await broadcastRetailerStopAuto();
         }
         return { ok: true };
       } catch (error) {

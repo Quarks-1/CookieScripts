@@ -1,13 +1,15 @@
 import { HISTORY_LIMIT, RECENT_URL_LIMIT, STORAGE_KEYS } from "@ext/core/lib/constants.ts";
 import { stripChannelWatchFields } from "@ext/core/lib/channel-targets.ts";
+import { migrateSettingsAtcPillV1 } from "@ext/core/lib/settings-migrations.ts";
 import { validateGlobalWatchSettings, validatePersistedTargets } from "@ext/core/lib/validate.ts";
 import { DEFAULT_SETTINGS, type ExtensionSettings, type HistoryItem } from "@ext/core/types/index.ts";
 
 export async function getSettings(): Promise<ExtensionSettings> {
   const result = await chrome.storage.local.get(STORAGE_KEYS.settings);
   const base = (result[STORAGE_KEYS.settings] as ExtensionSettings | undefined) ?? DEFAULT_SETTINGS;
-  const stripped = stripChannelWatchFields(base);
-  if (stripped.changed) {
+  const migrated = migrateSettingsAtcPillV1(base);
+  const stripped = stripChannelWatchFields(migrated);
+  if (migrated !== base || stripped.changed) {
     await saveSettings(stripped.settings);
   }
   return stripped.settings;

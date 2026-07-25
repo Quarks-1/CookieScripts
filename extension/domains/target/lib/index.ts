@@ -7,7 +7,6 @@ export {
 
 export {
   getRetailerAtcQuantity,
-  getRetailerAutoAtcEnabled,
   getRetailerAutoCheckoutMode,
   shouldEnableRetailerAutoCheckout,
   getRetailerBackendAtcEnabled,
@@ -18,7 +17,6 @@ export {
   normalizeRetailerRefreshIntervalSec,
   setRetailerAtcModes,
   setRetailerAtcQuantity,
-  setRetailerAutoAtcEnabled,
   setRetailerAutoCheckoutMode,
   setRetailerRefreshInterval,
 } from "@ext/domains/target/lib/channel-config.ts";

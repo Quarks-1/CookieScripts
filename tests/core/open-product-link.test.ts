@@ -20,7 +20,9 @@ const HISTORY_TIMESTAMP = "2026-01-01T00:00:00.000Z";
 function buildRetailerSettings(overrides: Record<string, unknown> = {}) {
   return {
     ...DEFAULT_SETTINGS,
-    retailer_auto_atc_enabled: true,
+    retailer_frontend_atc_enabled: undefined,
+    retailer_backend_atc_enabled: undefined,
+    _migrations: { atc_pill_v1: true },
     ...overrides,
     channel_targets: [
       buildChannelTarget({

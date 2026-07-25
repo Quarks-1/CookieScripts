@@ -1,18 +1,19 @@
+import type { AtcMode } from "@ext/core/lib/atc-mode.ts";
+import { ATC_MODE_OPTIONS } from "@ext/core/lib/atc-mode.ts";
 import type { SamsclubAutoCheckoutMode } from "@ext/core/types/index.ts";
 import { EnableSlider } from "@shared/components/EnableSlider.tsx";
 import { QuantitySegmentedField } from "@shared/components/QuantitySegmentedField.tsx";
+import { SegmentedPillToggle } from "@shared/components/SegmentedPillToggle.tsx";
 
 type SamsclubAtcTogglesProps = {
-  frontendEnabled: boolean;
-  backendEnabled: boolean;
+  atcMode: AtcMode;
   autoCheckoutMode: SamsclubAutoCheckoutMode;
   disabled: boolean;
   saving: boolean;
   saveError: string | null;
   autoCheckoutSaving: boolean;
   autoCheckoutSaveError: string | null;
-  onFrontendChange: (next: boolean) => void;
-  onBackendChange: (next: boolean) => void;
+  onAtcModeChange: (next: AtcMode) => void;
   onAutoCheckoutModeChange: (next: SamsclubAutoCheckoutMode) => void;
   checkoutCvvVisible: boolean;
   checkoutCvvDraft: string;
@@ -38,16 +39,14 @@ type SamsclubAtcTogglesProps = {
 };
 
 export function SamsclubAtcToggles({
-  frontendEnabled,
-  backendEnabled,
+  atcMode,
   autoCheckoutMode,
   disabled,
   saving,
   saveError,
   autoCheckoutSaving,
   autoCheckoutSaveError,
-  onFrontendChange,
-  onBackendChange,
+  onAtcModeChange,
   onAutoCheckoutModeChange,
   checkoutCvvVisible,
   checkoutCvvDraft,
@@ -81,19 +80,14 @@ export function SamsclubAtcToggles({
       <h2 id="samsclub-atc-heading" className="text-sm font-medium text-zinc-400">
         Add to cart
       </h2>
-      <EnableSlider
-        id="popup-samsclub-frontend-atc"
-        label="Frontend ATC"
-        checked={frontendEnabled}
+      <SegmentedPillToggle
+        id="popup-samsclub-atc-mode"
+        label="ATC"
+        value={atcMode}
+        options={ATC_MODE_OPTIONS}
+        trackClassName="w-[16rem]"
         disabled={controlsDisabled}
-        onChange={onFrontendChange}
-      />
-      <EnableSlider
-        id="popup-samsclub-backend-atc"
-        label="Backend ATC"
-        checked={backendEnabled}
-        disabled={controlsDisabled}
-        onChange={onBackendChange}
+        onChange={onAtcModeChange}
       />
       <EnableSlider
         id="popup-samsclub-auto-checkout"
@@ -166,7 +160,7 @@ export function SamsclubAtcToggles({
         onUseMaxChange={onUseMaxChange}
       />
       {autoCheckoutSaving && <p className="text-xs text-zinc-500">Saving auto checkout…</p>}
-      {saving && <p className="text-xs text-zinc-500">Saving ATC modes…</p>}
+      {saving && <p className="text-xs text-zinc-500">Saving ATC…</p>}
       {showInvalidError && purchaseLimit != null && (
         <p role="status" aria-live="polite" className="text-xs text-red-300">
           Quantity cannot exceed max ({purchaseLimit})

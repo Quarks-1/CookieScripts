@@ -62,6 +62,7 @@ describe("handleMessage — ui", () => {
     expect(response).toEqual({ ok: true });
     expect(storage["cookiescripts:settings"]).toEqual({
       ...DEFAULT_SETTINGS,
+      _migrations: { atc_pill_v1: true },
       retailer_auto_checkout_mode: "all",
     });
   });
@@ -78,6 +79,7 @@ describe("handleMessage — ui", () => {
     expect(response).toEqual({ ok: true });
     expect(storage["cookiescripts:settings"]).toEqual({
       ...DEFAULT_SETTINGS,
+      _migrations: { atc_pill_v1: true },
       retailer_price_gate_enabled: true,
     });
   });
@@ -93,40 +95,5 @@ describe("handleMessage — ui", () => {
 
     expect(response).toEqual({ ok: false, error: "Invalid auto checkout mode" });
     expect(storage["cookiescripts:settings"]).toEqual(DEFAULT_SETTINGS);
-  });
-
-  it("persists global retailer auto atc toggle without channel_id", async () => {
-    const storage = setupChromeMocks();
-    const sender = mockExtensionPageSender(EXTENSION_ID);
-
-    const response = await handleMessage(
-      { type: "SET_RETAILER_AUTO_ATC_ENABLED", enabled: true },
-      sender,
-    );
-
-    expect(response).toEqual({ ok: true });
-    expect(storage["cookiescripts:settings"]).toEqual({
-      ...DEFAULT_SETTINGS,
-      retailer_auto_atc_enabled: true,
-    });
-  });
-
-  it("disables global retailer auto atc without domain error", async () => {
-    const storage = setupChromeMocks();
-    storage["cookiescripts:settings"] = {
-      ...DEFAULT_SETTINGS,
-      retailer_auto_atc_enabled: true,
-    };
-    const sender = mockExtensionPageSender(EXTENSION_ID);
-
-    const response = await handleMessage(
-      { type: "SET_RETAILER_AUTO_ATC_ENABLED", enabled: false },
-      sender,
-    );
-
-    expect(response).toEqual({ ok: true });
-    expect(storage["cookiescripts:settings"]).toEqual({
-      ...DEFAULT_SETTINGS,
-    });
   });
 });

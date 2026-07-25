@@ -479,7 +479,8 @@ describe("handleMessage — discord", () => {
 
     expect(response).toEqual({ ok: true });
     expect(storage["cookiescripts:settings"]).toEqual({
-      enabled: true,
+      ...DEFAULT_SETTINGS,
+      _migrations: { atc_pill_v1: true },
       channel_targets: [{ channel_id: "222", allowed_domains: ["walmart.com"] }],
     });
   });
@@ -571,7 +572,7 @@ describe("handleMessage — discord", () => {
     const storage: Record<string, unknown> = {
       "cookiescripts:settings": {
         enabled: true,
-        retailer_auto_atc_enabled: true,
+        _migrations: { atc_pill_v1: true },
         retailer_link_open_count: 3,
         channel_targets: [
           buildChannelTarget({

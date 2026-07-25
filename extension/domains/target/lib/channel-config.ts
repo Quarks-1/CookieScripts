@@ -31,23 +31,6 @@ export function getRetailerRefreshIntervalSec(
   return normalizeRetailerRefreshIntervalSec(settings.retailer_refresh_interval_sec ?? 0);
 }
 
-export function getRetailerAutoAtcEnabled(settings: ExtensionSettings): boolean {
-  return settings.retailer_auto_atc_enabled === true;
-}
-
-export function setRetailerAutoAtcEnabled(
-  settings: ExtensionSettings,
-  enabled: boolean,
-): ExtensionSettings {
-  const next = { ...settings };
-  if (enabled) {
-    next.retailer_auto_atc_enabled = true;
-  } else {
-    delete next.retailer_auto_atc_enabled;
-  }
-  return next;
-}
-
 export function setRetailerRefreshInterval(
   settings: ExtensionSettings,
   channelId: string,
@@ -88,10 +71,6 @@ export function setRetailerAtcModes(
   settings: ExtensionSettings,
   modes: { frontend: boolean; backend: boolean },
 ): ExtensionSettings {
-  if (!modes.frontend && !modes.backend) {
-    throw new Error("Enable at least one ATC method");
-  }
-
   const next = { ...settings };
   if (modes.frontend) {
     delete next.retailer_frontend_atc_enabled;

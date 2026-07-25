@@ -2,10 +2,13 @@ import { describe, expect, it } from "vitest";
 
 import {
   getSamsclubAutoCheckoutMode,
+  getSamsclubBackendAtcEnabled,
   getSamsclubCheckoutCvv,
+  getSamsclubFrontendAtcEnabled,
   getSamsclubRefreshIntervalSec,
   normalizeSamsclubCheckoutCvv,
   normalizeSamsclubRefreshIntervalSec,
+  setSamsclubAtcModes,
   setSamsclubAutoCheckoutMode,
   setSamsclubCheckoutCvv,
   shouldEnableSamsclubAutoCheckout,
@@ -32,6 +35,14 @@ describe("samsclub channel-config", () => {
     const all = setSamsclubAutoCheckoutMode(DEFAULT_SETTINGS, "all");
     expect(getSamsclubAutoCheckoutMode(all)).toBe("all");
     expect(shouldEnableSamsclubAutoCheckout(all)).toBe(true);
+  });
+
+  it("persists off when both ATC modes are disabled", () => {
+    const next = setSamsclubAtcModes(DEFAULT_SETTINGS, { frontend: false, backend: false });
+    expect(getSamsclubFrontendAtcEnabled(next)).toBe(false);
+    expect(getSamsclubBackendAtcEnabled(next)).toBe(false);
+    expect(next.samsclub_frontend_atc_enabled).toBe(false);
+    expect(next.samsclub_backend_atc_enabled).toBeUndefined();
   });
 
   it("normalizes and stores checkout cvv", () => {

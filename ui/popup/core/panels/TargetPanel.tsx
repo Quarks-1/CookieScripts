@@ -2,7 +2,6 @@ import type { ExtensionStatus } from "@ext/core/types/index.ts";
 import { RetailerAutoModeSection } from "../../domains/target/components/RetailerAutoModeSection.tsx";
 import { RetailerScheduleSection } from "../../domains/target/components/RetailerScheduleSection.tsx";
 import { TargetAtcToggles } from "../../domains/target/components/TargetAtcToggles.tsx";
-import { TargetAutoAtcSection } from "../../domains/target/components/TargetAutoAtcSection.tsx";
 import { TargetLinkSettingsSection } from "../../domains/target/components/TargetLinkSettingsSection.tsx";
 import { useRetailerAutoCheckout } from "../../domains/target/hooks/useRetailerAutoCheckout.ts";
 import { useRetailerAtcMode } from "../../domains/target/hooks/useRetailerAtcMode.ts";
@@ -35,13 +34,9 @@ export function TargetPanel({ status, disabled, onRefresh }: TargetPanelProps) {
     <div className="space-y-3">
       <TargetLinkSettingsSection status={status} disabled={disabled} onRefresh={onRefresh} />
 
-      <TargetAutoAtcSection status={status} disabled={disabled} onRefresh={onRefresh} />
-
       <TargetAtcToggles
-        frontendEnabled={retailerAtc.frontendEnabled}
-        backendEnabled={retailerAtc.backendEnabled}
+        atcMode={retailerAtc.mode}
         autoCheckoutMode={retailerAutoCheckout.mode}
-        autoAtcEnabled={status.retailer_auto_atc_enabled}
         disabled={disabled}
         saving={retailerAtc.saving}
         saveError={retailerAtc.saveError}
@@ -50,8 +45,7 @@ export function TargetPanel({ status, disabled, onRefresh }: TargetPanelProps) {
         priceGateEnabled={retailerPriceGate.enabled}
         priceGateSaving={retailerPriceGate.saving}
         priceGateSaveError={retailerPriceGate.saveError}
-        onFrontendChange={(next) => void retailerAtc.handleFrontendChange(next)}
-        onBackendChange={(next) => void retailerAtc.handleBackendChange(next)}
+        onAtcModeChange={(next) => void retailerAtc.handleModeChange(next)}
         onAutoCheckoutModeChange={(next) => void retailerAutoCheckout.onChange(next)}
         onPriceGateChange={(next) => void retailerPriceGate.onChange(next)}
         quantityDraft={retailerAtcQuantity.draftQuantity}

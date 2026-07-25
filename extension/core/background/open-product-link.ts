@@ -4,9 +4,9 @@ import {
   registerRetailerWindow,
   setRetailerTabUiState,
 } from "@ext/domains/target/background/runtime-state.ts";
+import { isAtcEnabled } from "@ext/core/lib/atc-mode.ts";
 import {
   getRetailerAtcQuantity,
-  getRetailerAutoAtcEnabled,
   shouldEnableRetailerAutoCheckout,
   getRetailerBackendAtcEnabled,
   getRetailerFrontendAtcEnabled,
@@ -244,7 +244,10 @@ export async function openTargetLinkRepeated(
   }
 
   const count = getRetailerLinkOpenCount(settings);
-  const startAuto = getRetailerAutoAtcEnabled(settings);
+  const startAuto = isAtcEnabled(
+    getRetailerFrontendAtcEnabled(settings),
+    getRetailerBackendAtcEnabled(settings),
+  );
   const opened: string[] = [];
   const histories: HistoryItem[] = [];
 

@@ -39,9 +39,6 @@ export function setSamsclubAtcModes(
   settings: ExtensionSettings,
   modes: { frontend: boolean; backend: boolean },
 ): ExtensionSettings {
-  if (!modes.frontend && !modes.backend) {
-    throw new Error("Enable at least one ATC method");
-  }
   const next = { ...settings };
   if (modes.frontend) {
     delete next.samsclub_frontend_atc_enabled;

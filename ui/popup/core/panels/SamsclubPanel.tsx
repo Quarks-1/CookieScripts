@@ -80,16 +80,14 @@ export function SamsclubPanel({ status, disabled, onRefresh }: SamsclubPanelProp
       {status.enabled && (
         <>
           <SamsclubAtcToggles
-            frontendEnabled={samsclubAtc.frontendEnabled}
-            backendEnabled={samsclubAtc.backendEnabled}
+            atcMode={samsclubAtc.mode}
             autoCheckoutMode={samsclubAutoCheckout.mode}
             disabled={disabled}
             saving={samsclubAtc.saving}
             saveError={samsclubAtc.saveError}
             autoCheckoutSaving={samsclubAutoCheckout.saving}
             autoCheckoutSaveError={samsclubAutoCheckout.saveError}
-            onFrontendChange={(next) => void samsclubAtc.handleFrontendChange(next)}
-            onBackendChange={(next) => void samsclubAtc.handleBackendChange(next)}
+            onAtcModeChange={(next) => void samsclubAtc.handleModeChange(next)}
             onAutoCheckoutModeChange={(next) => void samsclubAutoCheckout.onChange(next)}
             checkoutCvvVisible={samsclubCheckoutCvv.visible}
             checkoutCvvDraft={samsclubCheckoutCvv.draftCvv}

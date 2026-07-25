@@ -83,13 +83,6 @@ function validateRetailerKeywordOverlap(
 }
 
 export function validateGlobalWatchSettings(settings: ExtensionSettings): string | null {
-  if (
-    settings.retailer_auto_atc_enabled !== undefined &&
-    typeof settings.retailer_auto_atc_enabled !== "boolean"
-  ) {
-    return "retailer_auto_atc_enabled must be a boolean";
-  }
-
   if (settings.retailer_auto_checkout_mode !== undefined) {
     const mode = settings.retailer_auto_checkout_mode;
     if (mode !== "off" && mode !== "sku_only" && mode !== "all") {

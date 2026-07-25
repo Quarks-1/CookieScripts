@@ -29,7 +29,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 
 ### Shared components (`ui/shared/components/`)
 
-`EnableSlider`, `WatchStatusBadge`, `LinkHistory`, `CollapsiblePillList`, `CatalogLaunchButton`, `DomainPills`, `DetectedLinkPills`, `KeywordPills`, `SkuPills`, `PillListSectionHeader`, `CompactNumberField`, `QuantitySegmentedField`, `ScheduleTimeField`
+`EnableSlider`, `WatchStatusBadge`, `LinkHistory`, `CollapsiblePillList`, `CatalogLaunchButton`, `DomainPills`, `DetectedLinkPills`, `KeywordPills`, `SkuPills`, `PillListSectionHeader`, `CompactNumberField`, `QuantitySegmentedField`, `SegmentedPillToggle`, `ScheduleTimeField`
 
 ## Layout
 
@@ -43,7 +43,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 | Tab | Panel | Settings always visible |
 |---|---|---|
 | Discord | `DiscordPanel` | Yes — per-channel domains need a focused Discord channel tab; global keywords/SKUs always editable when extension is on |
-| Target | `TargetPanel` | Yes — link opens, Enable Auto ATC, ATC toggles, schedule, hard refresh interval, etc. |
+| Target | `TargetPanel` | Yes — link opens, ATC mode, schedule, hard refresh interval, etc. |
 | Walmart | `WalmartPanel` | Yes — schedule, auto-refresh, queue helpers, recording |
 | Sam's Club | `SamsclubPanel` | Yes — ATC toggles, auto checkout/CVV, schedule, manual auto mode, recording |
 | Global | `GlobalPanel` | Open links in new window, SKU open mode, SKU catalog launch, Show Walmart/Sam's Club recording |
@@ -70,9 +70,7 @@ Used inside domain panels for intra-panel gating:
 
 **Exception:** **Channel filters** (`ChannelFiltersSection`) renders in `DiscordPanel` on `discord_channel` surface.
 
-**Note:** **Enable Auto ATC** (`retailer_auto_atc_enabled`, global) UI lives in `TargetAutoAtcSection` on the Target tab. Always toggleable when the extension is enabled.
-
-**Note:** `sku_open_mode_enabled` UI lives in `GlobalPanel` and the SKU catalog page. `CatalogLaunchButton` (`openOptionsPage`) lives in `GlobalPanel` and beside Target/Walmart SKU list headers on the Discord tab. `retailer_link_open_count` UI lives in `TargetLinkSettingsSection` (Target tab). SKU mode applies to Target and Walmart configured SKU lists on the Discord tab.
+ `sku_open_mode_enabled` UI lives in `GlobalPanel` and the SKU catalog page. `CatalogLaunchButton` (`openOptionsPage`) lives in `GlobalPanel` and beside Target/Walmart SKU list headers on the Discord tab. `retailer_link_open_count` UI lives in `TargetLinkSettingsSection` (Target tab). SKU mode applies to Target and Walmart configured SKU lists on the Discord tab.
 
 ## Domain UI map
 
@@ -89,7 +87,7 @@ Used inside domain panels for intra-panel gating:
 |---|---|
 | Core | `usePopupStatus`, `useUpdateCheck`, `useLiveScheduleStatus` |
 | Discord (`DiscordPanel`) | `useChannelDiscordSettings`, `useGlobalDiscordWatchSettings`, `useDetectedLinks`, `useLinkHistory` |
-| Target (`TargetPanel`) | `useRetailerLinkOpenCount`, `useRetailerAutoAtcEnabled`, `useRetailerAutoMode`, `useRetailerAtcMode`, `useRetailerAtcQuantity`, `useRetailerAutoCheckout`, `useRetailerPriceGate`, `useRetailerSchedule` |
+| Target (`TargetPanel`) | `useRetailerLinkOpenCount`, `useRetailerAutoMode`, `useRetailerAtcMode`, `useRetailerAtcQuantity`, `useRetailerAutoCheckout`, `useRetailerPriceGate`, `useRetailerSchedule` |
 | Walmart (`WalmartPanel`) | `useWalmartSchedule`, `useWalmartRecording`, `useWalmartAutoRefresh`, `useWalmartQueueSettings` |
 | Sam's Club (`SamsclubPanel`) | `useSamsclubAtcMode`, `useSamsclubAutoCheckout`, `useSamsclubCheckoutCvv`, `useSamsclubAtcQuantity`, `useSamsclubAutoMode`, `useSamsclubRecording`, `useSamsclubSchedule` |
 
@@ -117,7 +115,7 @@ When a hook displays persisted settings:
 4. `useEffect`-sync when `status` changes, skipping while `saving` / focused / pending debounce.
 5. Reserve `GET_STATUS` / `getExtensionSettings` for post-save refresh and live runtime polling (e.g. manual auto status every 500ms).
 
-`GlobalPanel` and `useRetailerAutoAtcEnabled` already read directly from `status`. `useLinkHistory` / `useDetectedLinks` are runtime fetches — loading states are intentional there.
+`GlobalPanel` already reads directly from `status`. `useLinkHistory` / `useDetectedLinks` are runtime fetches — loading states are intentional there.
 
 ## Invariants
 
