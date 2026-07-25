@@ -1,6 +1,6 @@
 import type { SamsclubAutoCheckoutMode } from "@ext/core/types/index.ts";
 import { EnableSlider } from "@shared/components/EnableSlider.tsx";
-import { CompactNumberField } from "@shared/components/CompactNumberField.tsx";
+import { QuantitySegmentedField } from "@shared/components/QuantitySegmentedField.tsx";
 
 type SamsclubAtcTogglesProps = {
   frontendEnabled: boolean;
@@ -71,10 +71,10 @@ export function SamsclubAtcToggles({
   onQuantityFocus,
   onUseMaxChange,
 }: SamsclubAtcTogglesProps) {
-  const controlsDisabled = disabled || saving || quantitySaving;
+  const controlsDisabled = disabled || saving;
   const autoCheckoutDisabled = disabled || autoCheckoutSaving;
-  const quantityInputDisabled = controlsDisabled || effectiveUseMax;
-  const maxToggleDisabled = controlsDisabled;
+  const quantityInputDisabled = disabled || quantitySaving || effectiveUseMax;
+  const maxToggleDisabled = disabled;
 
   return (
     <section aria-labelledby="samsclub-atc-heading" className="mt-3 space-y-2">
@@ -151,23 +151,19 @@ export function SamsclubAtcToggles({
           )}
         </div>
       )}
-      <CompactNumberField
+      <QuantitySegmentedField
         id="popup-samsclub-atc-quantity"
         label="Quantity"
         min={1}
         step={1}
         value={quantityDraft}
-        disabled={quantityInputDisabled}
+        useMax={maxToggleChecked}
+        quantityDisabled={quantityInputDisabled}
+        maxDisabled={maxToggleDisabled}
         onFocus={onQuantityFocus}
         onChange={onQuantityChange}
         onBlur={onQuantityBlur}
-      />
-      <EnableSlider
-        id="popup-samsclub-max-quantity"
-        label="Max quantity"
-        checked={maxToggleChecked}
-        disabled={maxToggleDisabled}
-        onChange={onUseMaxChange}
+        onUseMaxChange={onUseMaxChange}
       />
       {autoCheckoutSaving && <p className="text-xs text-zinc-500">Saving auto checkout…</p>}
       {saving && <p className="text-xs text-zinc-500">Saving ATC modes…</p>}
@@ -186,7 +182,6 @@ export function SamsclubAtcToggles({
           {saveError}
         </p>
       )}
-      {quantitySaving && <p className="text-xs text-zinc-500">Saving quantity…</p>}
       {quantitySaveError && (
         <p role="status" aria-live="polite" className="text-xs text-red-300">
           {quantitySaveError}

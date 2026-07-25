@@ -29,7 +29,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 
 ### Shared components (`ui/shared/components/`)
 
-`EnableSlider`, `WatchStatusBadge`, `LinkHistory`, `CollapsiblePillList`, `CatalogLaunchButton`, `DomainPills`, `DetectedLinkPills`, `KeywordPills`, `SkuPills`, `PillListSectionHeader`, `CompactNumberField`, `ScheduleTimeField`
+`EnableSlider`, `WatchStatusBadge`, `LinkHistory`, `CollapsiblePillList`, `CatalogLaunchButton`, `DomainPills`, `DetectedLinkPills`, `KeywordPills`, `SkuPills`, `PillListSectionHeader`, `CompactNumberField`, `QuantitySegmentedField`, `ScheduleTimeField`
 
 ## Layout
 

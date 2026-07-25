@@ -4,8 +4,6 @@ import { sendToBackground } from "@ext/core/lib/messages.ts";
 import type { BackgroundResponse, ExtensionStatus } from "@ext/core/types/index.ts";
 import { isEffectiveUseMax, isQuantityInvalid } from "@ext/domains/target/lib/quantity-limit.ts";
 
-const SAVE_DEBOUNCE_MS = 400;
-
 type QuantityStatus = Pick<
   ExtensionStatus,
   | "retailer_atc_quantity"
@@ -38,10 +36,10 @@ export function useRetailerAtcQuantity(
   );
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const quantityFocusedRef = useRef(false);
   const lastSavedQuantityRef = useRef(status?.retailer_atc_quantity ?? 1);
   const useMaxRef = useRef(status?.retailer_use_max_quantity ?? false);
+  const pendingUseMaxRef = useRef<boolean | null>(null);
 
   const purchaseLimit = status?.retailer_purchase_limit ?? null;
   const effectiveUseMax = isEffectiveUseMax(useMaxQuantity, purchaseLimit);
@@ -53,7 +51,7 @@ export function useRetailerAtcQuantity(
     isQuantityInvalid(draftParsed, purchaseLimit, false);
 
   useEffect(() => {
-    if (!retailerTabDetected || status == null) {
+    if (!retailerTabDetected || status == null || saving) {
       return;
     }
     if (!quantityFocusedRef.current) {
@@ -61,17 +59,23 @@ export function useRetailerAtcQuantity(
       setDraftQuantity(String(status.retailer_atc_quantity));
       lastSavedQuantityRef.current = status.retailer_atc_quantity;
     }
-    setUseMaxQuantity(status.retailer_use_max_quantity);
-    useMaxRef.current = status.retailer_use_max_quantity;
-  }, [retailerTabDetected, status]);
 
-  useEffect(() => {
-    return () => {
-      if (debounceRef.current != null) {
-        clearTimeout(debounceRef.current);
+    const statusUseMax = status.retailer_use_max_quantity;
+    if (pendingUseMaxRef.current !== null) {
+      if (statusUseMax === pendingUseMaxRef.current) {
+        pendingUseMaxRef.current = null;
+        setUseMaxQuantity(statusUseMax);
+        useMaxRef.current = statusUseMax;
+      } else {
+        setUseMaxQuantity(pendingUseMaxRef.current);
+        useMaxRef.current = pendingUseMaxRef.current;
       }
-    };
-  }, []);
+      return;
+    }
+
+    setUseMaxQuantity(statusUseMax);
+    useMaxRef.current = statusUseMax;
+  }, [retailerTabDetected, status, saving]);
 
   const saveQuantity = useCallback(
     async (nextQuantity: number, nextUseMax: boolean) => {
@@ -79,6 +83,7 @@ export function useRetailerAtcQuantity(
       setSaveError(null);
       const prevQuantity = quantity;
       const prevUseMax = useMaxQuantity;
+      pendingUseMaxRef.current = nextUseMax;
       setQuantity(nextQuantity);
       setUseMaxQuantity(nextUseMax);
       useMaxRef.current = nextUseMax;
@@ -94,6 +99,7 @@ export function useRetailerAtcQuantity(
         }
         lastSavedQuantityRef.current = nextQuantity;
       } catch (err) {
+        pendingUseMaxRef.current = null;
         setQuantity(prevQuantity);
         setUseMaxQuantity(prevUseMax);
         useMaxRef.current = prevUseMax;
@@ -105,36 +111,8 @@ export function useRetailerAtcQuantity(
     [quantity, useMaxQuantity],
   );
 
-  const scheduleQuantitySave = useCallback(
-    (nextDraft: string) => {
-      if (debounceRef.current != null) {
-        clearTimeout(debounceRef.current);
-      }
-
-      const parsed = parseQuantityDraft(nextDraft);
-      if (parsed == null) {
-        return;
-      }
-
-      if (
-        purchaseLimit != null &&
-        !isEffectiveUseMax(useMaxRef.current, purchaseLimit) &&
-        isQuantityInvalid(parsed, purchaseLimit, false)
-      ) {
-        return;
-      }
-
-      debounceRef.current = setTimeout(() => {
-        debounceRef.current = null;
-        void saveQuantity(parsed, useMaxRef.current);
-      }, SAVE_DEBOUNCE_MS);
-    },
-    [purchaseLimit, saveQuantity],
-  );
-
   const handleQuantityChange = (raw: string) => {
     setDraftQuantity(raw);
-    scheduleQuantitySave(raw);
   };
 
   const handleQuantityBlur = () => {
@@ -154,6 +132,9 @@ export function useRetailerAtcQuantity(
   };
 
   const handleUseMaxChange = (next: boolean) => {
+    if (next === useMaxRef.current) {
+      return;
+    }
     const parsed = parseQuantityDraft(draftQuantity) ?? lastSavedQuantityRef.current;
     void saveQuantity(parsed, next);
   };

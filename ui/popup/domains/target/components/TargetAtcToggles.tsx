@@ -1,6 +1,6 @@
 import type { RetailerAutoCheckoutMode } from "@ext/core/types/index.ts";
 import { EnableSlider } from "@shared/components/EnableSlider.tsx";
-import { CompactNumberField } from "@shared/components/CompactNumberField.tsx";
+import { QuantitySegmentedField } from "@shared/components/QuantitySegmentedField.tsx";
 import { ThreeWayToggle } from "@shared/components/ThreeWayToggle.tsx";
 
 const AUTO_CHECKOUT_OPTIONS = [
@@ -74,12 +74,12 @@ export function TargetAtcToggles({
   onQuantityFocus,
   onUseMaxChange,
 }: TargetAtcTogglesProps) {
-  const controlsDisabled = disabled || saving || quantitySaving;
+  const controlsDisabled = disabled || saving;
   const autoCheckoutDisabled = disabled || autoCheckoutSaving || !autoAtcEnabled;
   const priceGateDisabled =
     disabled || priceGateSaving || !autoAtcEnabled || autoCheckoutMode === "off";
-  const quantityInputDisabled = controlsDisabled || effectiveUseMax;
-  const maxToggleDisabled = controlsDisabled;
+  const quantityInputDisabled = disabled || quantitySaving || effectiveUseMax;
+  const maxToggleDisabled = disabled;
 
   return (
     <section aria-labelledby="target-atc-heading" className="mt-3 space-y-2">
@@ -115,23 +115,19 @@ export function TargetAtcToggles({
         disabled={priceGateDisabled}
         onChange={onPriceGateChange}
       />
-      <CompactNumberField
+      <QuantitySegmentedField
         id="popup-atc-quantity"
         label="Quantity"
         min={1}
         step={1}
         value={quantityDraft}
-        disabled={quantityInputDisabled}
+        useMax={maxToggleChecked}
+        quantityDisabled={quantityInputDisabled}
+        maxDisabled={maxToggleDisabled}
         onFocus={onQuantityFocus}
         onChange={onQuantityChange}
         onBlur={onQuantityBlur}
-      />
-      <EnableSlider
-        id="popup-max-quantity"
-        label="Max quantity"
-        checked={maxToggleChecked}
-        disabled={maxToggleDisabled}
-        onChange={onUseMaxChange}
+        onUseMaxChange={onUseMaxChange}
       />
       {priceGateSaving && <p className="text-xs text-zinc-500">Saving price gate…</p>}
       {autoCheckoutSaving && <p className="text-xs text-zinc-500">Saving auto checkout…</p>}
@@ -151,7 +147,6 @@ export function TargetAtcToggles({
           {saveError}
         </p>
       )}
-      {quantitySaving && <p className="text-xs text-zinc-500">Saving quantity…</p>}
       {quantitySaveError && (
         <p role="status" aria-live="polite" className="text-xs text-red-300">
           {quantitySaveError}
