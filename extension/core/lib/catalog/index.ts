@@ -1,4 +1,6 @@
 export { parseCatalog } from "./parse.ts";
+export { lookupExpectedPriceCents } from "./lookup.ts";
+export type { ExpectedCatalogPrice } from "./lookup.ts";
 export {
   buildCatalogCell,
   buildCatalogRow,

@@ -31,6 +31,10 @@ const ADD_TO_CART_RETRY_INTERVAL_MS = 10;
 const QTY_PREP_TIMEOUT_MS = 15_000;
 const QTY_PREP_RETRY_MS = 250;
 
+export type AutomationPlaybackResult =
+  | { ok: true; checkoutNavigated: boolean }
+  | { ok: false; error: string };
+
 export type AutomationPlaybackOptions = {
   shouldContinue: () => boolean;
   refreshIntervalSec: number;
@@ -40,7 +44,7 @@ export type AutomationPlaybackOptions = {
   backendAtcEnabled: boolean;
   cartAlreadyAdded?: boolean;
   getEffectiveQuantity: () => number;
-  onBeforeCheckoutNavigate?: () => void;
+  onBeforeCheckoutNavigate?: () => boolean | Promise<boolean>;
 };
 
 function cartMinDelta(steps: AutomationStep[]): number {
@@ -231,10 +235,13 @@ export async function runAutomationPlayback(
   steps: AutomationStep[],
   onStatus: (status: string) => void,
   options: AutomationPlaybackOptions,
-): Promise<{ ok: true } | { ok: false; error: string }> {
+): Promise<AutomationPlaybackResult> {
   const playbackSteps = options.cartAlreadyAdded
     ? steps.filter((step) => step.type === "navigate")
     : steps;
+
+  const hasNavigateStep = playbackSteps.some((step) => step.type === "navigate");
+  let checkoutNavigated = false;
 
   const baselineCartCount = readCartCountFromDocument(document);
   const minDelta = cartMinDelta(steps);
@@ -298,15 +305,19 @@ export async function runAutomationPlayback(
       onStatus("Waiting for cart…");
       return isCartConfirmed(document, baselineCartCount, waitMinDelta);
     },
-    navigate: (url) => {
+    navigate: async (url) => {
       onStatus("Going to checkout…");
-      options.onBeforeCheckoutNavigate?.();
+      const proceed = (await options.onBeforeCheckoutNavigate?.()) ?? true;
+      if (!proceed) {
+        return;
+      }
       location.assign(url);
+      checkoutNavigated = true;
     },
   });
 
   if (addResult.ok) {
-    return addResult;
+    return { ok: true, checkoutNavigated: hasNavigateStep && checkoutNavigated };
   }
 
   if (!shouldContinue()) {

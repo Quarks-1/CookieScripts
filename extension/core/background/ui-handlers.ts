@@ -5,6 +5,7 @@ import {
   setRetailerAtcQuantityForSettings,
   setRetailerAutoAtcEnabledGlobal,
   setRetailerAutoCheckoutModeForSettings,
+  setRetailerPriceGateEnabledForSettings,
   setRetailerRefreshIntervalForChannel,
   setSamsclubAtcModesForSettings,
   setSamsclubAtcQuantityForSettings,
@@ -150,6 +151,14 @@ export async function handleUiMessage(
       }
       try {
         await setRetailerAutoCheckoutModeForSettings(message.mode as RetailerAutoCheckoutMode);
+        return { ok: true };
+      } catch (error) {
+        return { ok: false, error: error instanceof Error ? error.message : "Save failed" };
+      }
+    }
+    case "SET_RETAILER_PRICE_GATE_ENABLED": {
+      try {
+        await setRetailerPriceGateEnabledForSettings(message.enabled);
         return { ok: true };
       } catch (error) {
         return { ok: false, error: error instanceof Error ? error.message : "Save failed" };

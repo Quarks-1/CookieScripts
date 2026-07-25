@@ -45,6 +45,7 @@ export interface ExtensionStatus {
   retailer_quantity_invalid: boolean;
   retailer_auto_start_blocked: boolean;
   retailer_auto_checkout_mode: RetailerAutoCheckoutMode;
+  retailer_price_gate_enabled: boolean;
   retailer_schedule_enabled: boolean;
   retailer_schedule_start_time: string | null;
   retailer_schedule_end_time: string | null;

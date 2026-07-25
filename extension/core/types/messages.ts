@@ -56,7 +56,8 @@ export type RetailerToBackground =
       running: boolean;
     }
   | { type: "RETAILER_PURCHASE_LIMIT_SNAPSHOT"; purchase_limit: number | null }
-  | { type: "RETAILER_CLOSE_TAB_ON_OOS" };
+  | { type: "RETAILER_CLOSE_TAB_ON_OOS" }
+  | { type: "RETAILER_LOOKUP_EXPECTED_PRICE"; tcin: string };
 
 export type WalmartToBackground =
   | {
@@ -107,6 +108,7 @@ export type BackgroundToContent =
       atc_quantity?: number;
       use_max_quantity?: boolean;
       auto_checkout_enabled?: boolean;
+      price_gate_enabled?: boolean;
     }
   | { type: "RETAILER_STOP_AUTO" }
   | { type: "RETAILER_START_MANUAL_AUTO"; hard_refresh?: boolean }
@@ -167,6 +169,7 @@ export type UiToBackground =
       use_max_quantity: boolean;
     }
   | { type: "SET_RETAILER_AUTO_CHECKOUT_MODE"; mode: RetailerAutoCheckoutMode }
+  | { type: "SET_RETAILER_PRICE_GATE_ENABLED"; enabled: boolean }
   | { type: "RETAILER_START_MANUAL_AUTO"; window_id?: number }
   | { type: "RETAILER_STOP_MANUAL_AUTO"; window_id?: number }
   | {
@@ -275,9 +278,15 @@ export type BackgroundResponse =
       atc_quantity: number;
       use_max_quantity: boolean;
       auto_checkout_enabled: boolean;
+      price_gate_enabled?: boolean;
       stop_on_oos_enabled?: boolean;
       close_tab_on_oos_enabled?: boolean;
       checkout_cvv?: string | null;
+    }
+  | {
+      ok: true;
+      expected_price_cents: number | null;
+      product_name?: string;
     }
   | { ok: true; purchase_limit: number | null }
   | { ok: true; manual_auto_stopped: boolean; ui_status: string; ui_running: boolean }

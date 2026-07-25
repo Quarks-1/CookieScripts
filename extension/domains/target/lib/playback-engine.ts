@@ -34,7 +34,7 @@ export type PlaybackEngineCallbacks = {
   click: (selectors: string[], optional?: boolean) => Promise<boolean>;
   keyboardEnterHold: (selectors: string[], holdMs: number) => Promise<boolean>;
   waitForCartDelta: (minDelta: number) => Promise<boolean>;
-  navigate: (url: string) => void;
+  navigate: (url: string) => void | Promise<void>;
 };
 
 export async function runPlaybackEngine(
@@ -65,7 +65,7 @@ export async function runPlaybackEngine(
         break;
       }
       case "navigate": {
-        callbacks.navigate(step.url);
+        await callbacks.navigate(step.url);
         break;
       }
     }

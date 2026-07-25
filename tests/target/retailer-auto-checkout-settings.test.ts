@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 
 import {
   getRetailerAutoCheckoutMode,
+  getRetailerPriceGateEnabled,
   setRetailerAutoCheckoutMode,
+  setRetailerPriceGateEnabled,
   shouldEnableRetailerAutoCheckout,
 } from "@ext/domains/target/lib/channel-config.ts";
 import { DEFAULT_SETTINGS } from "@ext/core/types/index.ts";
@@ -76,6 +78,22 @@ describe("retailer auto checkout settings", () => {
       expect(shouldEnableRetailerAutoCheckout(settings, { openedViaSkuMatch: false })).toBe(
         false,
       );
+    });
+  });
+
+  describe("price gate settings", () => {
+    it("defaults to false when omitted", () => {
+      expect(getRetailerPriceGateEnabled(DEFAULT_SETTINGS)).toBe(false);
+    });
+
+    it("persists enabled flag", () => {
+      const enabled = setRetailerPriceGateEnabled(DEFAULT_SETTINGS, true);
+      expect(getRetailerPriceGateEnabled(enabled)).toBe(true);
+      expect(enabled.retailer_price_gate_enabled).toBe(true);
+
+      const disabled = setRetailerPriceGateEnabled(enabled, false);
+      expect(getRetailerPriceGateEnabled(disabled)).toBe(false);
+      expect(disabled.retailer_price_gate_enabled).toBeUndefined();
     });
   });
 });

@@ -28,6 +28,7 @@ describe("applyCachedAutoConfig", () => {
       atcQuantity: 1,
       useMaxQuantity: false,
       autoCheckoutEnabled: false,
+      priceGateEnabled: false,
       stopOnOosEnabled: false,
       closeTabOnOosEnabled: false,
     });
@@ -55,6 +56,7 @@ describe("applyCachedAutoConfig", () => {
       atcQuantity: 1,
       useMaxQuantity: false,
       autoCheckoutEnabled: false,
+      priceGateEnabled: false,
       stopOnOosEnabled: false,
       closeTabOnOosEnabled: false,
     });

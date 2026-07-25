@@ -10,12 +10,14 @@ import {
   getRetailerBackendAtcEnabled,
   getRetailerFrontendAtcEnabled,
   getRetailerLinkOpenCount,
+  getRetailerPriceGateEnabled,
   getRetailerRefreshIntervalSec,
   getRetailerUseMaxQuantity,
   setRetailerAtcModes,
   setRetailerAtcQuantity,
   setRetailerAutoAtcEnabled,
   setRetailerAutoCheckoutMode,
+  setRetailerPriceGateEnabled,
   setRetailerRefreshInterval,
 } from "@ext/domains/target/lib/channel-config.ts";
 import { buildQuantityStatusFields as buildRetailerQuantityStatusFields } from "@ext/domains/target/lib/quantity-limit.ts";
@@ -602,6 +604,7 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     retailer_quantity_invalid: quantityStatus.retailer_quantity_invalid,
     retailer_auto_start_blocked: quantityStatus.retailer_auto_start_blocked,
     retailer_auto_checkout_mode: getRetailerAutoCheckoutMode(settings),
+    retailer_price_gate_enabled: getRetailerPriceGateEnabled(settings),
     ...retailerScheduleStatus,
     walmart_auto_refresh_enabled: walmartAutoRefreshEnabled,
     walmart_refresh_interval_sec: walmartRefreshIntervalSec,
@@ -686,6 +689,15 @@ export async function setRetailerAutoCheckoutModeForSettings(
 ): Promise<ExtensionSettings> {
   const settings = await getSettings();
   const next = setRetailerAutoCheckoutMode(settings, mode);
+  await saveSettings(next);
+  return next;
+}
+
+export async function setRetailerPriceGateEnabledForSettings(
+  enabled: boolean,
+): Promise<ExtensionSettings> {
+  const settings = await getSettings();
+  const next = setRetailerPriceGateEnabled(settings, enabled);
   await saveSettings(next);
   return next;
 }

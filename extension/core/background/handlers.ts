@@ -49,7 +49,8 @@ function isRetailerContentMessage(message: RuntimeMessage): message is RetailerT
     message.type === "RETAILER_SYNC_MANUAL_START" ||
     message.type === "RETAILER_UI_STATE" ||
     message.type === "RETAILER_PURCHASE_LIMIT_SNAPSHOT" ||
-    message.type === "RETAILER_CLOSE_TAB_ON_OOS"
+    message.type === "RETAILER_CLOSE_TAB_ON_OOS" ||
+    message.type === "RETAILER_LOOKUP_EXPECTED_PRICE"
   );
 }
 
@@ -106,6 +107,7 @@ function isUiMessage(message: RuntimeMessage): message is UiToBackground {
     message.type === "SET_RETAILER_ATC_MODES" ||
     message.type === "SET_RETAILER_ATC_QUANTITY" ||
     message.type === "SET_RETAILER_AUTO_CHECKOUT_MODE" ||
+    message.type === "SET_RETAILER_PRICE_GATE_ENABLED" ||
     message.type === "RETAILER_START_MANUAL_AUTO" ||
     message.type === "RETAILER_STOP_MANUAL_AUTO" ||
     message.type === "WALMART_RECORDING" ||

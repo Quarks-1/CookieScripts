@@ -37,6 +37,7 @@ function status(overrides: Partial<ExtensionStatus>): ExtensionStatus {
     retailer_quantity_invalid: false,
     retailer_auto_start_blocked: false,
     retailer_auto_checkout_mode: "off",
+    retailer_price_gate_enabled: false,
     retailer_schedule_enabled: false,
     retailer_schedule_start_time: null,
     retailer_schedule_end_time: null,

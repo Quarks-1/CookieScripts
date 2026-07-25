@@ -27,6 +27,7 @@ export const state = {
   cachedAtcQuantity: 1,
   cachedUseMaxQuantity: false,
   cachedAutoCheckoutEnabled: false,
+  cachedPriceGateEnabled: false,
   cachedStopOnOosEnabled: false,
   cachedCloseTabOnOosEnabled: false,
   stoppedDueToOos: false,
@@ -51,6 +52,7 @@ export function applyCachedAutoConfig(config: RetailerAutoConfig): void {
   state.cachedAtcQuantity = config.atcQuantity;
   state.cachedUseMaxQuantity = config.useMaxQuantity;
   state.cachedAutoCheckoutEnabled = config.autoCheckoutEnabled;
+  state.cachedPriceGateEnabled = config.priceGateEnabled;
   state.cachedStopOnOosEnabled = config.stopOnOosEnabled;
   state.cachedCloseTabOnOosEnabled = config.closeTabOnOosEnabled;
 

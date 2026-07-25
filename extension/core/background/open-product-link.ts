@@ -11,6 +11,7 @@ import {
   getRetailerBackendAtcEnabled,
   getRetailerFrontendAtcEnabled,
   getRetailerLinkOpenCount,
+  getRetailerPriceGateEnabled,
   getRetailerRefreshIntervalSec,
   getRetailerUseMaxQuantity,
 } from "@ext/domains/target/lib/channel-config.ts";
@@ -96,6 +97,7 @@ async function sendRetailerStartAuto(
       auto_checkout_enabled: shouldEnableRetailerAutoCheckout(settings, {
         openedViaSkuMatch,
       }),
+      price_gate_enabled: getRetailerPriceGateEnabled(settings),
     });
     setRetailerTabUiState(tabId, { status: "Running auto mode…", running: true });
     return true;

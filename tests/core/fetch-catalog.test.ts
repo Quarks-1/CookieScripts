@@ -282,3 +282,31 @@ describe("clearCatalogCache", () => {
     expect(chrome.storage.local.remove).toHaveBeenCalledWith(STORAGE_KEYS.catalogCache);
   });
 });
+
+describe("loadCatalogForRuntime", () => {
+  const catalog = minimalCatalog();
+
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  afterEach(async () => {
+    await clearCatalogCache();
+  });
+
+  it("returns parsed cache when remote fetch is unavailable", async () => {
+    setupChromeMocks();
+    const { loadCatalogForRuntime } = await import("@ext/core/lib/catalog/fetch-catalog.ts");
+    const parsed = parseCatalog(catalog);
+    await chrome.storage.local.set({
+      [STORAGE_KEYS.catalogCache]: {
+        fetchedAt: Date.now(),
+        etag: '"etag"',
+        raw: catalog,
+      },
+    });
+    vi.stubGlobal("fetch", vi.fn(async () => ({ status: 500, ok: false })));
+
+    await expect(loadCatalogForRuntime()).resolves.toEqual(parsed);
+  });
+});

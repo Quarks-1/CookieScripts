@@ -36,6 +36,8 @@ export interface ExtensionSettings {
   retailer_use_max_quantity?: boolean;
   /** Auto checkout scope after ATC: off, SKU-match Discord opens only, or all opens. */
   retailer_auto_checkout_mode?: RetailerAutoCheckoutMode;
+  /** When true with auto checkout, only navigate to checkout when PDP price matches catalog. */
+  retailer_price_gate_enabled?: boolean;
   /**
    * @deprecated Read for migration only — use `retailer_auto_checkout_mode`.
    * `true` maps to `"all"` when mode is omitted.

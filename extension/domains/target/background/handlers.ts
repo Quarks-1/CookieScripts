@@ -12,10 +12,13 @@ import {
   getRetailerAtcQuantity,
   getRetailerBackendAtcEnabled,
   getRetailerFrontendAtcEnabled,
+  getRetailerPriceGateEnabled,
   getRetailerRefreshIntervalSec,
   getRetailerUseMaxQuantity,
   shouldEnableRetailerAutoCheckout,
 } from "@ext/domains/target/lib/channel-config.ts";
+import { loadCatalogForRuntime } from "@ext/core/lib/catalog/fetch-catalog.ts";
+import { lookupExpectedPriceCents } from "@ext/core/lib/catalog/lookup.ts";
 import {
   getRetailerCloseTabOnOos,
   getRetailerScheduleStopOnOos,
@@ -61,6 +64,7 @@ export async function handleRetailerMessage(
         auto_checkout_enabled: shouldEnableRetailerAutoCheckout(settings, {
           openedViaSkuMatch: false,
         }),
+        price_gate_enabled: getRetailerPriceGateEnabled(settings),
         stop_on_oos_enabled: getRetailerScheduleStopOnOos(settings),
         close_tab_on_oos_enabled: getRetailerCloseTabOnOos(settings),
       };
@@ -139,6 +143,21 @@ export async function handleRetailerMessage(
         // Tab may already be closing.
       }
       return { ok: true };
+    }
+    case "RETAILER_LOOKUP_EXPECTED_PRICE": {
+      const catalog = await loadCatalogForRuntime();
+      if (!catalog) {
+        return { ok: false, error: "catalog unavailable" };
+      }
+      const match = lookupExpectedPriceCents(catalog, "target", message.tcin);
+      if (!match) {
+        return { ok: true, expected_price_cents: null };
+      }
+      return {
+        ok: true,
+        expected_price_cents: match.expectedCents,
+        product_name: match.productName,
+      };
     }
   }
 }

@@ -27,6 +27,13 @@ import {
   readPurchaseLimitFromNextData,
   resolveEffectiveQuantity,
 } from "@ext/domains/target/lib/quantity-limit.ts";
+import {
+  evaluatePriceGate,
+  PRICE_GATE_CATALOG_UNAVAILABLE,
+  PRICE_GATE_TCIN_NOT_FOUND,
+  type PriceGateResult,
+} from "@ext/domains/target/lib/price-gate.ts";
+import { readProductPriceCentsForAutomation } from "@ext/domains/target/lib/product-price.ts";
 import { DEFAULT_ADD_TO_CART_SELECTORS } from "@ext/domains/target/lib/selectors.ts";
 import { isExtensionContextInvalidatedError, isExtensionContextValid } from "@ext/core/lib/messages.ts";
 import type { BackgroundToContent } from "@ext/core/types/index.ts";
@@ -79,6 +86,7 @@ export async function loadAutoConfig(channelId: string): Promise<RetailerAutoCon
     atcQuantity: 1,
     useMaxQuantity: false,
     autoCheckoutEnabled: false,
+    priceGateEnabled: false,
     stopOnOosEnabled: false,
     closeTabOnOosEnabled: false,
   };
@@ -98,6 +106,7 @@ export async function loadAutoConfig(channelId: string): Promise<RetailerAutoCon
       atc_quantity?: number;
       use_max_quantity?: boolean;
       auto_checkout_enabled?: boolean;
+      price_gate_enabled?: boolean;
       stop_on_oos_enabled?: boolean;
       close_tab_on_oos_enabled?: boolean;
     };
@@ -115,6 +124,7 @@ export async function loadAutoConfig(channelId: string): Promise<RetailerAutoCon
           : 1,
       useMaxQuantity: response?.ok === true && response.use_max_quantity === true,
       autoCheckoutEnabled: response?.ok === true && response.auto_checkout_enabled === true,
+      priceGateEnabled: response?.ok === true && response.price_gate_enabled === true,
       stopOnOosEnabled: response?.ok === true && response.stop_on_oos_enabled === true,
       closeTabOnOosEnabled: response?.ok === true && response.close_tab_on_oos_enabled === true,
     };
@@ -140,7 +150,39 @@ function applyStartAutoConfig(message: StartAutoMessage): boolean {
       : 1;
   state.cachedUseMaxQuantity = message.use_max_quantity === true;
   state.cachedAutoCheckoutEnabled = message.auto_checkout_enabled === true;
+  state.cachedPriceGateEnabled = message.price_gate_enabled === true;
   return true;
+}
+
+async function runPriceGateCheck(tcin: string | null): Promise<PriceGateResult> {
+  if (tcin == null) {
+    return { pass: false, reason: PRICE_GATE_TCIN_NOT_FOUND };
+  }
+
+  try {
+    const response = (await sendToBackground({
+      type: "RETAILER_LOOKUP_EXPECTED_PRICE",
+      tcin,
+    })) as {
+      ok?: boolean;
+      expected_price_cents?: number | null;
+      error?: string;
+    };
+
+    if (response?.ok !== true) {
+      return { pass: false, reason: PRICE_GATE_CATALOG_UNAVAILABLE };
+    }
+
+    const liveCents = readProductPriceCentsForAutomation(document, location.href);
+    const expectedCents =
+      typeof response.expected_price_cents === "number" ? response.expected_price_cents : null;
+    return evaluatePriceGate(liveCents, expectedCents);
+  } catch (err) {
+    if (isExtensionContextInvalidatedError(err)) {
+      endSession();
+    }
+    return { pass: false, reason: PRICE_GATE_CATALOG_UNAVAILABLE };
+  }
 }
 
 function getEffectiveQuantityFromPage(purchaseLimit: number | null): number {
@@ -215,10 +257,24 @@ export function autoModePlaybackOptions(
     backendAtcEnabled: state.cachedBackendAtcEnabled,
     cartAlreadyAdded,
     getEffectiveQuantity,
-    onBeforeCheckoutNavigate: () => {
-      if (state.cachedAutoCheckoutEnabled && session.channelId) {
-        transitionRetailerAutoResumeToCheckout(session.channelId, location.href);
+    onBeforeCheckoutNavigate: async () => {
+      if (!state.cachedAutoCheckoutEnabled || !session.channelId) {
+        return true;
       }
+      if (!state.cachedPriceGateEnabled) {
+        transitionRetailerAutoResumeToCheckout(session.channelId, location.href);
+        return true;
+      }
+      const gateResult = await runPriceGateCheck(parseTargetTcinFromUrl(location.href));
+      if (!gateResult.pass) {
+        requestStopAutoMode();
+        publishUiState(`Stopped — ${gateResult.reason}`, false);
+        void reportAutoStatus("failed", gateResult.reason);
+        clearRetailerAutoResume();
+        return false;
+      }
+      transitionRetailerAutoResumeToCheckout(session.channelId, location.href);
+      return true;
     },
   };
 }
@@ -291,6 +347,7 @@ export async function runAutoMode(): Promise<void> {
           atcQuantity: state.cachedAtcQuantity,
           useMaxQuantity: state.cachedUseMaxQuantity,
           autoCheckoutEnabled: state.cachedAutoCheckoutEnabled,
+          priceGateEnabled: state.cachedPriceGateEnabled,
           stopOnOosEnabled: state.cachedStopOnOosEnabled,
           closeTabOnOosEnabled: state.cachedCloseTabOnOosEnabled,
         }
@@ -397,8 +454,13 @@ export async function runAutoMode(): Promise<void> {
       return;
     }
 
-    if (result.ok && state.cachedAutoCheckoutEnabled) {
+    if (result.ok && state.cachedAutoCheckoutEnabled && result.checkoutNavigated) {
       skipRunningResetInFinally = true;
+      skipReadyInFinally = true;
+      return;
+    }
+
+    if (result.ok && state.cachedAutoCheckoutEnabled && !result.checkoutNavigated) {
       skipReadyInFinally = true;
       return;
     }

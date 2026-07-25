@@ -89,7 +89,7 @@ Used inside domain panels for intra-panel gating:
 |---|---|
 | Core | `usePopupStatus`, `useUpdateCheck`, `useLiveScheduleStatus` |
 | Discord (`DiscordPanel`) | `useChannelDiscordSettings`, `useGlobalDiscordWatchSettings`, `useDetectedLinks`, `useLinkHistory` |
-| Target (`TargetPanel`) | `useRetailerLinkOpenCount`, `useRetailerAutoAtcEnabled`, `useRetailerAutoMode`, `useRetailerAtcMode`, `useRetailerAtcQuantity`, `useRetailerAutoCheckout`, `useRetailerSchedule` |
+| Target (`TargetPanel`) | `useRetailerLinkOpenCount`, `useRetailerAutoAtcEnabled`, `useRetailerAutoMode`, `useRetailerAtcMode`, `useRetailerAtcQuantity`, `useRetailerAutoCheckout`, `useRetailerPriceGate`, `useRetailerSchedule` |
 | Walmart (`WalmartPanel`) | `useWalmartSchedule`, `useWalmartRecording`, `useWalmartAutoRefresh`, `useWalmartQueueSettings` |
 | Sam's Club (`SamsclubPanel`) | `useSamsclubAtcMode`, `useSamsclubAutoCheckout`, `useSamsclubCheckoutCvv`, `useSamsclubAtcQuantity`, `useSamsclubAutoMode`, `useSamsclubRecording`, `useSamsclubSchedule` |
 

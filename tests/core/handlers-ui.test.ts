@@ -66,6 +66,22 @@ describe("handleMessage — ui", () => {
     });
   });
 
+  it("persists retailer price gate toggle", async () => {
+    const storage = setupChromeMocks();
+    const sender = mockExtensionPageSender(EXTENSION_ID);
+
+    const response = await handleMessage(
+      { type: "SET_RETAILER_PRICE_GATE_ENABLED", enabled: true },
+      sender,
+    );
+
+    expect(response).toEqual({ ok: true });
+    expect(storage["cookiescripts:settings"]).toEqual({
+      ...DEFAULT_SETTINGS,
+      retailer_price_gate_enabled: true,
+    });
+  });
+
   it("rejects invalid retailer auto checkout mode", async () => {
     const storage = setupChromeMocks();
     const sender = mockExtensionPageSender(EXTENSION_ID);

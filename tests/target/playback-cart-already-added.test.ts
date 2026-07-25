@@ -28,7 +28,7 @@ describe("runAutomationPlayback cartAlreadyAdded", () => {
       },
     );
 
-    expect(result).toEqual({ ok: true });
+    expect(result).toEqual({ ok: true, checkoutNavigated: true });
     expect(assign).toHaveBeenCalledWith(CHECKOUT_START_URL);
   });
 });

@@ -95,3 +95,38 @@ export async function resolveCatalog(bundledRaw: unknown): Promise<CatalogLoadRe
 export async function clearCatalogCache(): Promise<void> {
   await chrome.storage.local.remove(STORAGE_KEYS.catalogCache);
 }
+
+export async function loadCatalogForRuntime(): Promise<CatalogData | null> {
+  const cache = await readCache();
+
+  try {
+    const result = await fetchRemoteCatalog(cache?.etag ?? null);
+    if (result?.status === 304 && cache) {
+      const parsed = tryParseCatalog(cache.raw);
+      if (parsed) {
+        return parsed;
+      }
+    } else if (result?.status === 200) {
+      const parsed = tryParseCatalog(result.raw);
+      if (parsed) {
+        await writeCache({
+          fetchedAt: Date.now(),
+          etag: result.etag,
+          raw: result.raw,
+        });
+        return parsed;
+      }
+    }
+  } catch {
+    // Fall through to stale cache.
+  }
+
+  if (cache) {
+    const parsed = tryParseCatalog(cache.raw);
+    if (parsed) {
+      return parsed;
+    }
+  }
+
+  return null;
+}

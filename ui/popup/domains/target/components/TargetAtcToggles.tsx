@@ -23,9 +23,13 @@ type TargetAtcTogglesProps = {
   saveError: string | null;
   autoCheckoutSaving: boolean;
   autoCheckoutSaveError: string | null;
+  priceGateEnabled: boolean;
+  priceGateSaving: boolean;
+  priceGateSaveError: string | null;
   onFrontendChange: (next: boolean) => void;
   onBackendChange: (next: boolean) => void;
   onAutoCheckoutModeChange: (next: RetailerAutoCheckoutMode) => void;
+  onPriceGateChange: (next: boolean) => void;
   quantityDraft: string;
   purchaseLimit: number | null;
   effectiveUseMax: boolean;
@@ -50,9 +54,13 @@ export function TargetAtcToggles({
   saveError,
   autoCheckoutSaving,
   autoCheckoutSaveError,
+  priceGateEnabled,
+  priceGateSaving,
+  priceGateSaveError,
   onFrontendChange,
   onBackendChange,
   onAutoCheckoutModeChange,
+  onPriceGateChange,
   quantityDraft,
   purchaseLimit,
   effectiveUseMax,
@@ -68,6 +76,8 @@ export function TargetAtcToggles({
 }: TargetAtcTogglesProps) {
   const controlsDisabled = disabled || saving || quantitySaving;
   const autoCheckoutDisabled = disabled || autoCheckoutSaving || !autoAtcEnabled;
+  const priceGateDisabled =
+    disabled || priceGateSaving || !autoAtcEnabled || autoCheckoutMode === "off";
   const quantityInputDisabled = controlsDisabled || effectiveUseMax;
   const maxToggleDisabled = controlsDisabled;
 
@@ -98,6 +108,13 @@ export function TargetAtcToggles({
         disabled={autoCheckoutDisabled}
         onChange={onAutoCheckoutModeChange}
       />
+      <EnableSlider
+        id="popup-price-gate"
+        label="Price gate"
+        checked={priceGateEnabled}
+        disabled={priceGateDisabled}
+        onChange={onPriceGateChange}
+      />
       <CompactNumberField
         id="popup-atc-quantity"
         label="Quantity"
@@ -116,6 +133,7 @@ export function TargetAtcToggles({
         disabled={maxToggleDisabled}
         onChange={onUseMaxChange}
       />
+      {priceGateSaving && <p className="text-xs text-zinc-500">Saving price gate…</p>}
       {autoCheckoutSaving && <p className="text-xs text-zinc-500">Saving auto checkout…</p>}
       {saving && <p className="text-xs text-zinc-500">Saving ATC modes…</p>}
       {showInvalidError && purchaseLimit != null && (
@@ -137,6 +155,11 @@ export function TargetAtcToggles({
       {quantitySaveError && (
         <p role="status" aria-live="polite" className="text-xs text-red-300">
           {quantitySaveError}
+        </p>
+      )}
+      {priceGateSaveError && (
+        <p role="status" aria-live="polite" className="text-xs text-red-300">
+          {priceGateSaveError}
         </p>
       )}
       {autoCheckoutSaveError && (

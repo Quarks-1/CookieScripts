@@ -167,6 +167,23 @@ export function shouldEnableRetailerAutoCheckout(
   return context.openedViaSkuMatch === true;
 }
 
+export function getRetailerPriceGateEnabled(settings: ExtensionSettings): boolean {
+  return settings.retailer_price_gate_enabled === true;
+}
+
+export function setRetailerPriceGateEnabled(
+  settings: ExtensionSettings,
+  enabled: boolean,
+): ExtensionSettings {
+  const next = { ...settings };
+  if (enabled) {
+    next.retailer_price_gate_enabled = true;
+  } else {
+    delete next.retailer_price_gate_enabled;
+  }
+  return next;
+}
+
 export function setRetailerAutoCheckoutMode(
   settings: ExtensionSettings,
   mode: RetailerAutoCheckoutMode,

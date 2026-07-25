@@ -23,6 +23,7 @@ export type RetailerAutoConfig = {
   atcQuantity: number;
   useMaxQuantity: boolean;
   autoCheckoutEnabled: boolean;
+  priceGateEnabled: boolean;
   stopOnOosEnabled: boolean;
   closeTabOnOosEnabled: boolean;
 };

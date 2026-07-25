@@ -55,6 +55,7 @@ Content `RETAILER_SET_REFRESH_INTERVAL` and UI `SET_RETAILER_REFRESH_INTERVAL` a
 | Refresh / resume | `page-refresh.ts`, `auto-resume.ts` |
 | Schedule / OOS | `extension/core/lib/schedule*.ts` (alarms + settings); PDP wait OOS via `restock-wait.ts` (`isOosSignal`), `waiting-disabled.ts`, `main-add-to-cart.ts`; Target-only `RETAILER_CLOSE_TAB_ON_OOS` |
 | Quantity | `quantity-limit.ts` (barrel export) |
+| Price gate | `product-price.ts`, `price-gate.ts` — checkout-only; catalog via `RETAILER_LOOKUP_EXPECTED_PRICE` |
 | Checkout | `lib/checkout/*` (`steps.ts`, `place-order.ts`, `checkout-state.ts`, `checkout-url.ts`, `waiting-checkout.ts`) |
 | DOM helpers | `dom.ts`, `selectors.ts` |
 | SKU / tab UI | `sku-watch.ts`, `tab-label.ts`, `open-tab-active.ts` |
@@ -69,6 +70,7 @@ Core/UI-core import settings helpers via `@ext/domains/target/lib/index.ts` only
 - Hard refresh resume uses Target tab `sessionStorage` (`auto-resume.ts`).
 - Scheduled auto start/end: `background/scheduled-auto.ts` + core `schedule-alarms.ts` (`retailer_schedule_*` settings). Start alarm opens all idle `/p/` tabs; end/disable stops all running auto.
 - Stop-on-OOS and close-tab-on-OOS apply during PDP wait only (`retailer_schedule_stop_on_oos`, `retailer_close_tab_on_oos`); close tab via service worker.
+- **Price gate** (`retailer_price_gate_enabled`): when auto checkout is active, block checkout navigation unless PDP current/sale unit price matches catalog (`RETAILER_LOOKUP_EXPECTED_PRICE` + cache/remote `catalog.json`); fail-closed.
 - Avoid re-monolithing `content/session/`.
 - Content scripts guard `chrome.runtime` messaging when extension context is invalidated (post-reload).
 

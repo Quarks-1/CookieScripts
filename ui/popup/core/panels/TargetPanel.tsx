@@ -8,6 +8,7 @@ import { useRetailerAutoCheckout } from "../../domains/target/hooks/useRetailerA
 import { useRetailerAtcMode } from "../../domains/target/hooks/useRetailerAtcMode.ts";
 import { useRetailerAtcQuantity } from "../../domains/target/hooks/useRetailerAtcQuantity.ts";
 import { useRetailerAutoMode } from "../../domains/target/hooks/useRetailerAutoMode.ts";
+import { useRetailerPriceGate } from "../../domains/target/hooks/useRetailerPriceGate.ts";
 import { useRetailerSchedule } from "../../domains/target/hooks/useRetailerSchedule.ts";
 
 interface TargetPanelProps {
@@ -26,6 +27,7 @@ export function TargetPanel({ status, disabled, onRefresh }: TargetPanelProps) {
   );
   const retailerAtc = useRetailerAtcMode(panelActive, status);
   const retailerAutoCheckout = useRetailerAutoCheckout(panelActive, status);
+  const retailerPriceGate = useRetailerPriceGate(panelActive, status);
   const retailerAtcQuantity = useRetailerAtcQuantity(panelActive, status);
   const retailerSchedule = useRetailerSchedule(panelActive, status, onRefresh);
 
@@ -45,9 +47,13 @@ export function TargetPanel({ status, disabled, onRefresh }: TargetPanelProps) {
         saveError={retailerAtc.saveError}
         autoCheckoutSaving={retailerAutoCheckout.saving}
         autoCheckoutSaveError={retailerAutoCheckout.saveError}
+        priceGateEnabled={retailerPriceGate.enabled}
+        priceGateSaving={retailerPriceGate.saving}
+        priceGateSaveError={retailerPriceGate.saveError}
         onFrontendChange={(next) => void retailerAtc.handleFrontendChange(next)}
         onBackendChange={(next) => void retailerAtc.handleBackendChange(next)}
         onAutoCheckoutModeChange={(next) => void retailerAutoCheckout.onChange(next)}
+        onPriceGateChange={(next) => void retailerPriceGate.onChange(next)}
         quantityDraft={retailerAtcQuantity.draftQuantity}
         purchaseLimit={retailerAtcQuantity.purchaseLimit}
         effectiveUseMax={retailerAtcQuantity.effectiveUseMax}
