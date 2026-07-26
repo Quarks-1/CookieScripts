@@ -18,7 +18,8 @@ Chrome MV3 service worker hub — message router, link opening pipeline, shared 
 | Schedule alarms | `background/schedule-alarms.ts`, `background/schedule-runtime-state.ts`, `lib/schedule.ts`, `lib/schedule-settings.ts`, `lib/schedule-session.ts` |
 | Runtime dedup/state | `background/runtime-state.ts` |
 | Link pipeline | `lib/process-links.ts`, `lib/links.ts`, `lib/validate.ts`, `lib/affiliate-unwrap.ts`, `lib/keywords.ts`, `lib/retailer-url.ts`, `lib/sku-watch/*` |
-| Channel allowlists | `lib/channel-targets.ts`, `lib/storage.ts` |
+| Channel allowlists | `lib/channel-targets.ts`, `lib/storage.ts`, `lib/settings-migrations.ts` |
+| ATC mode | `lib/atc-mode.ts` — Off/Frontend/Backend/Both helpers (`isAtcEnabled` gates Discord Target auto-start in `open-product-link.ts`) |
 | UI bridge | `lib/messages.ts` — side panel and Discord content helpers |
 | Update check | `lib/check-for-update.ts`, `lib/version.ts` |
 | Catalog fetch | `lib/catalog/fetch-catalog.ts` — live catalog cache (catalog page only; not in catalog barrel) |
@@ -62,6 +63,7 @@ Routing: `background/handlers.ts` → domain `background/handlers*` (Walmart and
 - Never bypass `background/sender-auth.ts`.
 - Production types via `@ext/core/types/index.ts` only.
 - Overnight schedule windows (`end` ≤ `start`): `resolveScheduleWindow` in `lib/schedule.ts` binds the upcoming window when `now` is before start — not the post-midnight tail of yesterday's window.
+- `getSettings` runs one-time migrations (`migrateSettingsAtcPillV1` in `lib/settings-migrations.ts`) before return; fresh installs default ATC mode to Off.
 
 Global invariants and import rules: [AGENTS.md](../../AGENTS.md).
 
