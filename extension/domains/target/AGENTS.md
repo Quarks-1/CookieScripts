@@ -82,6 +82,6 @@ Global invariants and import rules: [AGENTS.md](../../../AGENTS.md).
 
 ## UI
 
-ATC toggles, auto mode, **schedule** (`RetailerScheduleSection`), quantity, auto checkout, **tab pills**: `ui/popup/domains/target/`
+ATC mode, auto mode, **schedule** (`RetailerScheduleSection`), quantity, auto checkout, **tab pills**: `ui/popup/domains/target/`
 
-Tab pills (`TargetTabPills` in `RetailerAutoModeSection`) list open Target tabs from `status.retailer_open_tabs`. When the focused tab is not Target, the section shows pills + hint only (controls hidden).
+Tab pills (`TargetTabPills` in `RetailerAutoModeSection`) list open Target tabs from `status.retailer_open_tabs`. Start/Stop controls render only when `retailer_tab_detected`; tab pills and refresh interval stay visible.
