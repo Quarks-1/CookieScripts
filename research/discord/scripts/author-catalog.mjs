@@ -48,7 +48,7 @@ function buildHitsMap(curated) {
 function sortListings(listings, targetHits, walmartHits) {
   const byRetailer = { target: [], walmart: [] };
   for (const listing of listings) {
-  if (listing.retailer === "target" || listing.retailer === "walmart") {
+    if (listing.retailer === "target" || listing.retailer === "walmart") {
       byRetailer[listing.retailer].push(listing);
     }
   }
@@ -56,46 +56,19 @@ function sortListings(listings, targetHits, walmartHits) {
   const result = [];
   for (const retailer of ["target", "walmart"]) {
     const hits = retailer === "target" ? targetHits : walmartHits;
-    const bucket = byRetailer[retailer];
-    const firstParty = [];
-    const marketplace = [];
-    for (const listing of bucket) {
-      if (listing.marketplace) {
-        marketplace.push(listing);
-      } else {
-        firstParty.push(listing);
-      }
-    }
-    const sortByHits = (a, b) => {
-      const ha = hits.get(a.sku) ?? 0;
-      const hb = hits.get(b.sku) ?? 0;
-      return hb - ha;
-    };
-    firstParty.sort(sortByHits);
-    marketplace.sort(sortByHits);
-    result.push(...firstParty, ...marketplace);
+    const bucket = byRetailer[retailer].filter((listing) => !listing.marketplace);
+    bucket.sort((a, b) => (hits.get(b.sku) ?? 0) - (hits.get(a.sku) ?? 0));
+    result.push(...bucket);
   }
   return result;
 }
 
 function stripListing(listing) {
   const next = { retailer: listing.retailer, sku: String(listing.sku) };
-  if (listing.marketplace === true) {
-    next.marketplace = true;
-  }
   if (typeof listing.price_cents === "number" && listing.price_cents > 0) {
     next.price_cents = listing.price_cents;
   }
   return next;
-}
-
-function stripRedundantMarketplaceListings(listings) {
-  const firstPartyRetailers = new Set(
-    listings.filter((listing) => !listing.marketplace).map((listing) => listing.retailer),
-  );
-  return listings.filter(
-    (listing) => !listing.marketplace || !firstPartyRetailers.has(listing.retailer),
-  );
 }
 
 function stripContents(contents) {
@@ -123,35 +96,42 @@ function assignProductIds(products) {
   });
 }
 
+function mapSet(set) {
+  const next = { id: set.id, name: set.name };
+  if (set.released_on) {
+    next.released_on = set.released_on;
+  }
+  if (set.kind === "assorted") {
+    next.kind = "assorted";
+  }
+  return next;
+}
+
 function main() {
   const draft = JSON.parse(readFileSync(DRAFT_PATH, "utf8"));
   const targetHits = buildHitsMap(JSON.parse(readFileSync(TARGET_CURATED_PATH, "utf8")));
   const walmartHits = buildHitsMap(JSON.parse(readFileSync(WALMART_CURATED_PATH, "utf8")));
 
-  const sets = draft.sets.map((set) => {
-    const next = { id: set.id, name: set.name };
-    if (set.released_on) {
-      next.released_on = set.released_on;
-    }
-    return next;
-  });
-
-  const hasAssorted = sets.some((set) => set.id === "assorted");
-  if (!hasAssorted) {
-    sets.push({ id: "assorted", name: "Assorted Packs", kind: "assorted" });
-  }
-
-  const products = assignProductIds(
-    draft.products.map((product) => ({
+  const draftProducts = draft.products
+    .map((product) => ({
       name: product.name,
       type: product.type,
       msrp_cents: product.msrp_cents,
       contents: stripContents(product.contents ?? []),
-      listings: stripRedundantMarketplaceListings(
-        sortListings(product.listings ?? [], targetHits, walmartHits).map(stripListing),
-      ),
-    })),
-  );
+      listings: sortListings(product.listings ?? [], targetHits, walmartHits).map(stripListing),
+    }))
+    .filter((product) => product.listings.length > 0);
+
+  const products = assignProductIds(draftProducts);
+
+  const referenced = new Set(products.flatMap((product) => product.contents.map((entry) => entry.set_id)));
+  const sets = draft.sets
+    .filter((set) => referenced.has(set.id) || set.id === "assorted")
+    .map(mapSet);
+
+  if (!sets.some((set) => set.id === "assorted")) {
+    sets.push({ id: "assorted", name: "Assorted Packs", kind: "assorted" });
+  }
 
   const catalog = {
     schema_version: 1,

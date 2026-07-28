@@ -47,27 +47,11 @@ describe("catalog-data", () => {
     expect(multi).toBeDefined();
   });
 
-  it("round-trips marketplace flag", () => {
+  it("ships no marketplace listings", () => {
     const marketplace = catalog.products.flatMap((product) =>
       product.listings.filter((listing) => listing.marketplace),
     );
-    expect(marketplace.length).toBeGreaterThan(0);
-    for (const listing of marketplace) {
-      expect(listing.marketplace).toBe(true);
-    }
-  });
-
-  it("drops marketplace listings when first-party exists for the same retailer", () => {
-    for (const product of catalog.products) {
-      const firstPartyRetailers = new Set(
-        product.listings.filter((listing) => !listing.marketplace).map((listing) => listing.retailer),
-      );
-      for (const listing of product.listings) {
-        if (listing.marketplace) {
-          expect(firstPartyRetailers.has(listing.retailer)).toBe(false);
-        }
-      }
-    }
+    expect(marketplace).toEqual([]);
   });
 
   it("resolves types and set_ids", () => {

@@ -80,14 +80,14 @@ for (const [sku, extra] of Object.entries(RESTORE)) {
   }
 }
 
-// 1b. Apply Target liveness: drop delisted TCINs, flag Target Plus marketplace
+// 1b. Apply Target liveness: drop delisted TCINs and Target Plus marketplace
 // listings. Done before the merge below so duplicate-name groups that only
 // existed because of dead/marketplace variants collapse on their own.
 if (existsSync(`${DIR}/liveness-target.json`)) {
   const live = JSON.parse(readFileSync(`${DIR}/liveness-target.json`, "utf8"));
   if (live.blocked) throw new Error("liveness-target.json is marked blocked; its dead verdicts are untrustworthy");
   const status = new Map(live.results.map((r) => [r.tcin, r.status]));
-  let dropped = 0, flagged = 0;
+  let dropped = 0, droppedMarketplace = 0;
   for (let i = records.length - 1; i >= 0; i -= 1) {
     const r = records[i];
     if (r.retailer !== "target") continue;
@@ -96,11 +96,15 @@ if (existsSync(`${DIR}/liveness-target.json`)) {
       records.splice(i, 1);
       dropped += 1;
     } else if (s === "live_marketplace") {
-      r.marketplace = true;
-      flagged += 1;
+      records.splice(i, 1);
+      droppedMarketplace += 1;
     }
   }
-  log.liveness = { dropped, flagged, unchecked: records.filter((r) => r.retailer === "target" && !status.has(r.sku)).length };
+  log.liveness = {
+    dropped,
+    droppedMarketplace,
+    unchecked: records.filter((r) => r.retailer === "target" && !status.has(r.sku)).length,
+  };
 }
 
 // Normalize before grouping, so names that only become identical after cleanup

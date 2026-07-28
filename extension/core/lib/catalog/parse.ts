@@ -75,17 +75,16 @@ function parseListing(raw: unknown, productId: string, index: number): CatalogLi
   return listing;
 }
 
-/** Drop marketplace listings when the same product already has first-party for that retailer. */
-export function stripRedundantMarketplaceListings(listings: CatalogListing[]): CatalogListing[] {
-  const firstPartyRetailers = new Set(
-    listings.filter((listing) => !listing.marketplace).map((listing) => listing.retailer),
-  );
-  return listings.filter(
-    (listing) => !listing.marketplace || !firstPartyRetailers.has(listing.retailer),
-  );
+/** Drop all marketplace listings from a product's listing list. */
+export function stripMarketplaceListings(listings: CatalogListing[]): CatalogListing[] {
+  return listings.filter((listing) => !listing.marketplace);
 }
 
-function parseProduct(raw: unknown, productTypes: ReadonlySet<string>, index: number): CatalogProduct {
+function parseProduct(
+  raw: unknown,
+  productTypes: ReadonlySet<string>,
+  index: number,
+): CatalogProduct | null {
   if (typeof raw !== "object" || raw === null) {
     throw new Error(`Invalid product at index ${index}`);
   }
@@ -128,9 +127,13 @@ function parseProduct(raw: unknown, productTypes: ReadonlySet<string>, index: nu
     return next;
   });
 
-  const listings = stripRedundantMarketplaceListings(
+  const listings = stripMarketplaceListings(
     record.listings.map((listing, listingIndex) => parseListing(listing, productId, listingIndex)),
   );
+
+  if (listings.length === 0) {
+    return null;
+  }
 
   const listingKeys = new Set<string>();
   for (const listing of listings) {
@@ -186,9 +189,9 @@ export function parseCatalog(raw: unknown): CatalogData {
     setIds.add(set.id);
   }
 
-  const products = record.products.map((product, index) =>
-    parseProduct(product, productTypes, index),
-  );
+  const products = record.products
+    .map((product, index) => parseProduct(product, productTypes, index))
+    .filter((product): product is CatalogProduct => product !== null);
   const productIds = new Set<string>();
   const skuOwners = new Map<string, string>();
 

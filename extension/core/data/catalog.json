@@ -143,11 +143,6 @@
       "released_on": "2022-05-27"
     },
     {
-      "id": "shining-fates",
-      "name": "Shining Fates",
-      "released_on": "2021-02-19"
-    },
-    {
       "id": "shining-legends",
       "name": "Shining Legends",
       "released_on": "2017-10-06"
@@ -156,11 +151,6 @@
       "id": "scarlet-violet",
       "name": "Scarlet & Violet",
       "released_on": "2023-03-31"
-    },
-    {
-      "id": "evolving-skies",
-      "name": "Evolving Skies",
-      "released_on": "2021-08-27"
     },
     {
       "id": "assorted",
@@ -1274,29 +1264,6 @@
       "id": "ascended-heroes-first-partners-deluxe-pin-collection-collection-box"
     },
     {
-      "name": "Paldean Fates Tin",
-      "type": "tin",
-      "msrp_cents": 2499,
-      "contents": [
-        {
-          "set_id": "paldean-fates"
-        }
-      ],
-      "listings": [
-        {
-          "retailer": "target",
-          "sku": "93970337",
-          "marketplace": true
-        },
-        {
-          "retailer": "target",
-          "sku": "93970334",
-          "marketplace": true
-        }
-      ],
-      "id": "paldean-fates-tin-tin"
-    },
-    {
       "name": "Mega Lucario ex Figure Collection",
       "type": "premium_collection",
       "msrp_cents": 4999,
@@ -2301,33 +2268,6 @@
       "id": "crown-zenith-premium-treasures-morpeko-v-union-box-collection-box"
     },
     {
-      "name": "Charizard ex Premium Collection",
-      "type": "premium_collection",
-      "msrp_cents": 3999,
-      "contents": [
-        {
-          "set_id": "scarlet-violet",
-          "packs": 2
-        },
-        {
-          "set_id": "paldea-evolved",
-          "packs": 2
-        },
-        {
-          "set_id": "obsidian-flames",
-          "packs": 2
-        }
-      ],
-      "listings": [
-        {
-          "retailer": "target",
-          "sku": "88897908",
-          "marketplace": true
-        }
-      ],
-      "id": "charizard-ex-premium-collection-premium-collection"
-    },
-    {
       "name": "Bloodmoon Ursaluna ex Box",
       "type": "collection_box",
       "msrp_cents": 2199,
@@ -2606,21 +2546,6 @@
         }
       ],
       "listings": [
-        {
-          "retailer": "target",
-          "sku": "1002162998",
-          "marketplace": true
-        },
-        {
-          "retailer": "target",
-          "sku": "1002159033",
-          "marketplace": true
-        },
-        {
-          "retailer": "target",
-          "sku": "1002159036",
-          "marketplace": true
-        },
         {
           "retailer": "walmart",
           "sku": "17962266411"
@@ -3263,39 +3188,6 @@
       "id": "heroes-tin-espeon-tin"
     },
     {
-      "name": "Phantasmal Flames Booster Pack",
-      "type": "booster_pack",
-      "msrp_cents": 449,
-      "contents": [
-        {
-          "set_id": "phantasmal-flames"
-        }
-      ],
-      "listings": [
-        {
-          "retailer": "target",
-          "sku": "1007155454",
-          "marketplace": true
-        },
-        {
-          "retailer": "target",
-          "sku": "1007155452",
-          "marketplace": true
-        },
-        {
-          "retailer": "target",
-          "sku": "1007155451",
-          "marketplace": true
-        },
-        {
-          "retailer": "target",
-          "sku": "1007155453",
-          "marketplace": true
-        }
-      ],
-      "id": "phantasmal-flames-booster-pack-booster-pack"
-    },
-    {
       "name": "Paradox Destinies Tin (Iron Leaves ex)",
       "type": "tin",
       "msrp_cents": 2499,
@@ -3410,34 +3302,6 @@
       "id": "paldea-partners-tin-quaquaval-tin"
     },
     {
-      "name": "Evolving Skies Sleeved Booster",
-      "type": "sleeved_booster_pack",
-      "msrp_cents": 459,
-      "contents": [
-        {
-          "set_id": "evolving-skies"
-        }
-      ],
-      "listings": [
-        {
-          "retailer": "target",
-          "sku": "93050244",
-          "marketplace": true
-        },
-        {
-          "retailer": "target",
-          "sku": "93050245",
-          "marketplace": true
-        },
-        {
-          "retailer": "target",
-          "sku": "93050243",
-          "marketplace": true
-        }
-      ],
-      "id": "evolving-skies-sleeved-booster-sleeved-booster-pack"
-    },
-    {
       "name": "Paradox Destinies Tin (Gouging Fire ex)",
       "type": "tin",
       "msrp_cents": 2499,
@@ -3483,53 +3347,6 @@
         }
       ],
       "id": "chaos-rising-booster-display-booster-box"
-    },
-    {
-      "name": "2023 Trick or Trade Mimikyu & Pikachu",
-      "type": "special_box",
-      "msrp_cents": 999,
-      "contents": [],
-      "listings": [
-        {
-          "retailer": "target",
-          "sku": "1005019724",
-          "marketplace": true
-        }
-      ],
-      "id": "2023-trick-or-trade-mimikyu-pikachu-special-box"
-    },
-    {
-      "name": "Phantasmal Flames Sleeved Booster Pack",
-      "type": "sleeved_booster_pack",
-      "msrp_cents": 459,
-      "contents": [
-        {
-          "set_id": "phantasmal-flames"
-        }
-      ],
-      "listings": [
-        {
-          "retailer": "target",
-          "sku": "1007155477",
-          "marketplace": true
-        },
-        {
-          "retailer": "target",
-          "sku": "1007155474",
-          "marketplace": true
-        },
-        {
-          "retailer": "target",
-          "sku": "1007155475",
-          "marketplace": true
-        },
-        {
-          "retailer": "target",
-          "sku": "1007155471",
-          "marketplace": true
-        }
-      ],
-      "id": "phantasmal-flames-sleeved-booster-pack-sleeved-booster-pack"
     },
     {
       "name": "Ascended Heroes Tech Sticker Collection",
@@ -3699,39 +3516,6 @@
       "id": "mega-evolution-elite-trainer-box-lucario-ex-elite-trainer-box"
     },
     {
-      "name": "Prismatic Evolutions Booster Pack",
-      "type": "booster_pack",
-      "msrp_cents": 449,
-      "contents": [
-        {
-          "set_id": "prismatic-evolutions"
-        }
-      ],
-      "listings": [
-        {
-          "retailer": "target",
-          "sku": "1001632611",
-          "marketplace": true
-        },
-        {
-          "retailer": "target",
-          "sku": "1001632618",
-          "marketplace": true
-        },
-        {
-          "retailer": "target",
-          "sku": "1001632610",
-          "marketplace": true
-        },
-        {
-          "retailer": "target",
-          "sku": "1001632615",
-          "marketplace": true
-        }
-      ],
-      "id": "prismatic-evolutions-booster-pack-booster-pack"
-    },
-    {
       "name": "Paradox Destinies Tin (Walking Wake ex)",
       "type": "tin",
       "msrp_cents": 2499,
@@ -3786,20 +3570,6 @@
         }
       ],
       "id": "booster-bundle-booster-bundle"
-    },
-    {
-      "name": "Ultra-Premium Collection-Charizard",
-      "type": "premium_collection",
-      "msrp_cents": 12999,
-      "contents": [],
-      "listings": [
-        {
-          "retailer": "target",
-          "sku": "93504915",
-          "marketplace": true
-        }
-      ],
-      "id": "ultra-premium-collection-charizard-premium-collection"
     },
     {
       "name": "Mega Moonlit Tin",
@@ -4010,11 +3780,6 @@
       ],
       "listings": [
         {
-          "retailer": "target",
-          "sku": "1006188693",
-          "marketplace": true
-        },
-        {
           "retailer": "walmart",
           "sku": "17344605257"
         }
@@ -4127,29 +3892,6 @@
         }
       ],
       "id": "crown-zenith-collection-regidrago-v-collection-box"
-    },
-    {
-      "name": "Destined Rivals Booster Pack",
-      "type": "booster_pack",
-      "msrp_cents": 449,
-      "contents": [
-        {
-          "set_id": "destined-rivals"
-        }
-      ],
-      "listings": [
-        {
-          "retailer": "target",
-          "sku": "1004021922",
-          "marketplace": true
-        },
-        {
-          "retailer": "target",
-          "sku": "1004021919",
-          "marketplace": true
-        }
-      ],
-      "id": "destined-rivals-booster-pack-booster-pack"
     },
     {
       "name": "Mega Heroes Mini Tin (Gardevoir)",
@@ -4344,88 +4086,6 @@
       "id": "vmax-battle-box-zeraora-collection-box"
     },
     {
-      "name": "Mega Evolution: Ascended Heroes Booster Pack - 10 Cards",
-      "type": "booster_pack",
-      "msrp_cents": 449,
-      "contents": [
-        {
-          "set_id": "ascended-heroes"
-        }
-      ],
-      "listings": [
-        {
-          "retailer": "target",
-          "sku": "1011207063",
-          "marketplace": true
-        }
-      ],
-      "id": "mega-evolution-ascended-heroes-booster-pack-10-cards-booster-pack"
-    },
-    {
-      "name": "Chaos Rising Build & Battle Box",
-      "type": "build_battle_box",
-      "msrp_cents": 2199,
-      "contents": [
-        {
-          "set_id": "chaos-rising"
-        }
-      ],
-      "listings": [
-        {
-          "retailer": "target",
-          "sku": "1011662523",
-          "marketplace": true
-        }
-      ],
-      "id": "chaos-rising-build-battle-box-build-battle-box"
-    },
-    {
-      "name": "Trading Card Game Triple Whammy Tin with 3 Booster Packs and 3 Promo Cards (Slaking)",
-      "type": "tin",
-      "msrp_cents": 2499,
-      "contents": [
-        {
-          "set_id": "destined-rivals",
-          "packs": 2
-        },
-        {
-          "set_id": "journey-together",
-          "packs": 1
-        }
-      ],
-      "listings": [
-        {
-          "retailer": "target",
-          "sku": "1010967084",
-          "marketplace": true
-        }
-      ],
-      "id": "trading-card-game-triple-whammy-tin-with-3-booster-packs-and-3-promo-cards-slaking-tin"
-    },
-    {
-      "name": "Lumiose City Mini Tin (Emboar & Inkay)",
-      "type": "tin",
-      "msrp_cents": 2999,
-      "contents": [
-        {
-          "set_id": "perfect-order",
-          "packs": 1
-        },
-        {
-          "set_id": "chaos-rising",
-          "packs": 1
-        }
-      ],
-      "listings": [
-        {
-          "retailer": "target",
-          "sku": "1011308966",
-          "marketplace": true
-        }
-      ],
-      "id": "lumiose-city-mini-tin-emboar-inkay-tin"
-    },
-    {
       "name": "Blastoise VMAX Battle Box",
       "type": "collection_box",
       "msrp_cents": 2499,
@@ -4439,24 +4099,6 @@
       "id": "blastoise-vmax-battle-box-collection-box"
     },
     {
-      "name": "Twilight Masquerade Checklane Blister",
-      "type": "checklane_blister",
-      "msrp_cents": 499,
-      "contents": [
-        {
-          "set_id": "twilight-masquerade"
-        }
-      ],
-      "listings": [
-        {
-          "retailer": "target",
-          "sku": "1012053278",
-          "marketplace": true
-        }
-      ],
-      "id": "twilight-masquerade-checklane-blister-checklane-blister"
-    },
-    {
       "name": "Gyarados ex Premium Collection Box",
       "type": "premium_collection",
       "msrp_cents": 4999,
@@ -4468,39 +4110,6 @@
         }
       ],
       "id": "gyarados-ex-premium-collection-box-premium-collection"
-    },
-    {
-      "name": "Card Game MEGA Expansion Pack Abyss Eye Booster Box",
-      "type": "booster_box",
-      "msrp_cents": 17999,
-      "contents": [],
-      "listings": [
-        {
-          "retailer": "target",
-          "sku": "1011800956",
-          "marketplace": true
-        }
-      ],
-      "id": "card-game-mega-expansion-pack-abyss-eye-booster-box-booster-box"
-    },
-    {
-      "name": "151 Mini Tin - Electabuzz and Magnemite (2 Booster Packs, 1 Coin & 1 Art Card)",
-      "type": "tin",
-      "msrp_cents": 2499,
-      "contents": [
-        {
-          "set_id": "151",
-          "packs": 2
-        }
-      ],
-      "listings": [
-        {
-          "retailer": "target",
-          "sku": "1011937034",
-          "marketplace": true
-        }
-      ],
-      "id": "151-mini-tin-electabuzz-and-magnemite-2-booster-packs-1-coin-1-art-card-tin"
     },
     {
       "name": "Combined Power Premium Collection",
@@ -4769,97 +4378,6 @@
         }
       ],
       "id": "crown-zenith-tin-galarian-articuno-4-booster-packs-tin"
-    },
-    {
-      "name": "Shining Fates Elite Trainer Box",
-      "type": "elite_trainer_box",
-      "msrp_cents": 4999,
-      "contents": [
-        {
-          "set_id": "shining-fates"
-        }
-      ],
-      "listings": [
-        {
-          "retailer": "target",
-          "sku": "1011202516",
-          "marketplace": true
-        }
-      ],
-      "id": "shining-fates-elite-trainer-box-elite-trainer-box"
-    },
-    {
-      "name": "Paldean Fates Great Tusk ex & Iron Threads ex Premium Collection",
-      "type": "premium_collection",
-      "msrp_cents": 4999,
-      "contents": [
-        {
-          "set_id": "paldean-fates",
-          "packs": 11
-        }
-      ],
-      "listings": [
-        {
-          "retailer": "target",
-          "sku": "1010781938",
-          "marketplace": true
-        }
-      ],
-      "id": "paldean-fates-great-tusk-ex-iron-threads-ex-premium-collection-premium-collection"
-    },
-    {
-      "name": "White Flare Booster Pack",
-      "type": "booster_pack",
-      "msrp_cents": 449,
-      "contents": [
-        {
-          "set_id": "white-flare"
-        }
-      ],
-      "listings": [
-        {
-          "retailer": "target",
-          "sku": "1004842211",
-          "marketplace": true
-        }
-      ],
-      "id": "white-flare-booster-pack-booster-pack"
-    },
-    {
-      "name": "Mega Evolution Booster Pack",
-      "type": "booster_pack",
-      "msrp_cents": 449,
-      "contents": [
-        {
-          "set_id": "mega-evolution"
-        }
-      ],
-      "listings": [
-        {
-          "retailer": "target",
-          "sku": "1006188660",
-          "marketplace": true
-        }
-      ],
-      "id": "mega-evolution-booster-pack-booster-pack"
-    },
-    {
-      "name": "151",
-      "type": "booster_pack",
-      "msrp_cents": 449,
-      "contents": [
-        {
-          "set_id": "151"
-        }
-      ],
-      "listings": [
-        {
-          "retailer": "target",
-          "sku": "1001304528",
-          "marketplace": true
-        }
-      ],
-      "id": "151-booster-pack"
     },
     {
       "name": "Ascended Heroes Mini Tin",

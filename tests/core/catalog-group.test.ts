@@ -47,15 +47,19 @@ describe("groupCatalog", () => {
   });
 
   it("builds dual cells with first-party and marketplace arrays", () => {
-    const marketplaceProduct = catalog.products.find((entry) =>
-      entry.listings.some((listing) => listing.marketplace && listing.retailer === "target"),
-    );
+    const marketplaceProduct = {
+      id: "marketplace-only",
+      name: "Marketplace Product",
+      type: "elite_trainer_box" as const,
+      msrp_cents: 4999,
+      contents: [{ set_id: catalog.sets[0]!.id }],
+      listings: [{ retailer: "target" as const, sku: "1010873274", marketplace: true }],
+    };
     const firstPartyProduct = catalog.products.find((entry) =>
       entry.listings.some((listing) => !listing.marketplace && listing.retailer === "target"),
     );
-    expect(marketplaceProduct).toBeDefined();
     expect(firstPartyProduct).toBeDefined();
-    if (!marketplaceProduct || !firstPartyProduct) {
+    if (!firstPartyProduct) {
       return;
     }
 
