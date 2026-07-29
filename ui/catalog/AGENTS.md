@@ -29,7 +29,7 @@ Authoring (not shipped): `research/discord/scripts/author-catalog.mjs` reads git
 - **JSON bundling:** only `ui/catalog/main.tsx` imports `catalog.json` (keeps service worker chunk clean). Bundled copy is offline/first-install fallback only.
 - **Live catalog:** on open, `useCatalogData` → `resolveCatalog` fetches `CATALOG_RAW_URL` (`raw.githubusercontent.com`), validates with `parseCatalog`, caches in `chrome.storage.local` under `STORAGE_KEYS.catalogCache` with ETag. Fallback chain: remote → cache → bundled. Cache cleared on extension install/update (`clearCatalogCache` in service worker `onInstalled`).
 - **No hint text** — same rule as side panel UI.
-- **First-party vs marketplace:** main retailer checkbox toggles all first-party SKUs for that product; Target Plus marketplace listings appear inline below the Marketplace badge when no first-party SKU exists for that retailer on the row. `parseCatalog` and `author-catalog.mjs` strip marketplace listings when first-party exists for the same retailer. Marketplace listings are excluded from Select all / None.
+- **Marketplace:** shipped catalog has no marketplace listings — `parseCatalog` (`stripMarketplaceListings`) drops them and omits marketplace-only products; `author-catalog.mjs` / `reconcile.mjs` exclude them at authoring. UI still renders marketplace cells when present (tests); retailer checkbox and Select all / None operate on first-party only.
 - **Indeterminate:** partial first-party selection; click completes remaining; click when fully selected clears all first-party for that retailer on the row.
 - **Caps:** `MAX_SKUS_PER_LIST` (250) per retailer; near-cap select-all is all-or-nothing per product.
 - **Clear all:** native `window.confirm` then wipes **both** `watch_skus` lists (including manual SKUs).
@@ -44,6 +44,6 @@ Authoring (not shipped): `research/discord/scripts/author-catalog.mjs` reads git
 
 ## Tests
 
-`tests/core/catalog-{data,group,selection,fetch-catalog}.test.ts`, `tests/shared/pill-list-collapse.test.ts`
+`tests/core/catalog-{data,group,parse,selection,fetch-catalog}.test.ts`, `tests/shared/pill-list-collapse.test.ts`
 
 Global invariants and import rules: [AGENTS.md](../../AGENTS.md).
