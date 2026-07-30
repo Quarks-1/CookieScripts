@@ -134,6 +134,7 @@ export async function loadWalmartRecordingState(): Promise<string | null> {
 
 export type WalmartTabAutoRefreshState = {
   enabled: boolean;
+  schedule_enabled?: boolean;
   interval_sec: number;
   last_refresh_at?: number;
 };

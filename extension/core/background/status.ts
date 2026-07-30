@@ -550,7 +550,7 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     activeTab?.id != null && walmartTabDetected
       ? getWalmartTabAutoRefresh(activeTab.id)
       : undefined;
-  const walmartAutoRefreshEnabled = walmartAutoRefresh?.enabled ?? false;
+  const walmartAutoRefreshEnabled = walmartAutoRefresh?.enabled === true;
   const walmartRefreshIntervalSec =
     walmartAutoRefresh?.interval_sec ?? walmartFallbackIntervalSec;
 

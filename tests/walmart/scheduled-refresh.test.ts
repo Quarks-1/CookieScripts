@@ -23,6 +23,7 @@ import { getSettings } from "@ext/core/lib/storage.ts";
 import {
   clearWalmartRuntimeState,
   getWalmartTabAutoRefresh,
+  hasWalmartTabAutoRefresh,
   setWalmartTabAutoRefresh,
 } from "@ext/domains/walmart/background/runtime-state.ts";
 import {
@@ -61,18 +62,20 @@ describe("startScheduledWalmartRefresh", () => {
     vi.spyOn(Date, "now").mockReturnValue(1_700_000_000_000);
   });
 
-  it("enables refresh and reloads every open Walmart tab", async () => {
+  it("sets schedule_enabled and reloads every open Walmart tab without flipping manual enabled", async () => {
     setWalmartTabAutoRefresh(1, { enabled: false, interval_sec: 5 });
 
     await startScheduledWalmartRefresh();
 
     expect(getWalmartTabAutoRefresh(1)).toEqual({
-      enabled: true,
+      enabled: false,
+      schedule_enabled: true,
       interval_sec: 5,
       last_refresh_at: 1_700_000_000_000,
     });
     expect(getWalmartTabAutoRefresh(2)).toEqual({
-      enabled: true,
+      enabled: false,
+      schedule_enabled: true,
       interval_sec: 15,
       last_refresh_at: 1_700_000_000_000,
     });
@@ -84,6 +87,7 @@ describe("startScheduledWalmartRefresh", () => {
 describe("stopScheduledWalmartRefresh", () => {
   beforeEach(() => {
     clearWalmartRuntimeState();
+    vi.mocked(getSettings).mockResolvedValue(scheduleSettings());
     vi.stubGlobal("chrome", {
       tabs: {
         sendMessage: vi.fn().mockResolvedValue(undefined),
@@ -91,22 +95,48 @@ describe("stopScheduledWalmartRefresh", () => {
     });
   });
 
-  it("disables refresh while keeping intervals", async () => {
-    setWalmartTabAutoRefresh(4, { enabled: true, interval_sec: 7, last_refresh_at: 100 });
+  it("clears schedule_enabled while preserving manual enabled and interval", async () => {
+    setWalmartTabAutoRefresh(4, {
+      enabled: true,
+      schedule_enabled: true,
+      interval_sec: 7,
+      last_refresh_at: 100,
+    });
 
     await stopScheduledWalmartRefresh();
 
     expect(getWalmartTabAutoRefresh(4)).toEqual({
-      enabled: false,
+      enabled: true,
+      schedule_enabled: false,
       interval_sec: 7,
       last_refresh_at: 100,
     });
     expect(chrome.tabs.sendMessage).toHaveBeenCalledWith(4, {
       type: "WALMART_AUTO_REFRESH_CONFIG",
-      enabled: false,
+      enabled: true,
       interval_sec: 7,
       pause: false,
       last_refresh_at: 100,
+    });
+  });
+
+  it("removes map entry when both manual and schedule flags are off", async () => {
+    setWalmartTabAutoRefresh(5, {
+      enabled: false,
+      schedule_enabled: true,
+      interval_sec: 10,
+      last_refresh_at: 200,
+    });
+
+    await stopScheduledWalmartRefresh();
+
+    expect(hasWalmartTabAutoRefresh(5)).toBe(false);
+    expect(chrome.tabs.sendMessage).toHaveBeenCalledWith(5, {
+      type: "WALMART_AUTO_REFRESH_CONFIG",
+      enabled: false,
+      interval_sec: 10,
+      pause: false,
+      last_refresh_at: 200,
     });
   });
 });
@@ -120,7 +150,7 @@ describe("seedScheduledWalmartRefreshForTab", () => {
     });
   });
 
-  it("writes an enabled entry for an untracked tab in an active window", async () => {
+  it("writes schedule_enabled for an untracked tab in an active window", async () => {
     const today = new Date();
     vi.mocked(readScheduleSession).mockResolvedValue({
       start_fired_date: `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`,
@@ -128,11 +158,12 @@ describe("seedScheduledWalmartRefreshForTab", () => {
 
     await seedScheduledWalmartRefreshForTab(9);
 
-    expect(getWalmartTabAutoRefresh(9)?.enabled).toBe(true);
+    expect(getWalmartTabAutoRefresh(9)?.enabled).toBe(false);
+    expect(getWalmartTabAutoRefresh(9)?.schedule_enabled).toBe(true);
     expect(getWalmartTabAutoRefresh(9)?.interval_sec).toBe(15);
   });
 
-  it("leaves a manually disabled tab alone", async () => {
+  it("sets schedule_enabled on a manually disabled tab without flipping manual enabled", async () => {
     const today = new Date();
     vi.mocked(readScheduleSession).mockResolvedValue({
       start_fired_date: `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`,
@@ -141,7 +172,12 @@ describe("seedScheduledWalmartRefreshForTab", () => {
 
     await seedScheduledWalmartRefreshForTab(9);
 
-    expect(getWalmartTabAutoRefresh(9)).toEqual({ enabled: false, interval_sec: 5 });
+    expect(getWalmartTabAutoRefresh(9)).toEqual({
+      enabled: false,
+      schedule_enabled: true,
+      interval_sec: 5,
+      last_refresh_at: expect.any(Number),
+    });
   });
 });
 
@@ -160,7 +196,7 @@ describe("resumeScheduledWalmartRefresh", () => {
     });
   });
 
-  it("seeds only untracked tabs in an active window", async () => {
+  it("seeds schedule_enabled on tabs not yet under schedule and pushes effective enabled", async () => {
     const today = new Date();
     vi.mocked(readScheduleSession).mockResolvedValue({
       start_fired_date: `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`,
@@ -169,9 +205,22 @@ describe("resumeScheduledWalmartRefresh", () => {
 
     await resumeScheduledWalmartRefresh();
 
-    expect(getWalmartTabAutoRefresh(10)).toEqual({ enabled: false, interval_sec: 5 });
-    expect(getWalmartTabAutoRefresh(11)?.enabled).toBe(true);
-    expect(chrome.tabs.sendMessage).toHaveBeenCalledTimes(1);
+    expect(getWalmartTabAutoRefresh(10)).toEqual({
+      enabled: false,
+      schedule_enabled: true,
+      interval_sec: 5,
+      last_refresh_at: expect.any(Number),
+    });
+    expect(getWalmartTabAutoRefresh(11)?.enabled).toBe(false);
+    expect(getWalmartTabAutoRefresh(11)?.schedule_enabled).toBe(true);
+    expect(chrome.tabs.sendMessage).toHaveBeenCalledTimes(2);
+    expect(chrome.tabs.sendMessage).toHaveBeenCalledWith(10, {
+      type: "WALMART_AUTO_REFRESH_CONFIG",
+      enabled: true,
+      interval_sec: 5,
+      pause: false,
+      last_refresh_at: expect.any(Number),
+    });
     expect(chrome.tabs.sendMessage).toHaveBeenCalledWith(11, {
       type: "WALMART_AUTO_REFRESH_CONFIG",
       enabled: true,

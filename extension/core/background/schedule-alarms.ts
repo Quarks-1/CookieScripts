@@ -151,7 +151,6 @@ async function syncRetailerAlarms(
       config.endTime ?? undefined,
       now,
       session.start_fired_date,
-      { treatMissingEndAsUnbounded: config.retailer === "walmart" },
     )
   ) {
     await actions.start();

@@ -4,6 +4,7 @@ import {
   handleSetWalmartAutoRefreshEnabled,
   handleSetWalmartRefreshInterval,
   handleWalmartAutoRefreshContentMessage,
+  resolveWalmartAutoRefreshForTab,
 } from "@ext/domains/walmart/background/handlers/auto-refresh.ts";
 import { saveSettings } from "@ext/core/lib/storage.ts";
 import {
@@ -63,6 +64,33 @@ describe("walmart auto-refresh handlers", () => {
     );
 
     expect(result).toEqual({ ok: true, enabled: false, interval_sec: 10, pause: false });
+  });
+
+  it("resolveWalmartAutoRefreshForTab returns effective enabled when only schedule_enabled is true", () => {
+    setWalmartTabAutoRefresh(8, { enabled: false, schedule_enabled: true, interval_sec: 12 });
+
+    const config = resolveWalmartAutoRefreshForTab(8, true, {
+      enabled: true,
+      channel_targets: [],
+    });
+
+    expect(config).toEqual({
+      enabled: true,
+      interval_sec: 12,
+      pause: false,
+      last_refresh_at: undefined,
+    });
+  });
+
+  it("GET returns effective enabled true when only schedule_enabled is true", async () => {
+    setWalmartTabAutoRefresh(2, { enabled: false, schedule_enabled: true, interval_sec: 10 });
+
+    const result = await handleWalmartAutoRefreshContentMessage(
+      { type: "WALMART_GET_AUTO_REFRESH_CONFIG" },
+      { tab: { id: 2 } } as chrome.runtime.MessageSender,
+    );
+
+    expect(result).toEqual({ ok: true, enabled: true, interval_sec: 10, pause: false });
   });
 
   it("persists global refresh interval when changed from the panel", async () => {

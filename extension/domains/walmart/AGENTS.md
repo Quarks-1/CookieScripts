@@ -85,7 +85,7 @@ Source of truth: [extension/core/types/messages.ts](../../core/types/messages.ts
 - Inject research probe only while recording (`lib/page-probe-bridge.ts`); queue probe loads on every Walmart tab via `entry-early.ts`.
 - Queue pass dedup uses tab `sessionStorage` (`WALMART_QUEUE_PASS_SEEN_KEY`); optional sound via `sounds/queue-pass.mp3`.
 - Export mutex (`tryAcquireExport`); extend existing handler modules, do not merge into monolith.
-- Scheduled auto-refresh mirrors Target/Sam's Club via `walmart_schedule_*` settings and `background/scheduled-refresh.ts`. Scheduled start hard-refreshes every open Walmart tab immediately, then leaves interval auto-refresh on until end time or disable. No page-kind filtering.
+- Scheduled auto-refresh mirrors Target/Sam's Club via `walmart_schedule_*` settings and `background/scheduled-refresh.ts`. Schedule uses per-tab `schedule_enabled` (independent of manual **Auto refresh** `enabled`). Scheduled start hard-refreshes every open Walmart tab immediately, then leaves interval auto-refresh on until end time or disable. No page-kind filtering.
 
 Manifest: Walmart early (`document_start`) + main (`document_idle`) on `walmart.com` / `www.walmart.com`.
 

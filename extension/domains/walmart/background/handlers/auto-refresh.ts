@@ -25,6 +25,7 @@ export function defaultWalmartAutoRefreshState(
 ): WalmartTabAutoRefreshState {
   return {
     enabled: false,
+    schedule_enabled: false,
     interval_sec: intervalSec,
   };
 }
@@ -51,7 +52,7 @@ export function resolveWalmartAutoRefreshForTab(
     };
   }
   return {
-    enabled: entry.enabled,
+    enabled: entry.enabled === true || entry.schedule_enabled === true,
     interval_sec: entry.interval_sec,
     pause: false,
     last_refresh_at: entry.last_refresh_at,

@@ -10,10 +10,11 @@ import {
 import { getSettings } from "@ext/core/lib/storage.ts";
 import {
   pushWalmartAutoRefreshConfigToTab,
+  resolveWalmartAutoRefreshForTab,
 } from "@ext/domains/walmart/background/handlers/auto-refresh.ts";
 import {
+  clearWalmartTabAutoRefresh,
   getWalmartTabAutoRefresh,
-  hasWalmartTabAutoRefresh,
   listWalmartTabAutoRefreshTabIds,
   setWalmartTabAutoRefresh,
 } from "@ext/domains/walmart/background/runtime-state.ts";
@@ -66,9 +67,11 @@ async function writeScheduledRefreshEntry(
   fallbackInterval: number,
   lastRefreshAt?: number,
 ): Promise<void> {
-  const intervalSec = resolveIntervalForTab(tabId, fallbackInterval);
+  const existing = getWalmartTabAutoRefresh(tabId);
+  const intervalSec = existing?.interval_sec ?? resolveIntervalForTab(tabId, fallbackInterval);
   setWalmartTabAutoRefresh(tabId, {
-    enabled: true,
+    ...(existing ?? { enabled: false, interval_sec: fallbackInterval }),
+    schedule_enabled: true,
     interval_sec: intervalSec,
     last_refresh_at: lastRefreshAt,
   });
@@ -126,21 +129,13 @@ export async function resumeScheduledWalmartRefresh(): Promise<void> {
 
   for (const tab of tabs) {
     const tabId = tab.id;
-    if (tabId == null || hasWalmartTabAutoRefresh(tabId)) {
+    if (tabId == null || getWalmartTabAutoRefresh(tabId)?.schedule_enabled === true) {
       continue;
     }
 
     await writeScheduledRefreshEntry(tabId, fallbackInterval, Date.now());
-    const entry = getWalmartTabAutoRefresh(tabId);
-    if (!entry) {
-      continue;
-    }
-    await pushWalmartAutoRefreshConfigToTab(tabId, {
-      enabled: entry.enabled,
-      interval_sec: entry.interval_sec,
-      pause: false,
-      last_refresh_at: entry.last_refresh_at,
-    });
+    const config = resolveWalmartAutoRefreshForTab(tabId, settings.enabled, settings);
+    await pushWalmartAutoRefreshConfigToTab(tabId, config);
     started += 1;
   }
 
@@ -154,7 +149,10 @@ export async function resumeScheduledWalmartRefresh(): Promise<void> {
 }
 
 export async function seedScheduledWalmartRefreshForTab(tabId: number): Promise<void> {
-  if (!(await isWalmartScheduleWindowActive()) || hasWalmartTabAutoRefresh(tabId)) {
+  if (!(await isWalmartScheduleWindowActive())) {
+    return;
+  }
+  if (getWalmartTabAutoRefresh(tabId)?.schedule_enabled === true) {
     return;
   }
 
@@ -164,6 +162,7 @@ export async function seedScheduledWalmartRefreshForTab(tabId: number): Promise<
 }
 
 export async function stopScheduledWalmartRefresh(): Promise<void> {
+  const settings = await getSettings();
   const tabIds = listWalmartTabAutoRefreshTabIds();
 
   for (const tabId of tabIds) {
@@ -174,14 +173,15 @@ export async function stopScheduledWalmartRefresh(): Promise<void> {
 
     const next = {
       ...existing,
-      enabled: false,
+      schedule_enabled: false,
     };
     setWalmartTabAutoRefresh(tabId, next);
-    await pushWalmartAutoRefreshConfigToTab(tabId, {
-      enabled: false,
-      interval_sec: next.interval_sec,
-      pause: false,
-      last_refresh_at: next.last_refresh_at,
-    });
+
+    const config = resolveWalmartAutoRefreshForTab(tabId, settings.enabled, settings);
+    await pushWalmartAutoRefreshConfigToTab(tabId, config);
+
+    if (!next.enabled && !next.schedule_enabled) {
+      clearWalmartTabAutoRefresh(tabId);
+    }
   }
 }
