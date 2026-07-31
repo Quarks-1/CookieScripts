@@ -13,7 +13,7 @@ import { addIgnoredDomain } from "@ext/core/lib/ignored-domains.ts";
 import { resolveWatchKeywordRetailer } from "@ext/core/lib/retailer-url.ts";
 import { decideSkuOpenAction } from "@ext/core/lib/sku-watch/decide.ts";
 import { getSettings, prependHistory, saveSettings } from "@ext/core/lib/storage.ts";
-import { getOpenLinksInWindow, getSkuOpenModeEnabled, resolveWatchConfig } from "@ext/core/lib/watch.ts";
+import { getDiscordAllowDuplicates, getOpenLinksInWindow, getSkuOpenModeEnabled, resolveWatchConfig } from "@ext/core/lib/watch.ts";
 import { openTargetLinkRepeated } from "@ext/core/background/open-product-link.ts";
 import {
   enqueueLinkProcessing,
@@ -89,7 +89,7 @@ async function handleSkuModeRetailerPath(
   }
 
   const dedupKey = normalizeUrlForDedup(decision.url);
-  if (recentUrlKeys.has(dedupKey)) {
+  if (!getDiscordAllowDuplicates(settings) && recentUrlKeys.has(dedupKey)) {
     await prependHistory([
       {
         kind: "duplicate",
@@ -102,8 +102,10 @@ async function handleSkuModeRetailerPath(
     return { opened: [], duplicates: [decision.url] };
   }
 
-  mergeDedupKeys([dedupKey]);
-  scheduleRecentUrlsPersist();
+  if (!getDiscordAllowDuplicates(settings)) {
+    mergeDedupKeys([dedupKey]);
+    scheduleRecentUrlsPersist();
+  }
 
   const openResult = await openTargetLinkRepeated(decision.url, channelId, settings, {
     inWindow: getOpenLinksInWindow(settings),
@@ -144,6 +146,7 @@ async function handleNormalModeCandidateLinks(
   settings: ExtensionSettings,
   allowedDomains: string[],
 ): Promise<LinkOpenResult> {
+  const allowDuplicates = getDiscordAllowDuplicates(settings);
   const decision = decideLinkActions({
     urls: message.urls,
     allowedDomains,
@@ -151,6 +154,7 @@ async function handleNormalModeCandidateLinks(
     enabled: settings.enabled,
     channelId,
     author: message.author,
+    allowDuplicates,
   });
 
   const messageText = message.message_text ?? "";
@@ -179,7 +183,9 @@ async function handleNormalModeCandidateLinks(
     }
 
     const dedupKey = normalizeUrlForDedup(entry.url);
-    newDedupKeys.push(dedupKey);
+    if (!allowDuplicates) {
+      newDedupKeys.push(dedupKey);
+    }
     const openResult = await openTargetLinkRepeated(entry.url, channelId, settings, {
       inWindow: getOpenLinksInWindow(settings),
       author: entry.author,

@@ -316,6 +316,30 @@ describe("buildStatus", () => {
     expect(status.sku_open_mode_enabled).toBe(true);
   });
 
+  it("defaults discord_allow_duplicates to false when setting is omitted", async () => {
+    activeChannels.clear();
+    const status = await buildStatus({
+      id: 1,
+      url: "https://discord.com/channels/111/222",
+    } as chrome.tabs.Tab);
+    expect(status.discord_allow_duplicates).toBe(false);
+  });
+
+  it("reflects discord_allow_duplicates true from settings", async () => {
+    const { getSettings } = await import("@ext/core/lib/storage.ts");
+    vi.mocked(getSettings).mockResolvedValueOnce({
+      enabled: true,
+      discord_allow_duplicates: true,
+      channel_targets: [],
+    });
+    activeChannels.clear();
+    const status = await buildStatus({
+      id: 1,
+      url: "https://discord.com/channels/111/222",
+    } as chrome.tabs.Tab);
+    expect(status.discord_allow_duplicates).toBe(true);
+  });
+
   it("defaults walmart_recording_ui_enabled to false when setting is omitted", async () => {
     activeChannels.clear();
     const status = await buildStatus({

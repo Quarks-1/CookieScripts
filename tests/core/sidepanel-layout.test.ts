@@ -63,6 +63,7 @@ function status(overrides: Partial<ExtensionStatus>): ExtensionStatus {
     open_links_in_window: true,
     retailer_link_open_count: 1,
     sku_open_mode_enabled: false,
+    discord_allow_duplicates: false,
     walmart_recording_ui_enabled: false,
     samsclub_tab_detected: false,
     any_samsclub_tab_open: false,

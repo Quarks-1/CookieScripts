@@ -50,11 +50,16 @@ export function extractUrls(text: string): string[] {
   return [...seen.keys()];
 }
 
-export function filterUrlsByDomains(urls: string[], allowedDomains: string[]): string[] {
+export function filterUrlsByDomains(
+  urls: string[],
+  allowedDomains: string[],
+  options?: { preserveDuplicates?: boolean },
+): string[] {
   if (!allowedDomains.length) {
     return [];
   }
-  const matched = new Map<string, null>();
+  const matched: string[] = [];
+  const seen = new Map<string, null>();
   for (const url of urls) {
     let host: string;
     try {
@@ -65,11 +70,16 @@ export function filterUrlsByDomains(urls: string[], allowedDomains: string[]): s
     if (!host) {
       continue;
     }
-    if (allowedDomains.some((domain) => hostMatches(host, domain))) {
-      matched.set(url, null);
+    if (!allowedDomains.some((domain) => hostMatches(host, domain))) {
+      continue;
     }
+    if (options?.preserveDuplicates) {
+      matched.push(url);
+      continue;
+    }
+    seen.set(url, null);
   }
-  return [...matched.keys()];
+  return options?.preserveDuplicates ? matched : [...seen.keys()];
 }
 
 export function isHttpOrHttpsUrl(url: string): boolean {

@@ -68,4 +68,29 @@ describe("decideLinkActions", () => {
     expect(second.toOpen).toEqual([]);
     expect(second.duplicates).toHaveLength(1);
   });
+
+  it("opens URLs in recentUrlKeys when allowDuplicates is true", () => {
+    const dedupKey = "https://walmart.com/item";
+    const result = decideLinkActions({
+      ...baseInput,
+      recentUrlKeys: new Set([dedupKey]),
+      allowDuplicates: true,
+    });
+    expect(result.toOpen).toEqual(["https://walmart.com/item"]);
+    expect(result.duplicates).toEqual([]);
+    expect(result.newDedupKeys).toEqual([]);
+    expect(result.historyEntries.every((entry) => entry.kind === "opened")).toBe(true);
+  });
+
+  it("opens duplicate URLs in the same batch when allowDuplicates is true", () => {
+    const url = "https://walmart.com/item";
+    const result = decideLinkActions({
+      ...baseInput,
+      urls: [url, url],
+      allowDuplicates: true,
+    });
+    expect(result.toOpen).toEqual([url, url]);
+    expect(result.duplicates).toEqual([]);
+    expect(result.newDedupKeys).toEqual([]);
+  });
 });

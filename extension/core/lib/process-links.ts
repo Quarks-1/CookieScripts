@@ -13,6 +13,7 @@ export interface DecideLinkActionsInput {
   enabled: boolean;
   channelId: string;
   author?: string;
+  allowDuplicates?: boolean;
 }
 
 export interface DecideLinkActionsResult {
@@ -23,14 +24,24 @@ export interface DecideLinkActionsResult {
 }
 
 export function decideLinkActions(input: DecideLinkActionsInput): DecideLinkActionsResult {
-  const { urls, allowedDomains, recentUrlKeys, enabled, channelId, author = "unknown" } = input;
+  const {
+    urls,
+    allowedDomains,
+    recentUrlKeys,
+    enabled,
+    channelId,
+    author = "unknown",
+    allowDuplicates = false,
+  } = input;
 
   if (!enabled || !allowedDomains.length) {
     return { toOpen: [], duplicates: [], newDedupKeys: [], historyEntries: [] };
   }
 
   const cappedUrls = urls.slice(0, MAX_URLS_PER_MESSAGE);
-  const matched = filterUrlsByDomains(cappedUrls, allowedDomains).filter(isHttpOrHttpsUrl);
+  const matched = filterUrlsByDomains(cappedUrls, allowedDomains, {
+    preserveDuplicates: allowDuplicates,
+  }).filter(isHttpOrHttpsUrl);
 
   const toOpen: string[] = [];
   const duplicates: string[] = [];
@@ -40,7 +51,10 @@ export function decideLinkActions(input: DecideLinkActionsInput): DecideLinkActi
 
   for (const url of matched) {
     const dedupKey = normalizeUrlForDedup(url);
-    if (recentUrlKeys.has(dedupKey) || newDedupKeys.includes(dedupKey)) {
+    if (
+      !allowDuplicates &&
+      (recentUrlKeys.has(dedupKey) || newDedupKeys.includes(dedupKey))
+    ) {
       duplicates.push(url);
       historyEntries.push({
         kind: "duplicate",
@@ -51,7 +65,9 @@ export function decideLinkActions(input: DecideLinkActionsInput): DecideLinkActi
       });
       continue;
     }
-    newDedupKeys.push(dedupKey);
+    if (!allowDuplicates) {
+      newDedupKeys.push(dedupKey);
+    }
     toOpen.push(url);
     historyEntries.push({
       kind: "opened",

@@ -74,6 +74,8 @@ export interface ExtensionStatus {
   retailer_link_open_count: number;
   /** When true, Discord auto-open uses per-channel SKUs instead of link keywords. */
   sku_open_mode_enabled: boolean;
+  /** When true, Discord monitor re-opens URLs even if recently seen. */
+  discord_allow_duplicates: boolean;
   /** When true, show Walmart research/recording controls in the side panel. */
   walmart_recording_ui_enabled: boolean;
   /** Active tab is on samsclub.com. */

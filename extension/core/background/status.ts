@@ -58,6 +58,7 @@ import {
 } from "@ext/core/lib/schedule-settings.ts";
 import { resolveActiveTabKind } from "@ext/core/lib/active-tab.ts";
 import {
+  getDiscordAllowDuplicates,
   getOpenLinksInWindow,
   getSamsclubRecordingUiEnabled,
   getSkuOpenModeEnabled,
@@ -620,6 +621,7 @@ export async function buildStatus(activeTab?: chrome.tabs.Tab): Promise<Extensio
     open_links_in_window: getOpenLinksInWindow(settings),
     retailer_link_open_count: getRetailerLinkOpenCount(settings),
     sku_open_mode_enabled: getSkuOpenModeEnabled(settings),
+    discord_allow_duplicates: getDiscordAllowDuplicates(settings),
     walmart_recording_ui_enabled: getWalmartRecordingUiEnabled(settings),
     samsclub_recording_ui_enabled: getSamsclubRecordingUiEnabled(settings),
     samsclub_refresh_interval_sec: getSamsclubRefreshIntervalSec(settings),

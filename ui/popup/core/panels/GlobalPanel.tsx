@@ -19,6 +19,8 @@ export function GlobalPanel({ status, disabled, onRefresh }: GlobalPanelProps) {
   const [openLinksInWindowError, setOpenLinksInWindowError] = useState<string | null>(null);
   const [skuOpenModeSaving, setSkuOpenModeSaving] = useState(false);
   const [skuOpenModeError, setSkuOpenModeError] = useState<string | null>(null);
+  const [discordAllowDuplicatesSaving, setDiscordAllowDuplicatesSaving] = useState(false);
+  const [discordAllowDuplicatesError, setDiscordAllowDuplicatesError] = useState<string | null>(null);
   const [walmartRecordingUiSaving, setWalmartRecordingUiSaving] = useState(false);
   const [walmartRecordingUiError, setWalmartRecordingUiError] = useState<string | null>(null);
   const [samsclubRecordingUiSaving, setSamsclubRecordingUiSaving] = useState(false);
@@ -49,6 +51,20 @@ export function GlobalPanel({ status, disabled, onRefresh }: GlobalPanelProps) {
       setSkuOpenModeError(err instanceof Error ? err.message : "Failed to save");
     } finally {
       setSkuOpenModeSaving(false);
+    }
+  }
+
+  async function handleDiscordAllowDuplicatesChange(next: boolean) {
+    setDiscordAllowDuplicatesSaving(true);
+    setDiscordAllowDuplicatesError(null);
+    try {
+      const settings = await getExtensionSettings();
+      await saveExtensionSettings({ ...settings, discord_allow_duplicates: next });
+      await onRefresh();
+    } catch (err) {
+      setDiscordAllowDuplicatesError(err instanceof Error ? err.message : "Failed to save");
+    } finally {
+      setDiscordAllowDuplicatesSaving(false);
     }
   }
 
@@ -125,6 +141,25 @@ export function GlobalPanel({ status, disabled, onRefresh }: GlobalPanelProps) {
         {skuOpenModeError && (
           <p role="status" aria-live="polite" className="mt-1 text-xs text-red-300">
             {skuOpenModeError}
+          </p>
+        )}
+      </section>
+
+      <section aria-labelledby="global-discord-allow-duplicates-heading">
+        <h2 id="global-discord-allow-duplicates-heading" className="sr-only">
+          Allow duplicate links
+        </h2>
+        <EnableSlider
+          id="popup-discord-allow-duplicates"
+          label="Allow duplicate links"
+          checked={status.discord_allow_duplicates}
+          disabled={disabled || discordAllowDuplicatesSaving}
+          onChange={(next) => void handleDiscordAllowDuplicatesChange(next)}
+        />
+        {discordAllowDuplicatesSaving && <p className="mt-1 text-xs text-zinc-500">Saving…</p>}
+        {discordAllowDuplicatesError && (
+          <p role="status" aria-live="polite" className="mt-1 text-xs text-red-300">
+            {discordAllowDuplicatesError}
           </p>
         )}
       </section>

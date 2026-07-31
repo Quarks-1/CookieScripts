@@ -19,6 +19,10 @@ export function getSkuOpenModeEnabled(settings: ExtensionSettings): boolean {
   return settings.sku_open_mode_enabled === true;
 }
 
+export function getDiscordAllowDuplicates(settings: ExtensionSettings): boolean {
+  return settings.discord_allow_duplicates === true;
+}
+
 export function getWalmartRecordingUiEnabled(settings: ExtensionSettings): boolean {
   return settings.walmart_recording_ui_enabled === true;
 }

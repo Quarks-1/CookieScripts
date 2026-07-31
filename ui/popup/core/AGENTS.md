@@ -46,7 +46,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 | Target | `TargetPanel` | Yes — link opens, ATC mode, schedule, hard refresh interval, etc. |
 | Walmart | `WalmartPanel` | Yes — schedule, auto-refresh, queue helpers, recording |
 | Sam's Club | `SamsclubPanel` | Yes — ATC toggles, auto checkout/CVV, schedule, manual auto mode, recording |
-| Global | `GlobalPanel` | Open links in new window, SKU open mode, SKU catalog launch, Show Walmart/Sam's Club recording |
+| Global | `GlobalPanel` | Open links in new window, SKU open mode, Allow duplicate links, SKU catalog launch, Show Walmart/Sam's Club recording |
 
 Inactive panels unmount; domain hooks run only on the selected tab. Target/Walmart/Sam's Club panel hooks load settings regardless of whether a matching browser tab is focused. Start/Stop runtime controls on Target and Sam's Club still require a focused matching tab (`showControls={retailer_tab_detected}` / `showControls={samsclub_tab_detected}`).
 

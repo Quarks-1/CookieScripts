@@ -8,6 +8,7 @@ import {
 } from "@ext/core/background/runtime-state.ts";
 import { DEFAULT_SETTINGS } from "@ext/core/types/index.ts";
 import { STORAGE_KEYS } from "@ext/core/lib/constants.ts";
+import { normalizeUrlForDedup } from "@ext/core/lib/links.ts";
 import { EXTENSION_ID, setupChromeMocks } from "../fixtures/handlers-setup.ts";
 import { buildChannelTarget, mockContentSender, mockExtensionPageSender } from "../fixtures/fixtures.ts";
 
@@ -91,6 +92,101 @@ describe("handleMessage — discord", () => {
       focused: false,
     });
     expect(chrome.tabs.create).not.toHaveBeenCalled();
+  });
+
+  it("blocks duplicate allowlisted links already in recentUrlKeys", async () => {
+    const url = "https://walmart.com/item";
+    recentUrlKeys.add("https://walmart.com/item");
+    const settings = {
+      enabled: true,
+      channel_targets: [buildChannelTarget({ channel_id: "222", allowed_domains: ["walmart.com"] })],
+    };
+    vi.mocked(chrome.storage.local.get).mockImplementation(async (keys) => {
+      const keyList = Array.isArray(keys) ? keys : [keys];
+      const result: Record<string, unknown> = {};
+      for (const key of keyList) {
+        if (key === "cookiescripts:settings") {
+          result[key] = settings;
+        } else if (key === "cookiescripts:history") {
+          result[key] = [];
+        } else if (key === "cookiescripts:recentUrls") {
+          result[key] = [];
+        }
+      }
+      return result;
+    });
+
+    const sender = mockContentSender({
+      extensionId: EXTENSION_ID,
+      tabUrl: "https://discord.com/channels/111/222",
+    });
+
+    const response = await handleMessage(
+      {
+        type: "CANDIDATE_LINKS",
+        channel_id: "222",
+        urls: [url],
+        author: "alice",
+      },
+      sender,
+    );
+
+    expect(response).toMatchObject({
+      ok: true,
+      opened: [],
+      duplicates: [url],
+    });
+    expect(chrome.windows.create).not.toHaveBeenCalled();
+  });
+
+  it("opens duplicate allowlisted links when discord_allow_duplicates is true", async () => {
+    const url = "https://walmart.com/item";
+    recentUrlKeys.add("https://walmart.com/item");
+    const settings = {
+      enabled: true,
+      discord_allow_duplicates: true,
+      channel_targets: [buildChannelTarget({ channel_id: "222", allowed_domains: ["walmart.com"] })],
+    };
+    vi.mocked(chrome.storage.local.get).mockImplementation(async (keys) => {
+      const keyList = Array.isArray(keys) ? keys : [keys];
+      const result: Record<string, unknown> = {};
+      for (const key of keyList) {
+        if (key === "cookiescripts:settings") {
+          result[key] = settings;
+        } else if (key === "cookiescripts:history") {
+          result[key] = [];
+        } else if (key === "cookiescripts:recentUrls") {
+          result[key] = [];
+        }
+      }
+      return result;
+    });
+
+    const sender = mockContentSender({
+      extensionId: EXTENSION_ID,
+      tabUrl: "https://discord.com/channels/111/222",
+    });
+
+    const response = await handleMessage(
+      {
+        type: "CANDIDATE_LINKS",
+        channel_id: "222",
+        urls: [url],
+        author: "alice",
+      },
+      sender,
+    );
+
+    expect(response).toMatchObject({
+      ok: true,
+      opened: [url],
+      duplicates: [],
+    });
+    expect(chrome.windows.create).toHaveBeenCalledWith({
+      url,
+      focused: false,
+    });
+    expect(recentUrlKeys.size).toBe(1);
   });
 
   it("opens allowlisted links in background tabs when open_links_in_window is false", async () => {
@@ -912,6 +1008,99 @@ describe("handleMessage — discord", () => {
         url: `https://www.walmart.com/ip/${WALMART_FIXTURE_SKU}`,
         focused: false,
       });
+    });
+
+    it("blocks SKU-mode opens when URL is already in recentUrlKeys", async () => {
+      const pdpUrl = `https://www.walmart.com/ip/${WALMART_FIXTURE_SKU}`;
+      recentUrlKeys.add(normalizeUrlForDedup(pdpUrl));
+      const storage: Record<string, unknown> = {
+        "cookiescripts:history": [],
+        "cookiescripts:recentUrls": [],
+      };
+      const settings = {
+        enabled: true,
+        sku_open_mode_enabled: true,
+        watch_skus: { walmart: [WALMART_FIXTURE_SKU] },
+        channel_targets: [
+          buildChannelTarget({
+            channel_id: "222",
+            allowed_domains: ["walmart.com"],
+          }),
+        ],
+      };
+      mockSkuSettings(settings, storage);
+
+      const sender = mockContentSender({
+        extensionId: EXTENSION_ID,
+        tabUrl: "https://discord.com/channels/111/222",
+      });
+
+      const response = await handleMessage(
+        {
+          type: "CANDIDATE_LINKS",
+          channel_id: "222",
+          urls: [`https://www.walmart.com/search?q=${WALMART_FIXTURE_SKU}`],
+          message_text: `SKU ${WALMART_FIXTURE_SKU}`,
+          author: "alice",
+        },
+        sender,
+      );
+
+      expect(response).toMatchObject({
+        ok: true,
+        opened: [],
+        duplicates: [pdpUrl],
+      });
+      expect(chrome.windows.create).not.toHaveBeenCalled();
+    });
+
+    it("opens SKU-mode links when discord_allow_duplicates is true and URL is in recentUrlKeys", async () => {
+      const pdpUrl = `https://www.walmart.com/ip/${WALMART_FIXTURE_SKU}`;
+      recentUrlKeys.add(normalizeUrlForDedup(pdpUrl));
+      const storage: Record<string, unknown> = {
+        "cookiescripts:history": [],
+        "cookiescripts:recentUrls": [],
+      };
+      const settings = {
+        enabled: true,
+        sku_open_mode_enabled: true,
+        discord_allow_duplicates: true,
+        watch_skus: { walmart: [WALMART_FIXTURE_SKU] },
+        channel_targets: [
+          buildChannelTarget({
+            channel_id: "222",
+            allowed_domains: ["walmart.com"],
+          }),
+        ],
+      };
+      mockSkuSettings(settings, storage);
+
+      const sender = mockContentSender({
+        extensionId: EXTENSION_ID,
+        tabUrl: "https://discord.com/channels/111/222",
+      });
+
+      const response = await handleMessage(
+        {
+          type: "CANDIDATE_LINKS",
+          channel_id: "222",
+          urls: [`https://www.walmart.com/search?q=${WALMART_FIXTURE_SKU}`],
+          message_text: `SKU ${WALMART_FIXTURE_SKU}`,
+          author: "alice",
+        },
+        sender,
+      );
+
+      expect(response).toMatchObject({
+        ok: true,
+        opened: [pdpUrl],
+        duplicates: [],
+      });
+      expect(chrome.windows.create).toHaveBeenCalledWith({
+        url: pdpUrl,
+        focused: false,
+      });
+      expect(recentUrlKeys.size).toBe(1);
     });
 
     it("records walmart sku_skipped when configured Walmart SKUs do not match", async () => {
