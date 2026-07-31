@@ -283,6 +283,22 @@ Existing implementation already matches this research:
 - Add `outOfStockMessage` as negative signal in wait state
 - Document Shape header risk in README; API fallback as optional fast path
 
+### Stop / close on OOS (PDP wait)
+
+CookieScripts treats **product-wide** OOS conservatively so hard-refresh hydration does not false-trigger stop-on-OOS or close-tab-on-OOS:
+
+| Signal | Role |
+|--------|------|
+| Scoped `NonbuyableSection` inside `@web/AddToCart/FulfillmentSection` | Strong product OOS |
+| Scoped `outOfStockMessage` with product-wide text (`Out of stock`, not `Out of stock at {store}`) | Strong product OOS |
+| Disabled `#addToCartButtonOrTextIdFor{tcin}` + no positive fulfillment path | Required for DOM OOS |
+| Enabled main ATC (excluding `showInStockPrimaryButton` / `chooseOptionsButton`) | **Not** OOS |
+| Fulfillment tabs with shipping ETA / “Check availability” / “Ready within” | **Not** OOS (positive path) |
+| Missing fulfillment section or TCIN button | Hydration pending — **not** OOS |
+| Cart API `INVENTORY_UNAVAILABLE` alert | OOS (bare HTTP 424 alone is **not** OOS) |
+
+Stop/close actions require DOM (or API) OOS to remain stable for **2 seconds** (`TARGET_OOS_STABLE_MS`) before firing.
+
 ---
 
 ## 11. Drop / OOS PDP patterns — TCIN `1011209279` (Pokémon TCG)

@@ -7,6 +7,7 @@ import { resolve } from "node:path";
 
 import {
   buildAddToCartBody,
+  hasInventoryUnavailableAlert,
   isTargetAuthDeniedBody,
   parseCartApiProbeResponse,
   probeAddToCartViaApi,
@@ -53,17 +54,26 @@ describe("cart-api", () => {
     ).toBe(true);
   });
 
-  it("parses inventory unavailable from 424", () => {
-    expect(parseCartApiProbeResponse(424, null)).toEqual({ kind: "out_of_stock" });
-  });
-
-  it("parses inventory unavailable from alert body", () => {
+  it("parses inventory unavailable from explicit alert body", () => {
+    expect(parseCartApiProbeResponse(424, null)).toEqual({ kind: "error", status: 424 });
     expect(
       parseCartApiProbeResponse(424, {
         code: "DEPENDENT_SERVICE_ERROR",
         alerts: [{ code: "INVENTORY_UNAVAILABLE" }],
       }),
     ).toEqual({ kind: "out_of_stock" });
+    expect(
+      hasInventoryUnavailableAlert({
+        code: "DEPENDENT_SERVICE_ERROR",
+        alerts: [{ code: "INVENTORY_UNAVAILABLE" }],
+      }),
+    ).toBe(true);
+    expect(
+      parseCartApiProbeResponse(424, {
+        code: "DEPENDENT_SERVICE_ERROR",
+        alerts: [{ code: "OTHER_ERROR" }],
+      }),
+    ).toEqual({ kind: "error", status: 424 });
   });
 
   it("parses Shape blocked response", () => {
@@ -83,7 +93,13 @@ describe("cart-api", () => {
       },
     });
 
-    const probeInPageContext = vi.fn().mockResolvedValue({ status: 424, body: null });
+    const probeInPageContext = vi.fn().mockResolvedValue({
+      status: 424,
+      body: {
+        code: "DEPENDENT_SERVICE_ERROR",
+        alerts: [{ code: "INVENTORY_UNAVAILABLE" }],
+      },
+    });
     const ensureBridge = vi.fn().mockResolvedValue("ready" as const);
     const fetchFn = vi.fn();
 
@@ -158,7 +174,10 @@ describe("cart-api", () => {
     const fetchFn = vi.fn().mockResolvedValue({
       status: 424,
       headers: { get: () => "application/json" },
-      json: async () => ({}),
+      json: async () => ({
+        code: "DEPENDENT_SERVICE_ERROR",
+        alerts: [{ code: "INVENTORY_UNAVAILABLE" }],
+      }),
     });
 
     const result = await probeAddToCartViaApi("1011209279", { fetchFn });

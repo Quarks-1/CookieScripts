@@ -2,7 +2,11 @@ import { unwrapAffiliateUrl } from "@ext/core/lib/affiliate-unwrap.ts";
 
 import { runWaitingDisabledTick } from "@ext/domains/target/lib/waiting-disabled.ts";
 import { shouldUseBackendAtc } from "@ext/domains/target/lib/atc-route.ts";
-import { isOosSignal } from "@ext/domains/target/lib/restock-wait.ts";
+import {
+  isOosSignal,
+  isTargetPdpHydrationPending,
+  TARGET_OOS_STABLE_MS,
+} from "@ext/domains/target/lib/restock-wait.ts";
 import { isElementActionable } from "./dom.ts";
 
 export const MAIN_ADD_TO_CART_SCOPES = [
@@ -254,7 +258,7 @@ export async function waitForMainAddToCartButton(
   const deadline = waitTimeoutMs === null ? null : Date.now() + waitTimeoutMs;
   let reportedWaiting = false;
   let lastCartApiProbeMs: number | null = null;
-  let consecutiveOosTicks = 0;
+  let oosStableSinceMs: number | null = null;
   const pageUrlForWait = resolvedPageUrl ?? "";
   const tcin = parseTargetTcinFromUrl(pageUrlForWait);
 
@@ -321,16 +325,20 @@ export async function waitForMainAddToCartButton(
       }
     }
 
-    const oosThisTick =
-      tickOutcome === "out_of_stock" || isOosSignal(document, pageUrlForWait);
-    if (oosThisTick) {
-      consecutiveOosTicks += 1;
-    } else {
-      consecutiveOosTicks = 0;
+    const hydrationPending = isTargetPdpHydrationPending(document, pageUrlForWait);
+    const oosDomSignal =
+      !hydrationPending && isOosSignal(document, pageUrlForWait);
+    const oosThisTick = tickOutcome === "out_of_stock" || oosDomSignal;
+
+    if (waitState.kind === "ready" || hydrationPending || !oosThisTick) {
+      oosStableSinceMs = null;
+    } else if (oosStableSinceMs === null) {
+      oosStableSinceMs = Date.now();
     }
 
     if (
-      consecutiveOosTicks >= 2 &&
+      oosStableSinceMs !== null &&
+      Date.now() - oosStableSinceMs >= TARGET_OOS_STABLE_MS &&
       (stopOnOosEnabled || closeTabOnOosEnabled)
     ) {
       onOosConfirmed?.();

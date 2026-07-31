@@ -64,6 +64,13 @@ export function isTargetAuthDeniedBody(body: unknown): boolean {
   return (body as CartApiErrorBody).errorKey === "_ERR_AUTH_DENIED";
 }
 
+export function hasInventoryUnavailableAlert(body: CartApiErrorBody): boolean {
+  if (!Array.isArray(body.alerts)) {
+    return false;
+  }
+  return body.alerts.some((alert) => alert?.code === "INVENTORY_UNAVAILABLE");
+}
+
 export function parseCartApiProbeResponse(
   status: number,
   body: unknown,
@@ -80,16 +87,15 @@ export function parseCartApiProbeResponse(
     return { kind: "blocked" };
   }
 
-  if (status === 424) {
-    return { kind: "out_of_stock" };
-  }
-
   if (body && typeof body === "object") {
     const parsed = body as CartApiErrorBody;
-    const alertCode = parsed.alerts?.[0]?.code;
-    if (alertCode === "INVENTORY_UNAVAILABLE" || parsed.code === "DEPENDENT_SERVICE_ERROR") {
+    if (hasInventoryUnavailableAlert(parsed)) {
       return { kind: "out_of_stock" };
     }
+  }
+
+  if (status === 424) {
+    return { kind: "error", status: 424 };
   }
 
   return { kind: "error", status };
