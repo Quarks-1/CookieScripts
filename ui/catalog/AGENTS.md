@@ -33,7 +33,7 @@ Authoring (not shipped): `research/discord/scripts/author-catalog.mjs` reads git
 - **Indeterminate:** partial first-party selection; click completes remaining; click when fully selected clears all first-party for that retailer on the row.
 - **Caps:** `MAX_SKUS_PER_LIST` (250) per retailer; near-cap select-all is all-or-nothing per product.
 - **Clear all:** native `window.confirm` then wipes **both** `watch_skus` lists (including manual SKUs).
-- **Cross-surface sync:** `useCatalogSelection` listens to `chrome.storage.onChanged` on `STORAGE_KEYS.settings` (standalone page — no `usePopupStatus` parent).
+- **Cross-surface sync:** `useCatalogSelection` listens to `chrome.storage.onChanged` on `STORAGE_KEYS.settings` (standalone page — no `usePopupStatus` parent). An import-revision change cancels pending SKU saves before reloading imported selections. `useCatalogView` listens for `STORAGE_KEYS.catalogView` changes so imported grouping applies immediately on an open catalog page.
 - **Domain lib barrels:** URL builders from `@ext/domains/target/lib/index.ts` and `@ext/domains/walmart/lib/index.ts` only.
 
 ## Pivots and filters

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import {
-  getExtensionSettings,
+  getExtensionSettingsSnapshot,
   saveExtensionSettings,
 } from "@ext/core/lib/messages.ts";
 import { SidepanelContextBar } from "./components/SidepanelContextBar.tsx";
@@ -58,8 +58,8 @@ export default function App() {
     setEnabling(true);
     setEnableError(null);
     try {
-      const settings = await getExtensionSettings();
-      await saveExtensionSettings({ ...settings, enabled: next });
+      const { settings, importRevision } = await getExtensionSettingsSnapshot();
+      await saveExtensionSettings({ ...settings, enabled: next }, importRevision);
       await refresh();
     } catch (err) {
       setEnableError(err instanceof Error ? err.message : "Failed to save");

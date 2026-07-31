@@ -5,7 +5,11 @@ import {
   getGlobalWatchSkus,
   upsertGlobalWatchSettings,
 } from "@ext/core/lib/channel-targets.ts";
-import { getExtensionSettings, saveExtensionSettings } from "@ext/core/lib/messages.ts";
+import {
+  getExtensionSettings,
+  getExtensionSettingsSnapshot,
+  saveExtensionSettings,
+} from "@ext/core/lib/messages.ts";
 import type { ExtensionStatus } from "@ext/core/types/index.ts";
 
 const SAVE_DEBOUNCE_MS = 400;
@@ -127,7 +131,7 @@ export function useGlobalDiscordWatchSettings(
       setSaving(true);
       setSaveError(null);
       try {
-        const settings = await getExtensionSettings();
+        const { settings, importRevision } = await getExtensionSettingsSnapshot();
         const next = upsertGlobalWatchSettings(settings, {
           target_positive_keywords: pending.targetPositiveKeywords,
           target_negative_keywords: pending.targetNegativeKeywords,
@@ -136,7 +140,7 @@ export function useGlobalDiscordWatchSettings(
           target_skus: pending.targetSkus,
           walmart_skus: pending.walmartSkus,
         });
-        await saveExtensionSettings(next);
+        await saveExtensionSettings(next, importRevision);
         await loadSettings();
       } catch (err) {
         setSaveError(err instanceof Error ? err.message : "Save failed");

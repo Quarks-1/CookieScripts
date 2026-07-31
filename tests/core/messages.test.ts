@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   isExtensionContextValid,
   requestWatchConfig,
+  saveExtensionSettings,
   sendCandidateLinks,
   sendChannelInactive,
 } from "@ext/core/lib/messages.ts";
@@ -147,5 +148,29 @@ describe("sendChannelInactive", () => {
 
     expect(sendMessage).not.toHaveBeenCalled();
     expect(console.warn).not.toHaveBeenCalled();
+  });
+});
+
+describe("saveExtensionSettings", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it("surfaces runtime-sync warnings returned after a successful save", async () => {
+    const sendMessage = vi.fn().mockResolvedValue({
+      ok: true,
+      warning: "Settings saved, but runtime sync failed. Reload the extension.",
+    });
+    vi.stubGlobal("chrome", { runtime: { id: "extension-id", sendMessage } });
+
+    await expect(
+      saveExtensionSettings({ enabled: true, channel_targets: [] }, "revision-1"),
+    ).rejects.toThrow(/runtime sync failed/i);
+    expect(sendMessage).toHaveBeenCalledWith({
+      type: "SAVE_SETTINGS",
+      settings: { enabled: true, channel_targets: [] },
+      expected_import_revision: "revision-1",
+    });
   });
 });

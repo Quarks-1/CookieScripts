@@ -30,6 +30,7 @@ export const STORAGE_KEYS = {
   samsclubMarkedLabels: "cookiescripts:samsclubMarkedLabels",
   samsclubActiveSession: "cookiescripts:samsclubActiveSession",
   statusRevision: "cookiescripts:statusRevision",
+  settingsImportRevision: "cookiescripts:settingsImportRevision",
   catalogView: "cookiescripts:catalogView",
   catalogCache: "cookiescripts:catalogCache",
 } as const;

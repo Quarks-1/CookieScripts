@@ -7,6 +7,7 @@ import type {
   ExtensionStatus,
   HistoryItem,
   RuntimeMessage,
+  SettingsImportSummary,
   UiToBackground,
   WatchConfig,
 } from "@ext/core/types/index.ts";
@@ -52,9 +53,9 @@ export async function saveChannelDomains(
   channelId: string,
   domains: string[],
 ): Promise<void> {
-  const settings = await getExtensionSettings();
+  const { settings, importRevision } = await getExtensionSettingsSnapshot();
   const next = upsertChannelDomains(settings, channelId, domains);
-  await saveExtensionSettings(next);
+  await saveExtensionSettings(next, importRevision);
 }
 
 export async function requestWatchConfig(channelId: string): Promise<WatchConfig | null> {
@@ -189,17 +190,41 @@ export async function getExtensionStatus(): Promise<ExtensionStatus> {
 }
 
 export async function getExtensionSettings(): Promise<ExtensionSettings> {
-  const response = await sendUiMessage({ type: "GET_SETTINGS" });
-  assertOk(response);
-  if (!("settings" in response)) {
-    throw new Error("Unexpected GET_SETTINGS response");
-  }
-  return response.settings;
+  return (await getExtensionSettingsSnapshot()).settings;
 }
 
-export async function saveExtensionSettings(settings: ExtensionSettings): Promise<void> {
-  const response = await sendUiMessage({ type: "SAVE_SETTINGS", settings });
+export async function getExtensionSettingsSnapshot(): Promise<{
+  settings: ExtensionSettings;
+  importRevision: string;
+}> {
+  const response = await sendUiMessage({ type: "GET_SETTINGS" });
   assertOk(response);
+  if (
+    !("settings" in response) ||
+    !("settings_import_revision" in response) ||
+    typeof response.settings_import_revision !== "string"
+  ) {
+    throw new Error("Unexpected GET_SETTINGS response");
+  }
+  return {
+    settings: response.settings,
+    importRevision: response.settings_import_revision,
+  };
+}
+
+export async function saveExtensionSettings(
+  settings: ExtensionSettings,
+  expectedImportRevision?: string,
+): Promise<void> {
+  const response = await sendUiMessage({
+    type: "SAVE_SETTINGS",
+    settings,
+    expected_import_revision: expectedImportRevision,
+  });
+  assertOk(response);
+  if ("warning" in response && response.warning) {
+    throw new Error(response.warning);
+  }
 }
 
 export async function getLinkHistory(): Promise<HistoryItem[]> {
@@ -224,4 +249,34 @@ export async function getDetectedDomains(): Promise<string[]> {
     throw new Error("Unexpected GET_DETECTED_DOMAINS response");
   }
   return response.domains;
+}
+
+export async function exportSettingsBlob(): Promise<{
+  settings_blob: string;
+  contains_cvv: boolean;
+}> {
+  const response = await sendUiMessage({ type: "EXPORT_SETTINGS_BLOB" });
+  assertOk(response);
+  if (!("settings_blob" in response) || typeof response.settings_blob !== "string") {
+    throw new Error("Unexpected EXPORT_SETTINGS_BLOB response");
+  }
+  return {
+    settings_blob: response.settings_blob,
+    contains_cvv: response.contains_cvv === true,
+  };
+}
+
+export async function validateSettingsBlob(blob: string): Promise<SettingsImportSummary> {
+  const response = await sendUiMessage({ type: "VALIDATE_SETTINGS_BLOB", blob });
+  assertOk(response);
+  if (!("import_summary" in response)) {
+    throw new Error("Unexpected VALIDATE_SETTINGS_BLOB response");
+  }
+  return response.import_summary;
+}
+
+export async function importSettingsBlob(blob: string): Promise<{ warning?: string }> {
+  const response = await sendUiMessage({ type: "IMPORT_SETTINGS_BLOB", blob });
+  assertOk(response);
+  return { warning: "warning" in response ? response.warning : undefined };
 }

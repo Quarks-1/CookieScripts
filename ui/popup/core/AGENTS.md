@@ -21,9 +21,9 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 | Section gating | `sidepanel-layout.ts` (`isSectionVisible`) |
 | Pinned shell | `components/SidepanelHeader.tsx`, `SidepanelContextBar.tsx` |
 | Panel bodies | `panels/DiscordPanel.tsx`, `TargetPanel.tsx`, `WalmartPanel.tsx`, `SamsclubPanel.tsx`, `GlobalPanel.tsx` |
-| Global hooks | `hooks/usePopupStatus.ts`, `hooks/useUpdateCheck.ts` |
+| Global hooks | `hooks/usePopupStatus.ts`, `hooks/useUpdateCheck.ts`, `hooks/useSettingsTransfer.ts` |
 | Shared components | `components/VersionStatus.tsx`, `ui/shared/components/*` |
-| Background bridge | `@ext/core/lib/messages.ts` (`sendToBackground`, `getExtensionSettings`, `getSidePanelWindowId`) |
+| Background bridge | `@ext/core/lib/messages.ts` (`sendToBackground`, `getExtensionSettingsSnapshot`, `getSidePanelWindowId`) |
 | Status source | `extension/core/background/status.ts` (`buildStatus`); `statusRevision` session key bumps on tab activation (`service-worker.ts`) |
 | UI message handler | `extension/core/background/ui-handlers.ts` |
 
@@ -46,7 +46,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 | Target | `TargetPanel` | Yes — link opens, ATC mode, schedule, hard refresh interval, etc. |
 | Walmart | `WalmartPanel` | Yes — schedule, auto-refresh, queue helpers, recording |
 | Sam's Club | `SamsclubPanel` | Yes — ATC toggles, auto checkout/CVV, schedule, manual auto mode, recording |
-| Global | `GlobalPanel` | Open links in new window, SKU open mode, Allow duplicate links, SKU catalog launch, Show Walmart/Sam's Club recording |
+| Global | `GlobalPanel` | Open links in new window, SKU open mode, Allow duplicate links, SKU catalog launch, Show Walmart/Sam's Club recording, Settings backup |
 
 Inactive panels unmount; domain hooks run only on the selected tab. Target/Walmart/Sam's Club panel hooks load settings regardless of whether a matching browser tab is focused. Start/Stop runtime controls on Target and Sam's Club still require a focused matching tab (`showControls={retailer_tab_detected}` / `showControls={samsclub_tab_detected}`).
 
@@ -98,6 +98,8 @@ Used inside domain panels for intra-panel gating:
 Source of truth: [extension/core/types/messages.ts](../../../extension/core/types/messages.ts). Handler: `extension/core/background/ui-handlers.ts`. How to add/change: `.cursor/rules/runtime-messages.mdc`.
 
 Focused-window actions may pass optional `window_id`; hooks use `getSidePanelWindowId()`.
+
+Full settings saves use `getExtensionSettingsSnapshot()` and pass its `importRevision` to `saveExtensionSettings()`; this rejects stale edits that began before an import.
 
 Walmart queue settings are exposed on `ExtensionStatus` (`walmart_queue_pass_sound_enabled`, `walmart_consolidate_queue_tabs_enabled`, `walmart_throttle_refresh_interval_sec`). Global Discord watch lists use `global_*_keywords` / `global_*_skus` on status. Persist via `getExtensionSettings` / `saveExtensionSettings` in hooks; add new panel fields to `buildStatus` + `types/status.ts` before wiring UI hooks.
 

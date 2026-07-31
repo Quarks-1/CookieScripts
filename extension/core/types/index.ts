@@ -61,6 +61,17 @@ export type {
 } from "@ext/core/types/catalog.ts";
 
 export type {
+  SettingsBackupBundle,
+  SettingsBackupV1,
+  SettingsImportSummary,
+} from "@ext/core/types/settings-transfer.ts";
+export {
+  SETTINGS_BACKUP_MAX_BYTES,
+  SETTINGS_BACKUP_TYPE,
+  SETTINGS_BACKUP_VERSION,
+} from "@ext/core/types/settings-transfer.ts";
+
+export type {
   BackgroundResponse,
   BackgroundToContent,
   ContentToBackground,

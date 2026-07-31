@@ -15,6 +15,7 @@ import {
   isSamsclubContentSender,
   isWalmartContentSender,
 } from "@ext/core/background/sender-auth.ts";
+import { runSettingsMutationExclusive } from "@ext/core/background/settings-mutation-lock.ts";
 import type {
   BackgroundResponse,
   ContentToBackground,
@@ -122,11 +123,40 @@ function isUiMessage(message: RuntimeMessage): message is UiToBackground {
     message.type === "SAMSCLUB_STOP_MANUAL_AUTO" ||
     message.type === "SET_RETAILER_SCHEDULE" ||
     message.type === "SET_SAMSCLUB_SCHEDULE" ||
-    message.type === "SET_WALMART_SCHEDULE"
+    message.type === "SET_WALMART_SCHEDULE" ||
+    message.type === "EXPORT_SETTINGS_BLOB" ||
+    message.type === "VALIDATE_SETTINGS_BLOB" ||
+    message.type === "IMPORT_SETTINGS_BLOB"
   );
 }
 
-export async function handleMessage(
+function requiresSettingsMutationLock(message: RuntimeMessage): boolean {
+  return (
+    message.type === "GET_SETTINGS" ||
+    message.type === "ADD_ALLOWED_DOMAIN" ||
+    message.type === "IGNORE_DOMAIN" ||
+    message.type === "RETAILER_SET_REFRESH_INTERVAL" ||
+    message.type === "SAMSCLUB_SET_REFRESH_INTERVAL" ||
+    message.type === "SAVE_SETTINGS" ||
+    message.type === "SET_RETAILER_REFRESH_INTERVAL" ||
+    message.type === "SET_RETAILER_ATC_MODES" ||
+    message.type === "SET_RETAILER_ATC_QUANTITY" ||
+    message.type === "SET_RETAILER_AUTO_CHECKOUT_MODE" ||
+    message.type === "SET_RETAILER_PRICE_GATE_ENABLED" ||
+    message.type === "SET_WALMART_REFRESH_INTERVAL" ||
+    message.type === "SET_SAMSCLUB_REFRESH_INTERVAL" ||
+    message.type === "SET_SAMSCLUB_ATC_MODES" ||
+    message.type === "SET_SAMSCLUB_ATC_QUANTITY" ||
+    message.type === "SET_SAMSCLUB_AUTO_CHECKOUT_MODE" ||
+    message.type === "SET_SAMSCLUB_CHECKOUT_CVV" ||
+    message.type === "SET_RETAILER_SCHEDULE" ||
+    message.type === "SET_SAMSCLUB_SCHEDULE" ||
+    message.type === "SET_WALMART_SCHEDULE" ||
+    message.type === "IMPORT_SETTINGS_BLOB"
+  );
+}
+
+async function handleMessageUnlocked(
   message: RuntimeMessage,
   sender: chrome.runtime.MessageSender,
 ): Promise<BackgroundResponse | undefined> {
@@ -197,4 +227,14 @@ export async function handleMessage(
     console.error("Handler error:", error);
     return { ok: false, error: error instanceof Error ? error.message : "Handler failed" };
   }
+}
+
+export function handleMessage(
+  message: RuntimeMessage,
+  sender: chrome.runtime.MessageSender,
+): Promise<BackgroundResponse | undefined> {
+  if (requiresSettingsMutationLock(message)) {
+    return runSettingsMutationExclusive(() => handleMessageUnlocked(message, sender));
+  }
+  return handleMessageUnlocked(message, sender);
 }

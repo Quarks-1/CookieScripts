@@ -1,7 +1,13 @@
 import { HISTORY_LIMIT, RECENT_URL_LIMIT, STORAGE_KEYS } from "@ext/core/lib/constants.ts";
 import { stripChannelWatchFields } from "@ext/core/lib/channel-targets.ts";
+import type { IgnoredDomainsMap } from "@ext/core/lib/ignored-domains.ts";
+import {
+  normalizeCatalogViewGroupBy,
+  validateSettingsForPersistence,
+} from "@ext/core/lib/settings-transfer.ts";
 import { migrateSettingsAtcPillV1 } from "@ext/core/lib/settings-migrations.ts";
-import { validateGlobalWatchSettings, validatePersistedTargets } from "@ext/core/lib/validate.ts";
+import type { CatalogViewPersisted } from "@ext/core/types/catalog.ts";
+import type { SettingsBackupBundle } from "@ext/core/types/settings-transfer.ts";
 import { DEFAULT_SETTINGS, type ExtensionSettings, type HistoryItem } from "@ext/core/types/index.ts";
 
 export async function getSettings(): Promise<ExtensionSettings> {
@@ -16,15 +22,8 @@ export async function getSettings(): Promise<ExtensionSettings> {
 }
 
 export async function saveSettings(settings: ExtensionSettings): Promise<void> {
-  const targetsError = validatePersistedTargets(settings.channel_targets);
-  if (targetsError) {
-    throw new Error(targetsError);
-  }
-  const watchError = validateGlobalWatchSettings(settings);
-  if (watchError) {
-    throw new Error(watchError);
-  }
-  await chrome.storage.local.set({ [STORAGE_KEYS.settings]: settings });
+  const validated = validateSettingsForPersistence(settings);
+  await chrome.storage.local.set({ [STORAGE_KEYS.settings]: validated });
 }
 
 export async function getHistory(): Promise<HistoryItem[]> {
@@ -56,6 +55,41 @@ export async function loadRecentUrls(): Promise<string[]> {
 export async function saveRecentUrls(urls: string[]): Promise<void> {
   const trimmed = urls.slice(-RECENT_URL_LIMIT);
   await chrome.storage.local.set({ [STORAGE_KEYS.recentUrls]: trimmed });
+}
+
+export async function loadSettingsBackupBundle(): Promise<SettingsBackupBundle> {
+  const result = await chrome.storage.local.get([
+    STORAGE_KEYS.settings,
+    STORAGE_KEYS.ignoredDomains,
+    STORAGE_KEYS.catalogView,
+  ]);
+  const base = (result[STORAGE_KEYS.settings] as ExtensionSettings | undefined) ?? DEFAULT_SETTINGS;
+  const migrated = migrateSettingsAtcPillV1(base);
+  const stripped = stripChannelWatchFields(migrated);
+  const ignoredDomains =
+    (result[STORAGE_KEYS.ignoredDomains] as IgnoredDomainsMap | undefined) ?? {};
+  const persisted = result[STORAGE_KEYS.catalogView] as CatalogViewPersisted | undefined;
+  return {
+    settings: stripped.settings,
+    ignored_domains: ignoredDomains,
+    catalog_view: { groupBy: normalizeCatalogViewGroupBy(persisted) },
+  };
+}
+
+export async function saveSettingsBackupBundle(bundle: SettingsBackupBundle): Promise<void> {
+  const settings = validateSettingsForPersistence(bundle.settings);
+  await chrome.storage.local.set({
+    [STORAGE_KEYS.settings]: settings,
+    [STORAGE_KEYS.ignoredDomains]: bundle.ignored_domains,
+    [STORAGE_KEYS.catalogView]: bundle.catalog_view,
+    [STORAGE_KEYS.settingsImportRevision]: crypto.randomUUID(),
+  });
+}
+
+export async function getSettingsImportRevision(): Promise<string> {
+  const result = await chrome.storage.local.get(STORAGE_KEYS.settingsImportRevision);
+  const value = result[STORAGE_KEYS.settingsImportRevision];
+  return typeof value === "string" ? value : "";
 }
 
 export async function seedDefaultsIfMissing(): Promise<void> {

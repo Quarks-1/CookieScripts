@@ -4,6 +4,7 @@ import {
   handleSetWalmartAutoRefreshEnabled,
   handleSetWalmartRefreshInterval,
   handleWalmartAutoRefreshContentMessage,
+  reconcileWalmartAutoRefreshInterval,
   resolveWalmartAutoRefreshForTab,
 } from "@ext/domains/walmart/background/handlers/auto-refresh.ts";
 import { saveSettings } from "@ext/core/lib/storage.ts";
@@ -104,5 +105,35 @@ describe("walmart auto-refresh handlers", () => {
       expect.objectContaining({ walmart_refresh_interval_sec: 25 }),
     );
     expect(getWalmartTabAutoRefresh(7)?.interval_sec).toBe(25);
+  });
+
+  it("reconciles active tab intervals after a full settings replacement", async () => {
+    setWalmartTabAutoRefresh(7, {
+      enabled: true,
+      schedule_enabled: false,
+      interval_sec: 10,
+      last_refresh_at: 1,
+    });
+    vi.spyOn(Date, "now").mockReturnValue(1234);
+
+    await reconcileWalmartAutoRefreshInterval({
+      enabled: true,
+      channel_targets: [],
+      walmart_refresh_interval_sec: 25,
+    });
+
+    expect(getWalmartTabAutoRefresh(7)).toEqual({
+      enabled: true,
+      schedule_enabled: false,
+      interval_sec: 25,
+      last_refresh_at: 1234,
+    });
+    expect(chrome.tabs.sendMessage).toHaveBeenCalledWith(7, {
+      type: "WALMART_AUTO_REFRESH_CONFIG",
+      enabled: true,
+      interval_sec: 25,
+      pause: false,
+      last_refresh_at: 1234,
+    });
   });
 });

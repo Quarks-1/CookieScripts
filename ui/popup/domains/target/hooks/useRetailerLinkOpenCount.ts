@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
-  getExtensionSettings,
+  getExtensionSettingsSnapshot,
   saveExtensionSettings,
 } from "@ext/core/lib/messages.ts";
 import type { ExtensionStatus } from "@ext/core/types/index.ts";
@@ -54,8 +54,11 @@ export function useRetailerLinkOpenCount(
     setSaving(true);
     setSaveError(null);
     try {
-      const settings = await getExtensionSettings();
-      await saveExtensionSettings(setRetailerLinkOpenCount(settings, normalized));
+      const { settings, importRevision } = await getExtensionSettingsSnapshot();
+      await saveExtensionSettings(
+        setRetailerLinkOpenCount(settings, normalized),
+        importRevision,
+      );
       lastSavedRef.current = normalized;
       await refresh();
     } catch (err) {

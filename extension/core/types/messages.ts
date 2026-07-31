@@ -19,6 +19,7 @@ import type {
   RetailerAutoCheckoutMode,
   SamsclubAutoCheckoutMode,
 } from "@ext/core/types/core.ts";
+import type { SettingsImportSummary } from "@ext/core/types/settings-transfer.ts";
 import type { ExtensionStatus } from "@ext/core/types/status.ts";
 
 export type ContentToBackground =
@@ -156,7 +157,11 @@ export type BackgroundToContent =
 export type UiToBackground =
   | { type: "GET_STATUS"; window_id?: number }
   | { type: "GET_SETTINGS" }
-  | { type: "SAVE_SETTINGS"; settings: ExtensionSettings }
+  | {
+      type: "SAVE_SETTINGS";
+      settings: ExtensionSettings;
+      expected_import_revision?: string;
+    }
   | { type: "GET_HISTORY" }
   | { type: "CLEAR_HISTORY" }
   | { type: "GET_DETECTED_DOMAINS"; window_id?: number }
@@ -214,7 +219,10 @@ export type UiToBackground =
       enabled?: boolean;
       start_time?: string;
       end_time?: string;
-    };
+    }
+  | { type: "EXPORT_SETTINGS_BLOB" }
+  | { type: "VALIDATE_SETTINGS_BLOB"; blob: string }
+  | { type: "IMPORT_SETTINGS_BLOB"; blob: string };
 
 export type SamsclubToBackground =
   | {
@@ -265,7 +273,7 @@ export type WatchConfig = {
 
 export type BackgroundResponse =
   | { ok: true; status: ExtensionStatus }
-  | { ok: true; settings: ExtensionSettings }
+  | { ok: true; settings: ExtensionSettings; settings_import_revision: string }
   | { ok: true; history: HistoryItem[] }
   | { ok: true; opened: string[]; duplicates: string[] }
   | { ok: true; domains: string[] }
@@ -294,6 +302,9 @@ export type BackgroundResponse =
   | { ok: true; tabId: number }
   | { ok: true; enabled: boolean; interval_sec: number; pause: boolean; last_refresh_at?: number }
   | { ok: true }
+  | { ok: true; settings_blob: string; contains_cvv: boolean }
+  | { ok: true; import_summary: SettingsImportSummary }
+  | { ok: true; warning?: string }
   | { ok: false; error: string }
   | WatchConfig;
 

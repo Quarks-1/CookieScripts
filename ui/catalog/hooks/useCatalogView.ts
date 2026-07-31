@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { STORAGE_KEYS } from "@ext/core/lib/constants.ts";
+import { normalizeCatalogViewGroupBy } from "@ext/core/lib/settings-transfer.ts";
 import type { CatalogView, CatalogViewPersisted } from "@ext/core/types/index.ts";
 
 const DEFAULT_VIEW: CatalogView = {
@@ -23,12 +24,35 @@ export function useCatalogView() {
       const persisted = result[STORAGE_KEYS.catalogView] as CatalogViewPersisted | undefined;
       setView({
         ...DEFAULT_VIEW,
-        groupBy: persisted?.groupBy === "type" ? "type" : "set",
+        groupBy: normalizeCatalogViewGroupBy(persisted),
       });
       setLoaded(true);
     });
     return () => {
       cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    function handleStorageChange(
+      changes: Record<string, chrome.storage.StorageChange>,
+      areaName: string,
+    ) {
+      if (areaName !== "local" || !changes[STORAGE_KEYS.catalogView]) {
+        return;
+      }
+      const persisted = changes[STORAGE_KEYS.catalogView].newValue as
+        | CatalogViewPersisted
+        | undefined;
+      setView((current) => ({
+        ...current,
+        groupBy: normalizeCatalogViewGroupBy(persisted),
+      }));
+    }
+
+    chrome.storage.onChanged.addListener(handleStorageChange);
+    return () => {
+      chrome.storage.onChanged.removeListener(handleStorageChange);
     };
   }, []);
 

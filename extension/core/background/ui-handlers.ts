@@ -1,4 +1,5 @@
 import type { RetailerAutoCheckoutMode, SamsclubAutoCheckoutMode } from "@ext/core/types/index.ts";
+import { applySettingsReplacementSideEffects } from "@ext/core/background/apply-settings-replacement.ts";
 import {
   buildStatus,
   setRetailerAtcModesForSettings,
@@ -18,18 +19,14 @@ import {
   SAMSCLUB_AUTO_CHECKOUT_MODES,
 } from "@ext/domains/samsclub/lib/index.ts";
 import {
-  clearAllScheduleAlarms,
   resetScheduleRuntimeForRetailer,
   syncScheduleAlarms,
 } from "@ext/core/background/schedule-alarms.ts";
 import { notifyStatusChanged } from "@ext/core/background/status-notify.ts";
-import { clearAllScheduleActionStatus } from "@ext/core/background/schedule-runtime-state.ts";
-import { clearAllScheduleSession } from "@ext/core/lib/schedule-session.ts";
 import { getActiveRetailerTabInWindow } from "@ext/domains/target/background/tab-message.ts";
 import { getActiveSamsclubTabInWindow } from "@ext/domains/samsclub/background/tab-message.ts";
 import { getActiveTabInWindow } from "@ext/core/background/window-active-tab.ts";
 import {
-  broadcastRetailerStopAuto,
   stopRetailerTabAuto,
 } from "@ext/domains/target/background/runtime-state.ts";
 import { startRetailerTabAuto } from "@ext/domains/target/background/scheduled-auto.ts";
@@ -38,19 +35,26 @@ import {
   clearHistory,
   getHistory,
   getSettings,
+  getSettingsImportRevision,
+  loadSettingsBackupBundle,
   saveSettings,
+  saveSettingsBackupBundle,
 } from "@ext/core/lib/storage.ts";
+import {
+  backupContainsCvv,
+  buildImportSummary,
+  parseSettingsBackupBlob,
+  serializeSettingsBackup,
+} from "@ext/core/lib/settings-transfer.ts";
+import { getInstalledVersion } from "@ext/core/lib/version.ts";
 import { clearRecentUrlKeys } from "@ext/core/background/runtime-state.ts";
 import {
   handleWalmartUiMessage,
-  stopAllWalmartRecordingsForDisable,
 } from "@ext/domains/walmart/background/handlers/index.ts";
 import {
   handleSamsclubUiMessage,
-  stopAllSamsclubRecordingsForDisable,
 } from "@ext/domains/samsclub/background/handlers/index.ts";
 import {
-  broadcastSamsclubStopAuto,
   stopSamsclubTabAuto,
 } from "@ext/domains/samsclub/background/automation-runtime-state.ts";
 import { startSamsclubTabAuto } from "@ext/domains/samsclub/background/scheduled-auto.ts";
@@ -63,12 +67,24 @@ import {
 import {
   handleSetWalmartAutoRefreshEnabled,
   handleSetWalmartRefreshInterval,
-  stopAllWalmartAutoRefreshForDisable,
 } from "@ext/domains/walmart/background/handlers/auto-refresh.ts";
 import {
   stopScheduledWalmartRefresh,
 } from "@ext/domains/walmart/background/scheduled-refresh.ts";
-import type { BackgroundResponse, UiToBackground } from "@ext/core/types/index.ts";
+import type { BackgroundResponse, ExtensionSettings, UiToBackground } from "@ext/core/types/index.ts";
+
+function preserveExistingCheckoutCvv(
+  previous: ExtensionSettings,
+  incoming: ExtensionSettings,
+): ExtensionSettings {
+  if (
+    incoming.samsclub_checkout_cvv === undefined &&
+    previous.samsclub_checkout_cvv !== undefined
+  ) {
+    return { ...incoming, samsclub_checkout_cvv: previous.samsclub_checkout_cvv };
+  }
+  return incoming;
+}
 
 export async function handleUiMessage(
   message: UiToBackground,
@@ -83,26 +99,33 @@ export async function handleUiMessage(
       return { ok: true, status };
     }
     case "GET_SETTINGS": {
-      const settings = await getSettings();
+      const [settings, settings_import_revision] = await Promise.all([
+        getSettings(),
+        getSettingsImportRevision(),
+      ]);
       const { samsclub_checkout_cvv: _cvv, ...safeSettings } = settings;
-      return { ok: true, settings: safeSettings };
+      return { ok: true, settings: safeSettings, settings_import_revision };
     }
     case "SAVE_SETTINGS": {
       try {
+        if (message.expected_import_revision !== undefined) {
+          const currentImportRevision = await getSettingsImportRevision();
+          if (currentImportRevision !== message.expected_import_revision) {
+            return {
+              ok: false,
+              error: "Settings were imported while this edit was pending. Retry the change.",
+            };
+          }
+        }
         const previous = await getSettings();
-        await saveSettings(message.settings);
-        if (previous.enabled && !message.settings.enabled) {
-          await stopAllWalmartRecordingsForDisable();
-          await stopAllWalmartAutoRefreshForDisable();
-          await stopAllSamsclubRecordingsForDisable();
-          clearAllScheduleActionStatus();
-          await clearAllScheduleSession();
-          await clearAllScheduleAlarms();
-          await broadcastRetailerStopAuto();
-          await broadcastSamsclubStopAuto();
-          void notifyStatusChanged();
-        } else {
-          await syncScheduleAlarms(message.settings);
+        const next = preserveExistingCheckoutCvv(previous, message.settings);
+        await saveSettings(next);
+        const sideEffects = await applySettingsReplacementSideEffects(previous, next);
+        if (sideEffects.runtimeSyncFailed) {
+          return {
+            ok: true,
+            warning: "Settings saved, but runtime sync failed. Reload the extension.",
+          };
         }
         return { ok: true };
       } catch (error) {
@@ -328,6 +351,56 @@ export async function handleUiMessage(
         return {
           ok: false,
           error: error instanceof Error ? error.message : "Save failed",
+        };
+      }
+    }
+    case "EXPORT_SETTINGS_BLOB": {
+      try {
+        const bundle = await loadSettingsBackupBundle();
+        const settings_blob = serializeSettingsBackup(bundle, {
+          exportedAt: new Date().toISOString(),
+          extensionVersion: getInstalledVersion(),
+        });
+        return {
+          ok: true,
+          settings_blob,
+          contains_cvv: backupContainsCvv(bundle),
+        };
+      } catch (error) {
+        return {
+          ok: false,
+          error: error instanceof Error ? error.message : "Export failed",
+        };
+      }
+    }
+    case "VALIDATE_SETTINGS_BLOB": {
+      try {
+        const bundle = parseSettingsBackupBlob(message.blob);
+        return { ok: true, import_summary: buildImportSummary(bundle) };
+      } catch (error) {
+        return {
+          ok: false,
+          error: error instanceof Error ? error.message : "Invalid backup",
+        };
+      }
+    }
+    case "IMPORT_SETTINGS_BLOB": {
+      try {
+        const bundle = parseSettingsBackupBlob(message.blob);
+        const previous = await getSettings();
+        await saveSettingsBackupBundle(bundle);
+        const sideEffects = await applySettingsReplacementSideEffects(previous, bundle.settings);
+        if (sideEffects.runtimeSyncFailed) {
+          return {
+            ok: true,
+            warning: "Settings imported, but runtime sync failed. Reload the extension.",
+          };
+        }
+        return { ok: true };
+      } catch (error) {
+        return {
+          ok: false,
+          error: error instanceof Error ? error.message : "Import failed",
         };
       }
     }

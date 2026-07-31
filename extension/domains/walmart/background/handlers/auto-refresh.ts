@@ -73,6 +73,26 @@ export async function stopAllWalmartAutoRefreshForDisable(): Promise<void> {
   clearAllWalmartTabAutoRefresh();
 }
 
+export async function reconcileWalmartAutoRefreshInterval(
+  settings: ExtensionSettings,
+): Promise<void> {
+  const intervalSec = getWalmartFallbackIntervalSec(settings);
+  const now = Date.now();
+  for (const tabId of listWalmartTabAutoRefreshTabIds()) {
+    const existing = getWalmartTabAutoRefresh(tabId);
+    if (!existing || existing.interval_sec === intervalSec) {
+      continue;
+    }
+    setWalmartTabAutoRefresh(tabId, {
+      ...existing,
+      interval_sec: intervalSec,
+      last_refresh_at: now,
+    });
+    const config = resolveWalmartAutoRefreshForTab(tabId, settings.enabled, settings);
+    await pushWalmartAutoRefreshConfigToTab(tabId, config);
+  }
+}
+
 export async function pushWalmartAutoRefreshConfigToTab(
   tabId: number,
   config: { enabled: boolean; interval_sec: number; pause: boolean; last_refresh_at?: number },

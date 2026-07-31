@@ -1,12 +1,13 @@
 import { useState } from "react";
 
 import {
-  getExtensionSettings,
+  getExtensionSettingsSnapshot,
   saveExtensionSettings,
 } from "@ext/core/lib/messages.ts";
 import type { ExtensionStatus } from "@ext/core/types/index.ts";
 import { EnableSlider } from "@shared/components/EnableSlider.tsx";
 import { CatalogLaunchButton } from "@shared/components/CatalogLaunchButton.tsx";
+import { useSettingsTransfer } from "../hooks/useSettingsTransfer.ts";
 
 interface GlobalPanelProps {
   status: ExtensionStatus;
@@ -15,6 +16,18 @@ interface GlobalPanelProps {
 }
 
 export function GlobalPanel({ status, disabled, onRefresh }: GlobalPanelProps) {
+  const {
+    exporting,
+    importing,
+    transferBusy,
+    message: transferMessage,
+    messageTone,
+    exportAllSettings,
+    importAllSettings,
+  } = useSettingsTransfer(onRefresh, {
+    hasStoredCvv: status.samsclub_checkout_cvv.trim().length > 0,
+  });
+
   const [openLinksInWindowSaving, setOpenLinksInWindowSaving] = useState(false);
   const [openLinksInWindowError, setOpenLinksInWindowError] = useState<string | null>(null);
   const [skuOpenModeSaving, setSkuOpenModeSaving] = useState(false);
@@ -30,8 +43,8 @@ export function GlobalPanel({ status, disabled, onRefresh }: GlobalPanelProps) {
     setOpenLinksInWindowSaving(true);
     setOpenLinksInWindowError(null);
     try {
-      const settings = await getExtensionSettings();
-      await saveExtensionSettings({ ...settings, open_links_in_window: next });
+      const { settings, importRevision } = await getExtensionSettingsSnapshot();
+      await saveExtensionSettings({ ...settings, open_links_in_window: next }, importRevision);
       await onRefresh();
     } catch (err) {
       setOpenLinksInWindowError(err instanceof Error ? err.message : "Failed to save");
@@ -44,8 +57,8 @@ export function GlobalPanel({ status, disabled, onRefresh }: GlobalPanelProps) {
     setSkuOpenModeSaving(true);
     setSkuOpenModeError(null);
     try {
-      const settings = await getExtensionSettings();
-      await saveExtensionSettings({ ...settings, sku_open_mode_enabled: next });
+      const { settings, importRevision } = await getExtensionSettingsSnapshot();
+      await saveExtensionSettings({ ...settings, sku_open_mode_enabled: next }, importRevision);
       await onRefresh();
     } catch (err) {
       setSkuOpenModeError(err instanceof Error ? err.message : "Failed to save");
@@ -58,8 +71,11 @@ export function GlobalPanel({ status, disabled, onRefresh }: GlobalPanelProps) {
     setDiscordAllowDuplicatesSaving(true);
     setDiscordAllowDuplicatesError(null);
     try {
-      const settings = await getExtensionSettings();
-      await saveExtensionSettings({ ...settings, discord_allow_duplicates: next });
+      const { settings, importRevision } = await getExtensionSettingsSnapshot();
+      await saveExtensionSettings(
+        { ...settings, discord_allow_duplicates: next },
+        importRevision,
+      );
       await onRefresh();
     } catch (err) {
       setDiscordAllowDuplicatesError(err instanceof Error ? err.message : "Failed to save");
@@ -72,8 +88,11 @@ export function GlobalPanel({ status, disabled, onRefresh }: GlobalPanelProps) {
     setWalmartRecordingUiSaving(true);
     setWalmartRecordingUiError(null);
     try {
-      const settings = await getExtensionSettings();
-      await saveExtensionSettings({ ...settings, walmart_recording_ui_enabled: next });
+      const { settings, importRevision } = await getExtensionSettingsSnapshot();
+      await saveExtensionSettings(
+        { ...settings, walmart_recording_ui_enabled: next },
+        importRevision,
+      );
       await onRefresh();
     } catch (err) {
       setWalmartRecordingUiError(err instanceof Error ? err.message : "Failed to save");
@@ -86,8 +105,11 @@ export function GlobalPanel({ status, disabled, onRefresh }: GlobalPanelProps) {
     setSamsclubRecordingUiSaving(true);
     setSamsclubRecordingUiError(null);
     try {
-      const settings = await getExtensionSettings();
-      await saveExtensionSettings({ ...settings, samsclub_recording_ui_enabled: next });
+      const { settings, importRevision } = await getExtensionSettingsSnapshot();
+      await saveExtensionSettings(
+        { ...settings, samsclub_recording_ui_enabled: next },
+        importRevision,
+      );
       await onRefresh();
     } catch (err) {
       setSamsclubRecordingUiError(err instanceof Error ? err.message : "Failed to save");
@@ -198,6 +220,45 @@ export function GlobalPanel({ status, disabled, onRefresh }: GlobalPanelProps) {
         {samsclubRecordingUiError && (
           <p role="status" aria-live="polite" className="mt-1 text-xs text-red-300">
             {samsclubRecordingUiError}
+          </p>
+        )}
+      </section>
+
+      <section aria-labelledby="global-settings-backup-heading">
+        <h2 id="global-settings-backup-heading" className="text-sm font-medium text-zinc-400">
+          Settings backup
+        </h2>
+        <div className="mt-2 flex gap-2">
+          <button
+            type="button"
+            className="rounded border border-zinc-700 px-2 py-0.5 text-xs text-zinc-400 disabled:opacity-50"
+            disabled={disabled || transferBusy}
+            onClick={() => void exportAllSettings()}
+          >
+            {exporting ? "Exporting…" : "Export all settings"}
+          </button>
+          <button
+            type="button"
+            className="rounded border border-zinc-700 px-2 py-0.5 text-xs text-zinc-400 disabled:opacity-50"
+            disabled={disabled || transferBusy}
+            onClick={() => void importAllSettings()}
+          >
+            {importing ? "Importing…" : "Import all settings"}
+          </button>
+        </div>
+        {transferMessage && (
+          <p
+            role="status"
+            aria-live="polite"
+            className={`mt-1 text-xs ${
+              messageTone === "error"
+                ? "text-red-300"
+                : messageTone === "warning"
+                  ? "text-amber-300"
+                  : "text-zinc-500"
+            }`}
+          >
+            {transferMessage}
           </p>
         )}
       </section>

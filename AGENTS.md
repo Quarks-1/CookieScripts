@@ -171,7 +171,7 @@ Current `manifest.json` (do not add `cookies`, `webRequest`, or `<all_urls>`):
 
 | Kind | Values |
 |---|---|
-| `permissions` | `storage`, `tabs`, `windows`, `sidePanel`, `downloads`, `alarms` |
+| `permissions` | `storage`, `tabs`, `windows`, `sidePanel`, `downloads`, `alarms`, `clipboardRead`, `clipboardWrite` |
 | `host_permissions` | `discord.com`, `target.com` (+ `www`), `carts.target.com`, `walmart.com` (+ `www`), `samsclub.com` (+ `www`), `api.github.com`, `raw.githubusercontent.com`, `http://127.0.0.1:9876/*` |
 | `side_panel.default_path` | `ui/sidepanel/index.html` |
 | `options_ui.page` | `ui/catalog/index.html` (`open_in_tab: true`) |

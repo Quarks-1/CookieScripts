@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import {
   getExtensionSettings,
+  getExtensionSettingsSnapshot,
   saveExtensionSettings,
 } from "@ext/core/lib/messages.ts";
 import type { ExtensionStatus } from "@ext/core/types/index.ts";
@@ -62,7 +63,7 @@ export function useWalmartQueueSettings(
       setSaving(true);
       setError(null);
       try {
-        const settings = await getExtensionSettings();
+        const { settings, importRevision } = await getExtensionSettingsSnapshot();
         const next = {
           ...settings,
           walmart_queue_pass_sound_enabled:
@@ -77,7 +78,7 @@ export function useWalmartQueueSettings(
               WALMART_THROTTLE_DEFAULT_INTERVAL_SEC,
           ),
         };
-        await saveExtensionSettings(next);
+        await saveExtensionSettings(next, importRevision);
         await refresh();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Save failed");

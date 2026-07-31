@@ -15,6 +15,7 @@ export function setupChromeMocks() {
   vi.stubGlobal("chrome", {
     runtime: {
       id: EXTENSION_ID,
+      getManifest: () => ({ version: "0.1.67" }),
     },
     storage: {
       local: {
@@ -45,6 +46,12 @@ export function setupChromeMocks() {
         }),
         set: vi.fn(async (items: Record<string, unknown>) => {
           Object.assign(sessionStorage, items);
+        }),
+        remove: vi.fn(async (keys: string | string[]) => {
+          const keyList = Array.isArray(keys) ? keys : [keys];
+          for (const key of keyList) {
+            delete sessionStorage[key];
+          }
         }),
       },
     },

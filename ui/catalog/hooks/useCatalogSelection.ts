@@ -12,7 +12,11 @@ import {
   toggleMarketplaceListing,
 } from "@ext/core/lib/catalog/index.ts";
 import { MAX_SKUS_PER_LIST, STORAGE_KEYS } from "@ext/core/lib/constants.ts";
-import { getExtensionSettings, saveExtensionSettings } from "@ext/core/lib/messages.ts";
+import {
+  getExtensionSettings,
+  getExtensionSettingsSnapshot,
+  saveExtensionSettings,
+} from "@ext/core/lib/messages.ts";
 import type { CatalogCell, CatalogGroup, CatalogPickerRetailer } from "@ext/core/types/index.ts";
 
 const SAVE_DEBOUNCE_MS = 400;
@@ -58,7 +62,15 @@ export function useCatalogSelection() {
       changes: Record<string, chrome.storage.StorageChange>,
       areaName: string,
     ) => {
-      if (areaName !== "local" || !changes[STORAGE_KEYS.settings]) {
+      if (areaName !== "local") {
+        return;
+      }
+      if (changes[STORAGE_KEYS.settingsImportRevision]) {
+        clearDebounce();
+        void loadSettings();
+        return;
+      }
+      if (!changes[STORAGE_KEYS.settings]) {
         return;
       }
       if (saving || pendingRef.current !== null) {
@@ -70,7 +82,7 @@ export function useCatalogSelection() {
     return () => {
       chrome.storage.onChanged.removeListener(onChanged);
     };
-  }, [loadSettings, saving]);
+  }, [clearDebounce, loadSettings, saving]);
 
   useEffect(() => {
     return () => {
@@ -82,12 +94,12 @@ export function useCatalogSelection() {
     setSaving(true);
     setSaveError(null);
     try {
-      const settings = await getExtensionSettings();
+      const { settings, importRevision } = await getExtensionSettingsSnapshot();
       const next = upsertGlobalWatchSkus(settings, {
         target: pending.target,
         walmart: pending.walmart,
       });
-      await saveExtensionSettings(next);
+      await saveExtensionSettings(next, importRevision);
       await loadSettings();
     } catch {
       setSaveError("Couldn't save — try again");

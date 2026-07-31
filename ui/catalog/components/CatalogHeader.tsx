@@ -1,6 +1,8 @@
+import { useState } from "react";
+
 import { MAX_SKUS_PER_LIST } from "@ext/core/lib/constants.ts";
 import {
-  getExtensionSettings,
+  getExtensionSettingsSnapshot,
   saveExtensionSettings,
 } from "@ext/core/lib/messages.ts";
 import { EnableSlider } from "@shared/components/EnableSlider.tsx";
@@ -43,10 +45,24 @@ export function CatalogHeader({
   onSkuOpenModeChange,
   onClearAll,
 }: CatalogHeaderProps) {
+  const [skuModeSaving, setSkuModeSaving] = useState(false);
+  const [skuModeError, setSkuModeError] = useState<string | null>(null);
+
   async function handleSkuOpenModeChange(next: boolean) {
-    const settings = await getExtensionSettings();
-    await saveExtensionSettings({ ...settings, sku_open_mode_enabled: next });
-    onSkuOpenModeChange(next);
+    setSkuModeSaving(true);
+    setSkuModeError(null);
+    try {
+      const { settings, importRevision } = await getExtensionSettingsSnapshot();
+      await saveExtensionSettings(
+        { ...settings, sku_open_mode_enabled: next },
+        importRevision,
+      );
+      onSkuOpenModeChange(next);
+    } catch (error) {
+      setSkuModeError(error instanceof Error ? error.message : "Failed to save");
+    } finally {
+      setSkuModeSaving(false);
+    }
   }
 
   return (
@@ -104,7 +120,7 @@ export function CatalogHeader({
         id="catalog-sku-open-mode"
         label="SKU open mode"
         checked={skuOpenModeEnabled}
-        disabled={saving}
+        disabled={saving || skuModeSaving}
         onChange={(next) => void handleSkuOpenModeChange(next)}
       />
 
@@ -121,6 +137,11 @@ export function CatalogHeader({
       {saveError && (
         <p role="status" aria-live="polite" className="text-xs text-red-300">
           {saveError}
+        </p>
+      )}
+      {skuModeError && (
+        <p role="status" aria-live="polite" className="text-xs text-red-300">
+          {skuModeError}
         </p>
       )}
       {overflowMessage && (
