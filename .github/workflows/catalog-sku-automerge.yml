@@ -1,0 +1,41 @@
+name: Catalog SKU automerge
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  automerge:
+    if: startsWith(github.head_ref, 'catalog/sku-')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Wait for CI
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          check-regexp: '^CI / test-and-build$'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify only catalog.json changed
+        run: |
+          git fetch origin main
+          CHANGED=$(git diff --name-only origin/main...HEAD)
+          if [ "$(echo "$CHANGED" | wc -l | tr -d ' ')" -ne 1 ] || [ "$CHANGED" != "extension/core/data/catalog.json" ]; then
+            echo "Unexpected files changed:"
+            echo "$CHANGED"
+            exit 1
+          fi
+
+      - name: Squash merge
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr merge ${{ github.event.pull_request.number }} --squash --delete-branch

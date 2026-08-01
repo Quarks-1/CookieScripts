@@ -78,6 +78,7 @@ flowchart TB
 | Manifest / permissions | This file § Critical invariants | `manifest.json` (no new sensitive permissions) |
 | SKU catalog page / bundled catalog data | [ui/catalog/AGENTS.md](ui/catalog/AGENTS.md) | `ui/catalog/*`, `extension/core/lib/catalog/*`, `extension/core/data/catalog.json` |
 | Catalog liveness / prune pipeline | [scripts/catalog-liveness/README.md](scripts/catalog-liveness/README.md) | `scripts/catalog-liveness/*`, `.github/workflows/catalog-liveness.yml` |
+| Catalog SKU request (extension + GH workflows) | [docs/catalog-sku-request.md](docs/catalog-sku-request.md) | `extension/core/lib/catalog/sku-request.ts`, `ui/popup/core/components/CatalogSkuRequestSection.tsx`, `.github/workflows/catalog-sku-*.yml` |
 
 ## Repository layout
 

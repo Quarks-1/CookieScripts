@@ -77,6 +77,7 @@ Releases are created automatically on every push to `main` (patch version bump).
 - `chrome.storage.local` holds per-channel domain allowlists, link history (last 200), recent dedup keys (last 500), cached update-check metadata, and cached SKU catalog data (raw JSON + ETag from `raw.githubusercontent.com`)
 - The popup may send an anonymous GET to `api.github.com` to compare your installed version with the latest GitHub release; no Discord messages, settings, or history are transmitted
 - The SKU catalog page may send an anonymous GET to `raw.githubusercontent.com` for `catalog.json` on `main`; selections still sync via `watch_skus` in `chrome.storage.local`
+- **Request catalog SKU** (Global side panel tab) opens a pre-filled GitHub issue in your browser; see [docs/catalog-sku-request.md](./docs/catalog-sku-request.md)
 - Extension packages are distributed via GitHub Releases over HTTPS; trust model is the Quarks-1 org and your browser’s download of the release zip
 
 ## Discord Terms of Service

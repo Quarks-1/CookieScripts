@@ -8,6 +8,7 @@ import type { ExtensionStatus } from "@ext/core/types/index.ts";
 import { EnableSlider } from "@shared/components/EnableSlider.tsx";
 import { CatalogLaunchButton } from "@shared/components/CatalogLaunchButton.tsx";
 import { useSettingsTransfer } from "../hooks/useSettingsTransfer.ts";
+import { CatalogSkuRequestSection } from "../components/CatalogSkuRequestSection.tsx";
 
 interface GlobalPanelProps {
   status: ExtensionStatus;
@@ -128,6 +129,8 @@ export function GlobalPanel({ status, disabled, onRefresh }: GlobalPanelProps) {
           <CatalogLaunchButton disabled={disabled} />
         </div>
       </section>
+
+      <CatalogSkuRequestSection disabled={disabled} />
 
       <section aria-labelledby="global-open-links-in-window-heading">
         <h2 id="global-open-links-in-window-heading" className="sr-only">

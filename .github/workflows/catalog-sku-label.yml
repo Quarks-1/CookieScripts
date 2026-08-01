@@ -1,0 +1,87 @@
+name: Catalog SKU label
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/catalog-sku-label.yml
+  issues:
+    types: [opened]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Optional issue number to label retroactively
+        required: false
+
+permissions:
+  issues: write
+
+jobs:
+  ensure-label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ensure catalog-request label exists
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create catalog-request \
+            --repo "${{ github.repository }}" \
+            --description "SKU catalog addition request from extension" \
+            --color "0E8A16" \
+            2>/dev/null || true
+
+  apply-label:
+    needs: ensure-label
+    if: >-
+      github.event_name == 'issues' &&
+      startsWith(github.event.issue.title, '[catalog-request]') &&
+      github.event.issue.body != null &&
+      contains(github.event.issue.body, '<!-- catalog-request-intake -->')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apply catalog-request label
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh issue edit "${{ github.event.issue.number }}" --repo "${{ github.repository }}" --add-label catalog-request
+
+      - name: Notify Cursor agent
+        if: secrets.CATALOG_AGENT_TRIGGER_PAT != ''
+        env:
+          GH_TOKEN: ${{ secrets.CATALOG_AGENT_TRIGGER_PAT }}
+        run: |
+          gh issue comment "${{ github.event.issue.number }}" \
+            --repo "${{ github.repository }}" \
+            --body "$(cat <<'EOF'
+          @cursor catalog-request
+
+          <!-- catalog-request-agent -->
+
+          Process the SKU in the issue body above and open a catalog PR per docs/cursor-automations/catalog-sku-request.md.
+          EOF
+          )"
+
+  apply-label-manual:
+    needs: ensure-label
+    if: github.event_name == 'workflow_dispatch' && inputs.issue_number != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apply catalog-request label to issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh issue edit "${{ inputs.issue_number }}" --repo "${{ github.repository }}" --add-label catalog-request
+
+      - name: Notify Cursor agent
+        if: secrets.CATALOG_AGENT_TRIGGER_PAT != ''
+        env:
+          GH_TOKEN: ${{ secrets.CATALOG_AGENT_TRIGGER_PAT }}
+        run: |
+          gh issue comment "${{ inputs.issue_number }}" \
+            --repo "${{ github.repository }}" \
+            --body "$(cat <<'EOF'
+          @cursor catalog-request
+
+          <!-- catalog-request-agent -->
+
+          Process the SKU in the issue body above and open a catalog PR per docs/cursor-automations/catalog-sku-request.md.
+          EOF
+          )"

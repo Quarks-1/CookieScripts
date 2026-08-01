@@ -9,6 +9,7 @@ const GRID_COLS: Record<number, string> = {
 type SegmentedPillToggleProps<T extends string> = {
   id: string;
   label?: string;
+  hideLabel?: boolean;
   value: T;
   options: readonly SegmentedPillToggleOption<T>[];
   disabled?: boolean;
@@ -19,6 +20,7 @@ type SegmentedPillToggleProps<T extends string> = {
 export function SegmentedPillToggle<T extends string>({
   id,
   label = "Mode",
+  hideLabel = false,
   value,
   options,
   disabled,
@@ -35,9 +37,9 @@ export function SegmentedPillToggle<T extends string>({
 
   return (
     <div
-      className={`flex w-full items-center justify-between gap-3 text-sm ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
+      className={`flex items-center text-sm ${hideLabel ? "w-auto" : "w-full justify-between gap-3"} ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
     >
-      <span className="text-zinc-300">{label}</span>
+      {!hideLabel && <span className="text-zinc-300">{label}</span>}
       <div
         role="radiogroup"
         aria-label={label}

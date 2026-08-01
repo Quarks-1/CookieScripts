@@ -11,6 +11,11 @@ export {
   resolvePrimarySetId,
 } from "./group.ts";
 export {
+  buildSkuRequestIssueUrl,
+  findSkuInCatalog,
+  normalizeSkuForRequest,
+} from "./sku-request.ts";
+export {
   canAddSku,
   clearFirstPartyInGroup,
   clearFirstPartyInRows,

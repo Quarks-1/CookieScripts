@@ -21,7 +21,8 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 | Section gating | `sidepanel-layout.ts` (`isSectionVisible`) |
 | Pinned shell | `components/SidepanelHeader.tsx`, `SidepanelContextBar.tsx` |
 | Panel bodies | `panels/DiscordPanel.tsx`, `TargetPanel.tsx`, `WalmartPanel.tsx`, `SamsclubPanel.tsx`, `GlobalPanel.tsx` |
-| Global hooks | `hooks/usePopupStatus.ts`, `hooks/useUpdateCheck.ts`, `hooks/useSettingsTransfer.ts` |
+| Global hooks | `hooks/usePopupStatus.ts`, `hooks/useUpdateCheck.ts`, `hooks/useSettingsTransfer.ts`, `hooks/useCatalogForSkuCheck.ts` |
+| Global components | `components/CatalogSkuRequestSection.tsx` |
 | Shared components | `components/VersionStatus.tsx`, `ui/shared/components/*` |
 | Background bridge | `@ext/core/lib/messages.ts` (`sendToBackground`, `getExtensionSettingsSnapshot`, `getSidePanelWindowId`) |
 | Status source | `extension/core/background/status.ts` (`buildStatus`); `statusRevision` session key bumps on tab activation (`service-worker.ts`) |
@@ -46,7 +47,7 @@ Shared styles: `@shared/index.css` (`ui/shared/`).
 | Target | `TargetPanel` | Yes — link opens, ATC mode, schedule, hard refresh interval, etc. |
 | Walmart | `WalmartPanel` | Yes — schedule, auto-refresh, queue helpers, recording |
 | Sam's Club | `SamsclubPanel` | Yes — ATC toggles, auto checkout/CVV, schedule, manual auto mode, recording |
-| Global | `GlobalPanel` | Open links in new window, SKU open mode, Allow duplicate links, SKU catalog launch, Show Walmart/Sam's Club recording, Settings backup |
+| Global | `GlobalPanel` | Open links in new window, SKU open mode, catalog SKU request, Allow duplicate links, SKU catalog launch, Show Walmart/Sam's Club recording, Settings backup |
 
 Inactive panels unmount; domain hooks run only on the selected tab. Target/Walmart/Sam's Club panel hooks load settings regardless of whether a matching browser tab is focused. Start/Stop runtime controls on Target and Sam's Club still require a focused matching tab (`showControls={retailer_tab_detected}` / `showControls={samsclub_tab_detected}`).
 
@@ -70,7 +71,7 @@ Used inside domain panels for intra-panel gating:
 
 **Exception:** **Channel filters** (`ChannelFiltersSection`) renders in `DiscordPanel` on `discord_channel` surface.
 
- `sku_open_mode_enabled` UI lives in `GlobalPanel` and the SKU catalog page. `CatalogLaunchButton` (`openOptionsPage`) lives in `GlobalPanel` and beside Target/Walmart SKU list headers on the Discord tab. `retailer_link_open_count` UI lives in `TargetLinkSettingsSection` (Target tab). SKU mode applies to Target and Walmart configured SKU lists on the Discord tab.
+ `sku_open_mode_enabled` UI lives in `GlobalPanel` and the SKU catalog page. **Catalog SKU request** (`CatalogSkuRequestSection`) lives in `GlobalPanel` — opens a pre-filled GitHub issue via `extension/core/lib/catalog/sku-request.ts`. `CatalogLaunchButton` (`openOptionsPage`) lives in `GlobalPanel` and beside Target/Walmart SKU list headers on the Discord tab. `retailer_link_open_count` UI lives in `TargetLinkSettingsSection` (Target tab). SKU mode applies to Target and Walmart configured SKU lists on the Discord tab.
 
 ## Domain UI map
 
