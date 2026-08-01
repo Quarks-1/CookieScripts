@@ -32,7 +32,7 @@ Configure manually at [cursor.com/automations](https://cursor.com/automations). 
 
 ## Auto-merge
 
-[`.github/workflows/catalog-sku-automerge.yml`](../.github/workflows/catalog-sku-automerge.yml) squash-merges PRs from branches matching `catalog/sku-*` after `CI / test-and-build` passes and only `extension/core/data/catalog.json` changed.
+[`.github/workflows/catalog-sku-automerge.yml`](../.github/workflows/catalog-sku-automerge.yml) squash-merges PRs from branches matching `catalog/sku-*` after `test-and-build` passes and only `extension/core/data/catalog.json` changed.
 
 **Branch protection:** ensure the Actions bot (`GITHUB_TOKEN`) can merge without a required human review, or automerge will fail.
 

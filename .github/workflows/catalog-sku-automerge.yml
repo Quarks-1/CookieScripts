@@ -22,7 +22,7 @@ jobs:
         uses: lewagon/wait-on-check-action@v1.3.4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-          check-regexp: '^CI / test-and-build$'
+          check-regexp: '^test-and-build$'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify only catalog.json changed
