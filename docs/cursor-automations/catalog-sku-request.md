@@ -30,44 +30,66 @@ The label workflow POSTs this JSON when a qualifying issue is opened or re-dispa
 
 ## Agent prompt
 
-Copy the instructions below into the automation prompt.
+Copy everything between the horizontal rules into the automation prompt.
 
 ---
 
-You are adding a missing Target or Walmart SKU to the Pokémon TCG catalog in `extension/core/data/catalog.json`.
+## Goal
 
-**Trigger:** A webhook POST where `event` is `catalog_request`. Parse **Retailer** and **SKU** from `issue_body` in the payload.
+Add one missing Target or Walmart SKU to `extension/core/data/catalog.json` and open a **ready** (non-draft) pull request so CI and auto-merge can run.
 
-### Steps
+## Trigger
 
-1. Read `issue_body` from the webhook payload. Parse **Retailer** (`target` or `walmart`) and **SKU** from the markdown list items.
-2. If the SKU already exists in `extension/core/data/catalog.json`, comment on the issue explaining it is already listed and stop.
-3. Research the product page:
+Webhook POST with `event: "catalog_request"`. Use these payload fields:
+
+| Field | Use |
+|-------|-----|
+| `issue_body` | Parse retailer and SKU |
+| `issue_url` | Link in PR body and issue comment |
+| `issue_number` | Issue thread for comments |
+
+Parse **Retailer** (`target` or `walmart`) and **SKU** from markdown list items in `issue_body` (lines like `- **Retailer:**` and `- **SKU:**`).
+
+## Stop without a PR
+
+- SKU already exists in `catalog.json` → comment on the issue and stop.
+- PDP unavailable or ambiguous → comment with findings and stop.
+- `npm test`, `npm run lint`, or `npm run build` fail → fix or stop; never open a PR with failing checks.
+
+## Workflow
+
+1. **Duplicate check** — Search `extension/core/data/catalog.json` for the normalized `retailer:sku`. If found, comment on the issue and stop.
+
+2. **Research PDP**
    - Target: `https://www.target.com/p/-/A-{sku}`
    - Walmart: `https://www.walmart.com/ip/{sku}`
-4. Determine: product name, `type` (from `product_types` in the catalog schema), `msrp_cents`, `set_id`, and `contents[].packs` if applicable. If the set is new, add a `sets[]` entry. If the set cannot be determined, use `assorted`.
-5. Update `extension/core/data/catalog.json`:
-   - Add the listing to an existing product when name/type/set match, otherwise create a new product.
-   - Product `id` slugs must follow `slugify(name, type)` in `research/discord/scripts/author-catalog.mjs`.
-   - Enforce rules in `extension/core/lib/catalog/parse.ts`: first-party listings only, globally unique `retailer:sku`, valid `set_id`, `schema_version: 1`.
-6. Run `npm test`, `npm run lint`, and `npm run build`.
-7. Commit on branch `catalog/sku-{retailer}-{sku}`.
-8. Open a pull request:
-   - **Title:** `feat(catalog): add {retailer} SKU {sku} [skip ci]` — `[skip ci]` must be in the title (squash merge uses the PR title as the commit message).
-   - **Body:** Link to the issue (`issue_url` from payload), plus a short summary of research (name, type, set, MSRP).
-9. Comment on the issue with the PR link.
+   - Record: product name, `type` (from catalog `product_types`), `msrp_cents`, `set_id`, and `contents[].packs` when applicable.
+   - New set → add `sets[]` entry. Unknown set → `assorted`.
 
-### Quality bar
+3. **Edit catalog** — Update only `extension/core/data/catalog.json`:
+   - Merge into an existing product when name, type, and set match; otherwise create a new product.
+   - Product `id`: follow `slugify(name, type)` in `research/discord/scripts/author-catalog.mjs`.
+   - Rules from `extension/core/lib/catalog/parse.ts`: first-party listings only, globally unique `retailer:sku`, valid `set_id`, `schema_version: 1`.
 
-- Do not open a PR if tests, lint, or build fail.
-- Do not change files other than `extension/core/data/catalog.json` unless a new set entry is required in the same file.
-- If the PDP is unavailable or ambiguous, comment on the issue with findings and stop without opening a PR.
+4. **Verify** — Run `npm test`, `npm run lint`, and `npm run build`. All must pass.
+
+5. **Branch** — `catalog/sku-{retailer}-{sku}` (example: `catalog/sku-target-95230445`).
+
+6. **Pull request** — Open a **ready for review** PR (never a draft):
+   - **Title:** `feat(catalog): add {retailer} SKU {sku} [skip ci]`
+     - `[skip ci]` is required in the title (squash merge uses the PR title as the commit message).
+   - **Body:** Link to `issue_url`, plus a short research summary (name, type, set, MSRP, PDP URL).
+   - If the tooling creates a draft PR, mark it ready immediately (`gh pr ready` or equivalent) before finishing.
+
+7. **Issue comment** — On the triggering issue, post the PR URL and one-line summary.
+
+## Constraints
+
+- Change only `extension/core/data/catalog.json` (new `sets[]` entries in the same file are OK).
+- Do not open a draft PR — auto-merge runs only on ready PRs.
+- Do not skip verification commands.
 
 ---
-
-## Branch naming
-
-`catalog/sku-{retailer}-{sku}` — example: `catalog/sku-target-95230445`
 
 ## Webhook setup
 
