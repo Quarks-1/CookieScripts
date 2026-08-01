@@ -4476,6 +4476,10 @@
       ],
       "listings": [
         {
+          "retailer": "target",
+          "sku": "1012055695"
+        },
+        {
           "retailer": "walmart",
           "sku": "5988933729"
         }
