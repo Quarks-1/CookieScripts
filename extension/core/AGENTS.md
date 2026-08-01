@@ -24,6 +24,7 @@ Chrome MV3 service worker hub — message router, link opening pipeline, shared 
 | Settings backup | `lib/settings-transfer.ts`, `background/apply-settings-replacement.ts`, `background/settings-mutation-lock.ts` — clipboard export/import bundle + stale-write guard |
 | Update check | `lib/check-for-update.ts`, `lib/version.ts` |
 | Catalog fetch | `lib/catalog/fetch-catalog.ts` — live catalog cache (catalog page only; not in catalog barrel) |
+| Catalog SKU request | `lib/catalog/sku-request.ts` — GitHub issue URL + duplicate lookup (side panel; exported from catalog barrel) |
 | Types | `types/messages.ts`, `types/core.ts`, `types/index.ts` |
 
 ### Service worker lifecycle (`service-worker.ts`)
