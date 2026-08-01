@@ -56,4 +56,5 @@ Agent PR titles must include `[skip ci]` so squash merges do not trigger the rel
 |---------|-----|
 | Workflow fails on webhook step | Confirm both webhook secrets are set; regenerate API key in Cursor if POST returns 401 |
 | Label applied but no agent run | Check Cursor Automations dashboard for a new run; verify webhook URL matches the saved automation |
+| Agent opened PR for marketplace SKU | Close PR without merging; catalog ships first-party listings only. Re-copy the automation prompt from [cursor-automations/catalog-sku-request.md](./cursor-automations/catalog-sku-request.md) (marketplace PDPs must stop without a PR). |
 | Retroactive issue | **Actions → Catalog SKU label → Run workflow** with `issue_number` |

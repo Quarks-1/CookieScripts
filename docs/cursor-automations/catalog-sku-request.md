@@ -54,6 +54,7 @@ Parse **Retailer** (`target` or `walmart`) and **SKU** from markdown list items 
 
 - SKU already exists in `catalog.json` → comment on the issue and stop.
 - PDP unavailable or ambiguous → comment with findings and stop.
+- **Marketplace / third-party seller PDP** → comment with findings and stop (see **Research PDP** below). Never add marketplace listings to `catalog.json`.
 - `npm test`, `npm run lint`, or `npm run build` fail → fix or stop; never open a PR with failing checks.
 
 ## Workflow
@@ -63,13 +64,18 @@ Parse **Retailer** (`target` or `walmart`) and **SKU** from markdown list items 
 2. **Research PDP**
    - Target: `https://www.target.com/p/-/A-{sku}`
    - Walmart: `https://www.walmart.com/ip/{sku}`
+   - **Marketplace check (required before editing catalog):**
+     - **Target:** stop if the PDP is marketplace-only. Signals include **Sold & shipped by** a third party (not Target), **Target Plus** / **Target+** partner disclosures, or **ships from third party seller**. Same heuristics as `scripts/catalog-liveness/lib/classify-target.mjs` (`live_marketplace`). Example: TCIN `1011202516` (Shining Fates ETB sold by BlueProton) — valid product, but not a first-party listing.
+     - **Walmart:** stop if sold by a marketplace seller (not Walmart.com).
+     - Comment on the issue: the product may be real, but this SKU/link is marketplace-only; suggest a first-party Target/Walmart listing or a different retailer SKU. Do **not** open a PR.
    - Record: product name, `type` (from catalog `product_types`), `msrp_cents`, `set_id`, and `contents[].packs` when applicable.
    - New set → add `sets[]` entry. Unknown set → `assorted`.
 
 3. **Edit catalog** — Update only `extension/core/data/catalog.json`:
    - Merge into an existing product when name, type, and set match; otherwise create a new product.
    - Product `id`: follow `slugify(name, type)` in `research/discord/scripts/author-catalog.mjs`.
-   - Rules from `extension/core/lib/catalog/parse.ts`: first-party listings only, globally unique `retailer:sku`, valid `set_id`, `schema_version: 1`.
+   - Rules from `extension/core/lib/catalog/parse.ts`: **first-party listings only**, globally unique `retailer:sku`, valid `set_id`, `schema_version: 1`.
+   - Never add `marketplace: true` listings — `parseCatalog` strips them; marketplace-only products are omitted from the shipped catalog (`tests/core/catalog-data.test.ts`).
 
 4. **Verify** — Run `npm test`, `npm run lint`, and `npm run build`. All must pass.
 
