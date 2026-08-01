@@ -7,14 +7,26 @@ Use this document when configuring a Cursor Automation for GitHub issue-driven c
 | Setting | Value |
 |---------|-------|
 | Name | Catalog SKU request |
-| Trigger | GitHub → **Issue comment** → issues in `Quarks-1/CookieScripts` |
-| Comment filter | `@cursor catalog-request` (if the UI offers a keyword/body filter) |
+| Trigger | **Webhook** |
 | Repository | `Quarks-1/CookieScripts` |
 | Tools | Pull request creation (enabled by default) |
 
-**Why Issue comment, not Issue label?** The Cursor Automations UI often only exposes **Label change** for pull requests, not issues. Issue comment is available under GitHub → **Issue comment**.
+After saving the automation, copy the webhook URL and generate an API key from the automation settings. Store them as GitHub Actions secrets (see [Webhook setup](#webhook-setup)).
 
-**Why a comment at all?** Cursor ignores comments from `github-actions[bot]` / `GITHUB_TOKEN`. The label workflow posts `@cursor catalog-request` using a **PAT** stored as the repo secret `CATALOG_AGENT_TRIGGER_PAT` (fine-grained PAT with Issues read/write on this repo). Without that secret, label the issue via Actions and then comment `@cursor catalog-request` yourself to trigger the agent.
+## Webhook payload
+
+The label workflow POSTs this JSON when a qualifying issue is opened or re-dispatched:
+
+```json
+{
+  "event": "catalog_request",
+  "repository": "Quarks-1/CookieScripts",
+  "issue_number": 11,
+  "issue_title": "[catalog-request] target SKU 95230445",
+  "issue_url": "https://github.com/Quarks-1/CookieScripts/issues/11",
+  "issue_body": "…full markdown body…"
+}
+```
 
 ## Agent prompt
 
@@ -24,11 +36,11 @@ Copy the instructions below into the automation prompt.
 
 You are adding a missing Target or Walmart SKU to the Pokémon TCG catalog in `extension/core/data/catalog.json`.
 
-**Trigger:** A comment containing `@cursor catalog-request` on a GitHub issue. Parse **Retailer** and **SKU** from the **issue body** (not the comment).
+**Trigger:** A webhook POST where `event` is `catalog_request`. Parse **Retailer** and **SKU** from `issue_body` in the payload.
 
 ### Steps
 
-1. Read the **issue body** on the triggering thread. Parse **Retailer** (`target` or `walmart`) and **SKU** from the markdown list items.
+1. Read `issue_body` from the webhook payload. Parse **Retailer** (`target` or `walmart`) and **SKU** from the markdown list items.
 2. If the SKU already exists in `extension/core/data/catalog.json`, comment on the issue explaining it is already listed and stop.
 3. Research the product page:
    - Target: `https://www.target.com/p/-/A-{sku}`
@@ -42,7 +54,7 @@ You are adding a missing Target or Walmart SKU to the Pokémon TCG catalog in `e
 7. Commit on branch `catalog/sku-{retailer}-{sku}`.
 8. Open a pull request:
    - **Title:** `feat(catalog): add {retailer} SKU {sku} [skip ci]` — `[skip ci]` must be in the title (squash merge uses the PR title as the commit message).
-   - **Body:** Link to the issue, plus a short summary of research (name, type, set, MSRP).
+   - **Body:** Link to the issue (`issue_url` from payload), plus a short summary of research (name, type, set, MSRP).
 9. Comment on the issue with the PR link.
 
 ### Quality bar
@@ -57,24 +69,38 @@ You are adding a missing Target or Walmart SKU to the Pokémon TCG catalog in `e
 
 `catalog/sku-{retailer}-{sku}` — example: `catalog/sku-target-95230445`
 
-## PAT setup (automated trigger comment)
+## Webhook setup
 
-1. Create a fine-grained GitHub PAT for your account with **Issues** read/write on `Quarks-1/CookieScripts`.
-2. Add repo secret: **Settings → Secrets → Actions →** `CATALOG_AGENT_TRIGGER_PAT`.
-3. Merge `.github/workflows/catalog-sku-label.yml` to `main`.
+1. Create or edit the automation at [cursor.com/automations](https://cursor.com/automations) with trigger **Webhook** and repository `Quarks-1/CookieScripts`.
+2. Save the automation, then copy the webhook URL and generate an auth header (Bearer `crsr_…`).
+3. Add repo secrets: **Settings → Secrets → Actions →**
+   - `CURSOR_CATALOG_WEBHOOK_URL` — full webhook URL
+   - `CURSOR_CATALOG_WEBHOOK_KEY` — token only (without `Bearer ` prefix)
+4. Delete or disable any superseded automations (e.g. PR label or issue-comment triggers) to avoid double-runs.
+5. Merge `.github/workflows/catalog-sku-label.yml` to `main`.
 
-The workflow applies `catalog-request` with `GITHUB_TOKEN`, then posts `@cursor catalog-request` with the PAT so Cursor sees a human-authored comment.
+### Smoke test
 
-## Manual trigger (no PAT)
+Replace placeholders and run locally after secrets are set:
 
-On a labeled catalog request issue, add a comment:
-
-```text
-@cursor catalog-request
+```bash
+curl -fsSL -X POST "$CURSOR_CATALOG_WEBHOOK_URL" \
+  -H "Authorization: Bearer $CURSOR_CATALOG_WEBHOOK_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "event": "catalog_request",
+    "repository": "Quarks-1/CookieScripts",
+    "issue_number": 11,
+    "issue_title": "[catalog-request] target SKU 95230445",
+    "issue_url": "https://github.com/Quarks-1/CookieScripts/issues/11",
+    "issue_body": "## SKU request\n\n- **Retailer:** target\n- **SKU:** 95230445\n\n<!-- catalog-request-intake -->"
+  }'
 ```
+
+If you get `401` / `ERROR_NOT_LOGGED_IN`, regenerate the webhook API key in the automation UI and update `CURSOR_CATALOG_WEBHOOK_KEY`. This has been a known Cursor platform regression, not a repo bug.
 
 ## Related workflows
 
-- Label + agent comment: `.github/workflows/catalog-sku-label.yml`
+- Label + webhook trigger: `.github/workflows/catalog-sku-label.yml`
 - Auto-merge after CI: `.github/workflows/catalog-sku-automerge.yml`
 - Operator runbook: [../catalog-sku-request.md](../catalog-sku-request.md)

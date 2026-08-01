@@ -44,44 +44,116 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh issue edit "${{ github.event.issue.number }}" --repo "${{ github.repository }}" --add-label catalog-request
 
-      - name: Notify Cursor agent
-        if: secrets.CATALOG_AGENT_TRIGGER_PAT != ''
+      - name: Trigger Cursor webhook
+        uses: actions/github-script@v7
         env:
-          GH_TOKEN: ${{ secrets.CATALOG_AGENT_TRIGGER_PAT }}
-        run: |
-          gh issue comment "${{ github.event.issue.number }}" \
-            --repo "${{ github.repository }}" \
-            --body "$(cat <<'EOF'
-          @cursor catalog-request
+          CURSOR_CATALOG_WEBHOOK_URL: ${{ secrets.CURSOR_CATALOG_WEBHOOK_URL }}
+          CURSOR_CATALOG_WEBHOOK_KEY: ${{ secrets.CURSOR_CATALOG_WEBHOOK_KEY }}
+        with:
+          script: |
+            const url = process.env.CURSOR_CATALOG_WEBHOOK_URL;
+            const key = process.env.CURSOR_CATALOG_WEBHOOK_KEY;
+            if (!url || !key) {
+              core.setFailed(
+                "CURSOR_CATALOG_WEBHOOK_URL and CURSOR_CATALOG_WEBHOOK_KEY must be set",
+              );
+              return;
+            }
 
-          <!-- catalog-request-agent -->
+            const issue = context.payload.issue;
+            const payload = {
+              event: "catalog_request",
+              repository: `${context.repo.owner}/${context.repo.repo}`,
+              issue_number: issue.number,
+              issue_title: issue.title,
+              issue_url: issue.html_url,
+              issue_body: issue.body,
+            };
 
-          Process the SKU in the issue body above and open a catalog PR per docs/cursor-automations/catalog-sku-request.md.
-          EOF
-          )"
+            const response = await fetch(url, {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${key}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+              const text = await response.text();
+              core.setFailed(`Cursor webhook failed: ${response.status} ${text}`);
+            }
 
   apply-label-manual:
     needs: ensure-label
     if: github.event_name == 'workflow_dispatch' && inputs.issue_number != ''
     runs-on: ubuntu-latest
     steps:
-      - name: Apply catalog-request label to issue
+      - name: Validate issue, apply label, trigger webhook
+        uses: actions/github-script@v7
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh issue edit "${{ inputs.issue_number }}" --repo "${{ github.repository }}" --add-label catalog-request
+          CURSOR_CATALOG_WEBHOOK_URL: ${{ secrets.CURSOR_CATALOG_WEBHOOK_URL }}
+          CURSOR_CATALOG_WEBHOOK_KEY: ${{ secrets.CURSOR_CATALOG_WEBHOOK_KEY }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issueNumber = Number.parseInt("${{ inputs.issue_number }}", 10);
+            const { data: issue } = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+            });
 
-      - name: Notify Cursor agent
-        if: secrets.CATALOG_AGENT_TRIGGER_PAT != ''
-        env:
-          GH_TOKEN: ${{ secrets.CATALOG_AGENT_TRIGGER_PAT }}
-        run: |
-          gh issue comment "${{ inputs.issue_number }}" \
-            --repo "${{ github.repository }}" \
-            --body "$(cat <<'EOF'
-          @cursor catalog-request
+            if (!issue.title.startsWith("[catalog-request]")) {
+              core.setFailed("Issue title must start with [catalog-request]");
+              return;
+            }
 
-          <!-- catalog-request-agent -->
+            if (
+              !issue.body ||
+              !issue.body.includes("<!-- catalog-request-intake -->")
+            ) {
+              core.setFailed(
+                "Issue body must contain <!-- catalog-request-intake -->",
+              );
+              return;
+            }
 
-          Process the SKU in the issue body above and open a catalog PR per docs/cursor-automations/catalog-sku-request.md.
-          EOF
-          )"
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              labels: ["catalog-request"],
+            });
+
+            const url = process.env.CURSOR_CATALOG_WEBHOOK_URL;
+            const key = process.env.CURSOR_CATALOG_WEBHOOK_KEY;
+            if (!url || !key) {
+              core.setFailed(
+                "CURSOR_CATALOG_WEBHOOK_URL and CURSOR_CATALOG_WEBHOOK_KEY must be set",
+              );
+              return;
+            }
+
+            const payload = {
+              event: "catalog_request",
+              repository: `${context.repo.owner}/${context.repo.repo}`,
+              issue_number: issue.number,
+              issue_title: issue.title,
+              issue_url: issue.html_url,
+              issue_body: issue.body,
+            };
+
+            const response = await fetch(url, {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${key}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+              const text = await response.text();
+              core.setFailed(`Cursor webhook failed: ${response.status} ${text}`);
+            }

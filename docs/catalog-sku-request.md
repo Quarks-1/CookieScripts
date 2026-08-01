@@ -11,11 +11,14 @@ End-to-end flow for requesting missing Target/Walmart SKUs from the extension si
 
 ## GitHub label workflow
 
-[`.github/workflows/catalog-sku-label.yml`](../.github/workflows/catalog-sku-label.yml) runs on `issues.opened`. When the title starts with `[catalog-request]` and the body contains `<!-- catalog-request-intake -->`, it ensures the `catalog-request` label exists and applies it.
+[`.github/workflows/catalog-sku-label.yml`](../.github/workflows/catalog-sku-label.yml) runs on `issues.opened`. When the title starts with `[catalog-request]` and the body contains `<!-- catalog-request-intake -->`, it:
 
-Non-collaborators cannot set labels via the `issues/new` URL; this workflow is required for the label.
+1. Ensures the `catalog-request` label exists and applies it.
+2. POSTs the issue payload to the Cursor Automation webhook.
 
-When repo secret `CATALOG_AGENT_TRIGGER_PAT` is set, the workflow also comments `@cursor catalog-request` on the issue (Cursor ignores `GITHUB_TOKEN` bot comments).
+Non-collaborators cannot set labels via the `issues/new` URL; the label workflow is required.
+
+If `CURSOR_CATALOG_WEBHOOK_URL` or `CURSOR_CATALOG_WEBHOOK_KEY` is missing, the workflow fails so you know the agent will not run.
 
 ## Cursor Automation
 
@@ -24,8 +27,8 @@ Configure manually at [cursor.com/automations](https://cursor.com/automations). 
 **Prerequisites:**
 
 - Cursor GitHub App connected to `Quarks-1/CookieScripts`
-- Trigger: **Issue comment** on issues in this repo (filter `@cursor catalog-request` if available)
-- Repo secret `CATALOG_AGENT_TRIGGER_PAT` for fully automated runs, **or** comment `@cursor catalog-request` on the issue yourself after submit
+- Trigger: **Webhook** (not GitHub issue/PR events)
+- Repo secrets `CURSOR_CATALOG_WEBHOOK_URL` and `CURSOR_CATALOG_WEBHOOK_KEY`
 
 ## Auto-merge
 
@@ -40,7 +43,17 @@ Agent PR titles must include `[skip ci]` so squash merges do not trigger the rel
 ## One-time setup checklist
 
 - [ ] Merge label + automerge workflows to `main` (push creates the `catalog-request` label automatically)
-- [ ] Add repo secret `CATALOG_AGENT_TRIGGER_PAT` (fine-grained PAT, Issues write on this repo) for automated `@cursor catalog-request` comments
-- [ ] Create Cursor Automation per [cursor-automations/catalog-sku-request.md](./cursor-automations/catalog-sku-request.md) (**Issue comment**, not PR label)
-- [ ] For issues opened before deploy: run **Catalog SKU label** workflow with `issue_number`, or comment `@cursor catalog-request` on the issue
+- [ ] Create Cursor Automation per [cursor-automations/catalog-sku-request.md](./cursor-automations/catalog-sku-request.md) with **Webhook** trigger
+- [ ] Add repo secrets `CURSOR_CATALOG_WEBHOOK_URL` and `CURSOR_CATALOG_WEBHOOK_KEY`
+- [ ] Delete or disable old Cursor automations (e.g. PR label or issue-comment variants)
+- [ ] Delete repo secret `CATALOG_AGENT_TRIGGER_PAT` if it was added previously
 - [ ] Confirm branch protection allows Actions merge for `catalog/sku-*` PRs
+- [ ] Smoke-test webhook with `curl` (see automation doc) or re-run **Catalog SKU label** workflow with `issue_number` for a test issue
+
+## Troubleshooting
+
+| Symptom | Fix |
+|---------|-----|
+| Workflow fails on webhook step | Confirm both webhook secrets are set; regenerate API key in Cursor if POST returns 401 |
+| Label applied but no agent run | Check Cursor Automations dashboard for a new run; verify webhook URL matches the saved automation |
+| Retroactive issue | **Actions → Catalog SKU label → Run workflow** with `issue_number` |
