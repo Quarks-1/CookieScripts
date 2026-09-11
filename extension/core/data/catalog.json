@@ -4889,6 +4889,24 @@
         }
       ],
       "id": "30th-celebration-poster-collection-collection-box"
+    },
+    {
+      "name": "30th Celebration Tin (Sylveon or Greninja)",
+      "type": "tin",
+      "msrp_cents": 2199,
+      "contents": [
+        {
+          "set_id": "30th-celebration",
+          "packs": 4
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1010892069"
+        }
+      ],
+      "id": "30th-celebration-tin-sylveon-or-greninja-tin"
     }
   ]
 }
