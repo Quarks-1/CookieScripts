@@ -4871,6 +4871,24 @@
         }
       ],
       "id": "30th-celebration-sylveon-ex-box-collection-box"
+    },
+    {
+      "name": "30th Celebration Poster Collection",
+      "type": "collection_box",
+      "msrp_cents": 1499,
+      "contents": [
+        {
+          "set_id": "30th-celebration",
+          "packs": 3
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1010892067"
+        }
+      ],
+      "id": "30th-celebration-poster-collection-collection-box"
     }
   ]
 }
