@@ -4835,6 +4835,24 @@
         }
       ],
       "id": "30th-celebration-greninja-ex-box-collection-box"
+    },
+    {
+      "name": "30th Celebration Sylveon ex Box",
+      "type": "collection_box",
+      "msrp_cents": 2199,
+      "contents": [
+        {
+          "set_id": "30th-celebration",
+          "packs": 4
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1010892068"
+        }
+      ],
+      "id": "30th-celebration-sylveon-ex-box-collection-box"
     }
   ]
 }
