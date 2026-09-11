@@ -165,6 +165,23 @@
   ],
   "products": [
     {
+      "name": "30th Celebration Elite Trainer Box",
+      "type": "elite_trainer_box",
+      "msrp_cents": 4999,
+      "contents": [
+        {
+          "set_id": "30th-celebration"
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1010892076"
+        }
+      ],
+      "id": "30th-celebration-elite-trainer-box-elite-trainer-box"
+    },
+    {
       "name": "Perfect Order Elite Trainer Box",
       "type": "elite_trainer_box",
       "msrp_cents": 4999,
