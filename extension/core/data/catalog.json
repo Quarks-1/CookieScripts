@@ -182,6 +182,24 @@
       "id": "30th-celebration-elite-trainer-box-elite-trainer-box"
     },
     {
+      "name": "30th Celebration Knock Out Collection",
+      "type": "collection_box",
+      "msrp_cents": 999,
+      "contents": [
+        {
+          "set_id": "30th-celebration",
+          "packs": 2
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1010892070"
+        }
+      ],
+      "id": "30th-celebration-knock-out-collection-collection-box"
+    },
+    {
       "name": "Perfect Order Elite Trainer Box",
       "type": "elite_trainer_box",
       "msrp_cents": 4999,
