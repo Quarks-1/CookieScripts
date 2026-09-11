@@ -4907,6 +4907,24 @@
         }
       ],
       "id": "30th-celebration-tin-sylveon-or-greninja-tin"
+    },
+    {
+      "name": "30th Celebration Tech Sticker Collection",
+      "type": "collection_box",
+      "msrp_cents": 1499,
+      "contents": [
+        {
+          "set_id": "30th-celebration",
+          "packs": 3
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1010892078"
+        }
+      ],
+      "id": "30th-celebration-tech-sticker-collection-collection-box"
     }
   ]
 }
