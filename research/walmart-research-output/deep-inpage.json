@@ -1,0 +1,129 @@
+{
+  "deep": {
+    "product": {
+      "usItemId": null,
+      "offerId": null,
+      "availability": null
+    },
+    "pdpSelectors": {
+      "aids": [],
+      "tids": [],
+      "atcSnips": [],
+      "disabledSnips": [],
+      "dca": []
+    },
+    "opNames": [],
+    "cartOps": [],
+    "cartAids": [],
+    "checkout": {
+      "/checkout": {
+        "status": 200,
+        "url": "https://www.walmart.com/blocked?url=L2NoZWNrb3V0&uuid=9869a910-73f1-11f1-9789-e7bd1124c409&vid=98749996-73f1-11f1-9e48-79412eb3a272&g=b",
+        "aids": [],
+        "ops": [],
+        "hasGuest": false,
+        "hasIframe": false
+      },
+      "/checkout/review-order": {
+        "status": 200,
+        "url": "https://www.walmart.com/blocked?url=L2NoZWNrb3V0L3Jldmlldy1vcmRlcg==&uuid=9869a910-73f1-11f1-9789-e7bd1124c409&vid=98749996-73f1-11f1-9e48-79412eb3a272&g=b",
+        "aids": [],
+        "ops": [],
+        "hasGuest": false,
+        "hasIframe": false
+      },
+      "/checkout/shipping": {
+        "status": 200,
+        "url": "https://www.walmart.com/blocked?url=L2NoZWNrb3V0L3NoaXBwaW5n&uuid=9869a910-73f1-11f1-9789-e7bd1124c409&vid=98749996-73f1-11f1-9e48-79412eb3a272&g=b",
+        "aids": [],
+        "ops": [],
+        "hasGuest": false,
+        "hasIframe": false
+      },
+      "/checkout/payment": {
+        "status": 200,
+        "url": "https://www.walmart.com/blocked?url=L2NoZWNrb3V0L3BheW1lbnQ=&uuid=9869a910-73f1-11f1-9789-e7bd1124c409&vid=98749996-73f1-11f1-9e48-79412eb3a272&g=b",
+        "aids": [],
+        "ops": [],
+        "hasGuest": false,
+        "hasIframe": false
+      },
+      "/checkout/place-order": {
+        "status": 200,
+        "url": "https://www.walmart.com/blocked?url=L2NoZWNrb3V0L3BsYWNlLW9yZGVy&uuid=9869a910-73f1-11f1-9789-e7bd1124c409&vid=98749996-73f1-11f1-9e48-79412eb3a272&g=b",
+        "aids": [],
+        "ops": [],
+        "hasGuest": false,
+        "hasIframe": false
+      },
+      "/checkout?stage=shipping": {
+        "status": 200,
+        "url": "https://www.walmart.com/blocked?url=L2NoZWNrb3V0P3N0YWdlPXNoaXBwaW5n&uuid=9869a910-73f1-11f1-9789-e7bd1124c409&vid=98749996-73f1-11f1-9e48-79412eb3a272&g=b",
+        "aids": [],
+        "ops": [],
+        "hasGuest": false,
+        "hasIframe": false
+      },
+      "/checkout?step=payment": {
+        "status": 200,
+        "url": "https://www.walmart.com/blocked?url=L2NoZWNrb3V0P3N0ZXA9cGF5bWVudA==&uuid=9869a910-73f1-11f1-9789-e7bd1124c409&vid=98749996-73f1-11f1-9e48-79412eb3a272&g=b",
+        "aids": [],
+        "ops": [],
+        "hasGuest": false,
+        "hasIframe": false
+      }
+    },
+    "pac": {
+      "status": 200,
+      "aids": [],
+      "hasPac": false
+    },
+    "bootstrapKeys": null,
+    "storage": {
+      "l": [
+        "io_lid",
+        "io_olid",
+        "nudgeCounter",
+        "renderViewId",
+        "PXu6b0qd2S_px_fp",
+        "PXu6b0qd2S_px_hvd",
+        "_bc_pulse_seq_num",
+        "_bc_pulse_batch_seq_num",
+        "PXu6b0qd2S_px-ff",
+        "io_lspt",
+        "oneTapSession"
+      ],
+      "s": [
+        "va-notice-seen",
+        "_bc_cpv_id",
+        "pxsid",
+        "_bc_prev_url",
+        "io_sstk",
+        "PXu6b0qd2S_px_c_p_PXu6b0qd2S",
+        "PXu6b0qd2S_px_nfsp",
+        "_bc_cur_url",
+        "_bc_batch_evts",
+        "is3pcSupported"
+      ]
+    }
+  },
+  "net": [
+    {
+      "m": "POST",
+      "u": "https://collector-pxu6b0qd2s.px-cloud.net/api/v2/collector"
+    },
+    {
+      "m": "GET",
+      "u": "https://www.walmart.com/orchestra/home/graphql/Location/26e4ca8c866334908ce825a5749f6aa13f772b98a527b0d0b7fe457818c5b349?variables=%7B%7D",
+      "op": "Location",
+      "cid": "RNxcY2QVjPu60luGerBqqerZVOvwKfhD97a7"
+    },
+    {
+      "m": "POST",
+      "u": "https://collector-pxu6b0qd2s.px-cloud.net/api/v2/collector"
+    }
+  ],
+  "ops": [
+    "Location"
+  ]
+}

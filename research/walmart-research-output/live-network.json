@@ -1,0 +1,328 @@
+{
+  "net": [
+    {
+      "m": "GET",
+      "u": "https://www.walmart.com/orchestra/home/graphql/Location/26e4ca8c866334908ce825a5749f6aa13f772b98a527b0d0b7fe457818c5b349?variables=%7B%7D",
+      "op": "Location"
+    }
+  ],
+  "ws": [],
+  "ops": [
+    "Location"
+  ],
+  "hosts": [
+    "www.walmart.com"
+  ],
+  "cookies": [
+    {
+      "name": "s",
+      "value": "1",
+      "domain": "i5.walmartimages.com",
+      "path": "/dfw/63fd9f59-4c54/7adb6fe1-4149-4ebe-b4c7-2ea1921d4a19/v344",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "isoLoc",
+      "value": "US_VA_t3",
+      "domain": ".www.walmart.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_pxvid",
+      "value": "21c224b3-73f1-11f1-a2dc-3205613300e2",
+      "domain": ".walmart.com",
+      "path": "/",
+      "expires": 1814297491.747543,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "pxcts",
+      "value": "21c232d3-73f1-11f1-a2dc-49ad1c35b8ee",
+      "domain": ".walmart.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_astc",
+      "value": "00382578f137c46423bde77b846defc7",
+      "domain": "www.walmart.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "adblocked",
+      "value": "false",
+      "domain": "www.walmart.com",
+      "path": "/",
+      "expires": 1783366292,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_pxhd",
+      "value": "fd4b37e2137ef8c5b3079c1172a054dbcdd1c5fd65d1ce4d68f7fa6d7960d830:21c224b3-73f1-11f1-a2dc-3205613300e2",
+      "domain": "www.walmart.com",
+      "path": "/",
+      "expires": 1814297492.08198,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "akavpau_p5",
+      "value": "1782762092~id=713cf5da65046993326670ccec694ab0",
+      "domain": "www.walmart.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "btc",
+      "value": "cG9mmH0QWaiS8lVcSgD-Dc",
+      "domain": "b.www.walmart.com",
+      "path": "/",
+      "expires": 1817321497.351098,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "bsc",
+      "value": "cG9mmH0QWaiS8lVcSgD-Dc",
+      "domain": "b.www.walmart.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "b30msc",
+      "value": "cG9mmH0QWaiS8lVcSgD-Dc",
+      "domain": "b.www.walmart.com",
+      "path": "/",
+      "expires": 1782763297.35115,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "vtc",
+      "value": "cG9mmH0QWaiS8lVcSgD-Dc",
+      "domain": ".walmart.com",
+      "path": "/",
+      "expires": 1817321497.351163,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "bstc",
+      "value": "cG9mmH0QWaiS8lVcSgD-Dc",
+      "domain": ".walmart.com",
+      "path": "/",
+      "expires": 1782763297.351186,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "va-notice-seen",
+      "value": "1",
+      "domain": "www.walmart.com",
+      "path": "/",
+      "expires": 1814297492.142821,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_tap-criteo",
+      "value": "1782761492194:0:1",
+      "domain": "b.www.walmart.com",
+      "path": "/",
+      "expires": 1783971092.201845,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_tap_path",
+      "value": "/rum.gif",
+      "domain": "b.www.walmart.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "uid",
+      "value": "03aa6ab7-8b2c-4e96-848c-8b14be164106",
+      "domain": ".criteo.com",
+      "path": "/",
+      "expires": 1816457492.242091,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "io_id",
+      "value": "72a5bea7-1322-47f3-97d1-8f454b0ec64b",
+      "domain": ".walmart.com",
+      "path": "/",
+      "expires": 1814297505,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "akavpau_p2",
+      "value": "1782762097~id=3c4b4f9d0546f0ce9930531d3ae36e58",
+      "domain": "www.walmart.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "bm_mi",
+      "value": "FFBC086F0289E92949C90AB17A3BB474~YAAQ6sgwF3JqQhOfAQAAnKLdFACpsu5kmJGv6plVppkq+QMCHgwJJ7cIQwmLnh7fFah2JE+RXZJLh22q7N/LJf8UUktrgOFdmNR/FCjX+QPeQ15uKwbz9HxI5A3xlXsKyQpor0Mh6NeCBaxMNP4jw6YXNd1+Q38L3T+oa1izhZJT0kT6OnCVl96qwNgNLWemyfCQzs6YwC1ZXbqtZjDldSBPi5YTClO97vZfh6/NQ9f60zRdbg+jHKNN8xSf0nnivxZaZeYo87zCvHzq09LALSpaUmc3YAvamobEzW5fPPyV4sTsUCPg0BXuucX3gEUolXJD1Hk=~1",
+      "domain": ".walmart.com",
+      "path": "/",
+      "expires": 1782768691.24749,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ak_bmsc",
+      "value": "503A3F1115F82D5FEB51149090958193~000000000000000000000000000000~YAAQ6sgwF+JwQhOfAQAAAqbdFACrBVn9G7R+Z6y35lfMiRevb4f5LPJoGAitnoAE7VFBsi4mYtU/fCIlem7Llw3/jxvf3xLU086LfrdpVbbS9nEUwiW0VhLOeb6IRd/E+N/zSSXBa2do4tbxWpDaxI4dUYZwxgO+U3BxDbhh+ObNqBUrxfLunW5N2ovW+SO2Jz1CrgR7qgGdlgOMpF71GetjZ0z5aDhpPkDnLr5NzYBPDrMODVZxFJu14AW5bb8J0xW3LvcKqDnID7avonIgMCxUutp549CUEPUK9zv+mofxRqH9glSCJnm2GE94O0iKMGSv1TrGY5xF+/CFTJ6LxtHwabbOsgPFfXPWvclJX1lBLYUekYELi1elAnR8jyhp/BJhxPh8ygznV1gBq89INJPfKFUThIKa82p+uM0XvQGdb8Onbfc+wOdMJ2y2K1gf+Cvx9qmPx3oaG665gH3FvXV1Z7KHIn3wBT97cSs0BsaPoFU1XmxvZZN56XuLftcr+PfXb85bzFKkDWrfHaQG7Sih+4XkXTlF/jE=",
+      "domain": ".walmart.com",
+      "path": "/",
+      "expires": 1782768691.117523,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "bm_sv",
+      "value": "9373AB4889DBBB7DDCF8CA8D6E3A87F7~YAAQ6sgwFx1yQhOfAQAApKbdFADmPwGvtN2567s/2Ztf0w3O0UHVmDYtayrHjIBL2tgAgtZCG0+ZDMwmTu2kusrX/sknGkbyRiBP+DUXTYxeXvKAJCBpvQlEB/SaX9ZO3aFZ2v7XCEA2Tn3KYgrUNUs8I/3bywyHRcljWdZLaKfzq9zgKrsHP1M0HX0E6ujLdyg6TXaLFgKCdO3Q842er27AbJXfF94xToh7r9L4G1QXCJgJTuCgLdCA5pCc2+sxUg==~1",
+      "domain": ".walmart.com",
+      "path": "/",
+      "expires": 1782768692.306299,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "TS012768cf",
+      "value": "01571c57a368a878e631b2777f29d4bf8b9e4bbdedab184a8307f9722628792ff7fa62f63ec6294e7dbafcc4ef2d7797b497e3da80",
+      "domain": ".www.walmart.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "TS2a5e0c5c027",
+      "value": "0813d4cf00ab2000f1d962ff00de815d6f7a2f46e6e311085cefb44331abf35e374fea896ff779ac08491a67411130004ca8c9268b16f85fb2c280a17ecc8f24b46432def5f8096d137b7247fb6c6a87e00b2aa14c5def527981c3b0dd90df13",
+      "domain": "www.walmart.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "akavpau_p1",
+      "value": "1782762105~id=108f4fbbeab054c252691c9ad1e2b479",
+      "domain": "www.walmart.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "if_id",
+      "value": "FMEZARSFSSHkgGX6dpa9oMolhntxx2MW0+UwF0xNP0jd34NEiupX9Wz6nvFcNcDawKUPwVJSYbEd5vUSSxQJ0iSZOzhpZ8L0rgznLs0Y27nDVDjFthZHeZmqnN7my5ZEuJzTg+BaPqRcuvxwEZP/FoYmniDQVa/W5SUFb4VLMUfZ4msQp7PcD6zXdnGyYb9NicNdZtxvXfzyPTAr8utKyIpRFMAFIv6yYhBwbT8/wTgNVgM6EKdoV9k7MnlZJ9dlhRREYo8owyACofy+2qxR+HxtTspjh+9Sp61MHQm58l/3UhdxXBBcPoPDbbrTaK+poEZtoTT9yjRjV2qwZV9VN1Y=",
+      "domain": ".walmart.com",
+      "path": "/",
+      "expires": 1814297506.095811,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "TS016ef4c8",
+      "value": "01a2914375783fdb5dc9ceca93e88bb8fe3ec2e7bc36fdf15799c47688540b3359b423560891071c945947ebc7a550db5f5b767eab",
+      "domain": "www.walmart.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "TS01f89308",
+      "value": "01a2914375783fdb5dc9ceca93e88bb8fe3ec2e7bc36fdf15799c47688540b3359b423560891071c945947ebc7a550db5f5b767eab",
+      "domain": ".walmart.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "TS8cb5a80e027",
+      "value": "0807a28e17ab2000bfbfd2174395af9d06846d9f4077fb689d408706ce22ba50492cd1a92be00975081db27dd4113000de1fb4353138d7fcec42bdde73557b858703d64a6908af74b2d5b9bf29ee4c2e0fe03799bc86fb0e380c7eaf7379ebd0",
+      "domain": "www.walmart.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_px3",
+      "value": "e6d2b1c6c7af30ad866dcde7befd2d8da34c28013c7d2b419e733864e1a96922:4Xh0DQkth274bDvqbRULQ+RG+eYBOnF2rAaRxC1yEWD2S+r05+hMj5jasZv5u24xYGdmmfysMnUrd388saGalg==:1000:UhLIvxjcqb2ljCRH7ATjyprDb6VHlWF5i08agDAJuypelFhfIZo8ypVyvTwpvaYZBjBgxHzl7ovaFTxUTazVvA73YTTmonxAlsYPe/tF1lTzEdeTPz9tw6t1saQkb0rEgVjUGRl8Z/0T7uYaQDp3yrwlwE8PDxlGSRyQUy3UcuoHhnpFICME3H6o8f31jHKcOGcxIK5/C0dCLWVfPb/9qSBfNRyMJC0KFEff48/CX9TSJa4Ra85J2CGgCq0EeiAN9NYXp/B757cmTf+VaJMf8PNwppiglnZ+XXA6vt31RX8zbFRIt7ITv6qA4p8BF0GURjzuAMcjXhAlUgUQ+8agNybojGV0PXBTWrdZmL6kEdUp7oRvZF1hA9NzSYgC3zq1zUPJArRfpmqF/A8Yi7YRYP/ZfcuakFRbwkJaZmB8cj4pQPwcHcYl+CBRElnh+UAZlr9x2RnZm1C13FaRYJPS7eljdcXMoEWDPvXd4bmy/zQ=",
+      "domain": ".walmart.com",
+      "path": "/",
+      "expires": 1782761837.027173,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_pxde",
+      "value": "a4b69a589b50a74c0f7df408dab97bace86c3870f57b6bb4244ed79a4fb49c6d:eyJ0aW1lc3RhbXAiOjE3ODI3NjE1MDcwMDIsImZfa2IiOjAsImlwY19pZCI6WzFdLCJpbmNfaWQiOlsiNjEzYWQ2NjM1ZmRlMjFmMThkNTljMzE4ZDQwZDU4NmMiLCI4YjcxOWFjYjExYWI5MmZkYzFlY2Q3ZmVjOGE3NjZlYyIsIjAzMmNkOWRhNzRjMDY4MTg0M2Y1ZjdiOWEzNjU5Mjk1IiwiYjA3MzU5Yzk2MGFmMTM3ZGQzZTI1Zjg0YWIxNjhkYzMiLCI1YTU5ODFhNDliNWIxNjk1NGRlNmU3M2U2YmI4NTA5OCJdfQ==",
+      "domain": ".walmart.com",
+      "path": "/",
+      "expires": 1782761837.02795,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ]
+}

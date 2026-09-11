@@ -1,0 +1,22 @@
+{
+  "pdp": {
+    "url": "https://www.walmart.com/search?q=great+value+milk+gallon",
+    "atc": [],
+    "oos": []
+  },
+  "net": [
+    {
+      "m": "POST",
+      "u": "https://collector-pxu6b0qd2s.px-cloud.net/api/v2/collector"
+    },
+    {
+      "m": "GET",
+      "u": "https://www.walmart.com/orchestra/home/graphql/Location/26e4ca8c866334908ce825a5749f6aa13f772b98a527b0d0b7fe457818c5b349?variables=%7B%7D",
+      "op": "Location"
+    },
+    {
+      "m": "POST",
+      "u": "https://collector-pxu6b0qd2s.px-cloud.net/api/v2/collector"
+    }
+  ]
+}

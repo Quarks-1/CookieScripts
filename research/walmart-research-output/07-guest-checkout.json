@@ -1,0 +1,65 @@
+{
+  "label": "guest_checkout",
+  "url": "https://www.walmart.com/blocked?url=L2NhcnQ=&uuid=983b89a0-73f0-11f1-9d79-cb6c270efe47&vid=90eed5b1-73f0-11f1-a256-95d1d4981051&g=b",
+  "title": "Robot or human?",
+  "buttons": [],
+  "atcCandidates": [],
+  "dialogs": [],
+  "forms": [],
+  "iframes": [
+    {}
+  ],
+  "shadowHosts": [],
+  "nextData": null,
+  "jsonLd": [],
+  "storageKeys": {
+    "local": [
+      "io_lid",
+      "io_olid",
+      "nudgeCounter",
+      "renderViewId",
+      "PXu6b0qd2S_px_fp",
+      "PXu6b0qd2S_px_hvd",
+      "_bc_pulse_seq_num",
+      "_bc_pulse_batch_seq_num",
+      "PXu6b0qd2S_px-ff",
+      "previous_typeahead_query",
+      "io_lspt"
+    ],
+    "session": [
+      "_bc_rpv_id",
+      "va-notice-seen",
+      "_bc_cpv_id",
+      "pxsid",
+      "_bc_prev_url",
+      "io_sstk",
+      "PXu6b0qd2S_px_c_p_PXu6b0qd2S",
+      "PXu6b0qd2S_px_nfsp",
+      "_bc_cur_url",
+      "_bc_batch_evts",
+      "is3pcSupported"
+    ]
+  },
+  "cookieNames": [
+    "isoLoc",
+    "_pxvid",
+    "pxcts",
+    "vtc",
+    "bstc",
+    "_astc",
+    "adblocked",
+    "_pxhd",
+    "va-notice-seen",
+    "io_id",
+    "TS012768cf",
+    "TS2a5e0c5c027",
+    "if_id",
+    "TS016ef4c8",
+    "TS01f89308",
+    "TS8cb5a80e027",
+    "_px3",
+    "_pxde"
+  ],
+  "variantSelectors": [],
+  "queueIndicators": []
+}
