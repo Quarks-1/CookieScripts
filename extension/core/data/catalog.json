@@ -18,6 +18,11 @@
   ],
   "sets": [
     {
+      "id": "30th-celebration",
+      "name": "30th Celebration",
+      "released_on": "2026-09-16"
+    },
+    {
       "id": "pitch-black",
       "name": "Pitch Black",
       "released_on": "2026-07-17"
@@ -4795,6 +4800,24 @@
         }
       ],
       "id": "reshiram-ex-box-collection-box"
+    },
+    {
+      "name": "30th Celebration Greninja ex Box",
+      "type": "collection_box",
+      "msrp_cents": 2199,
+      "contents": [
+        {
+          "set_id": "30th-celebration",
+          "packs": 4
+        }
+      ],
+      "listings": [
+        {
+          "retailer": "target",
+          "sku": "1010892065"
+        }
+      ],
+      "id": "30th-celebration-greninja-ex-box-collection-box"
     }
   ]
 }
