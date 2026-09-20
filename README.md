@@ -1,10 +1,51 @@
 # CookieScripts
 
-Chrome extension that auto-opens allowlisted links from Discord web channels.
+Chrome extension with a side panel for Discord link watching, Target automation, Walmart drop-day research, and Sam's Club recording plus manual automation. Global settings include SKU catalog picking, link-open behavior, and settings backup.
+
 See [AGENTS.md](./AGENTS.md) for architecture and where to edit.
 
 **Repo:** [Quarks-1/CookieScripts](https://github.com/Quarks-1/CookieScripts)  
 **Upstream desktop app:** [Quarks-1/autoopen](https://github.com/Quarks-1/autoopen)
+
+## Screenshots
+
+Side panel (Chrome **side panel**, not a toolbar popup) and the full-tab SKU catalog options page:
+
+### Discord
+
+Per-channel domain allowlists, global Target/Walmart keyword and SKU filters, detected links, and link history.
+
+![Discord side panel](docs/images/readme/sidepanel-discord.png)
+
+### Target
+
+Link open count, add-to-cart and checkout modes, quantity, manual auto mode, and schedule.
+
+![Target side panel](docs/images/readme/sidepanel-target.png)
+
+### Walmart
+
+Schedule, auto-refresh, and queue helpers (recording UI when enabled in Global).
+
+![Walmart side panel](docs/images/readme/sidepanel-walmart.png)
+
+### Sam's Club
+
+Add-to-cart, auto checkout, manual auto mode, schedule, and recording (when enabled in Global).
+
+![Sam's Club side panel](docs/images/readme/sidepanel-samsclub.png)
+
+### Global
+
+SKU catalog launch, catalog SKU requests, link-open and SKU modes, recording visibility toggles, and settings import/export.
+
+![Global side panel](docs/images/readme/sidepanel-global.png)
+
+### SKU catalog
+
+Pokémon TCG picker (grouped by set or type) that syncs Target/Walmart watch SKUs with the Discord tab.
+
+![SKU catalog page](docs/images/readme/catalog.png)
 
 ## Prerequisites
 
@@ -28,7 +69,7 @@ After changing the service worker or background handlers, reload the extension o
 2. Download `cookiescripts-X.Y.Z.zip` for the latest release
 3. Unzip to a permanent folder (`manifest.json` must be at the root of that folder)
 4. Open `chrome://extensions` → enable **Developer mode** → **Load unpacked** → select that folder
-5. Pin the extension and open the popup on a Discord channel tab
+5. Pin the extension and open the side panel on a Discord channel tab
 
 If you installed from a dev build before releases existed, do this once to enable in-extension update checks (new `api.github.com` permission).
 
@@ -38,7 +79,7 @@ If you installed from a dev build before releases existed, do this once to enabl
 2. Unzip **into the same folder** already loaded in Chrome (replace all files)
 3. On `chrome://extensions`, click **Reload** on the existing CookieScripts card — do **not** use **Load unpacked** again (that creates a duplicate extension and resets settings)
 
-The popup shows an update banner when a newer release is available (checks GitHub each time you open the popup; unchanged releases reuse a cached ETag).
+The side panel shows an update banner when a newer release is available (checks GitHub each time you open the side panel; unchanged releases reuse a cached ETag).
 
 ## Load unpacked (development)
 
@@ -46,7 +87,7 @@ The popup shows an update banner when a newer release is available (checks GitHu
 2. Open `chrome://extensions`
 3. Enable **Developer mode**
 4. Click **Load unpacked** and select the `dist/` folder
-5. Pin the extension and open the popup on a Discord channel tab
+5. Pin the extension and open the side panel on a Discord channel tab
 
 Releases are created automatically on every push to `main` (patch version bump). Contributors should `git pull` after merging to stay in sync with version commits from CI.
 
