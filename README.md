@@ -11,41 +11,45 @@ See [AGENTS.md](./AGENTS.md) for architecture and where to edit.
 
 Side panel (Chrome **side panel**, not a toolbar popup) and the full-tab SKU catalog options page:
 
-### Discord
-
-Per-channel domain allowlists, global Target/Walmart keyword and SKU filters, detected links, and link history.
-
-![Discord side panel](docs/images/readme/sidepanel-discord.png)
-
-### Target
-
-Link open count, add-to-cart and checkout modes, quantity, manual auto mode, and schedule.
-
-![Target side panel](docs/images/readme/sidepanel-target.png)
-
-### Walmart
-
-Schedule, auto-refresh, and queue helpers (recording UI when enabled in Global).
-
-![Walmart side panel](docs/images/readme/sidepanel-walmart.png)
-
-### Sam's Club
-
-Add-to-cart, auto checkout, manual auto mode, schedule, and recording (when enabled in Global).
-
-![Sam's Club side panel](docs/images/readme/sidepanel-samsclub.png)
-
-### Global
-
-SKU catalog launch, catalog SKU requests, link-open and SKU modes, recording visibility toggles, and settings import/export.
-
-![Global side panel](docs/images/readme/sidepanel-global.png)
-
-### SKU catalog
-
-Pokémon TCG picker (grouped by set or type) that syncs Target/Walmart watch SKUs with the Discord tab.
-
-![SKU catalog page](docs/images/readme/catalog.png)
+<table>
+  <tr>
+    <td align="center" valign="top" width="33%">
+      <strong>Discord</strong><br/>
+      <sub>Per-channel domain allowlists, global Target/Walmart keyword and SKU filters, detected links, and link history.</sub><br/>
+      <img src="docs/images/readme/sidepanel-discord.png" width="220" alt="Discord side panel" />
+    </td>
+    <td align="center" valign="top" width="33%">
+      <strong>Target</strong><br/>
+      <sub>Link open count, add-to-cart and checkout modes, quantity, manual auto mode, and schedule.</sub><br/>
+      <img src="docs/images/readme/sidepanel-target.png" width="220" alt="Target side panel" />
+    </td>
+    <td align="center" valign="top" width="33%">
+      <strong>Walmart</strong><br/>
+      <sub>Schedule, auto-refresh, and queue helpers (recording UI when enabled in Global).</sub><br/>
+      <img src="docs/images/readme/sidepanel-walmart.png" width="220" alt="Walmart side panel" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center" valign="top" width="33%">
+      <strong>Sam's Club</strong><br/>
+      <sub>Add-to-cart, auto checkout, manual auto mode, schedule, and recording (when enabled in Global).</sub><br/>
+      <img src="docs/images/readme/sidepanel-samsclub.png" width="220" alt="Sam's Club side panel" />
+    </td>
+    <td align="center" valign="top" width="33%">
+      <strong>Global</strong><br/>
+      <sub>SKU catalog launch, catalog SKU requests, link-open and SKU modes, recording visibility toggles, and settings import/export.</sub><br/>
+      <img src="docs/images/readme/sidepanel-global.png" width="220" alt="Global side panel" />
+    </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td colspan="3" align="center" valign="top">
+      <strong>SKU catalog</strong><br/>
+      <sub>Pokémon TCG picker (grouped by set or type) that syncs Target/Walmart watch SKUs with the Discord tab.</sub><br/>
+      <img src="docs/images/readme/catalog.png" width="900" alt="SKU catalog page" />
+    </td>
+  </tr>
+</table>
 
 ## Prerequisites
 
